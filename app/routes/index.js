@@ -67,12 +67,12 @@ router.get('/', function(req, res) {
   const securityEnabled = SECURE_ENDPOINTS;
   const stores =  NGSI_LD_STORES;
   res.render('index', {
-    title: 'NGSI-LD Tutorial',
     success: req.flash('success'),
     errors: req.flash('error'),
     info: req.flash('info'),
     securityEnabled,
-    stores
+    stores, 
+    ngsi: 'ngsi-ld'
   });
 });
 
