@@ -7,7 +7,7 @@
 [![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.01.01_60/gs_CIM009v010101p.pdf)
 [![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/)
 [<img src="docs/img/logo.png" align="right" width="162">](https://www.fiware.org/)<br/>
-[![Documentation](https://img.shields.io/readthedocs/ngsi-ld.tutorials.svg)](https://ngsi-ld-tutorials.rtfd.io)
+[![Documentation](https://img.shields.io/readthedocs/ngsi-ld-tutorials.svg)](https://ngsi-ld-tutorials.rtfd.io)
 [![Build Status](https://img.shields.io/travis/FIWARE/tutorials.NGSI-LD.svg)](https://travis-ci.org/FIWARE/tutorials.NGSI-LD)
 
 This is a collection of tutorials for the FIWARE ecosystem designed for **NGSI-LD** developers. Each tutorial consists
@@ -15,7 +15,7 @@ of a series of exercises to demonstrate the correct use of individual FIWARE com
 data within a simple Smart Solution either by connecting to a series of dummy IoT devices or manipulating the context
 directly or programmatically.
 
-| :books: [Documentation](https://ngsi-ld.tutorials.rtfd.io) | :whale: [Docker Hub](https://hub.docker.com/r/fiware/tutorials.ngsi-ld/) | <img src="https://json-ld.org/favicon.ico" align="center" height="25"> [NGSI-LD Data Models](https://fiware.github.io/tutorials.Step-by-Step/schema/) | <img src="https://assets.getpostman.com/common-share/postman-logo-stacked.svg" align="center" height="25"> [Postman Collections](https://explore.postman.com/team/3mM5EY6ChBYp9D) |
+| :books: [Documentation](https://ngsi-ld-tutorials.rtfd.io/) | :whale: [Docker Hub](https://hub.docker.com/r/fiware/tutorials.ngsi-ld/) | <img src="https://json-ld.org/favicon.ico" align="center" height="25"> [NGSI-LD Data Models](https://fiware.github.io/tutorials.Step-by-Step/schema/) | <img src="https://assets.getpostman.com/common-share/postman-logo-stacked.svg" align="center" height="25"> [Postman Collections](https://explore.postman.com/team/3mM5EY6ChBYp9D) |
 | --------------------------------------------------------- | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 
 
@@ -90,7 +90,7 @@ necessary HTTP requests: import the collection into Postman and follow the instr
 Each submodule contains full instructions in README which details the appropriate bash commands (cUrl and Docker
 Compose) to run.
 
-Full instructions can be found within the [documentation](https://ngsi-ld.tutorials.rtfd.io)
+Full instructions can be found within the [documentation](https://ngsi-ld-tutorials.rtfd.io/)
 
 ---
 
