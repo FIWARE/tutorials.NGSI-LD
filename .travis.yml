@@ -1,0 +1,31 @@
+branches:
+  only:
+    - master
+
+jobs:
+  include:
+    - stage: test
+      name: "Context Provider"
+      language: node_js
+      node_js:
+        - "10"
+      install:
+        - npm install -C ./context-provider
+      script:
+        - npm test -C ./context-provider
+     
+    - stage: test
+      name: "Documentation Tests"
+      language: node_js
+      node_js:
+        - "10"
+      install:
+        - npm install
+      script:
+        - npm run lint:md
+        - npm run lint:text
+
+
+notifications:
+  on_success: change
+  on_failure: always

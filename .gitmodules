@@ -1,0 +1,91 @@
+[submodule "tutorials.Getting.Started"]
+	path = tutorials.Getting.Started
+	url = https://github.com/FIWARE/tutorials.Getting-Started.git
+[submodule "tutorials.Accessing-Context"]
+	path = tutorials.Accessing-Context
+	url = https://github.com/FIWARE/tutorials.Accessing-Context.git
+[submodule "tutorials.Context-Providers"]
+	path = tutorials.Context-Providers
+	url = https://github.com/FIWARE/tutorials.Context-Providers.git
+[submodule "tutorials.CRUD-Operations"]
+	path = tutorials.CRUD-Operations
+	url = https://github.com/FIWARE/tutorials.CRUD-Operations.git
+[submodule "tutorials.Entity-Relationships"]
+	path = tutorials.Entity-Relationships
+	url = https://github.com/FIWARE/tutorials.Entity-Relationships.git
+[submodule "tutorials.Fast-RTPS-Micro-RTPS"]
+	path = tutorials.Fast-RTPS-Micro-RTPS
+	url = https://github.com/FIWARE/tutorials.Fast-RTPS-Micro-RTPS.git
+[submodule "tutorials.Historic-Context"]
+	path = tutorials.Historic-Context-Flume
+	url = https://github.com/FIWARE/tutorials.Historic-Context.git
+[submodule "tutorials.IoT-Agent"]
+	path = tutorials.IoT-Agent
+	url = https://github.com/FIWARE/tutorials.IoT-Agent.git
+[submodule "tutorials.IoT-over-MQTT"]
+	path = tutorials.IoT-over-MQTT
+	url = https://github.com/FIWARE/tutorials.IoT-over-MQTT.git
+[submodule "tutorials.IoT-Sensors"]
+	path = tutorials.IoT-Sensors
+	url = https://github.com/FIWARE/tutorials.IoT-Sensors.git
+[submodule "tutorials.Media-Streams"]
+	path = tutorials.Media-Streams
+	url = https://github.com/FIWARE/tutorials.Media-Streams
+[submodule "tutorials.Short-Term-History"]
+	path = tutorials.Short-Term-History
+	url = https://github.com/FIWARE/tutorials.Short-Term-History.git
+[submodule "tutorials.Subscriptions"]
+	path = tutorials.Subscriptions
+	url = https://github.com/FIWARE/tutorials.Subscriptions.git
+[submodule "tutorials.Time-Series-Data"]
+	path = tutorials.Time-Series-Data
+	url = https://github.com/FIWARE/tutorials.Time-Series-Data.git
+
+[submodule "tutorials.Identity-Management"]
+	path = tutorials.Identity-Management
+	url = https://github.com/FIWARE/tutorials.Identity-Management.git
+[submodule "tutorials.Roles-Permissions"]
+	path = tutorials.Roles-Permissions
+	url = https://github.com/FIWARE/tutorials.Roles-Permissions.git
+[submodule "tutorials.Securing-Access"]
+	path = tutorials.Securing-Access
+	url = https://github.com/FIWARE/tutorials.Securing-Access.git
+[submodule "tutorials.PEP-Proxy"]
+	path = tutorials.PEP-Proxy
+	url = https://github.com/FIWARE/tutorials.PEP-Proxy.git
+[submodule "tutorials.XACML-Access-Rules"]
+	path = tutorials.XACML-Access-Rules
+	url = https://github.com/FIWARE/tutorials.XACML-Access-Rules
+[submodule "tutorials.Administrating-XACML"]
+	path = tutorials.Administrating-XACML
+	url = https://github.com/FIWARE/tutorials.Administrating-XACML.git
+[submodule "tutorials.Historic-Context-NIFI"]
+	path = tutorials.Historic-Context-NIFI
+	url = https://github.com/FIWARE/tutorials.Historic-Context-NIFI
+[submodule "tutorials.Application-Mashup"]
+	path = tutorials.Application-Mashup
+	url = https://github.com/FIWARE/tutorials.Application-Mashup
+[submodule "tutorials.Linked-Data"]
+	path = tutorials.Linked-Data
+	url = https://github.com/FIWARE/tutorials.Linked-Data.git
+[submodule "tutorials.Relationships-Linked-Data"]
+	path = tutorials.Relationships-Linked-Data
+	url = https://github.com/FIWARE/tutorials.Relationships-Linked-Data.git
+[submodule "tutorials.Big-Data-Analysis"]
+	path = tutorials.Big-Data-Analysis
+	url = https://github.com/FIWARE/tutorials.Big-Data-Analysis.git
+[submodule "tutorials.Accessing-Linked-Data"]
+	path = tutorials.Working-with-Linked-Data
+	url = https://github.com/FIWARE/tutorials.Accessing-Linked-Data.git
+[submodule "tutorials.Custom-IoT-Agent"]
+	path = tutorials.Custom-IoT-Agent
+	url = https://github.com/FIWARE/tutorials.Custom-IoT-Agent.git
+[submodule "tutorials.IoT-Agent-JSON"]
+	path = tutorials.IoT-Agent-JSON
+	url = https://github.com/FIWARE/tutorials.IoT-Agent-JSON.git
+[submodule "tutorials.Edge-Computing"]
+	path = tutorials.Edge-Computing
+	url = https://github.com/FIWARE/tutorials.Edge-Computing.git
+[submodule "LD-Subscriptions-Registrations"]
+	path = tutorials.LD-Subscriptions-Registrations
+	url = https://github.com/FIWARE/tutorials.LD-Subscriptions-Registrations.git
