@@ -20,7 +20,7 @@
   "private": true,
   "license": "MIT",
   "engines": {
-    "node": ">=8.6"
+    "node": ">=10"
   },
   "dependencies": {
     "body-parser": "^1.18.3",
