@@ -8,12 +8,9 @@ tags:
   - name: ngsi-ld
     description: >
       NGSI-LD Linked-data Format
-  - name: ngsi-v2
-    description: >
-      NGSI-v2 Format
       
 paths:
-  /nsgi-ld:
+  /ngsi-ld/v1/entities:
     get:
       tags:
         - ngsi-ld
@@ -30,41 +27,20 @@ paths:
           content:
             application/ld+json:
               examples:
-                foo:
+                normalized:
                   summary: Linked Data example
                   value:
                     - $ref: >-
-                        https://raw.githubusercontent.com/smart-data-models/dataModel.Device/master/Device/example-normalized-ld.jsonld
-  /nsgi-v2:
-    get:
-      tags:
-        - ngsi-v2
-      parameters:
-        - in: query
-          name: type
-          schema:
-            type: string
-            enum: [Device]
-          required: true
-      responses:
-        '200':
-          description: NGSI-v2 Format
-          content:
-            application/json:
-              examples:
-                normalized:
-                  summary: Normalized example
-                  value:
-                    - $ref: >-
-                        https://raw.githubusercontent.com/smart-data-models/dataModel.Device/master/Device/example-normalized.json
+                        https://fiware.github.io/tutorials.NGSI-LD/examples/device-normalized.jsonld
+
                 keyvalues:
                   summary: Key-Values Pairs
                   value:
                     - $ref: >-
-                        https://raw.githubusercontent.com/smart-data-models/dataModel.Device/master/Device/example.json
+                        https://fiware.github.io/tutorials.NGSI-LD/examples/device-keyValues.json
 components:
   schemas:
     SupportedProtocol:
-      $ref: "./models/device.yaml#/SupportedProtocol"
+      $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/device.yaml#/SupportedProtocol"
     Device:
-      $ref: "./models/device.yaml#/Device"
+      $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/device.yaml#/Device"
