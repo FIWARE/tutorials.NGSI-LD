@@ -5,14 +5,14 @@ branches:
 jobs:
   include:
     - stage: test
-      name: "Context Provider"
+      name: "Application"
       language: node_js
       node_js:
         - "10"
       install:
-        - npm install -C ./context-provider
+        - npm install -C ./app
       script:
-        - npm test -C ./context-provider
+        - npm test -C ./app
      
     - stage: test
       name: "Documentation Tests"
