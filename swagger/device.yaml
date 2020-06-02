@@ -1,0 +1,70 @@
+openapi: 3.0.0
+info:
+  description: ''
+  version: 1.0.0
+  title: Device
+
+tags: 
+  - name: ngsi-ld
+    description: >
+      NGSI-LD Linked-data Format
+  - name: ngsi-v2
+    description: >
+      NGSI-v2 Format
+      
+paths:
+  /nsgi-ld:
+    get:
+      tags:
+        - ngsi-ld
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [Device]
+          required: true
+      responses:
+        '200':
+          description: NGSI-LD Linked-data Format
+          content:
+            application/ld+json:
+              examples:
+                foo:
+                  summary: Linked Data example
+                  value:
+                    - $ref: >-
+                        https://raw.githubusercontent.com/smart-data-models/dataModel.Device/master/Device/example-normalized-ld.jsonld
+  /nsgi-v2:
+    get:
+      tags:
+        - ngsi-v2
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [Device]
+          required: true
+      responses:
+        '200':
+          description: NGSI-v2 Format
+          content:
+            application/json:
+              examples:
+                normalized:
+                  summary: Normalized example
+                  value:
+                    - $ref: >-
+                        https://raw.githubusercontent.com/smart-data-models/dataModel.Device/master/Device/example-normalized.json
+                keyvalues:
+                  summary: Key-Values Pairs
+                  value:
+                    - $ref: >-
+                        https://raw.githubusercontent.com/smart-data-models/dataModel.Device/master/Device/example.json
+components:
+  schemas:
+    SupportedProtocol:
+      $ref: "./models/device.yaml#/SupportedProtocol"
+    Device:
+      $ref: "./models/device.yaml#/Device"

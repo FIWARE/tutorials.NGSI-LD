@@ -1,0 +1,104 @@
+openapi: "3.0.0"
+info:
+  description: >
+    # Building Data Models
+    
+    This repository is going to be archived (Jan-2020) and subsequent works will be carried out
+    in [Smart data models] (https://github.com/smart-data-models) repositories. Further questions 
+    on migration. alberto.abella@fiware.org
+    
+    This folders contains a number of data models related to the modelling of
+    Building and its management based on
+    [GSMA](https://www.gsma.com/iot/iot-big-data/) activities. Compared to GSMA
+    models, we introduced some changes and removed the `BuildingType` model.
+    
+    The following entity types are supported:
+    
+    -   `Building`: A Building is a human build structure where different activities
+        occur related to living, working, healing and so on.
+    -   `BuildingOperation`: It captures automated operations that may be ongoing
+        within a building.
+        
+        
+  x-description:
+    es: >
+    
+      # Construyendo modelos de datos
+
+      Este repositorio se archivará (enero de 2020) y los trabajos posteriores se llevarán a cabo
+      en los repositorios [Modelos de datos inteligentes] (https://github.com/smart-data-models).
+      Más preguntas sobre migración. alberto.abella@fiware.org
+
+      Esta carpeta contiene varios modelos de datos relacionados con el modelado de
+      Edificio y su gestión basada en
+      [GSMA] (https://www.gsma.com/iot/iot-big-data/) actividades. En comparación con GSMA
+      modelos, introdujimos algunos cambios y eliminamos el modelo `BuildingType`.
+    
+  version: "1.0.0"
+  title: "Building"
+
+tags: 
+  - name: ngsi-ld
+    description: >
+      NGSI-LD Linked-data Format
+  - name: ngsi-v2
+    description: >
+      NGSI-v2 Format
+
+
+paths:
+  /nsgi-ld:
+    get:
+      tags:
+        - ngsi-ld
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [Building]
+          required: true
+      responses:
+        200:
+          description: "NGSI-LD Linked-data Format"
+          content:
+            application/ld+json:
+              examples: 
+                foo:
+                  summary: Linked Data example
+                  value: 
+                    - $ref : "https://raw.githubusercontent.com/smart-data-models/dataModel.Building/master/Building/example-normalized-ld.jsonld"
+
+  /nsgi-v2:
+    get:
+      tags:
+        - ngsi-v2
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [Building]
+          required: true
+      responses:
+        200:
+          description: "NGSI-v2 Format"
+          content:
+            application/json:
+              examples: 
+                normalized:
+                  summary: Normalized example
+                  value: 
+                    - $ref: "https://raw.githubusercontent.com/smart-data-models/dataModel.Building/master/Building/example-normalized.json"
+                   
+                keyvalues:
+                  summary: Key-Values Pairs
+                  value: 
+                    - $ref: "https://raw.githubusercontent.com/smart-data-models/dataModel.Building/master/Building/example.json"
+                       
+components:
+  schemas:
+    Categories:
+      $ref: "./models/building.yaml#/Categories"
+    Building:
+      $ref: "./models/building.yaml#/Building"
