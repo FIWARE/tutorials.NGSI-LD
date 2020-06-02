@@ -125,3 +125,15 @@ Common:
       description: >
         Entity's creation timestamp.
 
+Error:
+  type: object
+  required:
+    - type
+  properties:
+    type:
+      type: string
+      format: uri
+    title:
+      type: string
+    detail:
+      type: string
