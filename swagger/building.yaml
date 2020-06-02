@@ -8,10 +8,11 @@ tags:
   - name: ngsi-ld
     description: >
       NGSI-LD Linked-data Format
-
+    
 paths:
   /ngsi-ld/v1/entities:
     get:
+      description: Retrieve a set of entities which matches a specific query from an NGSI-LD system
       tags:
         - ngsi-ld
       parameters:
@@ -22,20 +23,37 @@ paths:
             enum: [Building]
           required: true
       responses:
-        200:
-          description: "NGSI-LD Linked-data Format"
+        '200':
+          description: OK
           content:
             application/ld+json:
-              examples: 
-                foo:
-                  summary: Linked Data example
+              examples:
+                normalized:
+                  summary: Normalized NGSI-LD
                   value: 
                     - $ref : "https://fiware.github.io/tutorials.NGSI-LD/examples/building-normalized.jsonld"   
                 keyvalues:
                   summary: Key-Values Pairs
                   value: 
                     - $ref: "https://fiware.github.io/tutorials.NGSI-LD/examples/building-keyValues.json"
-                       
+
+        '400':
+          description: Bad request
+          content:
+            application/ld+json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    format: uri
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                required:
+                  - type
+                      
 components:
   schemas:
     Categories:

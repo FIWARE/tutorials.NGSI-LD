@@ -23,12 +23,12 @@ paths:
           required: true
       responses:
         '200':
-          description: NGSI-LD Linked-data Format
+          description: OK
           content:
             application/ld+json:
               examples:
                 normalized:
-                  summary: Linked Data example
+                  summary: Normalized NGSI-LD
                   value:
                     - $ref: >-
                         https://fiware.github.io/tutorials.NGSI-LD/examples/device-normalized.jsonld
@@ -38,6 +38,25 @@ paths:
                   value:
                     - $ref: >-
                         https://fiware.github.io/tutorials.NGSI-LD/examples/device-keyValues.json
+        '400':
+          description: Bad request
+          content:
+            application/ld+json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    format: uri
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                required:
+                  - type
+
+
+
 components:
   schemas:
     SupportedProtocol:
