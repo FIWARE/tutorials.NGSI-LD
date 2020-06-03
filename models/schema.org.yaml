@@ -136,4 +136,4 @@ address:
   description: >
     The mailing address.
   properties:
-    $ref: '#/PostalAddress/properties'
+    $ref: './schema.org.yaml#/PostalAddress/properties'
