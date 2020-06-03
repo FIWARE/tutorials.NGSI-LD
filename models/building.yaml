@@ -25,7 +25,7 @@ Building:
     category: 
       description: "The categories that this building belongs to\n"
       allOf:
-        - $ref: "./device.yaml#/Categories"
+        - $ref: "./building.yaml#/Categories"
       type: string
       x-ngsi: 
         type: EnumProperty

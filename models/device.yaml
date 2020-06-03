@@ -45,8 +45,8 @@ Device:
         type: Relationship
     controlledProperty: 
       description: "See attribute `controlledProperty` from [DeviceModel](../../DeviceModel/doc/spec.md). Optional but recommended to optimize queries."
-      enum: 
-        $ref: "./saref-terms.yaml#/ControlledProperties/enum"
+      allOf:
+        - $ref: "./saref-terms.yaml#/ControlledProperties"
       x-ngsi: 
         type: EnumProperty
         uri-prefix: "https://uri.fiware.org/ns/data-models#"
@@ -223,7 +223,7 @@ Device:
     - category
   type: object
 
-  
+
 SupportedProtocol: 
   description: "URN holding the id of the attribute"
   enum: 
