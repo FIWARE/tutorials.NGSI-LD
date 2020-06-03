@@ -24,69 +24,8 @@ Building:
       $ref: "./schema.org.yaml#/address"
     category: 
       description: "The categories that this building belongs to\n"
-      enum: 
-        - apartments
-        - farm
-        - hotel
-        - house
-        - detached
-        - residential
-        - dormitory
-        - terrace
-        - houseboat
-        - bungalow
-        - static_caravan
-        - commercial
-        - office
-        - industrial
-        - retail
-        - warehouse
-        - kiosk
-        - bakehouse
-        - cathedral
-        - chapel
-        - church
-        - kindergarten
-        - mosque
-        - temple
-        - synagogue
-        - shrine
-        - civic
-        - hospital
-        - school
-        - stadium
-        - train_station
-        - transportation
-        - university
-        - grandstand
-        - public
-        - barn
-        - bridge
-        - bunker
-        - cabin
-        - carport
-        - conservatory
-        - construction
-        - cowshed
-        - digester
-        - farm_auxiliary
-        - garage
-        - garages
-        - garbage_shed
-        - greenhouse
-        - hangar
-        - hut
-        - pavilion
-        - parking
-        - riding_hall
-        - roof
-        - shed
-        - stable
-        - sty
-        - transformer_tower
-        - service
-        - ruins
-        - water_tower
+      allOf:
+        - $ref: "./device.yaml#/Categories"
       type: string
       x-ngsi: 
         type: EnumProperty

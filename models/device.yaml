@@ -19,8 +19,8 @@ Device:
         type: Property
     category: 
       description: "See attribute `category` from [DeviceModel](../../DeviceModel/doc/spec.md). Optional but recommended to optimize queries."
-      enum: 
-        $ref: "./saref-terms.yaml#/Categories/enum"
+      allOf:
+        - $ref: "./saref-terms.yaml#/Categories"
       x-ngsi: 
         type: EnumProperty
         uri-prefix: "https://uri.fiware.org/ns/data-models#"
@@ -205,21 +205,8 @@ Device:
         type: Property
     supportedProtocol: 
       description: "See attribute `supportedProtocol` from [DeviceModel](../../DeviceModel/doc/spec.md). Needed if due to a software update new protocols are supported. Otherwise it is better to convey it at `DeviceModel` level."
-      enum: 
-        - ul20
-        - mqtt
-        - lwm2m
-        - http
-        - websocket
-        - onem2m
-        - sigfox
-        - lora
-        - nb-iot
-        - ec-gsm-iot
-        - lte-m
-        - cat-m
-        - 3g
-        - grps
+      allOf:
+        - $ref: "./device.yaml#/SupportedProtocol"
       type: string
       x-ngsi: 
         type: EnumProperty
@@ -235,6 +222,8 @@ Device:
     - address
     - category
   type: object
+
+  
 SupportedProtocol: 
   description: "URN holding the id of the attribute"
   enum: 
