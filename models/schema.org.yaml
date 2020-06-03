@@ -96,6 +96,7 @@ Person:
         model: "https://schema.org/Text"
         type: Property
   type: object
+
 PostalAddress: 
   properties: 
     addressCountry: 
@@ -117,12 +118,14 @@ PostalAddress:
       description: "The street address. For example, 1600 Amphitheatre Pkwy."
       type: string
   type: object
+
+
 address: 
   description: "The mailing address."
   externalDocs: 
     url: "https://schema.org/address"
   properties: 
-    $ref: "#/PostalAddress/properties"
+    $ref: "./schema.org.yaml#/PostalAddress/properties"
   type: object
   x-ngsi: 
     attr-type: Property
