@@ -124,8 +124,8 @@ address:
   description: "The mailing address."
   externalDocs: 
     url: "https://schema.org/address"
-  properties: 
-    $ref: "./schema.org.yaml#/PostalAddress/properties"
+  allOf: 
+    - $ref: "./schema.org.yaml#/PostalAddress/properties"
   type: object
   x-ngsi: 
     attr-type: Property
