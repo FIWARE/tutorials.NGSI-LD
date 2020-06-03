@@ -1,65 +1,64 @@
-openapi: 3.0.0
-info:
-  description: ''
-  version: 1.0.0
-  title: Device
-
-tags: 
-  - name: ngsi-ld
-    description: >
-      NGSI-LD Linked-data Format
-      
-paths:
-  /ngsi-ld/v1/entities:
-    get:
-      tags:
-        - ngsi-ld
-      parameters:
-        - in: query
-          name: type
-          schema:
-            type: string
-            enum: [Device]
-          required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/ld+json:
-              examples:
-                normalized:
-                  summary: Normalized NGSI-LD
-                  value:
-                    - $ref: >-
-                        https://fiware.github.io/tutorials.NGSI-LD/examples/device-normalized.jsonld
-
-                keyvalues:
-                  summary: Key-Values Pairs
-                  value:
-                    - $ref: >-
-                        https://fiware.github.io/tutorials.NGSI-LD/examples/device-keyValues.json
-        '400':
-          description: Bad request
-          content:
-            application/ld+json:
-              schema:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    format: uri
-                  title:
-                    type: string
-                  detail:
-                    type: string
-                required:
-                  - type
-
-
-
-components:
-  schemas:
-    SupportedProtocol:
-      $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/device.yaml#/SupportedProtocol"
-    Device:
+--- 
+components: 
+  schemas: 
+    Device: 
       $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/device.yaml#/Device"
+    SupportedProtocol: 
+      $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/device.yaml#/SupportedProtocol"
+info: 
+  description: ""
+  title: Device
+  version: "1.0.0"
+openapi: "3.0.0"
+paths: 
+  /ngsi-ld/v1/entities: 
+    get: 
+      parameters: 
+        - 
+          in: query
+          name: type
+          required: true
+          schema: 
+            enum: 
+              - Device
+            type: string
+      responses: 
+        ? "200"
+        : 
+          content: 
+            application/ld+json: 
+              examples: 
+                keyvalues: 
+                  summary: "Key-Values Pairs"
+                  value: 
+                    - 
+                      $ref: "https://fiware.github.io/tutorials.NGSI-LD/examples/device-keyValues.json"
+                normalized: 
+                  summary: "Normalized NGSI-LD"
+                  value: 
+                    - 
+                      $ref: "https://fiware.github.io/tutorials.NGSI-LD/examples/device-normalized.jsonld"
+          description: OK
+        ? "400"
+        : 
+          content: 
+            application/ld+json: 
+              schema: 
+                properties: 
+                  detail: 
+                    type: string
+                  title: 
+                    type: string
+                  type: 
+                    format: uri
+                    type: string
+                required: 
+                  - type
+                type: object
+          description: "Bad request"
+      tags: 
+        - ngsi-ld
+tags: 
+  - 
+    description: "NGSI-LD Linked-data Format\n"
+    name: ngsi-ld

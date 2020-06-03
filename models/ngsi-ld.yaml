@@ -1,139 +1,125 @@
-
-
-providedBy:
-  x-ngsi:
-    type: "Relationship"
-    model: "https://schema.org/URL"
-    uri: "https://uri.etsi.org/ngsi-ld/providedBy"
-    uri-prefix: "https://uri.fiware.org/ns/data-models#"
-  type: "string"
-  format: "URL"
-  description: >
-      The device that sent this reading
-
-observedAt:
-  x-ngsi:
-    type: "Property"
-    model: "https://schema.org/DateTime"
-    uri: "https://uri.etsi.org/ngsi-ld/observedAt"
-    uri-prefix: "https://uri.etsi.org/ngsi-ld/"
-  type: string
-  format: "date-time"
-  description: >
-    A timestamp which denotes when the reading was taken
-
-unitCode:
-  x-ngsi:
-    type: "Property"
-    model: "https://schema.org/Text"
-    uri: "https://uri.etsi.org/ngsi-ld/unitCode"
-    uri-prefix: "https://uri.etsi.org/ngsi-ld/"
-  type: "string"
-  description: >
-    A string representing the measurement unit corresponding to the Property value. It shall be
-    encoded using the UN/CEFACT Common Codes for Units of Measurement
-
-
-
-name: 
-  description: >
-    The name of the item
-  x-ngsi:
-    type: "Property"
-    uri: "https://uri.etsi.org/ngsi-ld/name"
-    uri-prefix: "https://uri.etsi.org/ngsi-ld/"
-  type: string
-
-description:
-  description: >
-    A description of the item
-  x-ngsi:
-    type: "Property"
-    model: "https://schema.org/Text"
-    uri: "https://uri.etsi.org/ngsi-ld/description"
-    uri-prefix: "https://uri.etsi.org/ngsi-ld/"
-  type: "string"
-  externalDocs:
-    url:  "http://purl.org/dc/elements/1.1/description"
+--- 
+Common: 
+  properties: 
+    dateCreated: 
+      description: "Entity's creation timestamp.\n"
+      format: date-time
+      readOnly: true
+      type: string
+      x-ngsi: 
+        auto-gen: true
+        model: "https://schema.org/DateTime"
+        type: Property
+    dateModified: 
+      description: "Update timestamp of this entity.\n"
+      format: date-time
+      readOnly: true
+      type: string
+      x-ngsi: 
+        attr-type: Property
+        auto-gen: true
+        model: "https://schema.org/DateTime"
+    id: 
+      description: "URN holding the id of the attribute\n"
+      type: string
+    type: 
+      description: "The entity type\n"
+      type: string
+  required: 
+    - id
+    - type
+  type: object
+Error: 
+  properties: 
+    detail: 
+      type: string
+    title: 
+      type: string
+    type: 
+      format: uri
+      type: string
+  required: 
+    - type
+  type: object
+description: 
+  description: "A description of the item\n"
+  externalDocs: 
+    url: "http://purl.org/dc/elements/1.1/description"
     x-see-also: 
       - "https://schema.org/description"
       - "https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#http://purl.org/dc/elements/1.1/description"
-   
-
-location: 
-  description: >
-    The current location of the item
-  x-ngsi:
-    type: "GeoProperty"
-    uri: "https://uri.etsi.org/ngsi-ld/location"
+  type: string
+  x-ngsi: 
+    model: "https://schema.org/Text"
+    type: Property
+    uri: "https://uri.etsi.org/ngsi-ld/description"
     uri-prefix: "https://uri.etsi.org/ngsi-ld/"
-    model: ["https://purl.org/geojson/vocab#Point", "https://purl.org/geojson/vocab#LineString", "https://purl.org/geojson/vocab#Polygon", "https://purl.org/geojson/vocab#MultiPoint", "https://purl.org/geojson/vocab#MultiLineString", "https://purl.org/geojson/vocab#MultiPolygon"]
-  type: object
-  required:
+location: 
+  description: "The current location of the item\n"
+  externalDocs: 
+    url: "http://geojson.org/geojson-spec.html#geometry-objects"
+  properties: 
+    coordinates: 
+      oneOf: 
+        - 
+          $ref: "./geojson-ld.yaml#/Point/allOf/1/properties/coordinates"
+        - 
+          $ref: "./geojson-ld.yaml#/LineString/allOf/1/properties/coordinates"
+        - 
+          $ref: "./geojson-ld.yaml#/Polygon/allOf/1/properties/coordinates"
+        - 
+          $ref: "./geojson-ld.yaml#/MultiPoint/allOf/1/properties/coordinates"
+        - 
+          $ref: "./geojson-ld.yaml#/MultiLineString/allOf/1/properties/coordinates"
+        - 
+          $ref: "./geojson-ld.yaml#/MultiPolygon/allOf/1/properties/coordinates"
+    type: 
+      $ref: "./geojson-ld.yaml#/Geometry/properties/type"
+  required: 
     - type
     - coordinates
-  externalDocs:
-    url: http://geojson.org/geojson-spec.html#geometry-objects
-  properties:
-    type:
-     $ref: ./geojson-ld.yaml#/Geometry/properties/type
-    coordinates:
-      oneOf:
-        - $ref: './geojson-ld.yaml#/Point/allOf/1/properties/coordinates'
-        - $ref: './geojson-ld.yaml#/LineString/allOf/1/properties/coordinates'
-        - $ref: './geojson-ld.yaml#/Polygon/allOf/1/properties/coordinates'
-        - $ref: './geojson-ld.yaml#/MultiPoint/allOf/1/properties/coordinates'
-        - $ref: './geojson-ld.yaml#/MultiLineString/allOf/1/properties/coordinates'
-        - $ref: './geojson-ld.yaml#/MultiPolygon/allOf/1/properties/coordinates'
-
-
-Common: 
   type: object
-  required:
-    - id
-    - type
-  properties:
-    id:
-      type: "string"
-      description: >
-        URN holding the id of the attribute
-        
-    type:
-      type: "string"
-      description: >
-        The entity type
-        
-    dateModified :
-      x-ngsi:
-        attr-type: "Property"
-        model: "https://schema.org/DateTime"
-        auto-gen: true
-      type: "string"
-      format: "date-time"
-      readOnly: true
-      description: >
-        Update timestamp of this entity.
-        
-    dateCreated :
-      x-ngsi:
-        type: "Property"
-        model: "https://schema.org/DateTime"
-        auto-gen: true
-      type: "string"
-      format: "date-time"
-      readOnly: true
-      description: >
-        Entity's creation timestamp.
-
-Error:
-  type: object
-  required:
-    - type
-  properties:
-    type:
-      type: string
-      format: uri
-    title:
-      type: string
-    detail:
-      type: string
+  x-ngsi: 
+    model: 
+      - "https://purl.org/geojson/vocab#Point"
+      - "https://purl.org/geojson/vocab#LineString"
+      - "https://purl.org/geojson/vocab#Polygon"
+      - "https://purl.org/geojson/vocab#MultiPoint"
+      - "https://purl.org/geojson/vocab#MultiLineString"
+      - "https://purl.org/geojson/vocab#MultiPolygon"
+    type: GeoProperty
+    uri: "https://uri.etsi.org/ngsi-ld/location"
+    uri-prefix: "https://uri.etsi.org/ngsi-ld/"
+name: 
+  description: "The name of the item\n"
+  type: string
+  x-ngsi: 
+    type: Property
+    uri: "https://uri.etsi.org/ngsi-ld/name"
+    uri-prefix: "https://uri.etsi.org/ngsi-ld/"
+observedAt: 
+  description: "A timestamp which denotes when the reading was taken\n"
+  format: date-time
+  type: string
+  x-ngsi: 
+    model: "https://schema.org/DateTime"
+    type: Property
+    uri: "https://uri.etsi.org/ngsi-ld/observedAt"
+    uri-prefix: "https://uri.etsi.org/ngsi-ld/"
+providedBy: 
+  description: "The device that sent this reading\n"
+  format: URL
+  type: string
+  x-ngsi: 
+    model: "https://schema.org/URL"
+    type: Relationship
+    uri: "https://uri.etsi.org/ngsi-ld/providedBy"
+    uri-prefix: "https://uri.fiware.org/ns/data-models#"
+unitCode: 
+  description: "A string representing the measurement unit corresponding to the Property value. It shall be encoded using the UN/CEFACT Common Codes for Units of Measurement\n"
+  type: string
+  x-ngsi: 
+    model: "https://schema.org/Text"
+    type: Property
+    uri: "https://uri.etsi.org/ngsi-ld/unitCode"
+    uri-prefix: "https://uri.etsi.org/ngsi-ld/"

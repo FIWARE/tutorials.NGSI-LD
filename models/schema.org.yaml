@@ -1,159 +1,130 @@
-
-Person:
-  type: "object"
-  allOf:
-    - $ref: >-
-        ./ngsi-ld.yaml#/Common
-  properties:
-    additionalName:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/Text'
+--- 
+Person: 
+  allOf: 
+    - 
+      $ref: "./ngsi-ld.yaml#/Common"
+  properties: 
+    additionalName: 
+      description: "An additional name for a Person, can be used for a middle name."
       type: string
-      description: |
-        An additional name for a Person, can be used for a middle name.
-    address:
+      x-ngsi: 
+        model: "https://schema.org/Text"
+        type: Property
+    address: 
       $ref: "./schema.org.yaml#/address"
-
-    email:
-       x-ngsi:
-        type: Property
-        model: 'https://schema.org/Text'
+    description: "The name of the item"
+    email: 
+      description: "Email address."
       type: string
-      description: |
-        Email address.
+      x-ngsi: 
+        model: "https://schema.org/Text"
+        type: Property
     familyName: 
-       x-ngsi:
-        type: Property
-        model: 'https://schema.org/Text'
+      description: "Family name. In the U.S., the last name of an Person. This can be used along with givenName instead of the name property."
       type: string
-      description: |
-        Family name. In the U.S., the last name of an Person. This can be used along with givenName instead of the name property.
-    faxNumber:
-       x-ngsi:
+      x-ngsi: 
+        model: "https://schema.org/Text"
         type: Property
-        model: 'https://schema.org/Text'
+    faxNumber: 
+      description: "The fax number."
       type: string
-      description: |
-        The fax number.
+      x-ngsi: 
+        model: "https://schema.org/Text"
+        type: Property
     gender: 
-      x-ngsi:
-        type: Property
-        model: ['https://schema.org/Text', 'https://schema.org/GenderType'] 
+      description: "Gender of something, typically a Person, but possibly also fictional characters, animals, etc. While http://schema.org/Male and http://schema.org/Female may be used, text strings are also acceptable for people who do not identify as a binary gender. The gender property can also be used in an extended sense to cover e.g. the gender of sports teams. As with the gender of individuals, we do not try to enumerate all possibilities. A mixed-gender SportsTeam can be indicated with a text value of \"Mixed\"."
       type: string
-      description: |
-        Gender of something, typically a Person, but possibly also fictional characters, animals, etc. While http://schema.org/Male and http://schema.org/Female may be used, text strings are also acceptable for people who do not identify as a binary gender. The gender property can also be used in an extended sense to cover e.g. the gender of sports teams. As with the gender of individuals, we do not try to enumerate all possibilities. A mixed-gender SportsTeam can be indicated with a text value of "Mixed".
-    givenName:
-       x-ngsi:
+      x-ngsi: 
+        model: 
+          - "https://schema.org/Text"
+          - "https://schema.org/GenderType"
         type: Property
-        model: 'https://schema.org/Text'
+    givenName: 
+      description: "Given name. In the U.S., the first name of a Person. This can be used along with familyName instead of the name property."
       type: string
-      description: |
-        Given name. In the U.S., the first name of a Person. This can be used along with familyName instead of the name property.
-    hasOccupation: Occupation  The Person's occupation. For past professions, use Role for expressing dates.
-    homeLocation:  ContactPoint  or
-    Place   A contact location for a person's residence.
-    honorificPrefix:
-       x-ngsi:
+      x-ngsi: 
+        model: "https://schema.org/Text"
         type: Property
-        model: 'https://schema.org/Text'
+    honorificPrefix: 
+      description: "An honorific prefix preceding a Person's name such as Dr/Mrs/Mr."
       type: string
-      description: |
-        An honorific prefix preceding a Person's name such as Dr/Mrs/Mr.
-    honorificSuffix:
-       x-ngsi:
+      x-ngsi: 
+        model: "https://schema.org/Text"
         type: Property
-        model: 'https://schema.org/Text'
-      type: string
+    honorificSuffix: 
       description: |
-        An honorific suffix preceding a Person's name such as M.D. /PhD/MSCSW.
-    interactionStatistic  InteractionCounter  The number of interactions for the CreativeWork using the WebSite or SoftwareApplication. The most specific child type of InteractionCounter should be used. Supersedes interactionCount.
+          An honorific suffix preceding a Person's name such as M.D. /PhD/MSCSW.
+          interactionStatistic  InteractionCounter  The number of interactions for the CreativeWork using the WebSite or SoftwareApplication. The most specific child type of InteractionCounter should be used. Supersedes interactionCount.
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/Text"
+        type: Property
     isicV4: 
-       x-ngsi:
-        type: Property
-        model: 'https://schema.org/Text'
+      description: "The International Standard of Industrial Classification of All Economic Activities (ISIC), Revision 4 code for a particular organization, business person, or place."
       type: string
-      description: |
-        The International Standard of Industrial Classification of All Economic Activities (ISIC), Revision 4 code for a particular organization, business person, or place.
+      x-ngsi: 
+        model: "https://schema.org/Text"
+        type: Property
     jobTitle: 
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/Text'
+      description: "The job title of the person (for example, Financial Manager)."
       type: string
-      description: |
-        The job title of the person (for example, Financial Manager).
-    name:
-      x-ngsi:
-        type: "Property"
+      x-ngsi: 
+        model: "https://schema.org/Text"
+        type: Property
+    name: 
+      x-ngsi: 
+        type: Property
         uri: "https://uri.etsi.org/ngsi-ld/name"
         uri-prefix: "https://uri.etsi.org/ngsi-ld/"
+    taxID: 
+      description: "The Tax / Fiscal ID of the organization or person, e.g. the TIN in the US or the CIF/NIF in Spain."
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/Text"
+        type: Property
+    telephone: 
+      description: "The telephone number."
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/Text"
+        type: Property
     type: string
-    description: >
-      The name of the item
-    
-    taxID:
-       x-ngsi:
-        type: Property
-        model: 'https://schema.org/Text'
+    vatID: 
+      description: "The Value-added Tax ID of the organization or person."
       type: string
-      description: |
-        The Tax / Fiscal ID of the organization or person, e.g. the TIN in the US or the CIF/NIF in Spain.
-    telephone:
-       x-ngsi:
+      x-ngsi: 
+        model: "https://schema.org/Text"
         type: Property
-        model: 'https://schema.org/Text'
+  type: object
+PostalAddress: 
+  properties: 
+    addressCountry: 
+      description: "The country. For example, USA. You can also provide the two-letter ISO 3166-1 alpha-2 country code."
       type: string
-      description: |
-        The telephone number.
-    vatID:
-       x-ngsi:
-        type: Property
-        model: 'https://schema.org/Text'
+    addressLocality: 
+      description: "The locality in which the street address is, and which is in the region. For example, Mountain View."
       type: string
-      description: |
-        The Value-added Tax ID of the organization or person.
-
-PostalAddress:
-  type: "object"
-  properties:  
-    addressCountry:
-      type: "string"
-      description: >
-        The country. For example, USA. You can also provide the two-letter ISO 3166-1 alpha-2 country code.
-    addressLocality:
-      type: "string"
-      description: >
-        The locality in which the street address is, and which is in the region. For example, Mountain View.
-    addressRegion:
-      type: "string"  
-      description: >
-        The region in which the locality is, and which is in the country. For example, California or another appropriate first-level Administrative division
-    postOfficeBoxNumber:
-      type: "string"
-      description: >
-        The post office box number for PO box addresses.
-    postalCode:
-      type: "string"
-      description: >
-        The postal code. For example, 94043.
-    streetAddress:
-      type: "string"  
-      description: >
-        The street address. For example, 1600 Amphitheatre Pkwy.
-
-   
-address:
-  type: "object"
-  x-ngsi:
-    attr-type: "Property"
+    addressRegion: 
+      description: "The region in which the locality is, and which is in the country. For example, California or another appropriate first-level Administrative division"
+      type: string
+    postOfficeBoxNumber: 
+      description: "The post office box number for PO box addresses."
+      type: string
+    postalCode: 
+      description: "The postal code. For example, 94043."
+      type: string
+    streetAddress: 
+      description: "The street address. For example, 1600 Amphitheatre Pkwy."
+      type: string
+  type: object
+address: 
+  description: "The mailing address."
+  externalDocs: 
+    url: "https://schema.org/address"
+  properties: 
+    $ref: "#/PostalAddress/properties"
+  type: object
+  x-ngsi: 
+    attr-type: Property
     model: "https://schema.org/address"
     uri-prefix: "https://schema.org/"
-  externalDocs:
-    url: https://schema.org/address
-
-  description: >
-    The mailing address.
-  properties:
-    $ref: '#/PostalAddress/properties
-
-  

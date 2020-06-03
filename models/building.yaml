@@ -1,11 +1,181 @@
-
-Categories:
-  type: string
-  x-ngsi :
-    uri-prefix: "https://uri.fiware.org/ns/data-models#"
-  description: >
-        URN holding the id of the attribute
-  enum: &CATEGORIES
+--- 
+Building: 
+  allOf: 
+    - 
+      $ref: "./ngsi-ld.yaml#/Common"
+  description: |
+      This entity contains a harmonised description of a Building. This entity is associated with the vertical segments of smart homes, smart cities, industry and related IoT applications.
+      This data model has been partially developed in cooperation with mobile operators and the [GSMA](https://www.gsma.com/iot/iot-big-data/), compared to GSMA data model following changes are introduced:
+      -   the reference to `BuildingType` is removed, since `BuildingType` compared to
+          `category` attribute does not introduce significant information.
+      
+      -   `category` attribute is required.
+      -   `openingHours` is introduced following schema.org data model to allow
+          fine-grained on building opening times. GSMA supported this as free text in
+          the `notes` attribute (removed as well).
+      
+      -   `refSubscriptionService` is not supported, since `SubscriptionService` model
+          is not supported currently.
+      
+      ## Data Model
+      For a full description of the following attributes refer to GSMA [IoT Big Data Harmonised Data Model](https://github.com/GSMADeveloper/NGSI-LD-Entities)
+  properties: 
+    address: 
+      $ref: "./schema.org.yaml#/address"
+    category: 
+      description: "The categories that this building belongs to\n"
+      enum: 
+        - apartments
+        - farm
+        - hotel
+        - house
+        - detached
+        - residential
+        - dormitory
+        - terrace
+        - houseboat
+        - bungalow
+        - static_caravan
+        - commercial
+        - office
+        - industrial
+        - retail
+        - warehouse
+        - kiosk
+        - bakehouse
+        - cathedral
+        - chapel
+        - church
+        - kindergarten
+        - mosque
+        - temple
+        - synagogue
+        - shrine
+        - civic
+        - hospital
+        - school
+        - stadium
+        - train_station
+        - transportation
+        - university
+        - grandstand
+        - public
+        - barn
+        - bridge
+        - bunker
+        - cabin
+        - carport
+        - conservatory
+        - construction
+        - cowshed
+        - digester
+        - farm_auxiliary
+        - garage
+        - garages
+        - garbage_shed
+        - greenhouse
+        - hangar
+        - hut
+        - pavilion
+        - parking
+        - riding_hall
+        - roof
+        - shed
+        - stable
+        - sty
+        - transformer_tower
+        - service
+        - ruins
+        - water_tower
+      type: string
+      x-ngsi: 
+        type: EnumProperty
+        uri-prefix: "https://uri.fiware.org/ns/data-models#"
+    containedInPlace: 
+      description: "The URL this building resides within  \n"
+      format: URL
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/URL"
+        type: Relationship
+    dataProvider: 
+      description: "Specifies the URL to information about the provider of this information\n"
+      format: URL
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/URL"
+        type: Property
+    description: 
+      $ref: "./ngsi-ld.yaml#/description"
+    floorsAboveGround: 
+      description: "Number of floors above ground within the building\n"
+      format: int32
+      type: integer
+      x-ngsi: 
+        model: "https://schema.org/Integer"
+        type: Property
+    floorsBelowGround: 
+      description: "Number of floors below ground within the building\n"
+      format: int32
+      type: integer
+      x-ngsi: 
+        model: "https://schema.org/Integer"
+        type: Property
+    location: 
+      $ref: "./ngsi-ld.yaml#/location"
+    occupier: 
+      description: "Link to the occupiers of the building\n"
+      format: URL
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/URL"
+        type: Relationship
+    openingHours: 
+      externalDocs: 
+        url: "https://schema.org/openingHours"
+      items: 
+        properties: 
+          type: 
+            type: string
+          values: 
+            items: 
+              type: string
+            type: array
+        type: object
+      type: array
+      x-ngsi: 
+        model: "https://schema.org/openingHours"
+        type: Property
+        uri: "https://schema.org/openingHours"
+    owner: 
+      description: "The owner of this building\n"
+      format: URL
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/URL"
+        type: Relationship
+    refMap: 
+      description: "The URL holding a map of the building\n"
+      format: URL
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/URL"
+        type: Property
+    source: 
+      description: "A sequence of characters giving the source of the entity data.\n"
+      type: string
+      x-ngsi: 
+        model: 
+          - "https://schema.org/Text"
+          - "https://schema.org/URL"
+        type: Property
+  required: 
+    - address
+    - category
+  type: object
+Categories: 
+  description: "URN holding the id of the attribute\n"
+  enum: 
     - apartments
     - farm
     - hotel
@@ -68,150 +238,6 @@ Categories:
     - service
     - ruins
     - water_tower
-
-Building:
-  required:
-    - address
-    - category
-  
-  type: "object"
-  allOf:
-    - $ref: "./ngsi-ld.yaml#/Common"
-    
-  description: >
-    ## Description
-
-    This entity contains a harmonised description of a Building. This entity is
-    associated with the vertical segments of smart homes, smart cities, industry and
-    related IoT applications.
-    
-    This data model has been partially developed in cooperation with mobile
-    operators and the [GSMA](https://www.gsma.com/iot/iot-big-data/), compared to
-    GSMA data model following changes are introduced:
-    
-    -   the reference to `BuildingType` is removed, since `BuildingType` compared to
-        `category` attribute does not introduce significant information.
-    
-    -   `category` attribute is required.
-    
-    -   `openingHours` is introduced following schema.org data model to allow
-        fine-grained on building opening times. GSMA supported this as free text in
-        the `notes` attribute (removed as well).
-    
-    -   `refSubscriptionService` is not supported, since `SubscriptionService` model
-        is not supported currently.
-    
-    ## Data Model
-    
-    For a full description of the following attributes refer to GSMA
-    [IoT Big Data Harmonised Data Model](https://github.com/GSMADeveloper/NGSI-LD-Entities)
-  
-  properties:
-  
-    address:
-      $ref: "./schema.org.yaml#/address"
-    
-    category:
-      x-ngsi:
-        type: "EnumProperty"
-        uri-prefix: 'https://uri.fiware.org/ns/data-models#'
-      type: "string"
-      enum: *CATEGORIES
-      description: >
-        The categories that this building belongs to
-
-    containedInPlace :
-      x-ngsi:
-        type: "Relationship"
-        model: "https://schema.org/URL"
-      type: "string"
-      format: "URL"
-      description: >
-        The URL this building resides within  
-   
-    dataProvider:
-      x-ngsi:
-        type: "Property"
-        model: "https://schema.org/URL"
-      type: "string"
-      format: "URL"
-      description: >
-        Specifies the URL to information about the provider of this information
-      
-    description:
-      $ref: './ngsi-ld.yaml#/description'
-           
-    floorsAboveGround:
-      x-ngsi:
-        type: "Property"
-        model: "https://schema.org/Integer"
-      type: "integer"
-      format: "int32"
-      description: >
-        Number of floors above ground within the building
-
-    floorsBelowGround:
-      x-ngsi:
-        type: "Property"
-        model: "https://schema.org/Integer"
-      type: "integer"
-      format: "int32"
-      description: >
-        Number of floors below ground within the building
-
-
-    location:
-      $ref: "./ngsi-ld.yaml#/location"
-
-    occupier:
-      x-ngsi:
-        type: "Relationship"
-        model: "https://schema.org/URL"
-      type: "string"
-      format: "URL"
-      description: >
-        Link to the occupiers of the building
-
-    openingHours :
-      x-ngsi:
-        type: "Property"
-        model: "https://schema.org/openingHours"
-        uri: "https://schema.org/openingHours"
-      type: array
-      items:
-        type: object
-        properties:
-          type: 
-            type: string
-          values: 
-            type: array
-            items:
-              type: string
-      externalDocs:
-        url: "https://schema.org/openingHours"
-        
-    owner :
-      x-ngsi:
-        type: "Relationship"
-        model: "https://schema.org/URL"
-      type: "string"
-      format: "URL"
-      description: >
-        The owner of this building
-
-    refMap :
-      x-ngsi:
-        type: "Property"
-        model: "https://schema.org/URL"
-      type: "string"
-      format: "URL"
-      description: >
-        The URL holding a map of the building
-        
-    source:
-      x-ngsi:
-        type: "Property"
-        model: ["https://schema.org/Text", "https://schema.org/URL"]
-      type: "string"
-      description: >
-        A sequence of characters giving the source of the entity data.
+  type: string
+  x-ngsi: 
+    uri-prefix: "https://uri.fiware.org/ns/data-models#"

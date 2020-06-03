@@ -1,11 +1,243 @@
-
-SupportedProtocol:
-  type: string
-  x-ngsi:
-    uri-prefix: 'https://uri.fiware.org/ns/data-models#'
+--- 
+Device: 
+  allOf: 
+    - 
+      $ref: "./ngsi-ld.yaml#/Common"
   description: |
-    URN holding the id of the attribute
-  enum: &ref_2
+      An apparatus (hardware + software + firmware) intended to accomplish a particular task (sensing the environment, actuating, etc.). A Device is a tangible object which contains some logic and is producer and/or consumer of data. A Device is always assumed to be capable of communicating electronically via a network.
+      This data model has been partially developed in cooperation with mobile operators and the [GSMA](https://www.gsma.com/iot/iot-big-data/).
+      This data model reuses concepts coming from the [SAREF Ontology](http://www.etsi.org/deliver/etsi_ts/103200_103299/103264/01.01.01_60/ts_103264v010101p.pdf) part of [ETSI](http://www.etsi.org) standards.
+  properties: 
+    batteryLevel: 
+      description: |
+          Device's battery level. It must be equal to `1.0` when battery is full. `0.0` when battery ìs empty. `-1` when transiently cannot be determined.
+          -  Allowed values: Interval \[0,1\] and -1
+      format: float
+      type: number
+      x-ngsi: 
+        model: "https://schema.org/Number"
+        type: Property
+    category: 
+      description: "See attribute `category` from [DeviceModel](../../DeviceModel/doc/spec.md). Optional but recommended to optimize queries."
+      enum: 
+        $ref: "./saref-terms.yaml#/Categories/enum"
+      x-ngsi: 
+        type: EnumProperty
+        uri-prefix: "https://uri.fiware.org/ns/data-models#"
+    configuration: 
+      description: "Device's technical configuration. This attribute is intended to be a dictionary of properties which capture parameters which have to do with the configuration of a device (timeouts, reporting periods, etc.) and which are not currently covered by the standard attributes defined by this model."
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/StructuredValue"
+        properties: 
+          dateModified: 
+            description: "Last update timestamp of this attribute"
+            readOnly: true
+            x-ngsi: 
+              model: "https://schema.org/DateTime"
+              type: Property
+        type: Property
+    controlledAsset: 
+      description: "The asset(s) (building, object, etc.) controlled by the device."
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/URL"
+        type: Relationship
+    controlledProperty: 
+      description: "See attribute `controlledProperty` from [DeviceModel](../../DeviceModel/doc/spec.md). Optional but recommended to optimize queries."
+      enum: 
+        $ref: "./saref-terms.yaml#/ControlledProperties/enum"
+      x-ngsi: 
+        type: EnumProperty
+        uri-prefix: "https://uri.fiware.org/ns/data-models#"
+    dataProvider: 
+      description: "Specifies the URL to information about the provider of this information"
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/URL"
+        type: Property
+    dateFirstUsed: 
+      description: "A timestamp which denotes when the device was first used."
+      format: date-time
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/DateTime"
+        type: Property
+    dateInstalled: 
+      description: "A timestamp which denotes when the device was installed"
+      format: date-time
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/DateTime"
+        type: Property
+    dateLastCalibration: 
+      description: "A timestamp which denotes when the last calibration of the device happened."
+      format: date-time
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/DateTime"
+        type: Property
+    dateLastValueReported: 
+      description: |
+          A timestamp which denotes the last time when the
+           device successfully reported data to the cloud.
+      format: date-time
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/DateTime"
+        type: Property
+    dateManufactured: 
+      description: "A timestamp which denotes when the device was manufactured."
+      format: date-time
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/DateTime"
+        type: Property
+    description: 
+      $ref: "./ngsi-ld.yaml#/description"
+    deviceState: 
+      description: |
+          State of this device from an operational point of view. Its
+           value can be vendor dependent.
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/Text"
+        type: Property
+    firmwareVersion: 
+      description: "The firmware version of this device."
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/Text"
+        type: Property
+    hardwareVersion: 
+      description: "The hardware version of this device."
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/Text"
+        type: Property
+    ipAddress: 
+      description: "The IP address of the device. It can be a comma separated list of values if the device has more than one IP address."
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/Text"
+        type: Property
+    location: 
+      $ref: "./ngsi-ld.yaml#/location"
+    macAddress: 
+      description: "The MAC address of the device."
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/Text"
+        type: Property
+    mcc: 
+      description: "Mobile Country Code - This property identifies univoquely the country of the mobile network the device is attached to."
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/Text"
+        type: Property
+    mnc: 
+      description: "This property identifies the Mobile Network Code (MNC) of the network the device is attached to. The MNC is used in combination with a Mobile Country Code (MCC) (also known as a \"MCC / MNC tuple\") to uniquely identify a mobile phone operator/carrier using the GSM, CDMA, iDEN, TETRA and 3G / 4G public land mobile networks and some satellite mobile "
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/Text"
+        type: Property
+    name: 
+      description: "A mnemonic name given to the device."
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/Text"
+        type: Property
+        uri: "https://uri.etsi.org/ngsi-ld/name"
+        uri-prefix: "https://uri.etsi.org/ngsi-ld/"
+    osVersion: 
+      description: "The version of the host operating system device."
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/Text"
+        type: Property
+    owner: 
+      description: "The owners of a Device."
+      type: string
+      x-ngsi: 
+        model: 
+          - "http://schema.org/Person"
+          - "https://schema.org/Organization"
+        type: Relationship
+    provider: 
+      description: "The provider of the device."
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/provider"
+        type: Property
+    refDeviceModel: 
+      description: "The device's model."
+      type: string
+      x-ngsi: 
+        model: "https://uri.fiware.org/ns/data-models#DeviceModel"
+        type: Relationship
+    rssi: 
+      description: |
+          Received signal strength indicator for a wireless enabled device. It must be equal to `1.0` when the signal strength is maximum. `0.0` when signal is missing. `-1.0` when it cannot be determined.
+          -  Allowed values: Interval \[0,1\] and -1
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/Number"
+        type: Property
+    serialNumber: 
+      description: "The serial number assigned by the manufacturer. see [https://schema.org/serialNumber](https://schema.org/serialNumber)"
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/Text"
+        type: Property
+    softwareVersion: 
+      description: "The software version of this device."
+      type: string
+      x-ngsi: 
+        model: "https://schema.org/Text"
+        type: Property
+    source: 
+      description: "A sequence of characters giving the source of the entity data. "
+      type: string
+      x-ngsi: 
+        model: 
+          - "https://schema.org/Text"
+          - "https://schema.org/URL"
+        type: Property
+    supportedProtocol: 
+      description: "See attribute `supportedProtocol` from [DeviceModel](../../DeviceModel/doc/spec.md). Needed if due to a software update new protocols are supported. Otherwise it is better to convey it at `DeviceModel` level."
+      enum: 
+        - ul20
+        - mqtt
+        - lwm2m
+        - http
+        - websocket
+        - onem2m
+        - sigfox
+        - lora
+        - nb-iot
+        - ec-gsm-iot
+        - lte-m
+        - cat-m
+        - 3g
+        - grps
+      type: string
+      x-ngsi: 
+        type: EnumProperty
+    value: 
+      description: "A observed or reported value. For actuator devices, it is an attribute that allows a controlling application to change the actuation setting. For instance, a switch device which is currently _on_ can report a value `\"on\"`of type `Text`. Obviously, in order to toggle the referred switch, this attribute value will have to be changed to `\"off\"`."
+      type: string
+      x-ngsi: 
+        model: 
+          - "https://schema.org/Text"
+          - "https://schema.org/QuantitativeValue"
+        type: Property
+  required: 
+    - address
+    - category
+  type: object
+SupportedProtocol: 
+  description: "URN holding the id of the attribute"
+  enum: 
     - ul20
     - mqtt
     - lwm2m
@@ -20,297 +252,6 @@ SupportedProtocol:
     - cat-m
     - 3g
     - grps
-
-
-Device:
-  type: object
-  required:
-    - address
-    - category
-  allOf:
-    - $ref: >-
-        ./ngsi-ld.yaml#/Common
-  description: >
-    An apparatus (hardware + software + firmware) intended to accomplish a
-    particular task (sensing the environment, actuating, etc.). A Device is
-    a tangible object which contains some logic and is producer and/or
-    consumer of data. A Device is always assumed to be capable of
-    communicating electronically via a network.
-
-    This data model has been partially developed in cooperation with mobile
-    operators and the [GSMA](https://www.gsma.com/iot/iot-big-data/).
-
-    This data model reuses concepts coming from the [SAREF
-    Ontology](http://www.etsi.org/deliver/etsi_ts/103200_103299/103264/01.01.01_60/ts_103264v010101p.pdf)
-    part of [ETSI](http://www.etsi.org) standards.
-  properties:
-    batteryLevel:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/Number'
-      type: number
-      format: float
-      description: >
-        Device's battery level. It must be equal to `1.0` when battery is
-        full. `0.0` when battery ìs empty. `-1` when transiently cannot be
-        determined.
-
-        -  Allowed values: Interval \[0,1\] and -1
-    category:
-      x-ngsi:
-        type: "EnumProperty"
-        uri-prefix: 'https://uri.fiware.org/ns/data-models#'
-      description: >
-        See attribute `category` from
-        [DeviceModel](../../DeviceModel/doc/spec.md). Optional but
-        recommended to optimize queries.
-      enum:
-        $ref: ./saref-terms.yaml#/Categories/enum
-    controlledAsset:
-      x-ngsi:
-        type: Relationship
-        model: 'https://schema.org/URL'
-      type: string
-      description: |
-        The asset(s) (building, object, etc.) controlled by the device.
-    controlledProperty:
-      x-ngsi:
-        type: "EnumProperty"
-        uri-prefix: 'https://uri.fiware.org/ns/data-models#'
-      description: >
-        See attribute `controlledProperty` from
-        [DeviceModel](../../DeviceModel/doc/spec.md). Optional but
-        recommended to optimize queries.
-      enum:
-        $ref: ./saref-terms.yaml#/ControlledProperties/enum
-
-    configuration:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/StructuredValue'
-        properties:
-          dateModified:
-            x-ngsi:
-              type: Property
-              model: 'https://schema.org/DateTime'
-            description: |
-              Last update timestamp of this attribute
-            readOnly: true
-      type: string
-      description: >
-        Device's technical configuration. This attribute is intended to be a
-        dictionary of properties which capture parameters which have to do
-        with the configuration of a device (timeouts, reporting periods,
-        etc.) and which are not currently covered by the standard attributes
-        defined by this model.
-    dataProvider:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/URL'
-      type: string
-      description: >
-        Specifies the URL to information about the provider of this
-        information
-    dateInstalled:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/DateTime'
-      type: string
-      format: "date-time"
-      description: |
-        A timestamp which denotes when the device was installed
-    dateFirstUsed:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/DateTime'
-      type: string
-      format: "date-time"
-      description: |
-        A timestamp which denotes when the device was first used.
-    dateLastCalibration:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/DateTime'
-      type: string
-      format: "date-time"
-      description: >
-        A timestamp which denotes when the last calibration of the device
-        happened.
-    dateLastValueReported:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/DateTime'
-      type: string
-      format: "date-time"
-      description: |
-        A timestamp which denotes the last time when the
-         device successfully reported data to the cloud.
-    dateManufactured:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/DateTime'
-      type: string
-      format: "date-time"
-      description: |
-        A timestamp which denotes when the device was manufactured.
-    deviceState:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/Text'
-      type: string
-      description: |
-        State of this device from an operational point of view. Its
-         value can be vendor dependent.
-    description:
-      $ref: >-
-        ./ngsi-ld.yaml#/description
-    firmwareVersion:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/Text'
-      type: string
-      description: |
-        The firmware version of this device.
-    hardwareVersion:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/Text'
-      type: string
-      description: |
-        The hardware version of this device.
-    ipAddress:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/Text'
-      type: string
-      description: >
-        The IP address of the device. It can be a comma separated list of
-        values if the device has more than one IP address.
-    location:
-      $ref: >-
-        ./ngsi-ld.yaml#/location
-    macAddress:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/Text'
-      type: string
-      description: |
-        The MAC address of the device.
-    mcc:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/Text'
-      type: string
-      description: >
-        Mobile Country Code - This property identifies univoquely the
-        country of the mobile network the device is attached to.
-    mnc:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/Text'
-      type: string
-      description: >
-        This property identifies the Mobile Network Code (MNC) of the
-        network the device is attached to. The MNC is used in combination
-        with a Mobile Country Code (MCC) (also known as a "MCC / MNC tuple")
-        to uniquely identify a mobile phone operator/carrier using the GSM,
-        CDMA, iDEN, TETRA and 3G / 4G public land mobile networks and some
-        satellite mobile 
-    name:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/Text'
-        uri: 'https://uri.etsi.org/ngsi-ld/name'
-        uri-prefix: 'https://uri.etsi.org/ngsi-ld/'
-      type: string
-      description: |
-        A mnemonic name given to the device.
-    osVersion:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/Text'
-      type: string
-      description: |
-        The version of the host operating system device.
-    owner:
-      x-ngsi:
-        type: Relationship
-        model:
-          - 'http://schema.org/Person'
-          - 'https://schema.org/Organization'
-      type: string
-      description: |
-        The owners of a Device.
-    provider:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/provider'
-      type: string
-      description: |
-        The provider of the device.
-    refDeviceModel:
-      x-ngsi:
-        type: Relationship
-        model: 'https://uri.fiware.org/ns/data-models#DeviceModel'
-      type: string
-      description: |
-        The device's model.
-    rssi:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/Number'
-      type: string
-      description: >
-        Received signal strength indicator for a wireless enabled device. It
-        must be equal to `1.0` when the signal strength is maximum. `0.0`
-        when signal is missing. `-1.0` when it cannot be determined.
-
-        -  Allowed values: Interval \[0,1\] and -1
-    serialNumber:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/Text'
-      type: string
-      description: >
-        The serial number assigned by the manufacturer. see
-        [https://schema.org/serialNumber](https://schema.org/serialNumber)
-    softwareVersion:
-      x-ngsi:
-        type: Property
-        model: 'https://schema.org/Text'
-      type: string
-      description: |
-        The software version of this device.
-    source:
-      x-ngsi:
-        type: Property
-        model:
-          - 'https://schema.org/Text'
-          - 'https://schema.org/URL'
-      type: string
-      description: |
-        A sequence of characters giving the source of the entity data. 
-    supportedProtocol:
-      x-ngsi:
-        type: EnumProperty
-      type: string
-      enum: *ref_2
-      description: >
-        See attribute `supportedProtocol` from
-        [DeviceModel](../../DeviceModel/doc/spec.md). Needed if due to a
-        software update new protocols are supported. Otherwise it is better
-        to convey it at `DeviceModel` level.
-    value:
-      x-ngsi:
-        type: Property
-        model:
-          - 'https://schema.org/Text'
-          - 'https://schema.org/QuantitativeValue'
-      type: string
-      description: >
-        A observed or reported value. For actuator devices, it is an
-        attribute that allows a controlling application to change the
-        actuation setting. For instance, a switch device which is currently
-        _on_ can report a value `"on"`of type `Text`. Obviously, in order to
-        toggle the referred switch, this attribute value will have to be
-        changed to `"off"`.
+  type: string
+  x-ngsi: 
+    uri-prefix: "https://uri.fiware.org/ns/data-models#"
