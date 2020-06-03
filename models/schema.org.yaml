@@ -13,7 +13,7 @@ Person:
       description: |
         An additional name for a Person, can be used for a middle name.
     address:
-      $ref: "#/address"
+      $ref: "./schema.org.yaml#/address"
 
     email:
        x-ngsi:
