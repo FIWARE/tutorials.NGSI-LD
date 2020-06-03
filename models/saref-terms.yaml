@@ -1,68 +1,55 @@
---- 
-Categories: 
-  enum: 
-    - 
-      sensor: 
-        description: "A device that detects and responds to events or changes in the physical environment such as light, motion, or temperature changes.\n"
-        x-ngsi: 
-          uri: "https://w3id.org/saref#Sensor"
-    - 
-      actuator: 
-        description: |
-            A device responsible for moving or controlling a mechanism or
-            system. .
-        x-ngsi: 
-          uri: "https://w3id.org/saref#Actuator"
-    - 
-      meter: 
-        description: "A device built to accurately detect and display a quantity in a form readable by a human being. Partially defined by SAREF.\n"
-        x-ngsi: 
-          uri: "https://w3id.org/saref#Meter"
-    - 
-      HVAC: 
-        description: "Heating, Ventilation and Air Conditioning (HVAC) device that provides indoor environmental comfort. .\n"
-        x-ngsi: 
-          uri: "https://w3id.org/saref#HVAC"
-    - 
-      network: 
-        description: |
-            A device used to connect other devices in a network, such as hub,
-            switch or router in a LAN or Sensor network.
-        x-ngsi: 
-          uri: "https://w3id.org/saref#Network"
-    - 
-      multimedia: 
-        description: |
-            A device designed to display, store, record or play multimedia
-            content such as audio, images, animation, video.
-        x-ngsi: 
-          uri: "https://w3id.org/saref#Multimedia"
-    - 
-      implement: 
-        description: "A device used or needed in a given activity; tool, instrument,  utensil, etc.\n"
-        x-ngsi: 
-          uri: "https://github.com/ADAPT/ADAPT/blob/develop/source/ADAPT/Equipment/ImplementConfiguration.cs"
-    - 
-      irrSystem: 
-        description: "A mobile or fixed irrigation system such as a center pivot, linear, traveling gun, solid set, etc.\n"
-        x-ngsi: 
-          uri: "https://github.com/ADAPT/ADAPT/blob/develop/source/ADAPT/Equipment/IrrSystemConfiguration.cs"
-    - 
-      irrSection: 
-        description: "A section of an IrrSystem. Different enough from a regular section.\n"
-        x-ngsi: 
-          uri: "https://github.com/ADAPT/ADAPT/blob/develop/source/ADAPT/Equipment/IrrSectionConfiguration.cs"
-    - 
-      endgun: 
-        description: "A device attached to an irrigation system that projects water beyond it\n"
-        x-ngsi: 
-          uri: "https://github.com/ADAPT/ADAPT/blob/develop/source/ADAPT/Equipment/EndgunConfiguration.cs"
+---
+properties: &commonMeta 
+    providedBy:
+        $ref: "ngsi-ld.yaml#/providedBy"
+    observedAt:
+        $ref: "ngsi-ld.yaml#/observedAt"
+    unitCode:
+        $ref: "ngsi-ld.yaml#/unitCode"
+
+
+Categories:
   type: string
-  x-ngsi: 
-    uri-prefix: "https://w3id.org/saref#"
-ControlledProperties: 
-  description: "URN holding the id of the attribute\n"
-  enum: 
+  x-ngsi:
+    uri-prefix: 'https://w3id.org/saref#'
+  enum:
+    - sensor
+    - actuator
+    - meter
+    - HVAC
+    - network
+    - multimedia          
+    - implement
+    - irrSystem
+    - irrSection
+    - endgun
+  description: >
+        -   `sensor`:  A device that detects and responds to events or changes in the
+            physical environment such as light, motion, or temperature
+            changes.
+        -   `actuator`: A device responsible for moving or controlling a mechanism or
+            system. .
+        -  `meter`: A device built to accurately detect and display a quantity in a
+              form readable by a human being. Partially defined by SAREF.
+        -   `HVAC`:  Heating, Ventilation and Air Conditioning (HVAC) device that
+              provides indoor environmental comfort.
+        -   `network`: A device used to connect other devices in a network, such as hub,
+              switch or router in a LAN or Sensor network.
+        -   `multimedia`: A device designed to display, store, record or play multimedia
+              content such as audio, images, animation, video.
+        -   `implement`:  A device used or needed in a given activity; tool, instrument,  utensil, etc.
+        -   `irrSystem`: A mobile or fixed irrigation system such as a center pivot,
+              linear, traveling gun, solid set, etc.
+        -   `irrSection`: A section of an IrrSystem. Different enough from a regular
+              section.
+        -   `endgun`: A device attached to an irrigation system that projects water
+              beyond it
+    
+ControlledProperties:
+  type: string
+  x-ngsi:
+    uri-prefix: 'https://w3id.org/saref#'
+  enum:
     - temperature
     - humidity
     - light
@@ -104,798 +91,498 @@ ControlledProperties:
     - eatingActivity
     - milking
     - movementActivity
-  type: string
-  x-ngsi: 
-    uri-prefix: "https://w3id.org/saref#"
-airPollution: 
-  description: "An individual representing air pollution"
+
+
+
+# Here follows additional attributes for individual devices.
+
+
+temperature:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#temperature'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: Property related to some measurements that are characterized by a certain value that is measured in a temperature unit (degree_Celsius, degree_Fahrenheit, or degree_kelvin)
+
+humidity:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#humidity'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: Property related to some measurements that are characterized by a certain value that is measured in a humidity unit
+
+light:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#light'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: Property related to some measurements that are characterized by a certain value that is measured in a illuminance unit (lux)
+
+motion:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#motion'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: Property related to some measurements that are characterized by a certain value that is measured in a unit of measure for motion
+
+fillingLevel:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#fillingLevel'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: Property related to some measurements that are characterized by a certain value that is a filling level.
+
+occupancy:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#occupancy'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: Property related to some measurements that are characterized by a certain value (saref:hasValue property) that is measured in a unit of measure for occupancy
+
+power:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#power'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: Property related to some measurements that are characterized by a certain value that is measured in a power unit (such as watt or kilowatt). Further specializations of the saref:Power class can be found in the SAREF4ENER extension, where classes such as PowerMax, PowerMin and PowerExpected are defined.
+
+pressure:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#pressure'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: Property related to some measurements that are characterized by a certain value that is measured in a pressure unit (bar or pascal)
+smoke:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#smoke'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: Property related to some measurements that are characterized by a certain value that is measured in a unit of measure for smoke
+
+energy:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#energy'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: Property related to some measurements that are characterized by a certain value measured in an energy unit (such as Kilowatt_Hour or Watt_hour). Furter specializations of the saref:Energy class can be found in the SAREF4ENER extension, where classes such as EnergyMax, EnergyMin and EnergyExpected are defined.
+
+
+
+airPollution:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#airPollution'
+    model: 'https://schema.org/StructuredValue'
   type: object
-  x-ngsi: 
-    model: "https://schema.org/StructuredValue"
-    uri: "https://w3id.org/saref#airPollution"
-airTemperature: 
-  description: "The degree or intensity of heat present in the air."
-  format: float
+  description: An individual representing air pollution
+noiseLevel:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#noiseLevel'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
   type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://saref.etsi.org/saref4agri#AirTemperature"
-ambientHumidity: 
-  description: "The amount of water vapour in the air."
   format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://saref.etsi.org/saref4agri#AmbientHumidity"
-atmosphericPressure: 
-  description: "An individual representing the atmospheric pressure"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#atmosphericPressure"
-cdom: 
-  description: "An individual representing the property Colored Dissolved Organic Matter"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#cdom"
-conductance: 
-  description: "An individual representing the property conductance"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#conductance"
-conductivity: 
-  description: "An individual representing the property conductitivity"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#conductivity"
-depth: 
-  description: "An individual representing the property depth"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#depth"
-eatingActivity: 
-  description: "An individual representing the property eating activity."
-  type: string
-  x-ngsi: 
-    model: "https://schema.org/Text"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#eatingActivity"
-electricityConsumption: 
-  description: "An individual representing the property electricity consumption."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#electricityConsumption"
-energy: 
-  description: "Property related to some measurements that are characterized by a certain value measured in an energy unit (such as Kilowatt_Hour or Watt_hour). Furter specializations of the saref:Energy class can be found in the SAREF4ENER extension, where classes such as EnergyMax, EnergyMin and EnergyExpected are defined."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#energy"
-fillingLevel: 
-  description: "Property related to some measurements that are characterized by a certain value that is a filling level."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#fillingLevel"
-fluorescence: 
-  description: "An individual representing the light property fluorescence."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://saref.etsi.org/saref4envi#Fluorescence"
-frequency: 
-  description: "An individual representing the property frequency."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://saref.etsi.org/saref4envi#Frequency"
-gasConsumption: 
-  description: "An individual representing the property gas consumption."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#gasComsumption"
-heading: 
-  description: "An individual representing the property heading."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#heading"
-height: 
-  description: "An individual representing the property height."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://saref.etsi.org/saref4envi#Height"
-humidity: 
-  description: "Property related to some measurements that are characterized by a certain value that is measured in a humidity unit"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#humidity"
-illuminance: 
-  description: "An individual representing the light property illuminance."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://saref.etsi.org/saref4envi#Illuminance"
-irradiance: 
-  description: "An individual representing the light property irradiance."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://saref.etsi.org/saref4envi#Irradiance"
-irrigationWater: 
-  description: "The amount of water falling in the soil by irrigation methods."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://saref.etsi.org/saref4agri#IrrigationWater"
-light: 
-  description: "Property related to some measurements that are characterized by a certain value that is measured in a illuminance unit (lux)"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#light"
-lightMagnitude: 
-  description: "An individual representing the light property light magnitude."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://saref.etsi.org/saref4envi#LightMagnitude"
-lightProperty: 
-  description: "An individual representing the light property light absorption."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://saref.etsi.org/saref4envi#LightAbsorption"
-luminiscence: 
-  description: "An individual representing the light property luminiscence."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://saref.etsi.org/saref4envi#Luminiscence"
-milking: 
-  description: "An individual representing the property milking."
-  type: string
-  x-ngsi: 
-    model: "https://schema.org/Text"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#milking"
-motion: 
-  description: "Property related to some measurements that are characterized by a certain value that is measured in a unit of measure for motion"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#motion"
-movementActivity: 
-  description: "An individual representing the property movement activity."
-  type: string
-  x-ngsi: 
-    model: "https://schema.org/Text"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#movementActivity"
-noiseLevel: 
-  description: "An individual representing the property noise level"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#noiseLevel"
-occupancy: 
-  description: "Property related to some measurements that are characterized by a certain value (saref:hasValue property) that is measured in a unit of measure for occupancy"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#occupancy"
-orp: 
-  description: "An individual representing the property  Operative Radiated Power"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#orp"
-pH: 
-  description: "An individual representing the property pH"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#pH"
-period: 
-  description: "An individual representing the property period."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://saref.etsi.org/saref4envi#Period"
-phosphorescence: 
-  description: "An individual representing the light property phosphorescence."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://saref.etsi.org/saref4envi#Phosphorescence"
-plantGrowthStage: 
-  description: "The level or stage of growth of the plant."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://saref.etsi.org/saref4agri#PlantGrowthStage"
-power: 
-  description: "Property related to some measurements that are characterized by a certain value that is measured in a power unit (such as watt or kilowatt). Further specializations of the saref:Power class can be found in the SAREF4ENER extension, where classes such as PowerMax, PowerMin and PowerExpected are defined."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#power"
-precipitation: 
-  description: "The amount of water falling in the soil by natural process (e.g. rain)."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://saref.etsi.org/saref4agri#Precipitation"
-pressure: 
-  description: "Property related to some measurements that are characterized by a certain value that is measured in a pressure unit (bar or pascal)"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#pressure"
-properties: 
-  observedAt: 
-    $ref: "ngsi-ld.yaml#/observedAt"
-  providedBy: 
-    $ref: "ngsi-ld.yaml#/providedBy"
-  unitCode: 
-    $ref: "ngsi-ld.yaml#/unitCode"
-reflectionOfLight: 
-  description: "An individual representing the light property reflection of light."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://saref.etsi.org/saref4envi#ReflectionOfLight"
-salinity: 
-  description: "An individual representing the property salinity"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#salinity"
-scatteringOfLight: 
-  description: "An individual representing the light property scattering of light."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://saref.etsi.org/saref4envi#ScatteringOfLight"
-smoke: 
-  description: "Property related to some measurements that are characterized by a certain value that is measured in a unit of measure for smoke"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#smoke"
-soilMoisture: 
-  description: "The amount of water or humidity contained in the soil."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://saref.etsi.org/saref4agri#SoilMoisture"
-soilTemperature: 
-  description: "The degree or intensity of heat present in the soil."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://saref.etsi.org/saref4agri#SoilTemperature"
-solarRadiation: 
-  description: "An individual representing the property solar radiation"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#solarRadiation"
-speed: 
-  description: "An individual representing the property speed."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#speed"
-tds: 
-  description: "An individual representing the property total disolved solids"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#tds"
-temperature: 
-  description: "Property related to some measurements that are characterized by a certain value that is measured in a temperature unit (degree_Celsius, degree_Fahrenheit, or degree_kelvin)"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#temperature"
-trafficFlow: 
-  description: "An individual representing the property traffic flow."
-  type: string
-  x-ngsi: 
-    model: "https://schema.org/Text"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#trafficFlow"
-tss: 
-  description: "An individual representing the property true total sulphur"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#tss"
-turbidity: 
-  description: "An individual representing the property turbidity"
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#turbidity"
-waterConsumption: 
-  description: "An individual representing the property water consumption."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#waterConsumption"
-waterPollution: 
-  description: "An individual representing the property water pollution."
-  format: float
-  type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#waterPollution"
-weatherConditions: 
-  description: "An individual representing the current weather conditions"
+  description: An individual representing the property noise level
+weatherConditions:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#weatherConditions'
+    model: 'https://schema.org/StructuredValue'
+    properties: *commonMeta
   type: object
-  x-ngsi: 
-    model: "https://schema.org/StructuredValue"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#weatherConditions"
-weight: 
-  description: "An individual representing the property weight."
-  format: float
+  description: An individual representing the current weather conditions 
+precipitation:
+  x-ngsi:
+    uri: 'https://saref.etsi.org/saref4agri#Precipitation'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
   type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#weight"
-windDirection: 
-  description: "An individual representing the property wind direction"
   format: float
+  description: The amount of water falling in the soil by natural process (e.g. rain).
+windSpeed:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#windSpeed'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
   type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#windDirection"
-windSpeed: 
-  description: "An individual representing the property wind speed"
   format: float
+  description: An individual representing the property wind speed
+windDirection:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#windDirection'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
   type: number
-  x-ngsi: 
-    model: "https://schema.org/Number"
-    properties: 
-      observedAt: 
-        $ref: "ngsi-ld.yaml#/observedAt"
-      providedBy: 
-        $ref: "ngsi-ld.yaml#/providedBy"
-      unitCode: 
-        $ref: "ngsi-ld.yaml#/unitCode"
-    uri: "https://w3id.org/saref#windSpeed"
+  format: float
+  description: An individual representing the property wind direction
+atmosphericPressure:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#atmosphericPressure'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the atmospheric pressure 
+solarRadiation:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#solarRadiation'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property solar radiation
+depth:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#depth'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property depth
+pH:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#pH'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property pH
+conductivity:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#conductivity'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property conductitivity
+conductance:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#conductance'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property conductance
+tss:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#tss'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property true total sulphur
+tds:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#tds'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property total disolved solids
+turbidity:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#turbidity'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property turbidity
+salinity:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#salinity'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property salinity
+orp:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#orp'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property  Operative Radiated Power
+cdom:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#cdom'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property Colored Dissolved Organic Matter
+waterPollution:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#waterPollution'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property water pollution.
+speed:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#speed'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property speed.
+heading:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#heading'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property heading.
+weight:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#weight'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property weight.
+waterConsumption:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#waterConsumption'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property water consumption.
+
+gasConsumption:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#gasComsumption'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property gas consumption.
+electricityConsumption:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#electricityConsumption'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property electricity consumption.
+
+## SAREF 4 AGRI
+airTemperature:
+  x-ngsi:
+    uri: 'https://saref.etsi.org/saref4agri#AirTemperature'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: The degree or intensity of heat present in the air.
+
+ambientHumidity:
+  x-ngsi:
+    uri: 'https://saref.etsi.org/saref4agri#AmbientHumidity'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: The amount of water vapour in the air.
+
+irrigationWater:
+  x-ngsi:
+    uri: 'https://saref.etsi.org/saref4agri#IrrigationWater'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: The amount of water falling in the soil by irrigation methods.
+
+plantGrowthStage:
+  x-ngsi:
+    uri: 'https://saref.etsi.org/saref4agri#PlantGrowthStage'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: The level or stage of growth of the plant.
+
+soilMoisture:
+  x-ngsi:
+    uri: 'https://saref.etsi.org/saref4agri#SoilMoisture'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: The amount of water or humidity contained in the soil.
+
+soilTemperature:
+  x-ngsi:
+    uri: 'https://saref.etsi.org/saref4agri#SoilTemperature'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: The degree or intensity of heat present in the soil.
+
+### saref4envi
+
+fluorescence:
+  x-ngsi:
+    uri: 'https://saref.etsi.org/saref4envi#Fluorescence'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the light property fluorescence.
+
+frequency:
+  x-ngsi:
+    uri: 'https://saref.etsi.org/saref4envi#Frequency'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property frequency.
+
+height:
+  x-ngsi:
+    uri: 'https://saref.etsi.org/saref4envi#Height'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property height.
+
+illuminance:
+  x-ngsi:
+    uri: 'https://saref.etsi.org/saref4envi#Illuminance'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description:  An individual representing the light property illuminance.
+
+irradiance:
+  x-ngsi:
+    uri: 'https://saref.etsi.org/saref4envi#Irradiance'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the light property irradiance.
+
+lightProperty:
+  x-ngsi:
+    uri: 'https://saref.etsi.org/saref4envi#LightAbsorption'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the light property light absorption.
+
+lightMagnitude:
+  x-ngsi:
+    uri: 'https://saref.etsi.org/saref4envi#LightMagnitude'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the light property light magnitude.
+
+luminiscence:
+  x-ngsi:
+    uri: 'https://saref.etsi.org/saref4envi#Luminiscence'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description:  An individual representing the light property luminiscence.
+
+period:
+  x-ngsi:
+    uri: 'https://saref.etsi.org/saref4envi#Period'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the property period.
+
+phosphorescence:
+  x-ngsi:
+    uri: 'https://saref.etsi.org/saref4envi#Phosphorescence'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the light property phosphorescence.
+
+reflectionOfLight:
+  x-ngsi:
+    uri: 'https://saref.etsi.org/saref4envi#ReflectionOfLight'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the light property reflection of light.
+
+scatteringOfLight:
+  x-ngsi:
+    uri: 'https://saref.etsi.org/saref4envi#ScatteringOfLight'
+    model: 'https://schema.org/Number'
+    properties: *commonMeta
+  type: number
+  format: float
+  description: An individual representing the light property scattering of light.
+
+###  Others              
+
+
+trafficFlow:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#trafficFlow'
+    model: 'https://schema.org/Text'
+    properties: *commonMeta
+  type: string
+  description: An individual representing the property traffic flow.
+
+eatingActivity:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#eatingActivity'
+    model: 'https://schema.org/Text'
+    properties: *commonMeta
+  type: string
+  description: An individual representing the property eating activity.
+
+milking:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#milking'
+    model: 'https://schema.org/Text'
+    properties: *commonMeta
+  type: string
+  description: An individual representing the property milking.
+
+movementActivity:
+  x-ngsi:
+    uri: 'https://w3id.org/saref#movementActivity'
+    model: 'https://schema.org/Text'
+    properties: *commonMeta
+  type: string
+  description: An individual representing the property movement activity.
