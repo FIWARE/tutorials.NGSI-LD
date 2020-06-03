@@ -12,7 +12,6 @@ Person:
         type: Property
     address: 
       $ref: "./schema.org.yaml#/address"
-    description: "The name of the item"
     email: 
       description: "Email address."
       type: string
@@ -88,7 +87,6 @@ Person:
       x-ngsi: 
         model: "https://schema.org/Text"
         type: Property
-    type: string
     vatID: 
       description: "The Value-added Tax ID of the organization or person."
       type: string
@@ -96,6 +94,51 @@ Person:
         model: "https://schema.org/Text"
         type: Property
   type: object
+
+PostalAddress:
+  type: "object"
+  properties:  
+    addressCountry:
+      type: "string"
+      description: >
+        The country. For example, USA. You can also provide the two-letter ISO 3166-1 alpha-2 country code.
+    addressLocality:
+      type: "string"
+      description: >
+        The locality in which the street address is, and which is in the region. For example, Mountain View.
+    addressRegion:
+      type: "string"  
+      description: >
+        The region in which the locality is, and which is in the country. For example, California or another appropriate first-level Administrative division
+    postOfficeBoxNumber:
+      type: "string"
+      description: >
+        The post office box number for PO box addresses.
+    postalCode:
+      type: "string"
+      description: >
+        The postal code. For example, 94043.
+    streetAddress:
+      type: "string"  
+      description: >
+        The street address. For example, 1600 Amphitheatre Pkwy.
+
+   
+address:
+  type: "object"
+  x-ngsi:
+    attr-type: "Property"
+    model: "https://schema.org/address"
+    uri-prefix: "https://schema.org/"
+  externalDocs:
+    url: https://schema.org/address
+
+  description: >
+    The mailing address.
+  properties:
+    $ref: '#/PostalAddress/properties
+
+  
 
 PostalAddress: 
   properties: 
