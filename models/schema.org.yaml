@@ -92,10 +92,7 @@ Person:
         uri: 'https://schema.org/jobTitle'
         uri-prefix: "https://schema.org/"
     name: 
-      x-ngsi: 
-        type: Property
-        uri: "https://uri.etsi.org/ngsi-ld/name"
-        uri-prefix: "https://uri.etsi.org/ngsi-ld/"
+      $ref: "./ngsi-ld.yaml#/name"
     taxID: 
       description: "The Tax / Fiscal ID of the organization or person, e.g. the TIN in the US or the CIF/NIF in Spain."
       type: string
