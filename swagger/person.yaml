@@ -1,0 +1,24 @@
+--- 
+components: 
+  schemas: 
+    Person: 
+      $ref: "./models/schema.org.yaml#/Person"
+info: 
+  description: "Definition of a Person from schema.org"
+  title: Person
+  version: "1.0.0"
+openapi: "3.0.0"
+
+
+# These paths are merely representative.
+paths: 
+  /ngsi-ld/v1/entities: 
+    get: 
+      responses: 
+        ? "200"
+        : 
+          description:  OK
+          content: 
+            application/ld+json: 
+              schema: 
+                type: object
