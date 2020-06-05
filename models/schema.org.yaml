@@ -1,8 +1,9 @@
 --- 
 Person: 
-  allOf: 
-    - 
-      $ref: "./ngsi-ld.yaml#/Common"
+  type: "object"
+  x-ngsi:
+    uri: 'https://schema.org/Person'
+    uri-prefix: "https://schema.org/"
   properties: 
     additionalName: 
       description: "An additional name for a Person, can be used for a middle name."

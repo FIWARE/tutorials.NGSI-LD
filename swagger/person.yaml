@@ -2,7 +2,9 @@
 components: 
   schemas: 
     Person: 
-      $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/schema.org.yaml#/Person"
+      allOf: 
+        - $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/ngsi-ld.yaml#/Common"
+        - $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/schema.org.yaml#/Person"
 info: 
   description: "Definition of a Person from schema.org"
   title: Person
