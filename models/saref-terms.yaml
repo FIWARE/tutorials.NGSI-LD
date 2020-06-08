@@ -13,16 +13,16 @@ Categories:
   x-ngsi:
     uri-prefix: 'https://w3id.org/saref#'
   enum:
-    - sensor
-    - actuator
-    - meter
     - HVAC
-    - network
-    - multimedia          
-    - implement
-    - irrSystem
-    - irrSection
+    - actuator
     - endgun
+    - implement
+    - irrSection
+    - irrSystem
+    - meter
+    - multimedia          
+    - network
+    - sensor
   description: >
         -   `sensor`:  A device that detects and responds to events or changes in the
             physical environment such as light, motion, or temperature
@@ -50,53 +50,91 @@ ControlledProperties:
   x-ngsi:
     uri-prefix: 'https://w3id.org/saref#'
   enum:
-    - temperature
+    - airPollution
+    - atmosphericPressure
+    - cdom
+    - conductance
+    - conductivity
+    - depth
+    - eatingActivity
+    - electricityConsumption
+    - energy
+    - fillingLevel
+    - gasConsumption
+    - heading
     - humidity
     - light
-    - motion
-    - fillingLevel
-    - occupancy
-    - power
-    - pressure
-    - smoke
-    - energy
-    - airPollution
-    - noiseLevel
-    - weatherConditions
-    - precipitation
-    - windSpeed
-    - windDirection
-    - atmosphericPressure
-    - solarRadiation
-    - depth
-    - pH
-    - conductivity
-    - conductance
-    - tss
-    - tds
-    - turbidity
-    - salinity
-    - orp
-    - cdom
-    - waterPollution
     - location
-    - speed
-    - heading
-    - weight
-    - waterConsumption
-    - gasConsumption
-    - electricityConsumption
-    - soilMoisture
-    - trafficFlow
-    - eatingActivity
     - milking
+    - motion
     - movementActivity
-
-
+    - noiseLevel
+    - occupancy
+    - orp
+    - pH
+    - power
+    - precipitation
+    - pressure
+    - salinity
+    - smoke
+    - soilMoisture
+    - solarRadiation
+    - speed
+    - tds
+    - temperature
+    - trafficFlow
+    - tss
+    - turbidity
+    - waterConsumption
+    - waterPollution
+    - weatherConditions
+    - weight
+    - windDirection
+    - windSpeed
+  description: >
+      -   `airPollution`
+      -   `atmosphericPressure`
+      -   `cdom`
+      -   `conductance`
+      -   `conductivity`
+      -   `depth`
+      -   `eatingActivity`
+      -   `electricityConsumption`
+      -   `energy`
+      -   `fillingLevel`
+      -   `gasConsumption`
+      -   `heading`
+      -   `humidity`
+      -   `light`
+      -   `location`
+      -   `milking`
+      -   `motion`
+      -   `movementActivity`
+      -   `noiseLevel`
+      -   `occupancy`
+      -   `orp`
+      -   `pH`
+      -   `power`
+      -   `precipitation`
+      -   `pressure`
+      -   `salinity`
+      -   `smoke`
+      -   `soilMoisture`
+      -   `solarRadiation`
+      -   `speed`
+      -   `tds`
+      -   `temperature`
+      -   `trafficFlow`
+      -   `tss`
+      -   `turbidity`
+      -   `waterConsumption`
+      -   `waterPollution`
+      -   `weatherConditions`
+      -   `weight`
+      -   `windDirection`
+      -   `windSpeed`
 
 # Here follows additional attributes for individual devices.
-
-
 temperature:
   x-ngsi:
     uri: 'https://w3id.org/saref#temperature'

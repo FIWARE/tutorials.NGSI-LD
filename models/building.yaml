@@ -175,7 +175,7 @@ Categories:
         -   `transportation`
         -   `university`
         -   `warehouse`
-        -   `water_tower
+        -   `water_tower`
   enum: 
     - apartments
     - bakehouse
