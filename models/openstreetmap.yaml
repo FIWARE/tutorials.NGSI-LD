@@ -154,15 +154,15 @@ Categories:
     
     ### Storage
     
-    -   `hangar` -  A hangar is a building used for the storage of airplanes, helicopters or space-craft. Consider adding aeroway=hangar, when appropriate. 
-    -   `hut` - A hut is a small and crude shelter. Note that this word has two meanings -   `it may be synonym of building=shed, it may be a residential building of low quality. 
+    -   `hangar` -  A hangar is a building used for the storage of airplanes, helicopters or space-craft. Consider adding `aeroway=hangar`, when appropriate. 
+    -   `hut` - A hut is a small and crude shelter. Note that this word has two meanings -   it may be synonym of `building=shed`, it may be a residential building of low quality. 
     -   `shed` -  A shed is a simple, single-storey structure in a back garden or on an allotment that is used for storage, hobbies, or as a workshop.  
     
     ### Cars
     
     -   `carport` - A carport is a covered structure used to offer limited protection to vehicles, primarily cars, from the elements. Unlike most structures a carport does not have four walls, and usually has one or two.  
-    -   `garage` -  A garage is a building suitable for the storage of one or possibly more motor vehicle or similar. See building=garages for larger shared buildings. For an aircraft garage, see building=hangar.  
-    -   `garages` - A building that consists of a number of discrete storage spaces for different owners/tenants. See also building=garage. 
+    -   `garage` -  A garage is a building suitable for the storage of one or possibly more motor vehicle or similar. See `building=garages` for larger shared buildings. For an aircraft garage, see building=hangar.  
+    -   `garages` - A building that consists of a number of discrete storage spaces for different owners/tenants. See also `building=garage`. 
     -   `parking` - Structure purpose-built for parking cars. 
     
     ### Power/Technical buildings
@@ -174,7 +174,7 @@ Categories:
     
     ### Other Buildings
     
-    -   `bunker` -  A hardened military building. Also use military=bunker. 
+    -   `bunker` -  A hardened military building. Also use `military=bunker`. 
     -   `bridge` -  A building used as a bridge. Can also represent a gatehouse for drawbridges. See also bridge=yes for highway=*. Don't use this tag just for marking bridges (their outlines). For such purposes use man_made=bridge.  
     -   `construction` -  Used for buildings under construction. Use construction=* to hold the value for the completed building. 
     -   `roof` -  A structure that consists of a roof with open sides, such as a rain shelter, and also gas stations  
