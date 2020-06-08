@@ -118,7 +118,6 @@ Person:
         type: Property
         uri: 'https://schema.org/vatID'
         uri-prefix: "https://schema.org/"
-  type: object
 
 PostalAddress:
   type: "object"
