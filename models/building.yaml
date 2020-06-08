@@ -23,22 +23,22 @@ Building:
     address: 
       $ref: "./schema.org.yaml#/address"
     category: 
-      description: "The categories that this building belongs to\n"
+      description: "The categories that this building belongs to"
       allOf:
-        - $ref: "./building.yaml#/Categories"
+        - $ref: "./openstreetmap.yaml#/Categories"
       type: string
       x-ngsi: 
         type: EnumProperty
-        uri-prefix: "https://uri.fiware.org/ns/data-models#"
+        uri-prefix: "https://wiki.openstreetmap.org/wiki/Tag:building%3D"
     containedInPlace: 
-      description: "The URL this building resides within  \n"
+      description: "The URL this building resides within  "
       format: URL
       type: string
       x-ngsi: 
         model: "https://schema.org/URL"
         type: Relationship
     dataProvider: 
-      description: "Specifies the URL to information about the provider of this information\n"
+      description: "Specifies the URL to information about the provider of this information"
       format: URL
       type: string
       x-ngsi: 
@@ -47,14 +47,14 @@ Building:
     description: 
       $ref: "./ngsi-ld.yaml#/description"
     floorsAboveGround: 
-      description: "Number of floors above ground within the building\n"
+      description: "Number of floors above ground within the building"
       format: int32
       type: integer
       x-ngsi: 
         model: "https://schema.org/Integer"
         type: Property
     floorsBelowGround: 
-      description: "Number of floors below ground within the building\n"
+      description: "Number of floors below ground within the building"
       format: int32
       type: integer
       x-ngsi: 
@@ -63,7 +63,7 @@ Building:
     location: 
       $ref: "./ngsi-ld.yaml#/location"
     occupier: 
-      description: "Link to the occupiers of the building\n"
+      description: "Link to the occupiers of the building"
       format: URL
       type: string
       x-ngsi: 
@@ -87,21 +87,21 @@ Building:
         type: Property
         uri: "https://schema.org/openingHours"
     owner: 
-      description: "The owner of this building\n"
+      description: "The owner of this building"
       format: URL
       type: string
       x-ngsi: 
         model: "https://schema.org/URL"
         type: Relationship
     refMap: 
-      description: "The URL holding a map of the building\n"
+      description: "The URL holding a map of the building"
       format: URL
       type: string
       x-ngsi: 
         model: "https://schema.org/URL"
         type: Property
     source: 
-      description: "A sequence of characters giving the source of the entity data.\n"
+      description: "A sequence of characters giving the source of the entity data."
       type: string
       x-ngsi: 
         model: 
