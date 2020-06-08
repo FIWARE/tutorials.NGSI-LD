@@ -4,7 +4,7 @@ components:
     Building: 
       $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/building.yaml#/Building"
     Categories: 
-      $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/building.yaml#/Categories"
+      $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/openstreetmap.yaml#/Categories"
 info: 
   description: ""
   title: Building
