@@ -113,69 +113,131 @@ Building:
     - category
   type: object
 Categories: 
-  description: "URN holding the id of the attribute\n"
+  description: >
+        -   `apartments`
+        -   `bakehouse`
+        -   `barn`
+        -   `bridge`
+        -   `bungalow`
+        -   `bunker`
+        -   `cabin`
+        -   `carport`
+        -   `cathedral`
+        -   `chapel`
+        -   `church`
+        -   `civic`
+        -   `commercial`
+        -   `conservatory`
+        -   `construction`
+        -   `cowshed`
+        -   `detached`
+        -   `digester`
+        -   `dormitory`
+        -   `farm`
+        -   `farm_auxiliary`
+        -   `garage`
+        -   `garages`
+        -   `garbage_shed`
+        -   `grandstand`
+        -   `greenhouse`
+        -   `hangar`
+        -   `hospital`
+        -   `hotel`
+        -   `house`
+        -   `houseboat`
+        -   `hut`
+        -   `industrial`
+        -   `kindergarten`
+        -   `kiosk`
+        -   `mosque`
+        -   `office`
+        -   `parking`
+        -   `pavilion`
+        -   `public`
+        -   `residential`
+        -   `retail`
+        -   `riding_hall`
+        -   `roof`
+        -   `ruins`
+        -   `school`
+        -   `service`
+        -   `shed`
+        -   `shrine`
+        -   `stable`
+        -   `stadium`
+        -   `static_caravan`
+        -   `sty`
+        -   `synagogue`
+        -   `temple`
+        -   `terrace`
+        -   `train_station`
+        -   `transformer_tower`
+        -   `transportation`
+        -   `university`
+        -   `warehouse`
+        -   `water_tower
   enum: 
     - apartments
-    - farm
-    - hotel
-    - house
-    - detached
-    - residential
-    - dormitory
-    - terrace
-    - houseboat
-    - bungalow
-    - static_caravan
-    - commercial
-    - office
-    - industrial
-    - retail
-    - warehouse
-    - kiosk
     - bakehouse
-    - cathedral
-    - chapel
-    - church
-    - kindergarten
-    - mosque
-    - temple
-    - synagogue
-    - shrine
-    - civic
-    - hospital
-    - school
-    - stadium
-    - train_station
-    - transportation
-    - university
-    - grandstand
-    - public
     - barn
     - bridge
+    - bungalow
     - bunker
     - cabin
     - carport
+    - cathedral
+    - chapel
+    - church
+    - civic
+    - commercial
     - conservatory
     - construction
     - cowshed
+    - detached
     - digester
+    - dormitory
+    - farm
     - farm_auxiliary
     - garage
     - garages
     - garbage_shed
+    - grandstand
     - greenhouse
     - hangar
+    - hospital
+    - hotel
+    - house
+    - houseboat
     - hut
-    - pavilion
+    - industrial
+    - kindergarten
+    - kiosk
+    - mosque
+    - office
     - parking
+    - pavilion
+    - public
+    - residential
+    - retail
     - riding_hall
     - roof
-    - shed
-    - stable
-    - sty
-    - transformer_tower
-    - service
     - ruins
+    - school
+    - service
+    - shed
+    - shrine
+    - stable
+    - stadium
+    - static_caravan
+    - sty
+    - synagogue
+    - temple
+    - terrace
+    - train_station
+    - transformer_tower
+    - transportation
+    - university
+    - warehouse
     - water_tower
   type: string
   x-ngsi: 

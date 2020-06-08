@@ -225,22 +225,37 @@ Device:
 
 
 SupportedProtocol: 
-  description: "URN holding the id of the attribute"
+  description: >
+      -   `3g`
+      -   `cat-m`
+      -   `ec-gsm-iot`
+      -   `grps`
+      -   `http`
+      -   `lora`
+      -   `lte-m`
+      -   `lwm2m`
+      -   `mqtt`
+      -   `nb-iot`
+      -   `onem2m`
+      -   `sigfox`
+      -   `ul20`
+      -   `websocket`
+
   enum: 
-    - ul20
-    - mqtt
-    - lwm2m
+    - 3g
+    - cat-m
+    - ec-gsm-iot
+    - grps
     - http
-    - websocket
+    - lora
+    - lte-m
+    - lwm2m
+    - mqtt
+    - nb-iot
     - onem2m
     - sigfox
-    - lora
-    - nb-iot
-    - ec-gsm-iot
-    - lte-m
-    - cat-m
-    - 3g
-    - grps
+    - ul20
+    - websocket
   type: string
   x-ngsi: 
     uri-prefix: "https://uri.fiware.org/ns/data-models#"
