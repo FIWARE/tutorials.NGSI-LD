@@ -29,7 +29,18 @@ choose which enablers are of interest to you.
 
 ## Prerequisites
 
-### Docker and Docker Compose <img src="https://www.docker.com/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
+### Swagger <img src="https://static1.smartbear.co/swagger/media/assets/swagger_fav.png" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
+
+The OpenAPI Specification (commonly known as Swagger) is an API description format for REST APIs. A Swaggger spec allows
+you to describe an entire API (such as NGSI-LD itself) however in this tutorial we shall be concentrating on using
+Swagger to define data models.
+
+API specifications can be written in YAML or JSON. The format is easy to learn and readable to both humans and machines.
+The complete OpenAPI Specification can be found on GitHub:
+[OpenAPI 3.0 Specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md). This is
+important since we will need a well defined structure to be able to generate `@context` files.
+
+### Docker and Docker Compose <img src="https://www.docker.com/favicon.ico" align="left"  height="36" width="36" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
 To keep things simple all components will be run using [Docker](https://www.docker.com). **Docker** is a container
 technology which allows to different components isolated into their respective environments.
@@ -95,5 +106,5 @@ Scala code into a JAR file.
 These first tutorials are an introduction to the FIWARE Context Broker, and are an essential first step when learning to
 use FIWARE
 
-&nbsp; 101. [Getting Started](getting-started.md)<br/>
+&nbsp; 101. [Understanding @context](understanding-@context.md)<br/>
 

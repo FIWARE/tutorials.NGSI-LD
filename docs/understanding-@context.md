@@ -1,646 +1,663 @@
 [![FIWARE Core Context Management](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/core.svg)](https://github.com/FIWARE/catalogue/blob/master/core/README.md)
 [![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.01.01_60/gs_CIM009v010101p.pdf)
-[![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/)
+[![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/) <br/>
 
-**Description:** This is an Introductory Tutorial to the FIWARE Platform. We will start with the data from a supermarket
-chain’s store finder and create a very simple _“Powered by FIWARE”_ application by passing in the address and location
-of each store as context data to the FIWARE context broker.
+**Description** This tutorial introduces basics of common Linked Data concepts and Data Models for **NGSI-LD** developers. The aim is to
+design and create a simple interoperable Smart Agricultural Solution from scratch and explain how to apply these
+concepts to your own smart solutions.
 
-The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
-[Postman documentation](https://fiware.github.io/tutorials.Getting-Started/)
+Unlike the previous [tutorials series](http://fiware-tutorials.rtfd.io/), this series will take an **NGSI-LD** first
+approach and therefore starts with reiterating the fundamentals of Linked Data and its application to the **NGSI-LD**
+interface.
 
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/d6671a59a7e892629d2b)
+The tutorial is mainly concerned with online and command-line tooling.
 
-<hr class="core"/>
 
-# Architecture
+# Understanding `@context`
 
-Our demo application will only make use of one FIWARE component - the
-[Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/). Usage of the Orion Context Broker (with proper
-context data flowing through it) is sufficient for an application to qualify as _“Powered by FIWARE”_.
+Creating an interoperable system of readable links for computers requires the use of a well defined data format
+([JSON-LD](http://json-ld.org/)) and assignation of unique IDs
+([URLs or URNs](https://stackoverflow.com/questions/4913343/what-is-the-difference-between-uri-url-and-urn)) for both
+data entities and the relationships between entities so that semantic meaning can be programmatically retrieved from the
+data itself. Futhermore the use and creation of thesse unique IDs should, as far as possible, be passed around so as not
+get in the way of the processing the data objects themselves.
 
-Currently, the Orion Context Broker relies on open source [MongoDB](https://www.mongodb.com/) technology to keep
-persistence of the context data it holds. Therefore, the architecture will consist of two elements:
+An attempt to solve this interoperablity problem has been made within the JSON domain, and this has been done by adding
+an `@context` element to existing JSON data structures. This has led to the creation of the **JSON-LD** standard.
 
--   The [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests using
-    [NGSI-v2](https://fiware.github.io/specifications/OpenAPI/ngsiv2)
--   The underlying [MongoDB](https://www.mongodb.com/) database :
-    -   Used by the Orion Context Broker to hold context data information such as data entities, subscriptions and
-        registrations
+The main takeaway from **JSON-LD**, is that a remote context file and the **JSON-LD**
+[`@context` definition](https://w3c.github.io/json-ld-syntax/#the-context) can be used to assign unique long URNs for
+every defined attribute. Developers are then free to use their own regular short attribute names within their own
+applications, converting from URIs to preferred shortnames though the application of Expansion and Compaction
+operations.
 
-Since all interactions between the two services are initiated by HTTP requests, the services can be containerized and
-run from exposed ports.
+**NGSI-LD** is a formally structured _extended subset_ of **JSON-LD**. To promote interoperability, the **NGSI-LD** API
+is defined using the **JSON-LD** specification and therefore a thorough knowledge of **JSON-LD** and in particular
+`@context` files is fundamental to the use **NGSI-LD**.
 
-![](https://fiware.github.io/tutorials.Getting-Started/img/architecture.png)
+## What is JSON-LD?
 
-## Prerequisites
+**JSON-LD** is an extension of JSON , it is a standard way of avoiding ambiguity when expressing linked data in JSON so
+that the data is structured in a format which is parsable by machines. It is a method of ensuring that all data
+attributes can be easily compared when coming from a multitude of separate data sources, which could have a different
+idea as to what each attribute means. For example, when two data entities have a `name` attribute how can the computer
+be certain that is refers to a _"Name of a thing"_ in the same sense (rather than a **Username** or a **Surname** or
+something). URLs and data models are used to remove ambiguity by allowing attributes to have a both short form (such as
+`name`) and a fully specified long form (such `http://schema.org/name`) which means it is easy to discover which
+attribute have a common meaning within a data structure.
 
-### Docker
+JSON-LD introduces the concept of the `@context` element which provides additional information allowing the computer to
+interpret the rest of the data with more clarity and depth.
 
-To keep things simple both components will be run using [Docker](https://www.docker.com). **Docker** is a container
-technology which allows to different components isolated into their respective environments.
+Furthermore the JSON-LD specification enables you to define a unique `@type` associating a well-defined
+[data model](https://fiware-datamodels.readthedocs.io/en/latest/guidelines/index.html) to the data itself.
 
--   To install Docker on Windows follow the instructions [here](https://docs.docker.com/docker-for-windows/)
--   To install Docker on Mac follow the instructions [here](https://docs.docker.com/docker-for-mac/)
--   To install Docker on Linux follow the instructions [here](https://docs.docker.com/install/)
+### Video: What is Linked Data?
 
-### Docker Compose (Optional)
+[![](https://fiware.github.io/tutorials.NGSI-LD/img/video-logo.png)](https://www.youtube.com/watch?v=4x_xzT5eF5Q "Introduction")
 
-**Docker Compose** is a tool for defining and running multi-container Docker applications. A
-[YAML file](https://raw.githubusercontent.com/Fiware/tutorials.Getting-Started/master/docker-compose.yml) is used
-configure the required services for the application. This means all container services can be brought up in a single
-command. Docker Compose is installed by default as part of Docker for Windows and Docker for Mac, however Linux users
-will need to follow the instructions found [here](https://docs.docker.com/compose/install/)
+Click on the image above to watch an introductory video on linked data concepts
 
-## Starting the containers
+### Video: What is JSON-LD?
 
-### Option 1) Using Docker commands directly
+[![](https://fiware.github.io/tutorials.NGSI-LD/img/video-logo.png)](https://www.youtube.com/watch?v=vioCbTo3C-4 "JSON-LD")
 
-First pull the necessary Docker images from Docker Hub and create a network for our containers to connect to:
+Click on the image above to watch a video describing the basic concepts behind JSON-LD.
 
-```bash
-docker pull mongo:3.6
-docker pull fiware/orion
-docker network create fiware_default
-```
 
-A Docker container running a [MongoDB](https://www.mongodb.com/) database can be started and connected to the network
-with the following command:
 
-```bash
-docker run -d --name=mongo-db --network=fiware_default \
-  --expose=27017 mongo:3.6 --bind_ip_all --smallfiles
-```
+# Start Up
 
-The Orion Context Broker can be started and connected to the network with the following command:
+In order to initialize the generator tool run:
 
 ```bash
-docker run -d --name fiware-orion -h orion --network=fiware_default \
-  -p 1026:1026  fiware/orion -dbhost mongo-db
+./services create
 ```
 
-> **Note:** If you want to clean up and start again you can do so with the following commands
->
-> ```
-> docker stop fiware-orion
-> docker rm fiware-orion
-> docker stop mongo-db
-> docker rm mongo-db
-> docker network rm fiware_default
-> ```
+# Creating NGSI-LD Data Models
 
-### Option 2) Using Docker Compose
+Within the FIWARE platform, every entity represents the state of a physical or conceptural object. Each entity provides
+the digital twin of an object which exists in the real world.
 
-All services can be initialised from the command-line using the `docker-compose` command. Please clone the repository
-and create the necessary images by running the commands as shown:
+Although the each data entity within your context will vary according to your use case, the common structure within each
+data entity should be standardized order to promote reuse. The Fundamentals for FIWARE Data Model design do not change.
+Typically each entiy will consist of an **id**, a **type**, a series of **Property** atttributes representing context
+data which changes over time and a series of **Relationship** atttributes which represent connections between existing
+entities.
 
-```bash
-git clone https://github.com/FIWARE/tutorials.Getting-Started.git
-cd tutorials.Getting-Started
+It is perhaps best to illustrate this using an example. The Underlying Data Models can be created using many different
+tools, however this example will use Swagger [schema](https://swagger.io/docs/specification/data-models/) objects
+defined using the [Open API 3](https://swagger.io/docs/specification/about/) Standard. The examples are valid Swagger
+specifications, but in reality, we are not interested in defining in paths and operations, as these are already defined
+using the
+[NGSI-LD API](https://swagger.lab.fiware.org/?url=https://fiware.github.io/tutorials.NGSI-LD/swagger/ngsi-ld.yaml)
 
-docker-compose -p fiware up -d
-```
+<h4>The Scenario</h4>
 
-> **Note:** If you want to clean up and start again you can do so with the following command:
->
-> ```
-> docker-compose -p fiware down
-> ```
+Consider the following Smart Agricultural Scenario:
 
-## Creating your first "Powered by FIWARE" app
+> _Imagine a farmer owns a barn. The barn contains two IoT devices - a temperature sensor and a filling level sensor
+> indicating how much hay is currently stored in the barn_
 
-### Checking the service health
+This example can be split down into the following Entities:
 
-You can check if the Orion Context Broker is running by making an HTTP request to the exposed port:
+-   **Building**: The barn
+-   **Person**: The farmer
+-   **IoT Devices**:
+    -   Temperature Senor
+    -   Filling Level Sensor
 
-#### 1 Request:
+## Baseline Data Models
 
-```bash
-curl -X GET \
-  'http://localhost:1026/version'
-```
+When architecting your Smart System, it is unnecessary to start from scratch, so the first step is to check to see if
+there are any existing NGSI-LD data models which are capable of describing your system. As it happens, there are
+existing [Smart Data Models](https://www.fiware.org/developers/smart-data-models/) for both **Building** and **Device**,
+so it is possible to check if these will fulfill our needs:
 
-#### Response:
+![](https://fiware.github.io/tutorials.Understanding-At-Context/img/swagger.png)
 
-The response will look similar to the following:
+-   The **Building** Data Model can be inspected
+    [here](https://swagger.lab.fiware.org/?url=https://fiware.github.io/tutorials.NGSI-LD/swagger/building.yaml)
+-   The **Device** Data Model can be inspected
+    [here](https://swagger.lab.fiware.org/?url=https://fiware.github.io/tutorials.NGSI-LD/swagger/device.yaml)
+
+Many common concepts such as **Person** or **Product** have been formalized by [Schema.org](https://schema.org/), which
+is a collaborative community activity for promoting schemas for structured data on the Internet. The schema.org
+[Person](https://schema.org/Person) can be described using a JSON-LD schema, and may be co-opted as an NGSI-LD data
+model.
+
+-   The **Person** Data Model can be inspected
+    [here](https://swagger.lab.fiware.org/?url=https://fiware.github.io/tutorials.NGSI-LD/swagger/person.yaml)
+
+It should be noted that definitions of the models examined so far are very general and will need further modifications
+to be of use in a working system, however using these models as the basis of interoperability will ensure that the
+resulting `@context` file will be understandable to the widest number of systems.
+
+## Amending Models
+
+The base data models are useful as a starting point but some enumerated values or attributes will be redundant other
+required fields will be missing. The base models will therefore need to be modified to create proper digital twins
+specific to the scenario we are modelling
+
+### Removing Redundant Items
+
+Many attributes within data models are optional, and not all options will be valid for our scenario. Take for example,
+the `category` attribute within the **Building** model - this offers over 60 types of building useful in multiple
+domains such as Smart Cities and Smart Agriculture, it is therefore safe to exclude certain options from our own
+`@context` file since they are unlikely to be used. For example a **Building** categorised as `cathedral` is unlikely to
+be found on a farm.
+
+It is logical to remove bloat before committing to using a particular model as it will help reduce the size of payloads
+used.
+
+### Extending
+
+Looking at the **Building** model, it is obvious that we will need a **Building** entity of `category="barn"`, however
+the base **Building** model does not offer additional attributes such as `temperature` or `fillingLevel` - these would
+need to be added to the base **Building** so that the context broker is able to hold the _context_ - i.e. the current
+state of the building.
+
+Many types of device reading (i.e. context data attributes) have been predefined within the
+[SAREF ontology](https://ontology.tno.nl/saref/) - so it is reasonable to use the URIs defining these attributes as a
+basis of extending our model.
+
+-   `temperature` (`https://w3id.org/saref#temperature`)
+-   `fillingLevel` (`https://w3id.org/saref#fillingLevel`)
+
+Many measurement attributes are defined within the [SAREF](https://ontology.tno.nl/saref/) ontology, but other
+ontologies could equally be used. For example, the
+[iotschema.org schema](https://github.com/iot-schema-collab/iotschema/blob/master/capability.jsonld) contains equivalent
+term URIs like `http://iotschema.org/temperature` which could also be used here, the additional data can be added to the
+`@graph` to show the equivalence of the two using Simple Knowledge Organization System terms
+[SKOS](https://www.w3.org/2009/08/skos-reference/skos.html#).
+
+### Adding metadata
+
+The key goal in designing NGSI-LD data models (as opposed to a generic hierarchy of ontologies), is that wherever
+posssible, every _Property_ attribute of a model represents the context data for a digital twin of something tangible in
+the real world.
+
+This formulation discourages deep nested hierarchies. A **Building** has a **temperature**, a **Building** has a
+**fillingLevel** - anything else is defined as a _Relationship_ - a **Building** has an **owner** which links the
+**Building** entity to a separate **Person** entity.
+
+However just holding the values of properties is insufficient. Saying that `temperature=6` is meaningless unless you
+also obtain certain meta data, such as _When was the reading taken?_ _Which device made the reading?_ _What units is it
+measured in?_ _How accurate is the device?_ and so on.
+
+Therefore supplementary metadata items will be necessary to ensure that the context data is understandable. This will
+mean we will need things such as:
+
+-   The Units of measurement
+-   Which sensor provided the measurement
+-   When was the measurement taken
+-   and so on.
 
 ```json
 {
-    "orion": {
-        "version": "1.12.0-next",
-        "uptime": "0 d, 0 h, 3 m, 21 s",
-        "git_hash": "e2ff1a8d9515ade24cf8d4b90d27af7a616c7725",
-        "compile_time": "Wed Apr 4 19:08:02 UTC 2018",
-        "compiled_by": "root",
-        "compiled_in": "2f4a69bdc191",
-        "release_date": "Wed Apr 4 19:08:02 UTC 2018",
-        "doc": "https://fiware-orion.readthedocs.org/en/master/"
+    "temperature" : 30,
+    "unitCode" : "CEL",
+    "providedBy": "urn:ngsi-ld:TemperatureSensor:001",
+    "observedAt" :"2016-03-15T11:00:00.000"
+},
+{
+    "fillingLevel" : 0.5,
+    "unitCode" : "CEL",
+    "providedBy": "urn:ngsi-ld:FillingSensor:001",
+    "observedAt" :"2016-03-15T11:00:00.000"
+}
+```
+
+Each one of these attributes has a name, and therefore requires a definition within the `@context`. Fortunately most of
+these are predefined in the core NGSI-LD specification:
+
+-   `unitCode` is specified from a common list such as the UN/CEFACT
+    [List of measurement codes](https://www.unece.org/fileadmin/DAM/cefact/recommendations/rec20/rec20_rev3_Annex3e.pdf)
+-   `observedAt` is a DateTime a well-defined temporal property expressed in UTC, using the ISO 8601 format.
+-   `providedBy` is an example recommendation within the NGSI-LD specification.
+
+### Subclassing
+
+As well as extending models by adding new attributes, it is also posssible to extend models by subclassing. Looking at
+the **Device** model, it can be seen that whereas common definitions useful to all IoT device such as `batteryLevel` are
+defined in the model, there are no additional attributes within the model explaining which readings are being made.
+
+It would be possible to continue to use the **Device** model and to add both `temperature` and `fillingLevel`, but it is
+highly unlikely that a filling sensor would also provide temperatures and vice-versa. In this case, it is therefore
+preferred to create a new subclass so that temperature sensors can be considered a different type of entity to filling
+sensors.
+
+## Using Swagger to extend the Baseline data models
+
+### Initial Baseline data models
+
+The following models are defined within the Smart Data Models domain.
+
+```yaml
+components:
+    schemas:
+        # This is the base definition of a building
+        Building:
+            $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/building.yaml#/Building"
+        # This is all of the defined building categories within
+        # within the Smart Cities and Smart AgriFood domain
+        BuildingCategory:
+            $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/building.yaml#/Categories"
+
+        # This is a base definition of an IoT Device
+        Device:
+            $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/device.yaml#/Device"
+        # This is the full list of IoT Device Categories
+        DeviceCategory:
+            $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/saref-terms.yaml#/Categories"
+        # This is a full list of context attributes measurable by devices
+        ControlledProperties:
+            $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/saref-terms.yaml#/ControlledProperties"
+
+        # This is an NGSI-LD defintion of a person.
+        # Since the schema.org Person ig JSON-LD,
+        # additional type and id attreibutes are require
+        Person:
+            allOf:
+                - $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/ngsi-ld.yaml#/Common"
+                - $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/schema.org.yaml#/Person"
+```
+
+![](https://fiware.github.io/tutorials.Understanding-At-Context/img/baseline.png)
+
+The baseline Data Model can be inspected
+[here](https://swagger.lab.fiware.org/?url=https://raw.githubusercontent.com/FIWARE/tutorials.Understanding-At-Context/master/baseline.yaml).
+
+The source file for the Baseline Date Models, `baseline.yaml` can be found
+[here](https://raw.githubusercontent.com/FIWARE/tutorials.Understanding-At-Context/master/baseline.yaml).
+
+### Updated Data models
+
+1. **Building** must be updated to accommodate `temperature` and `fillingLevel`. Both of these properties have been
+   defined within SAREF terms.
+
+```yaml
+Building:
+    allOf:
+        - $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/building.yaml#/Building"
+
+    properties:
+        temperature:
+            $ref: https://fiware.github.io/tutorials.NGSI-LD/models/saref-terms.yaml#/temperature
+        fillingLevel:
+            $ref: https://fiware.github.io/tutorials.NGSI-LD/models/saref-terms.yaml#/fillingLevel
+```
+
+2.  The list of defined building categories can be reduced to items found within the Agricultural domain (e.g. `barn`,
+    `cowshed`, `farm`, `farm_auxiliary`, `greenhouse`, `riding_hall`, `shed`, `stable`, `sty`, `water_tower`)
+
+3.  The base Device can be removed and replaced with two new models which extend it - `TemperatureSensor` and
+    `FillingLevelSensor`. Once again these add additional SAREF terms to the base `Device` class.
+
+```yaml
+TemperatureSensor:
+    type: object
+    required:
+        - temperature
+    allOf:
+        - $ref: https://fiware.github.io/tutorials.NGSI-LD/models/device.yaml#/Device
+    properties:
+        temperature:
+            $ref: https://fiware.github.io/tutorials.NGSI-LD/models/saref-terms.yaml#/temperature
+```
+
+```yaml
+FillingLevelSensor:
+    type: object
+    required:
+        - FillingLevelSensor
+    allOf:
+        - $ref: https://fiware.github.io/tutorials.NGSI-LD/models/device.yaml#/Device
+    properties:
+        fillingLevel:
+            $ref: https://fiware.github.io/tutorials.NGSI-LD/models/saref-terms.yaml#/fillingLevel
+```
+
+4. The list of controlled attributes can be reduced to those measured by Agricultural devices (e.g `airPollution`,
+   `atmosphericPressure`, `depth`, `eatingActivity`, `fillingLevel`, `humidity`, `location`, `milking`, `motion`,
+   `movementActivity`, `occupancy`, `precipitation`, `pressure`, `soilMoisture`, `solarRadiation`, `temperature`,
+   `waterConsumption`, `weatherConditions`, `weight`, `windDirection`, `windSpeed`)
+
+5. The other definitions remain unchanged.
+
+![](https://fiware.github.io/tutorials.Understanding-At-Context/img/updated.png)
+
+The updated Data Models for an Agricultural Smart System can be inspected
+[here](https://swagger.lab.fiware.org/?url=https://raw.githubusercontent.com/FIWARE/tutorials.Understanding-At-Context/master/agriculture.yaml).
+
+The raw source file `agriculture.yaml` can be found
+[here](https://raw.githubusercontent.com/FIWARE/tutorials.Understanding-At-Context/master/agriculture.yaml)
+
+## Autogenerating `@Context` Files from Swagger
+
+Every working linked data system relies on `@context` files to supply the relevant information about the data. Creating
+such files by hand is a tedious and error prone procedure, so it makes sense to automate the process. The required
+structure will depend on the operations involved.
+
+This tutorial will take the Agricultural Smart System data model file `agriculture.yaml` and autogenerate alternatives
+for use by other agents.
+
+> A deeper understanding can be obtained by runnning this tutorial with a more advanced example, the equivalent
+> [Data Models](https://swagger.lab.fiware.org/?url=https://raw.githubusercontent.com/FIWARE/tutorials.Understanding-At-Context/master/agriculture.yaml)
+> from the [Supermarket Scenario](https://fiware.github.io/tutorials.Step-by-Step/schema/en/) have also been added to
+> this tutorial. The raw `supermarket.yaml` file is available
+> [here](https://raw.githubusercontent.com/FIWARE/tutorials.Understanding-At-Context/master/agriculture.yaml)
+
+### Validating a Swagger Data Models
+
+It is necessary to check that the model is valid before processing, this can be done by viewing it online or by using a
+simple validator tool.
+
+```bash
+./services validate [file]
+```
+
+#### Terminal - Result:
+
+```text
+The API is valid
+```
+
+The underlying file(s) are a valid [Swagger definition](https://swagger.io/docs/specification/about/) which ensures that
+the tool can be used to extract attributes and enumerations as necessary.
+
+### Generating an NGSI-LD `@context` file
+
+The NGSI-LD `@context` needs to hold defined URIs for the following:
+
+-   The defined entity `types` within the system
+-   The names of all the attributes from within the defined Data Models
+-   The names of all the metadata attribute from within the Data Models
+-   The enumerated values of any constants used within the Data Models.
+
+An NGSI-LD `@context` file can be generated from a Swagger data model as follows:
+
+```bash
+./services ngsi [file]
+```
+
+#### Terminal - Result:
+
+```text
+Creating a NGSI-LD @context file for normalized interactions
+datamodels.context-ngsi.jsonld created
+```
+
+Opening the generated file, the following structure can be found:
+
+```json
+{
+    "@context": {
+        "type": "@type",
+        "id": "@id",
+        "ngsi-ld": "https://uri.etsi.org/ngsi-ld/",
+        "fiware": "https://uri.fiware.org/ns/data-models#",
+        "schema": "https://schema.org/",
+ ...etc
+        "Building": "fiware:Building",
+        "FillingLevelSensor": "fiware:FillingLevelSensor",
+        "Person": "fiware:Person",
+        "TemperatureSensor": "fiware:TemperatureSensor",
+ ... etc
+        "actuator": "https://w3id.org/saref#actuator",
+        "additionalName": "schema:additionalName",
+        "address": "schema:address",
+        "airPollution": "https://w3id.org/saref#airPollution",
+        "atmosphericPressure": "https://w3id.org/saref#atmosphericPressure",
+        "barn": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn",
+        "batteryLevel": "fiware:batteryLevel",
+        "category": "fiware:category",
+        "configuration": "fiware:configuration",
+        "conservatory": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dconservatory",
+        "containedInPlace": "fiware:containedInPlace",
+        "controlledAsset": "fiware:controlledAsset",
+        "controlledProperty": "fiware:controlledProperty",
+        "cowshed": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dcowshed",
+...etc
     }
 }
 ```
 
-> **What if I get a `Failed to connect to localhost port 1026: Connection refused` Response?**
->
-> If you get a `Connection refused` response, the Orion Content Broker cannot be found where expected for this
-> tutorial - you will need to substitute the URL and port in each cUrl command with the corrected IP address. All the
-> cUrl commands tutorial assume that orion is available on `localhost:1026`.
->
-> Try the following remedies:
->
-> -   To check that the docker containers are running try the following:
->
-> ```
-> docker ps
-> ```
->
-> You should see two containers running. If orion is not running, you can restart the containers as necessary. This
-> command will also display open port information.
->
-> -   If you have installed [`docker-machine`](https://docs.docker.com/machine/) and
->     [Virtual Box](https://www.virtualbox.org/), the orion docker container may be running from another IP address -
->     you will need to retrieve the virtual host IP as shown:
->
-> ```
-> curl -X GET \
->  'http://$(docker-machine ip default):1026/version'
-> ```
->
-> Alternatively run all your cUrl commands from within the container network:
->
-> ```
-> docker run --network fiware_default --rm appropriate/curl -s \
->  -X GET 'http://orion:1026/version'
-> ```
+The resultant `@context` file is a valid [JSON-LD](https://w3c.github.io/json-ld-syntax/) Context file usable by NGSI-LD
+applications. The file is structured into three parts:
 
-## Creating Context Data
+-   A list of standard terms and abbreviations - this avoids the necessity of repeating URIs and reduced the overall
+    size of the file
+-   A series of defined entity types (e.g. `Building`). These usually start with a capital letter.
+-   A list of attributes (e.g. `address`) and enumerations (e.g. `barn`)
 
-At its heart, FIWARE is a system for managing context information, so lets add some context data into the system by
-creating two new entities (stores in **Berlin**). Any entity must have a `id` and `type` attributes, additional
-attributes are optional and will depend on the system being described. Each additional attribute should also have a
-defined `type` and a `value` attribute.
+Effectively this NGSI-LD `@context` can be combined with a copy of the NGSI-LD core context
+[https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld)
+to mechanically define the following:
 
-#### 2 Request:
+If a computer encounters an entity of `type=Building` this really refers to a
+`https://uri.fiware.org/ns/data-models#Building`
 
-```bash
-curl -iX POST \
-  'http://localhost:1026/v2/entities' \
-  -H 'Content-Type: application/json' \
-  -d '
-{
-    "id": "urn:ngsi-ld:Store:001",
-    "type": "Store",
-    "address": {
-        "type": "PostalAddress",
-        "value": {
-            "streetAddress": "Bornholmer Straße 65",
-            "addressRegion": "Berlin",
-            "addressLocality": "Prenzlauer Berg",
-            "postalCode": "10439"
-        },
-        "metadata": {
-            "verified": {
-                "value": true,
-                "type": "Boolean"
-            }
-        }
-    },
-    "location": {
-        "type": "geo:json",
-        "value": {
-             "type": "Point",
-             "coordinates": [13.3986, 52.5547]
-        }
-    },
-    "name": {
-        "type": "Text",
-        "value": "Bösebrücke Einkauf"
-    }
-}'
-```
+From the definition of a **Building** we know it has a mandatory `category` and `address`.
 
-#### 3 Request:
+If a computer encounters an `address` attribute, this really refers to a `https://schema.org/address` (which in turn has
+well defined subattrributes)
 
-Each subsequent entity must have a unique `id` for the given `type`
+If a computer encounters a `category=barn` then it should be possible to accertain that this `category` can be
+identified as a `https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn`. Note that `category` itself is also well
+defined.
 
-```bash
-curl -iX POST \
-  'http://localhost:1026/v2/entities' \
-  -H 'Content-Type: application/json' \
-  -d '
-{
-    "type": "Store",
-    "id": "urn:ngsi-ld:Store:002",
-    "address": {
-        "type": "PostalAddress",
-        "value": {
-            "streetAddress": "Friedrichstraße 44",
-            "addressRegion": "Berlin",
-            "addressLocality": "Kreuzberg",
-            "postalCode": "10969"
-        },
-        "metadata": {
-            "verified": {
-                "value": true,
-                "type": "Boolean"
-            }
-        }
-    },
-    "location": {
-        "type": "geo:json",
-        "value": {
-             "type": "Point",
-             "coordinates": [13.3903, 52.5075]
-        }
-    },
-    "name": {
-        "type": "Text",
-        "value": "Checkpoint Markt"
-    }
-}'
-```
+NGSI-LD `@context`s are used for all NGSI-LD CRUD operations, and are required when sending or receiving NGSI-LD data in
+the default _normalized_ format. The _normalized_ format includes a structure of attributes each with its own `type` and
+`value`
 
-### Data Model Guidelines
-
-Although the each data entity within your context will vary according to your use case, the common structure within each
-data entity should be standardized order to promote reuse. The full FIWARE data model guidelines can be found
-[here](https://fiware-datamodels.readthedocs.io/en/latest/guidelines/index.html). This tutorial demonstrates the usage
-of the following recommendations:
-
-#### All terms are defined in American English
-
-Although the `value` fields of the context data may be in any language, all attributes and types are written using the
-English language.
-
-#### Entity type names must start with a Capital letter
-
-In this case we only have one entity type - **Store**
-
-#### Entity IDs should be a URN following NGSI-LD guidelines
-
-NGSI-LD has recently been published as a full ETSI
-[specification](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.01.01_60/gs_CIM009v010101p.pdf), the proposal is
-that each `id` is a URN follows a standard format: `urn:ngsi-ld:<entity-type>:<entity-id>`. This will mean that every
-`id` in the system will be unique
-
-#### Data type names should reuse schema.org data types where possible
-
-[Schema.org](http://schema.org/) is an initiative to create common structured data schemas. In order to promote reuse we
-have deliberately used the [`Text`](http://schema.org/PostalAddress) and
-[`PostalAddress`](http://schema.org/PostalAddress) type names within our **Store** entity. Other existing standards such
-as [Open311](http://www.open311.org/) (for civic issue tracking) or [Datex II](https://datex2.eu/) (for transport
-systems) can also be used, but the point is to check for the existence of the same attribute on existing data models and
-reuse it.
-
-#### Use camel case syntax for attribute names
-
-The `streetAddress`, `addressRegion`, `addressLocality` and `postalCode` are all examples of attributes using camel
-casing
-
-#### Location information should be defined using `address` and `location` attributes
-
--   We have used an `address` attribute for civic locations as per [schema.org](http://schema.org/)
--   We have used a `location` attribute for geographical coordinates.
-
-#### Use GeoJSON for codifying geospatial properties
-
-[GeoJSON](http://geojson.org) is an open standard format designed for representing simple geographical features. The
-`location` attribute has been encoded as a geoJSON `Point` location.
-
-### Attribute Metadata
-
-Metadata is _"data about data"_, it is additional data to describe properties of the attribute value itself like
-accuracy, provider, or a timestamp. Several built-in metadata attribute already exist and these names are reserved
-
--   `dateCreated` (type: DateTime): attribute creation date as an ISO 8601 string.
--   `dateModified` (type: DateTime): attribute modification date as an ISO 8601 string.
--   `previousValue` (type: any): only in notifications. The value of this
--   `actionType` (type: Text): only in notifications.
-
-One element of metadata can be found within the `address` attribute. a `verified` flag indicates whether the address has
-been confirmed.
-
-## Querying Context Data
-
-A consuming application can now request context data by making HTTP requests to the Orion Context Broker. The existing
-NGSI interface enables us to make complex queries and filter results.
-
-At the moment, for the store finder demo all the context data is being added directly via HTTP requests, however in a
-more complex smart solution, the Orion Context Broker will also retrieve context directly from attached sensors
-associated to each entity.
-
-Here are a few examples, in each case the `options=keyValues` query parameter has been used shorten the responses by
-stripping out the type elements from each attribute
-
-### Obtain entity data by ID
-
-This example returns the data of `urn:ngsi-ld:Store:001`
-
-#### 4 Request:
-
-```bash
-curl -G -X GET \
-   'http://localhost:1026/v2/entities/urn:ngsi-ld:Store:001' \
-   -d 'options=keyValues'
-```
-
-#### Response:
-
-Because of the use of the `options=keyValues`, the response consists of JSON only without the attribute `type` and
-`metadata` elements.
+For example this is a `Building` in _normalized_ NGSI-LD format:
 
 ```json
 {
-    "id": "urn:ngsi-ld:Store:001",
-    "type": "Store",
+    "id": "urn:ngsi-ld:Building:001",
+    "type": "Building",
+    "category": {
+        "type": "Property",
+        "value": "barn"
+    },
     "address": {
-        "streetAddress": "Bornholmer Straße 65",
+        "type": "Property",
+        "value": {
+            "streetAddress": "Großer Stern",
+            "addressRegion": "Berlin",
+            "addressLocality": "Tiergarten",
+            "postalCode": "10557"
+        }
+    },
+    "location": {
+        "type": "GeoProperty",
+        "value": {
+             "type": "Point",
+             "coordinates": [13.35, 52.5144]
+        }
+    },
+    "name": {
+        "type": "Property",
+        "value": "Siegessäule Barn"
+    },
+    "@context": [
+        "https://example.com/data-models.context-ngsild.jsonld",
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
+    ]
+}
+```
+
+The core context file defines the base structure of the NGSI-LD API payload (things like `type`, `value` and GeoJSON
+`Point`) whereas the _generated_ NGSI-LD context for the application itself defines the entities (`Building`) and
+`attributes` without defining a payloaf structure.
+
+### Generating a JSON-LD `@context` file
+
+The JSON-LD `@context` differs from the NGSI-LD `@context` file as it is standalone and does not use the core context
+definitions and does not specify metadata attribute definitions such as _properties-of-properties_. It is used in
+combination with the simplified NSGI-LD key-values pairs payloads.
+
+The JSON-LD requires the following:
+
+-   The names of all the attributes from within the defined Data Models
+-   The enumerated values of any constants used within the Data Models.
+
+Additionally a JSON-LD `@context` may also include supplimentary information (such as _This attribute is an integer_)
+and, within the `@graph` definition, information about the relationships between nodes (_This attribute is a link to a
+**Person** entity_ ) as well as human readable information about the attributes themselves (_A barn is an agricultural
+building used for storage_) may be returned.
+
+An JSON-LD `@context` file can be generated from a Swagger data model as follows:
+
+```bash
+./services jsonld [file]
+```
+
+#### Terminal - Result:
+
+```text
+Creating a JSON-LD @context file for key-values interactions
+datamodels.context.jsonld created
+```
+
+Opening the generated file, the following structure can be found:
+
+```json
+{
+    "@context": {
+        "type": "@type",
+        "id": "@id",
+        "ngsi-ld": "https://uri.etsi.org/ngsi-ld/",
+        "fiware": "https://uri.fiware.org/ns/data-models#",
+        "schema": "https://schema.org/",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+...  etc
+        "Building": "fiware:Building",
+        "FillingLevelSensor": "fiware:FillingLevelSensor",
+... etc
+        "actuator": "https://w3id.org/saref#actuator",
+        "additionalName": {
+            "@id": "schema:additionalName",
+            "@type": "xsd:string"
+        },
+        "address": "schema:address",
+        "airPollution": "https://w3id.org/saref#airPollution",
+        "atmosphericPressure": "https://w3id.org/saref#atmosphericPressure",
+        "barn": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn",
+        "controlledAsset": {
+            "@id": "fiware:controlledAsset",
+            "@type": "@id"
+        },
+... etc
+    },
+    "@graph": [
+...etc
+        {
+            "@id": "fiware:fillingLevel",
+            "@type": "ngsi-ld:Property",
+            "rdfs:comment": [
+                {
+                    "@language": "en",
+                    "@value": "Property related to some measurements that are characterized by a certain value that is a filling level."
+                }
+            ],
+            "rdfs:label": [
+                {
+                    "@language": "en",
+                    "@value": "fillingLevel"
+                }
+            ]
+        }
+    ]
+}
+```
+
+Once again the resultant `@context` file is a valid [JSON-LD](https://w3c.github.io/json-ld-syntax/), this time however
+it has been designed to be used by any application that understands generic JSON-LD applications. The file is structured
+as follows:
+
+-   A list of standard terms and abbreviations - this avoids the necessity of repeating URIs and reduced the overall
+    size of the file. For further information read the section on
+    [aliasing keywords](https://w3c.github.io/json-ld-syntax/#aliasing-keywords) from the JSON-LD specification.
+-   A series of defined entity types (e.g. `Building`). These usually start with a capital letter.
+-   A list of attributes - these may be sub-divided as follows: - attributes representing context data **Properties** to
+    be displayed as native JSON attributes (e.g. `additionalName`), these attributes are annotated to explain the
+    [XML Schema](https://www.w3.org/TR/xmlschema-2/) datatype to be used when consuming the data. - attributes
+    representing context data **Properties** which are complex of objects (e.g. `address`), these are remain as in the
+    previous example, there is an indication that `address` really refers to a `https://schema.org/address` - which in
+    turn has well defined subattrributes - and the native types of those sub-elements are also defined. - attributes
+    representing context data **Properties** which hold enumerations - e.g. `category` - these hold a link indicator in
+    the form of `"@type": "@vocab"`. When these attributes are encountered it indicates that the value `category="barn"`
+    can be expanded to the IRI `https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn` rather than just as a string
+    holding the short name `barn`. For further information on how this is achieved, look at the
+    [shortening IRIs](https://w3c.github.io/json-ld-syntax/#shortening-iris) in the JSON-LD specification. - attributes
+    representing context data **Relationships** - e.g. `controlledAsset` - these hold an indicator of a link between
+    entities in the form of `"@type": "@id"`. This is the syntax indicating a link, or more formally an
+    Internationalized Resource Identifier (see [RFC3987](https://w3c.github.io/json-ld-syntax/#bib-rfc3987)). For
+    further information see the [section on IRIs](https://w3c.github.io/json-ld-syntax/#iris) within the JSON-LD
+    sepcification
+-   A list of enumerations (e.g. `barn`) - these can be readily expanded by the receiving application when held within
+    defined `@vocab` elements.
+
+Furthermore an additional section in this context file called the `@graph`. This enables the JSON-LD @context to make
+additonal statements about the graph of linked data itself For example, the generated `@graph` elements are show a human
+readable description of the attribute in English. This could be further expanded to indicate in which entities each
+attribute is used, whether a entity defintion is a subclass of a base defintion (e.g. `TemperatureSensor` extends
+`Device`) and so on.
+
+Further information about `@graph` can be found in the section on
+[Named Graphs](https://w3c.github.io/json-ld-syntax/#named-graphs)).
+
+If NGSI-LD requests are made using the `options=keyValues` parameter, the response a generic JSON-LD object (as shown
+below) rather than a full NGSI-LD object:
+
+```json
+{
+    "id": "urn:ngsi-ld:Building:001",
+    "type": "Building",
+    "category": "barn",
+    "address": {
+        "streetAddress": "Großer Stern",
         "addressRegion": "Berlin",
-        "addressLocality": "Prenzlauer Berg",
-        "postalCode": "10439"
+        "addressLocality": "Tiergarten",
+        "postalCode": "10557"
     },
     "location": {
         "type": "Point",
-        "coordinates": [13.3986, 52.5547]
+        "coordinates": [13.35, 52.5144]
     },
-    "name": "Bösebrücke Einkauf"
+    "name": "Siegessäule Barn",
+    "@context": "https://example.com/data-models.context.jsonld"
 }
 ```
 
-### Obtain entity data by type
+This format should be familiar to any user of JSON - the additional `@context` attribute is the mechanism used to
+annotate the base JSON payload as JSON-LD linked data.
 
-This example returns the data of all `Store` entities within the context data The `type` parameter limits the response
-to store entities only.
+It should be noted that this JSON-LD payload does not include metadata about attributes - there are no _properties of
+properties_ or _relationships of properties_. Therefore to include a traversable link within JSON-LD it is necessary to
+declare it as **Relationship** directly on the entity itself- an example can be found in the `controlledAsset` attribute
+of `Device`. Metadata atttibutes such as the `providedBy` **Relationship** found within the `temperature` **Property**
+are only traversable using the NGSI-LD syntax.
 
-#### 5 Request:
+### Generating Documentation
 
-```bash
-curl -G -X GET \
-    'http://localhost:1026/v2/entities' \
-    -d 'type=Store' \
-    -d 'options=keyValues'
-```
+The `@context` syntax is designed to be readable by machines. Obviously developers need human readable documentation
+too.
 
-#### Response:
-
-Because of the use of the `options=keyValues`, the response consists of JSON only without the attribute `type` and
-`metadata` elements.
-
-```json
-[
-    {
-        "id": "urn:ngsi-ld:Store:001",
-        "type": "Store",
-        "address": {
-            "streetAddress": "Bornholmer Straße 65",
-            "addressRegion": "Berlin",
-            "addressLocality": "Prenzlauer Berg",
-            "postalCode": "10439"
-        },
-        "location": {
-            "type": "Point",
-            "coordinates": [13.3986, 52.5547]
-        },
-        "name": "Bose Brucke Einkauf"
-    },
-    {
-        "id": "urn:ngsi-ld:Store:002",
-        "type": "Store",
-        "address": {
-            "streetAddress": "Friedrichstraße 44",
-            "addressRegion": "Berlin",
-            "addressLocality": "Kreuzberg",
-            "postalCode": "10969"
-        },
-        "location": {
-            "type": "Point",
-            "coordinates": [13.3903, 52.5075]
-        },
-        "name": "Checkpoint Markt"
-    }
-]
-```
-
-### Filter context data by comparing the values of an attribute
-
-This example returns all stores with the `name` attribute _Checkpoint Markt_. Filtering can be done using the `q`
-parameter - if a string has spaces in it, it can be URL encoded and held within single quote characters `'` = `%27`
-
-#### 6 Request:
+Basic documentation about NGSI-LD entities can be generated from a Swagger data model as follows:
 
 ```bash
-curl -G -X GET \
-    'http://localhost:1026/v2/entities' \
-    -d 'type=Store' \
-    -d 'q=name==%27Checkpoint%20Markt%27' \
-    -d 'options=keyValues'
+./services markdown [file]
 ```
 
-#### Response:
+#### Terminal - Result:
 
-Because of the use of the `options=keyValues`, the response consists of JSON only without the attribute `type` and
-`metadata` elements.
-
-```json
-[
-    {
-        "id": "urn:ngsi-ld:Store:002",
-        "type": "Store",
-        "address": {
-            "streetAddress": "Friedrichstraße 44",
-            "addressRegion": "Berlin",
-            "addressLocality": "Kreuzberg",
-            "postalCode": "10969"
-        },
-        "location": {
-            "type": "Point",
-            "coordinates": [13.3903, 52.5075]
-        },
-        "name": "Checkpoint Markt"
-    }
-]
+```text
+Creating Documentation for the Data Models
+datamodels.md created
 ```
 
-### Filter context data by comparing the values of a sub-attribute
-
-This example returns all stores found in the Kreuzberg District.
-
-Filtering can be done using the `q` parameter - sub-attributes are annotated using the dot syntax e.g.
-`address.addressLocality`
-
-#### 7 Request:
-
-```bash
-curl -G -X GET \
-    'http://localhost:1026/v2/entities' \
-    -d 'type=Store' \
-    -d 'q=address.addressLocality==Kreuzberg' \
-    -d 'options=keyValues'
-```
-
-#### Response:
-
-Because of the use of the `options=keyValues`, the response consists of JSON only without the attribute `type` and
-`metadata` elements.
-
-```json
-[
-    {
-        "id": "urn:ngsi-ld:Store:002",
-        "type": "Store",
-        "address": {
-            "streetAddress": "Friedrichstraße 44",
-            "addressRegion": "Berlin",
-            "addressLocality": "Kreuzberg",
-            "postalCode": "10969"
-        },
-        "location": {
-            "type": "Point",
-            "coordinates": [13.3903, 52.5075]
-        },
-        "name": "Checkpoint Markt"
-    }
-]
-```
-
-### Filter context data by querying metadata
-
-This example returns the data of all `Store` entities with a verified address.
-
-Metadata queries can be made using the `mq` parameter.
-
-#### 8 Request:
-
-```bash
-curl -G -X GET \
-    'http://localhost:1026/v2/entities' \
-    -d 'type=Store' \
-    -d 'mq=address.verified==true' \
-    -d 'options=keyValues'
-```
-
-#### Response:
-
-Because of the use of the `options=keyValues`, the response consists of JSON only without the attribute `type` and
-`metadata` elements.
-
-```json
-[
-    {
-        "id": "urn:ngsi-ld:Store:001",
-        "type": "Store",
-        "address": {
-            "streetAddress": "Bornholmer Straße 65",
-            "addressRegion": "Berlin",
-            "addressLocality": "Prenzlauer Berg",
-            "postalCode": "10439"
-        },
-        "location": {
-            "type": "Point",
-            "coordinates": [13.3986, 52.5547]
-        },
-        "name": "Bösebrücke Einkauf"
-    },
-    {
-        "id": "urn:ngsi-ld:Store:002",
-        "type": "Store",
-        "address": {
-            "streetAddress": "Friedrichstraße 44",
-            "addressRegion": "Berlin",
-            "addressLocality": "Kreuzberg",
-            "postalCode": "10969"
-        },
-        "location": {
-            "type": "Point",
-            "coordinates": [13.3903, 52.5075]
-        },
-        "name": "Checkpoint Markt"
-    }
-]
-```
-
-### Filter context data by comparing the values of a geo:json attribute
-
-This example return all Stores within 1.5km the **Brandenburg Gate** in **Berlin** (_52.5162N 13.3777W_)
-
-#### 9 Request:
-
-```bash
-curl -G -X GET \
-  'http://localhost:1026/v2/entities' \
-  -d 'type=Store' \
-  -d 'georel=near;maxDistance:1500' \
-  -d 'geometry=point' \
-  -d 'coords=52.5162,13.3777'
-```
-
-#### Response:
-
-Because of the use of the `options=keyValues`, the response consists of JSON only without the attribute `type` and
-`metadata` elements.
-
-```json
-[
-    {
-        "id": "urn:ngsi-ld:Store:002",
-        "type": "Store",
-        "address": {
-            "streetAddress": "Friedrichstraße 44",
-            "addressRegion": "Berlin",
-            "addressLocality": "Kreuzberg",
-            "postalCode": "10969"
-        },
-        "location": {
-            "type": "Point",
-            "coordinates": [13.3903, 52.5075]
-        },
-        "name": "Checkpoint Markt"
-    }
-]
-```
-
-## Next Steps
-
-Want to learn how to add more complexity to your application by adding advanced features? You can find out by reading
-the other tutorials in this series:
-
-### Iterative Development
-
-The context of the store finder demo is very simple, it could easily be expanded to hold the whole of a stock management
-system by passing in the current stock count of each store as context data to the
-[Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/).
-
-So far, so simple, but consider how this Smart application could be iterated:
-
--   Real-time dashboards could be created to monitor the state of the stock across each store using a visualization
-    component. \[[Wirecloud](https://github.com/FIWARE/catalogue/blob/master/processing/README.md#Wirecloud)\]
--   The current layout of both the warehouse and store could be passed to the context broker so the location of the
-    stock could be displayed on a map
-    \[[Wirecloud](https://github.com/FIWARE/catalogue/blob/master/processing/README.md#Wirecloud)\]
--   User Management components \[[Wilma](https://github.com/FIWARE/catalogue/blob/master/security/README.md#Wilma),
-    [AuthZForce](https://github.com/FIWARE/catalogue/blob/master/security/README.md#Authzforce),
-    [Keyrock](https://github.com/FIWARE/catalogue/blob/master/security/README.md#Keyrock)\] could be added so that only
-    store managers are able to change the price of items
--   A threshold alert could be raised in the warehouse as the goods are sold to ensure the shelves are not left empty
-    [publish/subscribe function of [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/)]
--   Each generated list of items to be loaded from the warehouse could be calculated to maximize the efficiency of
-    replenishment
-    \[[Complex Event Processing - CEP](https://github.com/FIWARE/catalogue/blob/master/processing/README.md#new-perseo-incubated)\]
--   A motion sensor could be added at the entrance to count the number of customers
-    \[[IDAS](https://github.com/FIWARE/catalogue/blob/master/iot-agents/README.md)\]
--   The motion sensor could ring a bell whenever a customer enters
-    \[[IDAS](https://github.com/FIWARE/catalogue/blob/master/iot-agents/README.md)\]
--   A series of video cameras could be added to introduce a video feed in each store
-    \[[Kurento](https://github.com/FIWARE/catalogue/blob/master/processing/README.md#Kurento)\]
--   The video images could be processed to recognize where customers are standing within a store
-    \[[Kurento](https://github.com/FIWARE/catalogue/blob/master/processing/README.md#Kurento)\]
--   By maintaining and processing historical data within the system, footfall and dwell time can be calculated -
-    establishing which areas of the store attract the most interest \[connection through
-    [Cygnus](https://github.com/FIWARE/catalogue/blob/master/core/README.md#Cygnus) to Apache Flink\]
--   Patterns recognizing unusual behaviour could be used to raise an alert to avoid theft
-    \[[Kurento](https://github.com/FIWARE/catalogue/blob/master/processing/README.md#Kurento)\]
--   Data on the movement of crowds would be useful for scientific research - data about the state of the store could be
-    published externally.
-    \[[extensions to CKAN](https://github.com/FIWARE/catalogue/tree/master/data-publication#extensions-to-ckan)\]
-
-Each iteration adds value to the solution through existing components with standard interfaces and therefore minimizes
-development time.
+The result is a markdown file holding the documentation for the data models is returned.
