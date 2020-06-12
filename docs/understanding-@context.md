@@ -2,9 +2,9 @@
 [![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.01.01_60/gs_CIM009v010101p.pdf)
 [![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/) <br/>
 
-**Description** This tutorial introduces basics of common Linked Data concepts and Data Models for **NGSI-LD** developers. The aim is to
-design and create a simple interoperable Smart Agricultural Solution from scratch and explain how to apply these
-concepts to your own smart solutions.
+**Description** This tutorial introduces basics of common Linked Data concepts and Data Models for **NGSI-LD**
+developers. The aim is to design and create a simple interoperable Smart Agricultural Solution from scratch and explain
+how to apply these concepts to your own smart solutions.
 
 Unlike the previous [tutorials series](http://fiware-tutorials.rtfd.io/), this series will take an **NGSI-LD** first
 approach and therefore starts with reiterating the fundamentals of Linked Data and its application to the **NGSI-LD**
@@ -12,15 +12,14 @@ interface.
 
 The tutorial is mainly concerned with online and command-line tooling.
 
-
 # Understanding `@context`
 
 Creating an interoperable system of readable links for computers requires the use of a well defined data format
 ([JSON-LD](http://json-ld.org/)) and assignation of unique IDs
 ([URLs or URNs](https://stackoverflow.com/questions/4913343/what-is-the-difference-between-uri-url-and-urn)) for both
 data entities and the relationships between entities so that semantic meaning can be programmatically retrieved from the
-data itself. Futhermore the use and creation of thesse unique IDs should, as far as possible, be passed around so as not
-get in the way of the processing the data objects themselves.
+data itself. Furthermore the use and creation of thesse unique IDs should, as far as possible, be passed around so as
+not get in the way of the processing the data objects themselves.
 
 An attempt to solve this interoperablity problem has been made within the JSON domain, and this has been done by adding
 an `@context` element to existing JSON data structures. This has led to the creation of the **JSON-LD** standard.
@@ -64,8 +63,6 @@ Click on the image above to watch an introductory video on linked data concepts
 
 Click on the image above to watch a video describing the basic concepts behind JSON-LD.
 
-
-
 # Start Up
 
 In order to initialize the generator tool run:
@@ -81,8 +78,8 @@ the digital twin of an object which exists in the real world.
 
 Although the each data entity within your context will vary according to your use case, the common structure within each
 data entity should be standardized order to promote reuse. The Fundamentals for FIWARE Data Model design do not change.
-Typically each entiy will consist of an **id**, a **type**, a series of **Property** atttributes representing context
-data which changes over time and a series of **Relationship** atttributes which represent connections between existing
+Typically each entity will consist of an `id`, a `type`, a series of **Property** atttributes representing context data
+which changes over time and a series of **Relationship** atttributes which represent connections between existing
 entities.
 
 It is perhaps best to illustrate this using an example. The Underlying Data Models can be created using many different
@@ -109,10 +106,14 @@ This example can be split down into the following Entities:
 
 ## Baseline Data Models
 
+<!-- textlint-disable write-good -->
+
 When architecting your Smart System, it is unnecessary to start from scratch, so the first step is to check to see if
 there are any existing NGSI-LD data models which are capable of describing your system. As it happens, there are
 existing [Smart Data Models](https://www.fiware.org/developers/smart-data-models/) for both **Building** and **Device**,
 so it is possible to check if these will fulfill our needs:
+
+<!-- textlint-enable write-good -->
 
 ![](https://fiware.github.io/tutorials.Understanding-At-Context/img/swagger.png)
 
@@ -194,18 +195,18 @@ mean we will need things such as:
 -   and so on.
 
 ```json
-{
-    "temperature" : 30,
-    "unitCode" : "CEL",
+({
+    "temperature": 30,
+    "unitCode": "CEL",
     "providedBy": "urn:ngsi-ld:TemperatureSensor:001",
-    "observedAt" :"2016-03-15T11:00:00.000"
+    "observedAt": "2016-03-15T11:00:00.000"
 },
 {
-    "fillingLevel" : 0.5,
-    "unitCode" : "CEL",
+    "fillingLevel": 0.5,
+    "unitCode": "CEL",
     "providedBy": "urn:ngsi-ld:FillingSensor:001",
-    "observedAt" :"2016-03-15T11:00:00.000"
-}
+    "observedAt": "2016-03-15T11:00:00.000"
+})
 ```
 
 Each one of these attributes has a name, and therefore requires a definition within the `@context`. Fortunately most of
@@ -254,7 +255,7 @@ components:
         ControlledProperties:
             $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/saref-terms.yaml#/ControlledProperties"
 
-        # This is an NGSI-LD defintion of a person.
+        # This is an NGSI-LD definition of a person.
         # Since the schema.org Person ig JSON-LD,
         # additional type and id attreibutes are require
         Person:
@@ -273,8 +274,8 @@ The source file for the Baseline Date Models, `baseline.yaml` can be found
 
 ### Updated Data models
 
-1. **Building** must be updated to accommodate `temperature` and `fillingLevel`. Both of these properties have been
-   defined within SAREF terms.
+1.  **Building** must be updated to accommodate `temperature` and `fillingLevel`. Both of these properties have been
+    defined within SAREF terms.
 
 ```yaml
 Building:
@@ -318,12 +319,12 @@ FillingLevelSensor:
             $ref: https://fiware.github.io/tutorials.NGSI-LD/models/saref-terms.yaml#/fillingLevel
 ```
 
-4. The list of controlled attributes can be reduced to those measured by Agricultural devices (e.g `airPollution`,
-   `atmosphericPressure`, `depth`, `eatingActivity`, `fillingLevel`, `humidity`, `location`, `milking`, `motion`,
-   `movementActivity`, `occupancy`, `precipitation`, `pressure`, `soilMoisture`, `solarRadiation`, `temperature`,
-   `waterConsumption`, `weatherConditions`, `weight`, `windDirection`, `windSpeed`)
+4.  The list of controlled attributes can be reduced to those measured by Agricultural devices (e.g `airPollution`,
+    `atmosphericPressure`, `depth`, `eatingActivity`, `fillingLevel`, `humidity`, `location`, `milking`, `motion`,
+    `movementActivity`, `occupancy`, `precipitation`, `pressure`, `soilMoisture`, `solarRadiation`, `temperature`,
+    `waterConsumption`, `weatherConditions`, `weight`, `windDirection`, `windSpeed`)
 
-5. The other definitions remain unchanged.
+5.  The other definitions remain unchanged.
 
 ![](https://fiware.github.io/tutorials.Understanding-At-Context/img/updated.png)
 
@@ -336,7 +337,7 @@ The raw source file `agriculture.yaml` can be found
 ## Autogenerating `@Context` Files from Swagger
 
 Every working linked data system relies on `@context` files to supply the relevant information about the data. Creating
-such files by hand is a tedious and error prone procedure, so it makes sense to automate the process. The required
+such files by hand is a tedious and error-prone procedure, so it makes sense to automate the process. The required
 structure will depend on the operations involved.
 
 This tutorial will take the Agricultural Smart System data model file `agriculture.yaml` and autogenerate alternatives
@@ -473,8 +474,8 @@ For example this is a `Building` in _normalized_ NGSI-LD format:
     "location": {
         "type": "GeoProperty",
         "value": {
-             "type": "Point",
-             "coordinates": [13.35, 52.5144]
+            "type": "Point",
+            "coordinates": [13.35, 52.5144]
         }
     },
     "name": {
@@ -602,9 +603,9 @@ as follows:
     defined `@vocab` elements.
 
 Furthermore an additional section in this context file called the `@graph`. This enables the JSON-LD @context to make
-additonal statements about the graph of linked data itself For example, the generated `@graph` elements are show a human
-readable description of the attribute in English. This could be further expanded to indicate in which entities each
-attribute is used, whether a entity defintion is a subclass of a base defintion (e.g. `TemperatureSensor` extends
+additional statements about the graph of linked data itself For example, the generated `@graph` elements are show a
+human readable description of the attribute in English. This could be further expanded to indicate in which entities
+each attribute is used, whether a entity definition is a subclass of a base definition (e.g. `TemperatureSensor` extends
 `Device`) and so on.
 
 Further information about `@graph` can be found in the section on
@@ -660,4 +661,4 @@ Creating Documentation for the Data Models
 datamodels.md created
 ```
 
-The result is a markdown file holding the documentation for the data models is returned.
+The result is a Markdown file holding the documentation for the data models is returned.

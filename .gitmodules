@@ -89,3 +89,6 @@
 [submodule "LD-Subscriptions-Registrations"]
 	path = tutorials.LD-Subscriptions-Registrations
 	url = https://github.com/FIWARE/tutorials.LD-Subscriptions-Registrations.git
+[submodule "tutorials.Understanding-At-Context"]
+	path = tutorials.Understanding-At-Context
+	url = https://github.com/FIWARE/tutorials.Understanding-At-Context
