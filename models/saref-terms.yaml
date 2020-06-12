@@ -13,9 +13,9 @@ Categories:
   x-ngsi:
     uri-prefix: 'https://w3id.org/saref#'
   enum:
-    - HVAC
     - actuator
     - endgun
+    - HVAC
     - implement
     - irrSection
     - irrSystem
@@ -23,27 +23,17 @@ Categories:
     - multimedia          
     - network
     - sensor
-  description: >
-        -   `sensor`:  A device that detects and responds to events or changes in the
-            physical environment such as light, motion, or temperature
-            changes.
-        -   `actuator`: A device responsible for moving or controlling a mechanism or
-            system. .
-        -  `meter`: A device built to accurately detect and display a quantity in a
-              form readable by a human being. Partially defined by SAREF.
-        -   `HVAC`:  Heating, Ventilation and Air Conditioning (HVAC) device that
-              provides indoor environmental comfort.
-        -   `network`: A device used to connect other devices in a network, such as hub,
-              switch or router in a LAN or Sensor network.
-        -   `multimedia`: A device designed to display, store, record or play multimedia
-              content such as audio, images, animation, video.
-        -   `implement`:  A device used or needed in a given activity; tool, instrument,  utensil, etc.
-        -   `irrSystem`: A mobile or fixed irrigation system such as a center pivot,
-              linear, traveling gun, solid set, etc.
-        -   `irrSection`: A section of an IrrSystem. Different enough from a regular
-              section.
-        -   `endgun`: A device attached to an irrigation system that projects water
-              beyond it
+  description: |
+      -   `actuator`: A device responsible for moving or controlling a mechanism or system. .
+      -   `endgun`: A device attached to an irrigation system that projects water beyond it
+      -   `HVAC`:  Heating, Ventilation and Air Conditioning (HVAC) device that provides indoor environmental comfort.
+      -   `implement`:  A device used or needed in a given activity; tool, instrument, utensil, etc.
+      -   `irrSection`: A section of an IrrSystem. Different enough from a regular section.
+      -   `irrSystem`: A mobile or fixed irrigation system such as a center pivot, linear, traveling gun, solid set, etc.
+      -   `meter`: A device built to accurately detect and display a quantity in a form readable by a human being. Partially defined by SAREF.
+      -   `multimedia`: A device designed to display, store, record or play multimedia content such as audio, images, animation, video.
+      -   `network`: A device used to connect other devices in a network, such as hub, switch or router in a LAN or Sensor network.
+      -   `sensor`:  A device that detects and responds to events or changes in the physical environment such as light, motion, or temperature changes.
     
 ControlledProperties:
   type: string
@@ -91,7 +81,7 @@ ControlledProperties:
     - weight
     - windDirection
     - windSpeed
-  description: >
+  description: |
       -   `airPollution`
       -   `atmosphericPressure`
       -   `cdom`
