@@ -29,7 +29,19 @@ cd tutorials.Step-by-Step/
 git submodule update --init --recursive
 ```
 
-### Docker and Docker Compose <img src="https://www.docker.com/favicon.ico" align="left"  height="30" width="30">
+### Swagger <img src="https://static1.smartbear.co/swagger/media/assets/swagger_fav.png" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
+
+The OpenAPI Specification (commonly known as Swagger) is an API description format for REST APIs. A Swaggger spec allows
+you to describe an entire API (such as NGSI-LD itself) however in this tutorial we shall be concentrating on using
+Swagger to define data models.
+
+API specifications can be written in YAML or JSON. The format is easy to learn and readable to both humans and machines.
+The complete OpenAPI Specification can be found on GitHub:
+[OpenAPI 3.0 Specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md). This is
+important since we will need a well defined structure to be able to generate `@context` files.
+
+
+### Docker and Docker Compose <img src="https://www.docker.com/favicon.ico" align="left"  height="36" width="36">
 
 Each tutorial runs all components using [Docker](https://www.docker.com). **Docker** is a container technology which
 allows to different components isolated into their respective environments.
@@ -53,7 +65,7 @@ docker version
 Please ensure that you are using Docker version 18.03 or higher and Docker Compose 1.21 or higher and upgrade if
 necessary.
 
-### Postman <img src="https://www.getpostman.comhttps://www.postman.com/favicon-32x32.png" align="left"  height="32" width="32">
+### Postman <img src="https://www.postman.com/favicon-32x32.png" align="left"  height="32" width="32">
 
 The tutorials which use HTTP requests supply a collection for use with the Postman utility. Postman is a testing
 framework for REST APIs. The tool can be downloaded from [www.getpostman.com](www.getpostman.com). All the FIWARE
