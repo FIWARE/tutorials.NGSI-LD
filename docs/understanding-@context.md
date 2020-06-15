@@ -18,10 +18,10 @@ Creating an interoperable system of readable links for computers requires the us
 ([JSON-LD](http://json-ld.org/)) and assignation of unique IDs
 ([URLs or URNs](https://stackoverflow.com/questions/4913343/what-is-the-difference-between-uri-url-and-urn)) for both
 data entities and the relationships between entities so that semantic meaning can be programmatically retrieved from the
-data itself. Furthermore the use and creation of thesse unique IDs should, as far as possible, be passed around so as
-not get in the way of the processing the data objects themselves.
+data itself. Furthermore the use and creation of these unique IDs should, as far as possible, be passed around so as not
+get in the way of the processing the data objects themselves.
 
-An attempt to solve this interoperablity problem has been made within the JSON domain, and this has been done by adding
+An attempt to solve this interoperability problem has been made within the JSON domain, and this has been done by adding
 an `@context` element to existing JSON data structures. This has led to the creation of the **JSON-LD** standard.
 
 The main takeaway from **JSON-LD**, is that a remote context file and the **JSON-LD**
@@ -73,13 +73,13 @@ In order to initialize the generator tool run:
 
 # Creating NGSI-LD Data Models
 
-Within the FIWARE platform, every entity represents the state of a physical or conceptural object. Each entity provides
+Within the FIWARE platform, every entity represents the state of a physical or conceptual object. Each entity provides
 the digital twin of an object which exists in the real world.
 
 Although the each data entity within your context will vary according to your use case, the common structure within each
 data entity should be standardized order to promote reuse. The Fundamentals for FIWARE Data Model design do not change.
-Typically each entity will consist of an `id`, a `type`, a series of **Property** atttributes representing context data
-which changes over time and a series of **Relationship** atttributes which represent connections between existing
+Typically each entity will consist of an `id`, a `type`, a series of **Property** attributes representing context data
+which changes over time and a series of **Relationship** attributes which represent connections between existing
 entities.
 
 It is perhaps best to illustrate this using an example. The Underlying Data Models can be created using many different
@@ -240,7 +240,7 @@ components:
         # This is the base definition of a building
         Building:
             $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/building.yaml#/Building"
-        # This is all of the defined building categories within
+        # This is all of the defined building categories
         # within the Smart Cities and Smart AgriFood domain
         BuildingCategory:
             $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/building.yaml#/Categories"
@@ -256,7 +256,7 @@ components:
             $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/saref-terms.yaml#/ControlledProperties"
 
         # This is an NGSI-LD definition of a person.
-        # Since the schema.org Person ig JSON-LD,
+        # Since the schema.org Person is JSON-LD,
         # additional type and id attreibutes are require
         Person:
             allOf:
@@ -343,7 +343,7 @@ structure will depend on the operations involved.
 This tutorial will take the Agricultural Smart System data model file `agriculture.yaml` and autogenerate alternatives
 for use by other agents.
 
-> A deeper understanding can be obtained by runnning this tutorial with a more advanced example, the equivalent
+> A deeper understanding can be obtained by running this tutorial with a more advanced example, the equivalent
 > [Data Models](https://swagger.lab.fiware.org/?url=https://raw.githubusercontent.com/FIWARE/tutorials.Understanding-At-Context/master/agriculture.yaml)
 > from the [Supermarket Scenario](https://fiware.github.io/tutorials.Step-by-Step/schema/en/) have also been added to
 > this tutorial. The raw `supermarket.yaml` file is available
@@ -442,7 +442,7 @@ If a computer encounters an entity of `type=Building` this really refers to a
 From the definition of a **Building** we know it has a mandatory `category` and `address`.
 
 If a computer encounters an `address` attribute, this really refers to a `https://schema.org/address` (which in turn has
-well defined subattrributes)
+well defined subattributes)
 
 If a computer encounters a `category=barn` then it should be possible to accertain that this `category` can be
 identified as a `https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn`. Note that `category` itself is also well
@@ -491,7 +491,7 @@ For example this is a `Building` in _normalized_ NGSI-LD format:
 
 The core context file defines the base structure of the NGSI-LD API payload (things like `type`, `value` and GeoJSON
 `Point`) whereas the _generated_ NGSI-LD context for the application itself defines the entities (`Building`) and
-`attributes` without defining a payloaf structure.
+`attributes` without defining a payload structure.
 
 ### Generating a JSON-LD `@context` file
 
@@ -504,7 +504,7 @@ The JSON-LD requires the following:
 -   The names of all the attributes from within the defined Data Models
 -   The enumerated values of any constants used within the Data Models.
 
-Additionally a JSON-LD `@context` may also include supplimentary information (such as _This attribute is an integer_)
+Additionally a JSON-LD `@context` may also include supplementary information (such as _This attribute is an integer_)
 and, within the `@graph` definition, information about the relationships between nodes (_This attribute is a link to a
 **Person** entity_ ) as well as human readable information about the attributes themselves (_A barn is an agricultural
 building used for storage_) may be returned.
@@ -588,7 +588,7 @@ as follows:
     [XML Schema](https://www.w3.org/TR/xmlschema-2/) datatype to be used when consuming the data. - attributes
     representing context data **Properties** which are complex of objects (e.g. `address`), these are remain as in the
     previous example, there is an indication that `address` really refers to a `https://schema.org/address` - which in
-    turn has well defined subattrributes - and the native types of those sub-elements are also defined. - attributes
+    turn has well defined subattributes - and the native types of those sub-elements are also defined. - attributes
     representing context data **Properties** which hold enumerations - e.g. `category` - these hold a link indicator in
     the form of `"@type": "@vocab"`. When these attributes are encountered it indicates that the value `category="barn"`
     can be expanded to the IRI `https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn` rather than just as a string
@@ -598,7 +598,7 @@ as follows:
     entities in the form of `"@type": "@id"`. This is the syntax indicating a link, or more formally an
     Internationalized Resource Identifier (see [RFC3987](https://w3c.github.io/json-ld-syntax/#bib-rfc3987)). For
     further information see the [section on IRIs](https://w3c.github.io/json-ld-syntax/#iris) within the JSON-LD
-    sepcification
+    specification
 -   A list of enumerations (e.g. `barn`) - these can be readily expanded by the receiving application when held within
     defined `@vocab` elements.
 
@@ -609,7 +609,7 @@ each attribute is used, whether a entity definition is a subclass of a base defi
 `Device`) and so on.
 
 Further information about `@graph` can be found in the section on
-[Named Graphs](https://w3c.github.io/json-ld-syntax/#named-graphs)).
+[Named Graphs](https://w3c.github.io/json-ld-syntax/#named-graphs).
 
 If NGSI-LD requests are made using the `options=keyValues` parameter, the response a generic JSON-LD object (as shown
 below) rather than a full NGSI-LD object:
@@ -640,7 +640,7 @@ annotate the base JSON payload as JSON-LD linked data.
 It should be noted that this JSON-LD payload does not include metadata about attributes - there are no _properties of
 properties_ or _relationships of properties_. Therefore to include a traversable link within JSON-LD it is necessary to
 declare it as **Relationship** directly on the entity itself- an example can be found in the `controlledAsset` attribute
-of `Device`. Metadata atttibutes such as the `providedBy` **Relationship** found within the `temperature` **Property**
+of `Device`. Metadata attributes such as the `providedBy` **Relationship** found within the `temperature` **Property**
 are only traversable using the NGSI-LD syntax.
 
 ### Generating Documentation
