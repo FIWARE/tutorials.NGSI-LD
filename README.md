@@ -25,7 +25,7 @@ To download the full set of tutorials, simply clone this repository:
 
 ```console
 git clone https://github.com/FIWARE/tutorials.NGSI-LD.git
-cd tutorials.Step-by-Step/
+cd tutorials.NGSI-LD/
 git submodule update --init --recursive
 ```
 
@@ -81,7 +81,7 @@ to provide a command-line functionality similar to a Linux distribution on Windo
 
 ### Core Context Management: NGSI-LD Fundamentals
 
-&nbsp; 101. [Understanding `@context`](https://github.com/FIWARE/tutorials.Understanding-@Context)<br/>
+&nbsp; 101. [Understanding `@context`](https://github.com/FIWARE/tutorials.Understanding-At-Context)<br/>
 
 ## Usage
 
