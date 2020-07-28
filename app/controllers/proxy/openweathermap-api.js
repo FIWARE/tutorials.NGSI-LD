@@ -16,78 +16,64 @@ const monitor = require('../../lib/monitoring');
 //	Before you start using the OpenWeatherMap API,  Sign up for a key at http://openweathermap.org/appid
 //
 const OPENWEATHERMAP_URL =
-  'http://api.openweathermap.org/data/2.5/weather?appid=' +
-  process.env.OPENWEATHERMAP_KEY_ID +
-  '&q=';
+    'http://api.openweathermap.org/data/2.5/weather?appid=' + process.env.OPENWEATHERMAP_KEY_ID + '&q=';
 
 //
 // The Health Check function merely requests a weather forecast from Berlin
 // to check that your API KEY ID is valid.
 //
 function healthCheck(req, res) {
-  debug('healthCheck for OpenWeatherMap API');
-  makeWeatherRequest('berlin,de')
-    .then(result => {
-      const response = JSON.parse(result).response || {};
-      if (response.error) {
-        // An error response was returned for the query for Berlin.
-        throw new Error({ message: 'API Key Not Found', statusCode: 401 });
-      }
-      debug(
-        'OpenWeatherMap API is available - KeyID is valid  - responding with the weather for Berlin.'
-      );
-      monitor('health', 'OpenWeatherMap API is healthy');
-      res.set('Content-Type', 'application/json');
-      res.send(result);
-    })
-    .catch(err => {
-      debug(
-        'OpenWeatherMap API is not responding - have you added your KeyID as an environment variable?'
-      );
-      monitor('health', 'OpenWeatherMap API is unhealthy');
-      res.statusCode = err.statusCode || 501;
-      res.send(err);
-    });
+    debug('healthCheck for OpenWeatherMap API');
+    makeWeatherRequest('berlin,de')
+        .then((result) => {
+            const response = JSON.parse(result).response || {};
+            if (response.error) {
+                // An error response was returned for the query for Berlin.
+                throw new Error({ message: 'API Key Not Found', statusCode: 401 });
+            }
+            debug('OpenWeatherMap API is available - KeyID is valid  - responding with the weather for Berlin.');
+            monitor('health', 'OpenWeatherMap API is healthy');
+            res.set('Content-Type', 'application/json');
+            res.send(result);
+        })
+        .catch((err) => {
+            debug('OpenWeatherMap API is not responding - have you added your KeyID as an environment variable?');
+            monitor('health', 'OpenWeatherMap API is unhealthy');
+            res.statusCode = err.statusCode || 501;
+            res.send(err);
+        });
 }
 
 //
 // The /ngsi-ld/v1/entities/:id endpoint responds with data in the NGSI-LD format
 //
 function getAsNgsiLD(req, res) {
-  monitor(
-    '/ngsi-ld/v1/entities',
-    'Data requested from OpenWeatherMap API',
-    req.body
-  );
-  makeWeatherRequest(req.params.queryString)
-    .then(result => {
-      // Weather observation data is held in the main attribute
-      const observation = JSON.parse(result).main;
+    monitor('/ngsi-ld/v1/entities', 'Data requested from OpenWeatherMap API', req.body);
+    makeWeatherRequest(req.params.queryString)
+        .then((result) => {
+            // Weather observation data is held in the main attribute
+            const observation = JSON.parse(result).main;
 
-      if (observation == null) {
-        // No weather observation was returned for the query.
-        throw new Error({ message: 'Not Found', statusCode: 404 });
-      }
+            if (observation == null) {
+                // No weather observation was returned for the query.
+                throw new Error({ message: 'Not Found', statusCode: 404 });
+            }
 
-      const response = Formatter.formatResponse(
-        req,
-        observation,
-        getValueFromObservation
-      );
+            const response = Formatter.formatResponse(req, observation, getValueFromObservation);
 
-      if (req.headers.accept === 'application/json') {
-        res.set('Content-Type', 'application/json');
-        delete response['@context'];
-      } else {
-        res.set('Content-Type', 'application/ld+json');
-      }
-      res.send(response);
-    })
-    .catch(err => {
-      debug(err);
-      res.statusCode = err.statusCode || 501;
-      res.send(err);
-    });
+            if (req.headers.accept === 'application/json') {
+                res.set('Content-Type', 'application/json');
+                delete response['@context'];
+            } else {
+                res.set('Content-Type', 'application/ld+json');
+            }
+            res.send(response);
+        })
+        .catch((err) => {
+            debug(err);
+            res.statusCode = err.statusCode || 501;
+            res.send(err);
+        });
 }
 
 //
@@ -95,11 +81,11 @@ function getAsNgsiLD(req, res) {
 // URL. This method logs the request and appends the query to the base URL
 //
 function makeWeatherRequest(query) {
-  debug('Making a OpenWeatherMap API request: ' + query);
-  return request({
-    url: OPENWEATHERMAP_URL + query,
-    method: 'GET'
-  });
+    debug('Making a OpenWeatherMap API request: ' + query);
+    return request({
+        url: OPENWEATHERMAP_URL + query,
+        method: 'GET'
+    });
 }
 
 //
@@ -111,17 +97,11 @@ function makeWeatherRequest(query) {
 // @param {string} data - The Weather Data - an object of Weather observations
 //
 function getValueFromObservation(name, type, key, data) {
-  debug(
-    name +
-      ' was requested - returning current_observation.' +
-      key +
-      ' : ' +
-      data[key]
-  );
-  return data[key];
+    debug(name + ' was requested - returning current_observation.' + key + ' : ' + data[key]);
+    return data[key];
 }
 
 module.exports = {
-  healthCheck,
-  getAsNgsiLD
+    healthCheck,
+    getAsNgsiLD
 };

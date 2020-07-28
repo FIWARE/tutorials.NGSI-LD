@@ -6,9 +6,9 @@ const moment = require('moment');
 // Entity types are typically title cased following Schema.org
 //
 function toTitleCase(str) {
-  return str.replace(/\w\S*/g, txt => {
-    return txt.charAt(0).toUpperCase() + txt.substr(1);
-  });
+    return str.replace(/\w\S*/g, (txt) => {
+        return txt.charAt(0).toUpperCase() + txt.substr(1);
+    });
 }
 
 // NGSI attribute names should follow Data Model Guidelines (e.g. camelCasing)
@@ -29,66 +29,61 @@ function toTitleCase(str) {
 //    http://fiware-datamodels.readthedocs.io/en/latest/guidelines/index.html
 //
 function parseMapping(input) {
-  const mappedAttributes = {};
+    const mappedAttributes = {};
 
-  _.forEach(input.split(','), element => {
-    if (element.includes(':')) {
-      const splitElement = element.split(':');
-      mappedAttributes[splitElement[0]] = splitElement[1];
-    } else {
-      mappedAttributes[element] = element;
-    }
-  });
+    _.forEach(input.split(','), (element) => {
+        if (element.includes(':')) {
+            const splitElement = element.split(':');
+            mappedAttributes[splitElement[0]] = splitElement[1];
+        } else {
+            mappedAttributes[element] = element;
+        }
+    });
 
-  return mappedAttributes;
+    return mappedAttributes;
 }
 
 //
 // Formatting function for an NGSI LD response to a context query.
 //
 function formatResponse(req, inputData, attributeValueCallback) {
-  const mappedAttributes = parseMapping(req.params.mapping);
-  const regex = /:.*/gi;
-  const type = req.params.id.replace('urn:ngsi-ld:', '').replace(regex, '');
-  const links = parseLinks(req.headers.link);
-  const attrs = (req.query.attrs || '').split(',');
+    const mappedAttributes = parseMapping(req.params.mapping);
+    const regex = /:.*/gi;
+    const type = req.params.id.replace('urn:ngsi-ld:', '').replace(regex, '');
+    const links = parseLinks(req.headers.link);
+    const attrs = (req.query.attrs || '').split(',');
 
-  const response = {
-    '@context': links.context,
-    id: req.params.id,
-    type
-  };
+    const response = {
+        '@context': links.context,
+        id: req.params.id,
+        type
+    };
 
-  _.forEach(attrs, attribute => {
-    if (mappedAttributes[attribute]) {
-      const value = attributeValueCallback(
-        attribute,
-        req.params.type,
-        mappedAttributes[attribute],
-        inputData
-      );
-      if (req.query.options === 'keyValues') {
-        response[attribute] = value;
-      } else {
-        response[attribute] = {
-          type: 'Property',
-          value
-        };
-        if (attribute === 'temperature') {
-          response.temperature.unitCode = 'CEL';
-          response.temperature.observedAt = moment.utc().format();
-        } else if (attribute === 'relativeHumidity') {
-          response.relativeHumidity.unitCode = 'P1';
-          response.relativeHumidity.observedAt = moment.utc().format();
+    _.forEach(attrs, (attribute) => {
+        if (mappedAttributes[attribute]) {
+            const value = attributeValueCallback(attribute, req.params.type, mappedAttributes[attribute], inputData);
+            if (req.query.options === 'keyValues') {
+                response[attribute] = value;
+            } else {
+                response[attribute] = {
+                    type: 'Property',
+                    value
+                };
+                if (attribute === 'temperature') {
+                    response.temperature.unitCode = 'CEL';
+                    response.temperature.observedAt = moment.utc().format();
+                } else if (attribute === 'relativeHumidity') {
+                    response.relativeHumidity.unitCode = 'P1';
+                    response.relativeHumidity.observedAt = moment.utc().format();
+                }
+            }
         }
-      }
-    }
-  });
-  return response;
+    });
+    return response;
 }
 
 module.exports = {
-  formatResponse,
-  toTitleCase,
-  parseMapping
+    formatResponse,
+    toTitleCase,
+    parseMapping
 };
