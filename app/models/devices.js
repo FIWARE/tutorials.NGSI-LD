@@ -16,19 +16,24 @@ const DOOR_LOCKED = 's|LOCKED';
 const DOOR_OPEN = 's|OPEN';
 const DOOR_CLOSED = 's|CLOSED';
 
-const BELL_OFF = 's|OFF';
+//const BELL_OFF = 's|OFF';
 const BELL_ON = 's|ON';
 
 const LAMP_ON = 's|ON|l|1750';
 const LAMP_OFF = 's|OFF|l|0';
 
-const NO_MOTION_DETECTED = 'c|0';
+//const NO_MOTION_DETECTED = 'c|0';
 const MOTION_DETECTED = 'c|1';
+
+const DEFAULT_TEMPERATURE = 't|25';
+const FILLING_STATION_FULL = 'f|1';
+const FILLING_STATION_EMPTY = 'f|0';
 
 const VALID_COMMANDS = {
     door: ['open', 'close', 'lock', 'unlock'],
     lamp: ['on', 'off'],
-    bell: ['ring']
+    bell: ['ring'],
+    filling: ['fill', 'empty']
 };
 
 // Change the state of a dummy IoT device based on the command received.
@@ -56,6 +61,19 @@ function actuateDevice(deviceId, command) {
             }
             if (command === 'off') {
                 setDeviceState(deviceId, LAMP_OFF);
+            }
+            break;
+        case 'filling':
+            if (command === 'refill') {
+                setDeviceState(deviceId, FILLING_STATION_FULL, true);
+            } else if (command === 'add') {
+                setTimeout(fillingStationFill, 1000, deviceId);
+                setTimeout(fillingStationFill, 2000, deviceId);
+                setTimeout(fillingStationFill, 3000, deviceId);
+            } else if (command === 'remove') {
+                setTimeout(fillingStationEmpty, 1000, deviceId);
+                setTimeout(fillingStationEmpty, 2000, deviceId);
+                setTimeout(fillingStationEmpty, 3000, deviceId);
             }
             break;
     }
@@ -91,6 +109,7 @@ let isDoorActive = false;
 let isDevicesActive = false;
 let devicesInitialized = false;
 
+/*
 myCache.set('door001', DOOR_LOCKED);
 myCache.set('door002', DOOR_LOCKED);
 myCache.set('door003', DOOR_LOCKED);
@@ -110,6 +129,22 @@ myCache.set('motion001', NO_MOTION_DETECTED);
 myCache.set('motion002', NO_MOTION_DETECTED);
 myCache.set('motion003', NO_MOTION_DETECTED);
 myCache.set('motion004', NO_MOTION_DETECTED);
+*/
+
+myCache.set('temperature001', DEFAULT_TEMPERATURE);
+myCache.set('temperature002', DEFAULT_TEMPERATURE);
+myCache.set('temperature003', DEFAULT_TEMPERATURE);
+myCache.set('temperature004', DEFAULT_TEMPERATURE);
+
+myCache.set('targetTemp001', DEFAULT_TEMPERATURE);
+myCache.set('targetTemp002', DEFAULT_TEMPERATURE);
+myCache.set('targetTemp003', DEFAULT_TEMPERATURE);
+myCache.set('targetTemp004', DEFAULT_TEMPERATURE);
+
+myCache.set('filling001', FILLING_STATION_FULL);
+myCache.set('filling002', FILLING_STATION_FULL);
+myCache.set('filling003', FILLING_STATION_FULL);
+myCache.set('filling004', FILLING_STATION_EMPTY);
 
 // Open and shut an unlocked door
 function activateDoor() {
@@ -153,6 +188,8 @@ function activateDevices() {
     _.forEach(deviceIds, (deviceId) => {
         const state = getDeviceState(deviceId);
         let isSensor = true;
+        let target;
+        let targetTemp;
 
         switch (deviceId.replace(/\d/g, '')) {
             case 'bell':
@@ -197,6 +234,18 @@ function activateDevices() {
                         state.l = state.l - 30 - getRandom() * getRandom();
                     }
                     state.l = state.l + getRandom();
+                }
+                break;
+
+            case 'temperature':
+                target = getDeviceState('targetTemp' + deviceId.replace(/[a-zA-Z]/g, ''));
+                if (getRandom() > 7) {
+                    targetTemp = parseInt(target.t);
+                    if (state.t < targetTemp) {
+                        state.t++;
+                    } else if (state.t > targetTemp) {
+                        state.t--;
+                    }
                 }
                 break;
         }
@@ -283,6 +332,29 @@ function getLampState(deviceId, type) {
     return lamp.s || 'OFF';
 }
 
+function fillingStationEmpty(deviceId) {
+    const state = getDeviceState(deviceId);
+    state.f = state.f - (getRandom() * getRandom()) / 1000;
+    state.f = Math.round(state.f * 100) / 100;
+
+    if (state.f < 0) {
+        setDeviceState(deviceId, FILLING_STATION_EMPTY, true);
+    } else {
+        setDeviceState(deviceId, toUltraLight(state), true);
+    }
+}
+
+function fillingStationFill(deviceId) {
+    const state = getDeviceState(deviceId);
+    state.f = state.f - (getRandom() * getRandom()) / 1000;
+    state.f = Math.round(state.f * 100) / 100;
+    if (state.f > 1) {
+        setDeviceState(deviceId, FILLING_STATION_FULL, true);
+    } else {
+        setDeviceState(deviceId, toUltraLight(state), true);
+    }
+}
+
 // Pick a random number between 1 and 10
 function getRandom() {
     return Math.floor(Math.random() * 10) + 1;
@@ -292,6 +364,15 @@ function getRandom() {
 function fireMotionSensor(id) {
     debug('fireMotionSensor');
     setDeviceState(id, MOTION_DETECTED, true);
+}
+
+// Indirectly alter the state of the temperature gauge
+// by raising or lowering the target temperature.
+function alterTemperature(id, raise) {
+    debug('alterTemperature');
+    const target = getDeviceState(id);
+    target.t = raise ? parseInt(target.t) + 5 : parseInt(target.t) - 5;
+    setDeviceState(id, toUltraLight(target), false);
 }
 
 // Once a minute, read the existing state of the dummy devices
@@ -323,6 +404,8 @@ function isUnknownCommand(device, command) {
 module.exports = {
     actuateDevice,
     fireMotionSensor,
+    alterTemperature,
+    alterFilling: fillingStationEmpty,
     notFound,
     isUnknownCommand
 };

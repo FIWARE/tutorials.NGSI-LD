@@ -97,6 +97,25 @@ class UltralightCommand {
         return res.status(200).send(result + OK);
     }
 
+    // The filling station can have items added or removed.
+    // All changes are manual
+    actuateFillingStation(req, res) {
+        const keyValuePairs = req.body.split('|') || [''];
+        const command = getUltralightCommand(keyValuePairs[0]);
+        const deviceId = 'filling' + req.params.id;
+        const result = keyValuePairs[0] + '| ' + command;
+
+        if (IoTDevices.notFound(deviceId)) {
+            return res.status(404).send(result + NOT_OK);
+        } else if (IoTDevices.isUnknownCommand('filling', command)) {
+            return res.status(422).send(result + NOT_OK);
+        }
+
+        // Update device state
+        IoTDevices.actuateDevice(deviceId, command);
+        return res.status(200).send(result + OK);
+    }
+
     // cmd topics are consumed by the actuators (bell, lamp and door)
     processMqttMessage(topic, message) {
         const path = topic.split('/');

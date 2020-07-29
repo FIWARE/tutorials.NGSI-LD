@@ -32,15 +32,16 @@ global.MQTT_CLIENT = mqtt.connect(mqttBrokerUrl);
 // If the Ultralight Dummy Devices are configured to use the HTTP transport, then
 // listen to the command endpoints using HTTP
 if (DEVICE_TRANSPORT === 'HTTP') {
-    debug('Listening on HTTP endpoints: /iot/bell, /iot/door, iot/lamp');
+    debug('Listening on HTTP endpoints: /iot/bell, /iot/door, iot/lamp, /iot/filling');
 
     const iotRouter = express.Router();
 
     // The router listening on the IoT port is responding to commands going southbound only.
     // Therefore we need a route for each actuator
-    iotRouter.post('/iot/bell:id', Southbound.bellHttpCommand);
-    iotRouter.post('/iot/door:id', Southbound.doorHttpCommand);
-    iotRouter.post('/iot/lamp:id', Southbound.lampHttpCommand);
+    iotRouter.post('/iot/bell:id', Southbound.HTTP.bell);
+    iotRouter.post('/iot/door:id', Southbound.HTTP.door);
+    iotRouter.post('/iot/lamp:id', Southbound.HTTP.lamp);
+    iotRouter.post('/iot/filling:id', Southbound.HTTP.filling);
 
     iot.use('/', iotRouter);
 }
@@ -63,7 +64,7 @@ if (DEVICE_TRANSPORT === 'MQTT') {
     MQTT_CLIENT.on('message', function(topic, message) {
         // message is a buffer. The IoT devices will be listening and
         // responding to commands going southbound.
-        Southbound.processMqttMessage(topic.toString(), message.toString());
+        Southbound.MQTT.process(topic.toString(), message.toString());
     });
 }
 

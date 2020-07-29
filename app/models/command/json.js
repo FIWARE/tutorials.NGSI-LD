@@ -90,6 +90,23 @@ class JSONCommand {
         return res.status(200).send(getResult(command, OK));
     }
 
+    // The filling station can have items added or removed.
+    // All changes are manual
+    actuateFillingStation(req, res) {
+        const command = getJSONCommand(req.body);
+        const deviceId = 'filling' + req.params.id;
+
+        if (IoTDevices.notFound(deviceId)) {
+            return res.status(404).send(getResult(command, NOT_OK));
+        } else if (IoTDevices.isUnknownCommand('filling', command)) {
+            return res.status(422).send(getResult(command, NOT_OK));
+        }
+
+        // Update device state
+        IoTDevices.actuateDevice(deviceId, command);
+        return res.status(200).send(getResult(command, OK));
+    }
+
     // cmd topics are consumed by the actuators (bell, lamp and door)
     processMqttMessage(topic, message) {
         const path = topic.split('/');

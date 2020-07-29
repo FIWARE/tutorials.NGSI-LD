@@ -81,6 +81,23 @@ class XMLCommand {
         return res.status(200).send(getResult(OK, command, deviceId));
     }
 
+    // The filling station can have items added or removed.
+    // All changes are manual
+    actuateFillingStation(req, res) {
+        const data = xmlParser(req.body);
+        const deviceId = data.root.attributes.device;
+        const command = data.root.name;
+
+        if (IoTDevices.notFound(deviceId)) {
+            return res.status(404).send(getResult(NOT_OK, command, deviceId, 'not found'));
+        } else if (IoTDevices.isUnknownCommand('filling', command)) {
+            return res.status(422).send(getResult(NOT_OK, command, deviceId, 'unknown command'));
+        }
+
+        // Update device state
+        IoTDevices.actuateDevice(deviceId, command);
+        return res.status(200).send(getResult(OK, command, deviceId));
+    }
     // cmd topics are consumed by the actuators (bell, lamp and door)
     processMqttMessage(topic, message) {
         const path = topic.split('/');

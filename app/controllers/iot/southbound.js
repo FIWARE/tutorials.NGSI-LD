@@ -36,36 +36,52 @@ switch (DEVICE_PAYLOAD.toLowerCase()) {
         break;
 }
 
+// The bell will respond to the "ring" command.
+// this will briefly set the bell to on.
+// The bell  is not a sensor - it will not report state northbound
+function bellHttpCommand(req, res) {
+    debug('bellHttpCommand');
+    return Command.actuateBell(req, res);
+}
+
+// The door responds to "open", "close", "lock" and "unlock" commands
+// Each command alters the state of the door. When the door is unlocked
+// it can be opened and shut by external events.
+function doorHttpCommand(req, res) {
+    debug('doorHttpCommand');
+    return Command.actuateDoor(req, res);
+}
+
+// The lamp can be "on" or "off" - it also registers luminosity.
+// It will slowly dim as time passes (provided no movement is detected)
+function lampHttpCommand(req, res) {
+    debug('lampHttpCommand');
+    return Command.actuateLamp(req, res);
+}
+
+// The filling can re-filled, or a proportion can be removed.
+function fillingHttpCommand(req, res) {
+    debug('fillingHttpCommand');
+    return Command.actuateFillingStation(req, res);
+}
+
+// The device monitor will display all MQTT messages on screen.
+// cmd topics are consumed by the actuators (bell, lamp door and fillingStation)
+function processMqttMessage(topic, message) {
+    debug('processMqttMessage');
+    const mqttBrokerUrl = process.env.MQTT_BROKER_URL || 'mqtt://mosquitto';
+    SOCKET_IO.emit('mqtt', mqttBrokerUrl + topic + '  ' + message);
+    Command.processMqttMessage(topic, message);
+}
+
 module.exports = {
-    // The bell will respond to the "ring" command.
-    // this will briefly set the bell to on.
-    // The bell  is not a sensor - it will not report state northbound
-    bellHttpCommand(req, res) {
-        debug('bellHttpCommand');
-        return Command.actuateBell(req, res);
+    HTTP: {
+        bell: bellHttpCommand,
+        lamp: lampHttpCommand,
+        door: doorHttpCommand,
+        filling: fillingHttpCommand
     },
-
-    // The door responds to "open", "close", "lock" and "unlock" commands
-    // Each command alters the state of the door. When the door is unlocked
-    // it can be opened and shut by external events.
-    doorHttpCommand(req, res) {
-        debug('doorHttpCommand');
-        return Command.actuateDoor(req, res);
-    },
-
-    // The lamp can be "on" or "off" - it also registers luminosity.
-    // It will slowly dim as time passes (provided no movement is detected)
-    lampHttpCommand(req, res) {
-        debug('lampHttpCommand');
-        return Command.actuateLamp(req, res);
-    },
-
-    // The device monitor will display all MQTT messages on screen.
-    // cmd topics are consumed by the actuators (bell, lamp and door)
-    processMqttMessage(topic, message) {
-        debug('processMqttMessage');
-        const mqttBrokerUrl = process.env.MQTT_BROKER_URL || 'mqtt://mosquitto';
-        SOCKET_IO.emit('mqtt', mqttBrokerUrl + topic + '  ' + message);
-        Command.processMqttMessage(topic, message);
+    MQTT: {
+        process: processMqttMessage
     }
 };

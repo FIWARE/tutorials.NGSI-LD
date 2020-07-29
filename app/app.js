@@ -12,6 +12,8 @@ const flash = require('connect-flash');
 const SECRET = process.env.SESSION_SECRET || crypto.randomBytes(20).toString('hex');
 
 const app = express();
+
+/*
 const mongoose = require('mongoose');
 
 const MONGO_DB = process.env.MONGO_URL ? process.env.MONGO_URL : 'mongodb://mongo-db:27017/address';
@@ -20,6 +22,7 @@ mongoose.connect(MONGO_DB, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
+*/
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

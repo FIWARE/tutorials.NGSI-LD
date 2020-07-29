@@ -13,27 +13,24 @@ const IoTDevices = require('../../models/devices');
 // Connect to the context broker and use fallback values if necessary
 const CONTEXT_BROKER = process.env.CONTEXT_BROKER || 'http://localhost:1026/v2';
 const DEVICE_BROKER = process.env.DEVICE_BROKER || CONTEXT_BROKER;
-const NGSI_VERSION = process.env.NGSI_VERSION || 'ngsi-v2';
 const NGSI_PREFIX = process.env.NGSI_LD_PREFIX !== undefined ? process.env.NGSI_LD_PREFIX : 'urn:ngsi-ld:';
 const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
 
-function createNGSIv2Request(action, id) {
-    const method = 'PATCH';
-    const body = {};
-    const headers = {
-        'Content-Type': 'application/json',
-        'fiware-servicepath': '/',
-        'fiware-service': 'openiot'
-    };
-    const url = DEVICE_BROKER + '/entities/' + NGSI_PREFIX + id + '/attrs';
-
-    body[action] = {
-        type: 'command',
-        value: ''
-    };
-
-    return { method, url, headers, body, json: true };
-}
+const COMMANDS = {
+    ring: 'Bell:',
+    on: 'Lamp:',
+    off: 'Lamp:',
+    unlock: 'Door:',
+    open: 'Door:',
+    close: 'Door:',
+    lock: 'Door:',
+    presence: 'Motion:',
+    add: 'Filling:',
+    remove: 'Filling:',
+    refill: 'Filling:',
+    raise: 'Temperature:',
+    lower: 'Temperature:'
+};
 
 function createNGSILDRequest(action, id) {
     const method = 'PATCH';
@@ -57,7 +54,7 @@ function createNGSILDRequest(action, id) {
 // via the Orion Context Broker and an IoT Agent.
 function sendCommand(req, res) {
     debug('sendCommand: ' + req.body.id + ' ' + req.body.action);
-    let id = req.body.id.split(':').pop();
+    const id = req.body.id.split(':').pop();
     const action = req.body.action;
     if (!res.locals.authorized) {
         // If the user is not authorized, return an error code.
@@ -65,22 +62,25 @@ function sendCommand(req, res) {
         return res.status(403).send({ message: 'Forbidden' });
     }
 
+    if (!Object.keys(COMMANDS).includes(action)) {
+        return res.status(404).send();
+    }
+
+    // The motion sensor does not accept commands,
+    // Update the state of the device directly
     if (action === 'presence') {
-        // The motion sensor does not accept commands,
-        // Update the state of the device directly
         IoTDevices.fireMotionSensor('motion' + id);
         return res.status(204).send();
     }
 
-    if (action === 'ring') {
-        id = 'Bell:' + id;
-    } else if (action === 'on' || action === 'off') {
-        id = 'Lamp:' + id;
-    } else {
-        id = 'Door:' + id;
+    // The temperature Gauge does not accept commands,
+    // Update the state of the device directly
+    if (action === 'raise' || action === 'lower') {
+        IoTDevices.alterTemperature('targetTemp' + id, action === 'raise');
+        return res.status(204).send();
     }
 
-    const options = NGSI_VERSION === 'ngsi-v2' ? createNGSIv2Request(action, id) : createNGSILDRequest(action, id);
+    const options = createNGSILDRequest(action, COMMANDS[action] + id);
 
     if (req.session.access_token) {
         // If the system has been secured and we have logged in,
