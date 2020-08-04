@@ -42,7 +42,7 @@ RUN if [ "${DOWNLOAD}" = "latest" ] ; \
   apt-get update && \
   apt-get install -y  --no-install-recommends unzip && \
   curl -s -L https://github.com/"${GITHUB_ACCOUNT}"/"${GITHUB_REPOSITORY}"/archive/"${RELEASE}".zip > source.zip && \
-  unzip source.zip -x "*/tutorials.*/**" "*/docs/**" "*/.*" && \
+  unzip source.zip -x "*/docs/**" "*/.*" && \
   rm source.zip && \
   mv "${GITHUB_REPOSITORY}-${RELEASE}"/app /usr/src/app && \
   # Remove unzip and clean apt cache
