@@ -302,7 +302,7 @@ A person (alive, dead, undead, or fictional). Subset of _Person_ from `schema.or
 -   `dateModified`: Update timestamp of this entity.
     -   Attribute type: **Property**. [DateTime](https://schema.org/DateTime)
     -   Read-Only. Automatically generated.
--   `id`: URN holding the id of the attribute - <span style="color:red;font-weight:bold">Required</span>
+-   `id`: URN holding the ID of the attribute - <span style="color:red;font-weight:bold">Required</span>
     -   Attribute type: **Property**.
 -   `type`: The entity type - <span style="color:red;font-weight:bold">Required</span>
     -   Attribute type: **Property**.
@@ -329,9 +329,7 @@ A person (alive, dead, undead, or fictional). Subset of _Person_ from `schema.or
     -   Attribute type: **Property**. [Text](https://schema.org/Text)
 -   `honorificPrefix`: An honorific prefix preceding a Person's name such as Dr/Mrs/Mr.
     -   Attribute type: **Property**. [Text](https://schema.org/Text)
--   `honorificSuffix`: An honorific suffix preceding a Person's name such as M.D. /PhD/MSCSW. interactionStatistic
-    InteractionCounter The number of interactions for the CreativeWork using the WebSite or SoftwareApplication. The
-    most specific child type of InteractionCounter should be used. Supersedes interactionCount.
+-   `honorificSuffix`: An honorific suffix preceding a Person's name such as M.D. /PhD/MSCSW.
     -   Attribute type: **Property**. [Text](https://schema.org/Text)
 -   `isicV4`: The International Standard of Industrial Classification of All Economic Activities (ISIC), Revision 4 code
     for a particular organization, business person, or place.
