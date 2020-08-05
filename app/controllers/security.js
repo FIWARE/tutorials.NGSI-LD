@@ -41,7 +41,7 @@ function logUser(req, user, message) {
 
 function getUserFromAccessToken(req, accessToken) {
     debug('getUserFromAccessToken');
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         // Using the access token asks the IDM for the user info
         oa.get(keyrockIPAddress + '/user', accessToken)
             .then((response) => {

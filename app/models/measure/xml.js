@@ -75,12 +75,7 @@ class XMLMeasure {
 
         SOCKET_IO.emit(
             'http',
-            debugText +
-                '<br/> ' +
-                payload
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/\n/g, '<br/>')
+            debugText + '<br/> ' + payload.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br/>')
         );
     }
 

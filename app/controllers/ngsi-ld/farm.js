@@ -9,10 +9,11 @@ const monitor = require('../../lib/monitoring');
 const ngsiLD = require('../../lib/ngsi-ld');
 const _ = require('lodash');
 
-debug('Store is retrieved using NGSI-LD');
+debug('Context Data is retrieved using NGSI-LD');
 
-const LinkHeader =
-    '<https://fiware.github.io/tutorials.NGSI-LD/tutorials-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json">';
+const Context = 'http://context:3000/data-models/ngsi-context.jsonld';
+
+const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json">';
 
 function mapTileUrl(zoom, location) {
     const tilesPerRow = Math.pow(2, zoom);
@@ -34,36 +35,35 @@ function mapTileUrl(zoom, location) {
     );
 }
 
-// This function receives the details of a store from the context
+// This function receives the details of a building from the context
 //
 // It is effectively processing the following cUrl command:
 //   curl -X GET \
-//     'http://{{orion}}/ngsi-ld/v1/entities/?type=Store&options=keyValues'
+//     'http://{{orion}}/ngsi-ld/v1/entities/?type=Building&options=keyValues'
 //
-async function displayStore(req, res) {
-    debug('displayStore');
+async function displayFarm(req, res) {
+    debug('displayFarm');
     // If the user is not authorized, display the main page.
     if (!res.locals.authorized) {
         req.flash('error', 'Access Denied');
         return res.redirect('/');
     }
     try {
-        monitor('NGSI', 'readEntity ' + req.params.storeId);
-        const store = await ngsiLD.readEntity(
-            req.params.storeId,
+        monitor('NGSI', 'readEntity ' + req.params.id);
+        const building = await ngsiLD.readEntity(
+            req.params.id,
             { options: 'keyValues' },
             ngsiLD.setHeaders(req.session.access_token, LinkHeader)
         );
-        // If a store has been found display it on screen
-        store.mapUrl = mapTileUrl(15, store.location);
-        return res.render('store', { title: store.name, store, ngsi: 'ngsi-ld' });
+        // If a building has been found display it on screen
+        building.mapUrl = mapTileUrl(15, building.location);
+        return res.render('building', { title: building.name, building });
     } catch (error) {
         debug(error);
-        // If no store has been found, display an error screen
-        return res.render('store-error', {
+        // If no building has been found, display an error screen
+        return res.render('error', {
             title: 'Error',
-            error,
-            ngsi: 'ngsi-ld'
+            error
         });
     }
 }
@@ -75,7 +75,7 @@ async function displayStore(req, res) {
 //   curl -X GET \
 //     'http://{{orion}}/ngsi-ld/v1/entities/?type=Product&options=keyValues'
 //   curl -X GET \
-//     'http://{{orion}}/ngsi-ld/v1/entities/?type=InventoryItem&options=keyValues&q=refStore==<entity-id>'
+//     'http://{{orion}}/ngsi-ld/v1/entities/?type=InventoryItem&options=keyValues&q=refbuilding==<entity-id>'
 //
 async function displayTillInfo(req, res) {
     debug('displayTillInfo');
@@ -84,9 +84,9 @@ async function displayTillInfo(req, res) {
         const inventory = [];
         const headers = ngsiLD.setHeaders(req.session.access_token, LinkHeader);
 
-        monitor('NGSI', 'readEntity type=Building id=' + req.params.storeId);
+        monitor('NGSI', 'readEntity type=Building id=' + req.params.id);
         const building = await ngsiLD.readEntity(
-            req.params.storeId,
+            req.params.id,
             {
                 type: 'Building',
                 options: 'keyValues',
@@ -119,7 +119,7 @@ async function displayTillInfo(req, res) {
                 refProduct: key,
                 shelfCount: _.reduce(
                     value,
-                    function(sum, shelf) {
+                    function (sum, shelf) {
                         return sum + shelf.numberOfItems;
                     },
                     0
@@ -128,7 +128,7 @@ async function displayTillInfo(req, res) {
         });
 
         monitor('NGSI', 'listEntities type=Product id=' + stockedProducts.join(','));
-        let productsInStore = await ngsiLD.listEntities(
+        let productsInbuilding = await ngsiLD.listEntities(
             {
                 type: 'Product',
                 options: 'keyValues',
@@ -138,17 +138,17 @@ async function displayTillInfo(req, res) {
             headers
         );
 
-        productsInStore = Array.isArray(productsInStore) ? productsInStore : [productsInStore];
-        productsInStore = _.mapValues(productsInStore, (e) => {
+        productsInbuilding = Array.isArray(productsInbuilding) ? productsInbuilding : [productsInbuilding];
+        productsInbuilding = _.mapValues(productsInbuilding, (e) => {
             e.price = e.price * 100;
             return e;
         });
 
         return res.render('till', {
-            products: productsInStore,
+            products: productsInbuilding,
             inventory,
             ngsiLd: true,
-            storeId: req.params.storeId
+            id: req.params.id
         });
     } catch (error) {
         debug(error);
@@ -157,7 +157,7 @@ async function displayTillInfo(req, res) {
             products: {},
             inventory: {},
             ngsiLd: true,
-            storeId: req.params.storeId
+            id: req.params.id
         });
     }
 }
@@ -174,7 +174,7 @@ async function buyItem(req, res) {
             type: 'Shelf',
             options: 'keyValues',
             attrs: 'stocks,numberOfItems',
-            q: 'numberOfItems>0;locatedIn=="' + req.body.storeId + '";stocks=="' + req.body.productId + '"',
+            q: 'numberOfItems>0;locatedIn=="' + req.body.id + '";stocks=="' + req.body.productId + '"',
             limit: 1
         },
         headers
@@ -186,15 +186,15 @@ async function buyItem(req, res) {
         numberOfItems: { type: 'Property', value: count }
     });
     await ngsiLD.updateAttribute(shelf[0].id, { numberOfItems: { type: 'Property', value: count } }, headers);
-    res.redirect(`/app/store/${req.body.storeId}/till`);
+    res.redirect(`/app/building/${req.body.id}/till`);
 }
 
-// This function renders information for the warehouse of a store
+// This function renders information for the warehouse of a building
 // It is used to display alerts based on any low stock subscriptions received
 //
 function displayWarehouseInfo(req, res) {
     debug('displayWarehouseInfo');
-    res.render('warehouse', { id: req.params.storeId });
+    res.render('warehouse', { id: req.params.id });
 }
 
 function priceChange(req, res) {
@@ -221,7 +221,7 @@ function orderStock(req, res) {
 
 module.exports = {
     buyItem,
-    displayStore,
+    display: displayFarm,
     displayTillInfo,
     displayWarehouseInfo,
     priceChange,

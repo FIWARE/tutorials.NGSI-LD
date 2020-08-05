@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  h1= title
+  div
+    ul
+      li  battery: #{device.batteryLevel}
+      li  category: #{device.category}
+      li  asset: #{device.controlledAsset}
+      li  state: #{device.deviceState}

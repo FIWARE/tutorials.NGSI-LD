@@ -36,7 +36,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # the repository and replace the whole RUN statement below by the following COPY statement 
 # in your local source using :
 #
-# COPY . ${TARGET}/
+# COPY ./app ${TARGET}
 #
 
 # hadolint ignore=DL3008

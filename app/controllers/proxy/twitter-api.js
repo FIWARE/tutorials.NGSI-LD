@@ -99,7 +99,7 @@ function makeTwitterRequest(params, callback, errorHandler) {
             grant_type: 'client_credentials'
         }
     })
-        .then(function(result) {
+        .then(function (result) {
             debug('Making a Twitter Search API request: ' + JSON.stringify(params));
             const client = new Twitter({
                 consumer_key: TWITTER_CONSUMER_KEY,

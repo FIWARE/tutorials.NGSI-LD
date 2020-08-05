@@ -34,7 +34,7 @@ function translateRequest(req, res) {
     };
 
     request(options)
-        .then(async function(cbResponse) {
+        .then(async function (cbResponse) {
             // Having received a response, the payload is expanded using
             // the core context - this forces all attribute ids to be
             // URIs
@@ -46,7 +46,7 @@ function translateRequest(req, res) {
             delete compacted['@context'];
             return res.send(compacted);
         })
-        .catch(function(err) {
+        .catch(function (err) {
             return res.send(err);
         });
 }

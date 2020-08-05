@@ -1,0 +1,48 @@
+extends layout
+
+include product
+
+block content
+  h1= title
+  div
+    div(style="float:left; border-width:1px; border:solid; padding:2px; background: #efefef;")
+      img(src=`${building.mapUrl}`)
+      small(style="display: inherit")
+        a(href="https://www.openstreetmap.org/copyright")
+          | © OpenStreetMap contributors
+    div(style="float:left; padding:20px; border:none;")
+      address
+        | #{building.address.streetAddress} #[br]
+        | #{building.address.addressLocality} #[br]
+        | #{building.address.postalCode} #[br]
+        | #{building.address.addressRegion} #[br]
+
+  div(style="clear:both")
+  div
+    ul
+      li location: #{building.location.coordinates}
+      li category: #{building.category}
+      li owner: #{building.owner}
+//-    div(style="float: left; padding:0px 20px 20px 20px; border: none;")
+      iframe(width='560', height='270', src=`/app/building/${building.id}/till`, frameborder='0')
+    div(style="clear: both;")
+    div(style="padding:5px 20px 20px 20px; border:none;")
+      - if (building.tweets)
+        h3 Tweets:
+        ul
+          each item in building.tweets
+            li= item
+      - if (building.temperature)
+        p 
+          b Temperature:&nbsp;
+          | #{building.temperature}
+      - if (building.relativeHumidity)
+        p 
+          b Humidity:&nbsp;
+          | #{building.relativeHumidity}
+      - if (building.luminosity)
+        p 
+          b Luminosity:&nbsp;
+          | #{!isNaN(building.luminosity) ? building.luminosity : 'Unknown'}
+    div(style="float: left; padding:5px 20px 20px 20px; border: none;")
+      iframe(width='560', height='315', src=`/app/building/${building.id}/warehouse`, frameborder='0')

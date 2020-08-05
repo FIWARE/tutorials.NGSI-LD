@@ -48,15 +48,15 @@ block content
     a(href="device/history") Short-Term History
 
   div
-    h3 Store Details
+    h3 Farm Building Details
     - if (securityEnabled)
       p Any logged-in user can access these:
-      each store in stores
-        a.red(href=`${store.href}`)  #{store.name}
+      each building in buildings
+        a.red(href=`${building.href}`)  #{building.name}
         | &nbsp;
     - else
-      each store in stores
-        a(href=`${store.href}`)  #{store.name}
+      each building in buildings
+        a(href=`${building.href}`)  #{building.name}
         | &nbsp;
 
   - if (securityEnabled)

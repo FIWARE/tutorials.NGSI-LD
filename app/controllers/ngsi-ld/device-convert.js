@@ -48,7 +48,7 @@ function convertAttributeToLD(attr) {
     }
 
     if (attr.metadata) {
-        Object.keys(attr.metadata).forEach(function(key) {
+        Object.keys(attr.metadata).forEach(function (key) {
             switch (key) {
                 case 'observedAt':
                     obj[key] = attr.metadata[key].value;
@@ -64,7 +64,7 @@ function convertAttributeToLD(attr) {
 
 function convertEntityToLD(json) {
     const obj = { '@context': dataModelContext };
-    Object.keys(json).forEach(function(key) {
+    Object.keys(json).forEach(function (key) {
         switch (key) {
             case 'id':
                 obj[key] = json[key];
