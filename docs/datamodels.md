@@ -296,7 +296,7 @@ Extension of _Device_ from **Smart-Data-Models**
     -   Attribute type: **Property**. [Text](https://schema.org/Text) or
         [QuantitativeValue](https://schema.org/QuantitativeValue)
 *   `fillingLevel`: Property related to some measurements that are characterized by a certain value that is a filling
-    level.
+    level. - <span style="color:red;font-weight:bold">Required</span>
     -   Attribute type: **Property**. [Number](https://schema.org/Number)
     -   Meta Data:
         -   `providedBy`: The device that sent this reading
