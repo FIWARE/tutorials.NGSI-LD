@@ -81,8 +81,8 @@ RUN \
 
 USER node
 ENV NODE_ENV=development
-# Expose 4061 for NORTH PORT, 7896 for HTTP PORT
-EXPOSE ${IOTA_NORTH_PORT:-4061} ${IOTA_HTTP_PORT:-7896}
+# Ports used by application
+EXPOSE ${WEB_APP_PORT:-3000} ${DUMMY_DEVICES_PORT:-3001}
 CMD ["node", "${TARGET}/bin/www"]
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s \
    CMD npm run healthcheck
@@ -123,8 +123,8 @@ WORKDIR "${TARGET}"
 
 USER nobody
 ENV NODE_ENV=production
-# Expose 4061 for NORTH PORT, 7896 for HTTP PORT
-EXPOSE ${IOTA_NORTH_PORT:-4061} ${IOTA_HTTP_PORT:-7896}
+# Ports used by application
+EXPOSE ${WEB_APP_PORT:-3000} ${DUMMY_DEVICES_PORT:-3001}
 CMD ["./bin/www"]
 HEALTHCHECK  --interval=30s --timeout=3s --start-period=10s \
   CMD ["/nodejs/bin/node", "./bin/healthcheck"]
