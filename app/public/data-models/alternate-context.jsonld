@@ -7,35 +7,35 @@
         "schema": "https://schema.org/",
         "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
         "xsd": "http://www.w3.org/2001/XMLSchema#",
-        "Building": "fiware:Building",
-        "Female": "schema:Female",
-        "FillingLevelSensor": "fiware:FillingLevelSensor",
+        "Gebäude": "fiware:Building",
+        "Weiblich": "schema:Female",
+        "Füllstandssensor": "fiware:FillingLevelSensor",
         "HVAC": "https://w3id.org/saref#HVAC",
-        "Male": "schema:Male",
+        "Männlich": "schema:Male",
         "Person": "fiware:Person",
         "TemperatureSensor": "fiware:TemperatureSensor",
-        "actuator": "https://w3id.org/saref#actuator",
-        "additionalName": {
+        "aktuator": "https://w3id.org/saref#actuator",
+        "zusätzlicherName": {
             "@id": "schema:additionalName",
             "@type": "xsd:string"
         },
-        "address": "schema:address",
+        "adresse": "schema:address",
         "airPollution": "https://w3id.org/saref#airPollution",
         "atmosphericPressure": "https://w3id.org/saref#atmosphericPressure",
-        "barn": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn",
-        "batteryLevel": {
+        "scheune": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn",
+        "accu": {
             "@id": "fiware:batteryLevel",
             "@type": "xsd:number"
         },
-        "category": {
+        "kategorie": {
             "@id": "fiware:category",
             "@type": "@vocab"
         },
-        "configuration": {
+        "aufbau": {
             "@id": "fiware:configuration",
             "@type": "xsd:string"
         },
-        "conservatory": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dconservatory",
+        "wintergarten": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dconservatory",
         "containedInPlace": {
             "@id": "fiware:containedInPlace",
             "@type": "@id"
@@ -48,7 +48,7 @@
             "@id": "fiware:controlledProperty",
             "@type": "@vocab"
         },
-        "cowshed": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dcowshed",
+        "kuhstall": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dcowshed",
         "dataProvider": {
             "@id": "fiware:dataProvider",
             "@type": "xsd:string"
@@ -81,7 +81,7 @@
             "@id": "fiware:dateModified",
             "@type": "xs:dateTime"
         },
-        "depth": "https://w3id.org/saref#depth",
+        "tiefe": "https://w3id.org/saref#depth",
         "description": {
             "@id": "ngsi-ld:description",
             "@type": "xsd:string"
@@ -97,13 +97,13 @@
             "@type": "xsd:string"
         },
         "endgun": "https://w3id.org/saref#endgun",
-        "familyName": {
+        "familienname": {
             "@id": "schema:familyName",
             "@type": "xsd:string"
         },
         "farm": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dfarm",
         "farm_auxiliary": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dfarm_auxiliary",
-        "faxNumber": {
+        "Faxnummer": {
             "@id": "schema:faxNumber",
             "@type": "xsd:string"
         },
@@ -120,15 +120,15 @@
             "@id": "fiware:floorsBelowGround",
             "@type": "xsd:integer"
         },
-        "gender": {
+        "geschlecht": {
             "@id": "schema:gender",
             "@type": "@vocab"
         },
-        "givenName": {
+        "vorname": {
             "@id": "schema:givenName",
             "@type": "xsd:string"
         },
-        "greenhouse": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dgreenhouse",
+        "gewächshaus": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dgreenhouse",
         "hangar": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dhangar",
         "hardwareVersion": {
             "@id": "fiware:hardwareVersion",
@@ -142,7 +142,7 @@
             "@id": "schema:honorificSuffix",
             "@type": "xsd:string"
         },
-        "humidity": "https://w3id.org/saref#humidity",
+        "luftfeuchtigkeit": "https://w3id.org/saref#humidity",
         "hut": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dhut",
         "implement": "https://w3id.org/saref#implement",
         "ipAddress": {
@@ -155,11 +155,11 @@
             "@id": "schema:isicV4",
             "@type": "xsd:string"
         },
-        "jobTitle": {
+        "berufsbezeichnung": {
             "@id": "schema:jobTitle",
             "@type": "xsd:string"
         },
-        "location": "https://w3id.org/saref#location",
+        "ort": "https://w3id.org/saref#location",
         "macAddress": {
             "@id": "fiware:macAddress",
             "@type": "xsd:string"
@@ -169,7 +169,7 @@
             "@type": "xsd:string"
         },
         "meter": "https://w3id.org/saref#meter",
-        "milking": "https://w3id.org/saref#milking",
+        "melken": "https://w3id.org/saref#milking",
         "mnc": {
             "@id": "fiware:mnc",
             "@type": "xsd:string"
@@ -195,13 +195,13 @@
             "@id": "fiware:osVersion",
             "@type": "xsd:string"
         },
-        "owner": {
+        "inhaber": {
             "@id": "fiware:owner",
             "@type": "@id"
         },
-        "precipitation": "https://w3id.org/saref#precipitation",
-        "pressure": "https://w3id.org/saref#pressure",
-        "provider": {
+        "niederschlag": "https://w3id.org/saref#precipitation",
+        "druck": "https://w3id.org/saref#pressure",
+        "anbieter": {
             "@id": "fiware:provider",
             "@type": "xsd:string"
         },
@@ -218,38 +218,38 @@
             "@type": "xsd:string"
         },
         "sensor": "https://w3id.org/saref#sensor",
-        "serialNumber": {
+        "ordnungsnummer": {
             "@id": "fiware:serialNumber",
             "@type": "xsd:string"
         },
         "service": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dservice",
-        "shed": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dshed",
+        "schuppen": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dshed",
         "softwareVersion": {
             "@id": "fiware:softwareVersion",
             "@type": "xsd:string"
         },
-        "soilMoisture": "https://w3id.org/saref#soilMoisture",
-        "solarRadiation": "https://w3id.org/saref#solarRadiation",
-        "source": {
+        "bodenfeuchtigkeit": "https://w3id.org/saref#soilMoisture",
+        "sonnenstrahlung": "https://w3id.org/saref#solarRadiation",
+        "quelle": {
             "@id": "fiware:source",
             "@type": "xsd:string"
         },
-        "stable": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dstable",
-        "sty": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dsty",
+        "stall": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dstable",
+        "schweinestall": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dsty",
         "supportedProtocol": {
             "@id": "fiware:supportedProtocol",
             "@type": "@vocab"
         },
-        "taxID": {
+        "steuerID": {
             "@id": "schema:taxID",
             "@type": "xsd:string"
         },
-        "telephone": {
+        "telefon": {
             "@id": "schema:telephone",
             "@type": "xsd:string"
         },
         "temperature": "https://w3id.org/saref#temperature",
-        "transformer_tower": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dtransformer_tower",
+        "transformator_turm": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dtransformer_tower",
         "value": {
             "@id": "fiware:value",
             "@type": "xsd:string"
@@ -258,12 +258,12 @@
             "@id": "schema:vatID",
             "@type": "xsd:string"
         },
-        "waterConsumption": "https://w3id.org/saref#waterConsumption",
-        "water_tower": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dwater_tower",
-        "weatherConditions": "https://w3id.org/saref#weatherConditions",
-        "weight": "https://w3id.org/saref#weight",
-        "windDirection": "https://w3id.org/saref#windDirection",
-        "windSpeed": "https://w3id.org/saref#windSpeed"
+        "wasserVerbrauch": "https://w3id.org/saref#waterConsumption",
+        "wasserturm": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dwater_tower",
+        "wetterbedingungen": "https://w3id.org/saref#weatherConditions",
+        "gewicht": "https://w3id.org/saref#weight",
+        "windrichtung": "https://w3id.org/saref#windDirection",
+        "windgeschwindigkeit": "https://w3id.org/saref#windSpeed"
     },
     "@graph": [
         {
