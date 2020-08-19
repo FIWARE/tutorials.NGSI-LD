@@ -23,7 +23,7 @@
         "airPollution": "https://w3id.org/saref#airPollution",
         "atmosphericPressure": "https://w3id.org/saref#atmosphericPressure",
         "scheune": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn",
-        "accu": {
+        "akku": {
             "@id": "fiware:batteryLevel",
             "@type": "xsd:number"
         },
@@ -36,20 +36,20 @@
             "@type": "xsd:string"
         },
         "wintergarten": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dconservatory",
-        "containedInPlace": {
+        "anOrtEnthalten": {
             "@id": "fiware:containedInPlace",
             "@type": "@id"
         },
-        "controlledAsset": {
+        "kontrollierterVermögenswert": {
             "@id": "fiware:controlledAsset",
             "@type": "@id"
         },
-        "controlledProperty": {
+        "kontrollierterVermögenswert": {
             "@id": "fiware:controlledProperty",
             "@type": "@vocab"
         },
         "kuhstall": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dcowshed",
-        "dataProvider": {
+        "datenanbieter": {
             "@id": "fiware:dataProvider",
             "@type": "xsd:string"
         },
@@ -82,16 +82,16 @@
             "@type": "xs:dateTime"
         },
         "tiefe": "https://w3id.org/saref#depth",
-        "description": {
+        "beschreibung": {
             "@id": "ngsi-ld:description",
             "@type": "xsd:string"
         },
-        "deviceState": {
+        "gerätestatus": {
             "@id": "fiware:deviceState",
             "@type": "xsd:string"
         },
-        "digester": "https://wiki.openstreetmap.org/wiki/Tag:building%3Ddigester",
-        "eatingActivity": "https://w3id.org/saref#eatingActivity",
+        "fermenter": "https://wiki.openstreetmap.org/wiki/Tag:building%3Ddigester",
+        "essaktivität": "https://w3id.org/saref#eatingActivity",
         "email": {
             "@id": "schema:email",
             "@type": "xsd:string"
@@ -101,13 +101,13 @@
             "@id": "schema:familyName",
             "@type": "xsd:string"
         },
-        "farm": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dfarm",
-        "farm_auxiliary": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dfarm_auxiliary",
-        "Faxnummer": {
+        "bauernhof": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dfarm",
+        "bauernhofhilfsmittel": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dfarm_auxiliary",
+        "faxnummer": {
             "@id": "schema:faxNumber",
             "@type": "xsd:string"
         },
-        "fillingLevel": "https://w3id.org/saref#fillingLevel",
+        "füllstands": "https://w3id.org/saref#fillingLevel",
         "firmwareVersion": {
             "@id": "fiware:firmwareVersion",
             "@type": "xsd:string"
@@ -143,8 +143,8 @@
             "@type": "xsd:string"
         },
         "luftfeuchtigkeit": "https://w3id.org/saref#humidity",
-        "hut": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dhut",
-        "implement": "https://w3id.org/saref#implement",
+        "hütte": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dhut",
+        "werkzeug": "https://w3id.org/saref#implement",
         "ipAddress": {
             "@id": "fiware:ipAddress",
             "@type": "xsd:string"
@@ -174,20 +174,20 @@
             "@id": "fiware:mnc",
             "@type": "xsd:string"
         },
-        "motion": "https://w3id.org/saref#motion",
-        "movementActivity": "https://w3id.org/saref#movementActivity",
+        "bewegung": "https://w3id.org/saref#motion",
+        "bewegungsaktivität": "https://w3id.org/saref#movementActivity",
         "multimedia": "https://w3id.org/saref#multimedia",
         "name": {
             "@id": "ngsi-ld:name",
             "@type": "xsd:string"
         },
-        "network": "https://w3id.org/saref#network",
-        "occupancy": "https://w3id.org/saref#occupancy",
-        "occupier": {
+        "netzwerk": "https://w3id.org/saref#network",
+        "belegung": "https://w3id.org/saref#occupancy",
+        "besatzer": {
             "@id": "fiware:occupier",
             "@type": "@id"
         },
-        "openingHours": {
+        "öffnungszeiten": {
             "@id": "fiware:openingHours",
             "@type": "xsd:array"
         },
@@ -205,11 +205,11 @@
             "@id": "fiware:provider",
             "@type": "xsd:string"
         },
-        "refDeviceModel": {
+        "refGeräteModell": {
             "@id": "fiware:refDeviceModel",
             "@type": "@id"
         },
-        "refMap": {
+        "refKarte": {
             "@id": "fiware:refMap",
             "@type": "xs:anyURI"
         },
