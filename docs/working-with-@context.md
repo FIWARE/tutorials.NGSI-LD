@@ -85,9 +85,9 @@ _key-value-pairs_. Data returned in the _normalised_ format respects the **NGSI-
 another context broker (or any other component offering an **NGSI-LD** interface). Data returned in the
 _key-value-pairs_ format is by definition not **NGSI-LD**.
 
-## Content Negociation and the `Content-Type` and `Accept` Headers
+## Content Negotiation and the `Content-Type` and `Accept` Headers
 
-During content negociation, **NGSI-LD** offers data in one of three formats, these effect the structure of the payload
+During content negotiation, **NGSI-LD** offers data in one of three formats, these effect the structure of the payload
 body.
 
 -   `Accept: application/json` - the response is in **JSON** format
