@@ -11,6 +11,8 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/610b7cd32e4b07b8e9c9)
 
+<hr class="core"/>
+
 # Working with `@context` files
 
 > “Some quotations are greatly improved by lack of context.”
@@ -83,7 +85,7 @@ _key-value-pairs_. Data returned in the _normalised_ format respects the **NGSI-
 another context broker (or any other component offering an **NGSI-LD** interface). Data returned in the
 _key-value-pairs_ format is by definition not **NGSI-LD**.
 
-## Content negociation and the `Content-Type` and `Accept` Headers
+## Content Negociation and the `Content-Type` and `Accept` Headers
 
 During content negociation, **NGSI-LD** offers data in one of three formats, these effect the structure of the payload
 body.
@@ -137,6 +139,8 @@ run from exposed ports.
 ![](https://fiware.github.io/tutorials.Working-with-At-Context/img/architecture.png)
 
 The necessary configuration information can be seen in the services section of the associated `orion-ld.yml` file:
+
+<h3>Orion-LD Configuration</h3>
 
 ```yaml
 orion:
@@ -207,11 +211,11 @@ cd tutorials.Working-with-At-Context
 
 ---
 
-# Creating NGSI-LD data entities.
+# Creating NGSI-LD data entities
 
 This tutorial creates some initial farm building entities to be used by the Farm Management system.
 
-## Prerequisites
+<h2>Prerequisites</h2>
 
 Once the services have started up, and before interacting with the context broker itself, it is useful to check that the
 necessary prerequisites are in place.
