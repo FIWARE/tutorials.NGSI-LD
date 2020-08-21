@@ -14,6 +14,10 @@ The tutorial is mainly concerned with online and command-line tooling.
 
 # Understanding `@context`
 
+> “Wisdom is intelligence in context.”
+>
+> ― Raheel Farooq, Kalam
+
 Creating an interoperable system of readable links for computers requires the use of a well defined data format
 ([JSON-LD](http://json-ld.org/)) and assignation of unique IDs
 ([URLs or URNs](https://stackoverflow.com/questions/4913343/what-is-the-difference-between-uri-url-and-urn)) for both
@@ -196,7 +200,7 @@ mean we will need things such as:
 
 ```json
 {
-    "temperature": { 
+    "temperature": {
         "type": "Property",
         "value": 30,
         "unitCode" : "CEL",
@@ -205,7 +209,7 @@ mean we will need things such as:
     }
 },
 {
-    "fillingLevel": { 
+    "fillingLevel": {
         "type": "Property",
         "value": 0.5,
         "unitCode": "P1",
