@@ -38,7 +38,7 @@ Which means that every `address` attribute follows the definition as defined by 
 
 `https://schema.org/address` :
 
-![](https://fiware.github.io/tutorials.Working-with-At-Context/img/architecture.png)
+![](https://fiware.github.io/tutorials.Working-with-At-Context/img/address.png)
 
 A program written by a third party would therefore be able to extract information such the fact an `address` attribute
 holds a JSON object with a sub-attribute containing the `streetAddress` by referring to the full
