@@ -12,6 +12,7 @@ pages:
   - Home: "index.md"
   - "<span style='font-size:105%;padding:0px'>Core Context Management: </span><span style='font-size:105%;padding:0px'>The NGSI-LD Interface</span>":
       - "Understanding @context": "understanding-@context.md"
+      - "Working with @context": "working-with-@context.md"
   - "Appendix":
       - "Data Models": "datamodels.md"
   
