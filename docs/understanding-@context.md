@@ -12,6 +12,8 @@ interface.
 
 The tutorial is mainly concerned with online and command-line tooling.
 
+<hr class="core"/>
+
 # Understanding `@context`
 
 > “Wisdom is intelligence in context.”
