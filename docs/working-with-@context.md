@@ -4,7 +4,7 @@
 
 **Description:** This tutorial examines the interaction between **NGSI-LD** and **JSON-LD** `@context` files. The `@context` files
 generated in the [previous tutorial](understanding-@context.md) are used as the
-underlying data model for inputing context data and context information is queries and read back in different formats.
+underlying data model for inputting context data and context information is queries and read back in different formats.
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
 [Postman documentation](https://fiware.github.io/tutorials.Working-with-At-Context/)
@@ -25,7 +25,7 @@ This means that we have defined an agreed set of unique IDs (URNs or URLs) for a
 attribute within those entities so that other external applications will be able to programmatically understand the data
 held within our broker.
 
-For example the attribute `address` is within our smart application is defined as follows:
+For example, the attribute `address` is within our smart application is defined as follows:
 
 ```json
 "@context": {
@@ -59,20 +59,20 @@ holds a JSON object with a sub-attribute containing the `streetAddress` by refer
 }
 ```
 
-This is the **JSON-LD** programmatic syntax allowing computers to extract meaningful data _The attribute
+This is the **JSON-LD** programmatic syntax allowing computers to extract meaningful data. _The attribute
 `address.streetAddress` is a street_ directly without the need for human intervention.
 
 Imagine the case where a company is contracting agricultural labourers. The farmer will need to be billed for the work
 done. If such a system is built on JSON-LD, it does not matter if the farmer's Farm Management Information System
 assigns different names to the attributes of the billing address provided that the farmer and contractor can agree on
-the well-defined URNS for each attribute as **JSON-LD** can easily translate between the two formats using common
+the well-defined URNs for each attribute as **JSON-LD** can easily translate between the two formats using common
 expansion and compaction algorithms.
 
 ## NGSI-LD Rules
 
 **NGSI-LD** is a formally structured _extended subset_ of **JSON-LD**. Therefore **NGSI-LD** offers all the
 interoperability and flexibility of **JSON-LD** itself. It also defines its own core `@context` which cannot be
-overridden for **NGSI-LD** operations. This means that **NGSI-LD** users agree to a common well defined set of rules for
+overridden for **NGSI-LD** operations. This means that **NGSI-LD** users agree to a common well-defined set of rules for
 structuring their data, and then supplement this with the rest of the **JSON-LD** specification.
 
 Whilst interacting directly with **NGSI-LD** interface of the context broker the additional **NGSI-LD** rules must be
@@ -95,7 +95,7 @@ body.
 -   `Accept: application/geo+json` - the response is in **GeoJSON** or **GeoJSON-LD** format
 
 The major difference between **JSON** format and **JSON-LD** format, is that if **JSON-LD** format is chosen, then the
-`@context` is found as an additional attribute within the body of the response. if the **JSON** only format is used the
+`@context` is found as an additional attribute within the body of the response. If the **JSON** only format is used the
 `@context` is passed as an additional `Link` Header element and is not found in the response body.
 
 Similarly when sending **NGSI-LD** data to the context broker, an application may choose to send a payload including an
@@ -327,8 +327,8 @@ The first request will take some time, as the context broker must navigate and l
 
 Since the `Content-Type: application/ld+json` the `@context` is supplied in the body of the request. As with all
 **NGSI-LD** interactions, the core **NGSI-LD** `@context`
-([`https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld`](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld)
-is implicitly included as well.)
+([`https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld`](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld))
+is implicitly included as well.
 
 This means that the actual `@context` is:
 
@@ -457,7 +457,7 @@ Since no explicit `@context` was sent in the request, the response returns the C
 -   `address` has been mapped to `http://schema.org/address`
 -   `category` has been mapped to `https://uri.fiware.org/ns/data-models#category`
 
-Note that if an attribute has not been not associated to an FQN when the entity was created, the short name will
+Note that if an attribute has not been associated to an FQN when the entity was created, the short name will
 **always** be displayed.
 
 ```json
@@ -982,7 +982,7 @@ Note that the `@context` element has not been lost. It is still returned in the 
 
 ### Filter context data by comparing the values of a geo:json attribute
 
-This example return all buildings within 800m the **Brandenburg Gate** in **Berlin** (_52.5162N 13.3777W_). To make a
+This example returns all buildings within 800m the **Brandenburg Gate** in **Berlin** (_52.5162N 13.3777W_). To make a
 geo-query request, three parameters must be specified, `geometry`, `coordinates` and `georel`.
 
 The `coordinates` parameter is represented in [geoJSON](https://tools.ietf.org/html/rfc7946) including the square
