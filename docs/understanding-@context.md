@@ -109,6 +109,8 @@ This example can be split down into the following Entities:
 -   **IoT Devices**:
     -   Temperature Senor
     -   Filling Level Sensor
+    
+![](https://fiware.github.io/tutorials.Understanding-At-Context/img/entities.png)
 
 ## Baseline Data Models
 
