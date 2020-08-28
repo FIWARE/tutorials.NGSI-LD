@@ -50,30 +50,6 @@ Batch operations allow users to modify multiple data entities with a single requ
 -   `/entityOperations/upsert`
 -   `/entityOperations/delete`
 
-
-
-# Prerequisites
-
-## Docker
-
-To keep things simple all components will be run using [Docker](https://www.docker.com). **Docker** is a container
-technology which allows to different components isolated into their respective environments.
-
--   To install Docker on Windows follow the instructions [here](https://docs.docker.com/docker-for-windows/)
--   To install Docker on Mac follow the instructions [here](https://docs.docker.com/docker-for-mac/)
--   To install Docker on Linux follow the instructions [here](https://docs.docker.com/install/)
-
-**Docker Compose** is a tool for defining and running multi-container Docker applications. A
-[YAML file](https://raw.githubusercontent.com/Fiware/tutorials.NGSI-LD-Operations/master/docker-compose/orion-ld.yml) is used
-configure the required services for the application. This means all container services can be brought up in a single
-command. Docker Compose is installed by default as part of Docker for Windows and Docker for Mac, however Linux users
-will need to follow the instructions found [here](https://docs.docker.com/compose/install/)
-
-## Cygwin
-
-We will start up our services using a simple bash script. Windows users should download [cygwin](http://www.cygwin.com/)
-to provide a command-line functionality similar to a Linux distribution on Windows.
-
 # Architecture
 
 The demo application will send and receive NGSI-LD calls to a compliant context broker. Since the standardized NGSI-LD interface is available across
