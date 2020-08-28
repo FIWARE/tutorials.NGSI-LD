@@ -95,3 +95,6 @@
 [submodule "tutorials.Working-with-At-Context"]
 	path = tutorials.Working-with-At-Context
 	url = https://github.com/FIWARE/tutorials.Working-with-At-Context
+[submodule "tutorials.NGSI-LD-Operations"]
+	path = tutorials.NGSI-LD-Operations
+	url = https://github.com/FIWARE/tutorials.NGSI-LD-Operations

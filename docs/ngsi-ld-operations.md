@@ -8,7 +8,7 @@ example usage of the various ways of amending context as detailed within the [NG
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
 [Postman documentation](https://fiware.github.io/tutorials.NGSI-LD-Operations/).
 
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/125db8d3a1ea3dab8e3f)
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/cc52b59aaf5a55d04b42)
 
 <hr class="core"/>
 
@@ -461,8 +461,7 @@ Because `options=keyValues` was not used this is the normalized response includi
 
 ### Read a Data Entity (key-value pairs)
 
-This example reads the key-value pairs of two attributes (`name` and `price`) from the context of existing **Product**
-entities with a known `id`.
+This example reads the key-value pairs  from the context of an existing **TemperatureSensor** entities with a known `id`.
 
 #### 9 Request:
 
@@ -523,7 +522,7 @@ Combine the `options=keyValues` parameter and the `attrs` parameter to return a 
 
 ### List all Data Entities (verbose)
 
-This example lists the full context of all **Product** entities.
+This example lists the full context of all **TemperatureSensor** entities.
 
 #### 11 Request:
 
@@ -652,7 +651,7 @@ The full context contains four sensors, they are returned in a random order:
 ]
 ```
 
-Full context data for a specified entity type can be retrieved by making a GET request to the `/v2/entities` endpoint
+Full context data for a specified entity type can be retrieved by making a GET request to the `/ngsi-ld/v1/entities` endpoint
 and supplying the `type` parameter, combine this with the `options=keyValues` parameter and the `attrs` parameter to
 retrieve key-values.
 
@@ -786,7 +785,7 @@ An alternative would be to use the `/ngsi-ld/v1/entityOperations/update` endpoin
 
 ### Batch Replace Entity Data
 
-This example uses the convenience batch processing endpoint to replace entity data of existing products.
+This example uses the convenience batch processing endpoint to replace entity data of existing sensors.
 
 #### 17 Request:
 
@@ -867,7 +866,7 @@ curl -L -X DELETE 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Tempera
 -H 'Link: <http://context-provider:3000/data-models/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 ```
 
-Attributes can be deleted by making a DELETE request to the `/v2/entities/<entity>/attrs/<attribute>` endpoint. It is important to supply the appropriate `@context` in the request in the form of a `Link` header to ensure that the attribute name can be recognised.
+Attributes can be deleted by making a DELETE request to the `/ngsi-ld/v1/entities/<entity>/attrs/<attribute>` endpoint. It is important to supply the appropriate `@context` in the request in the form of a `Link` header to ensure that the attribute name can be recognised.
 
 If the entity does not exist within the context or the attribute cannot be found on the entity, the result will be an error response.
 
