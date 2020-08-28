@@ -101,11 +101,12 @@ Scala code into a JAR file.
 
 ## List of Tutorials
 
-<h3 style="box-shadow: 0px 4px 0px 0px #233c68;">Core Context Managment: The NGSI-v2 Interface</h3>
+<h3 style="box-shadow: 0px 4px 0px 0px #233c68;">Core Context Managment: The NGSI-LD Interface</h3>
 
-These first tutorials are an introduction to the FIWARE Context Broker, and are an essential first step when learning to
-use FIWARE
+These first tutorials are an introduction to the NGSI-LD Context Brokers, and are an essential first step when learning to
+use NGSI-LD
 
 &nbsp; 101. [Understanding `@context`](understanding-@context.md)<br/>
 &nbsp; 102. [Working with `@context`](working-with-@context)<br/>
+&nbsp; 103. [CRUD Operations](ngsi-ld-operations)<br/>
 
