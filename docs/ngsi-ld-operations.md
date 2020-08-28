@@ -36,19 +36,19 @@ General Attribute operations on a known entity occur on the `/ngsi-ld/v1/entitie
 
 When requesting data or modifying individual entities, the various CRUD operations map naturally to HTTP verbs.
 
--  **GET** - for reading data
--  **POST** - for creating new entities and attributes
--  **PATCH** - for amending entities and attributes
--  **DELETE** - for deleting entities and attributes
+-   **GET** - for reading data
+-   **POST** - for creating new entities and attributes
+-   **PATCH** - for amending entities and attributes
+-   **DELETE** - for deleting entities and attributes
 
 ## Context Entity Batch Operations
 
 Batch operations allow users to modify multiple data entities with a single request. All batch operations are mapped to the **POST** HTTP verb.
 
--  `/entityOperations/create`
--  `/entityOperations/update`
--  `/entityOperations/upsert`
--  `/entityOperations/delete`
+-   `/entityOperations/create`
+-   `/entityOperations/update`
+-   `/entityOperations/upsert`
+-   `/entityOperations/delete`
 
 
 
@@ -412,7 +412,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Temperatu
 
 #### Response:
 
-TemperatureSensor `urn:ngsi-ld:TemperatureSensor:001` is returned as _normalized_ NGSI-LD. Additional metada is returned because `options=sysAttrs`. By default the `@context` is returned in the payload body (although this could be moved due to content negociation if the `Accept:application/json` had been set. The full response is shown below:
+TemperatureSensor `urn:ngsi-ld:TemperatureSensor:001` is returned as _normalized_ NGSI-LD. Additional metadata is returned because `options=sysAttrs`. By default the `@context` is returned in the payload body (although this could be moved due to content negotiation if the `Accept:application/json` had been set. The full response is shown below:
 
 ```json
 {
