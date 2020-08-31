@@ -7,7 +7,7 @@ generated in the [previous tutorial](understanding-@context.md) are used as the
 underlying data model for inputting context data and context information is queries and read back in different formats.
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
-[Postman documentation](https://fiware.github.io/tutorials.Working-with-At-Context/)
+[Postman documentation](https://fiware.github.io/tutorials.Getting-Started/ngsi-ld.html)
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/610b7cd32e4b07b8e9c9)
 
@@ -38,7 +38,7 @@ Which means that every `address` attribute follows the definition as defined by 
 
 `https://schema.org/address` :
 
-![](https://fiware.github.io/tutorials.Working-with-At-Context/img/address.png)
+![](https://fiware.github.io/tutorials.Getting-Started/img/address.png)
 
 A program written by a third party would therefore be able to extract information such the fact an `address` attribute
 holds a JSON object with a sub-attribute containing the `streetAddress` by referring to the full
@@ -136,7 +136,7 @@ Therefore, the architecture will consist of three elements:
 Since all interactions between the three elements are initiated by HTTP requests, the elements can be containerized and
 run from exposed ports.
 
-![](https://fiware.github.io/tutorials.Working-with-At-Context/img/architecture.png)
+![](https://fiware.github.io/tutorials.Getting-Started/img/architecture-ld.png)
 
 The necessary configuration information can be seen in the services section of the associated `orion-ld.yml` file:
 
@@ -193,12 +193,13 @@ being part of the same network. The command-line initialization should be self e
 # Start Up
 
 All services can be initialised from the command-line by running the
-[services](https://github.com/FIWARE/tutorials.Working-with-At-Context/blob/master/services) Bash script provided within
+[services](https://github.com/FIWARE/tutorials.Getting-Started/blob/NGSI-LD/services) Bash script provided within
 the repository. Please clone the repository and create the necessary images by running the commands as shown:
 
 ```bash
-git clone https://github.com/FIWARE/tutorials.Working-with-At-Context.git
-cd tutorials.Working-with-At-Context
+git clone https://github.com/FIWARE/tutorials.Getting-Started.git
+cd tutorials.Getting-Started
+git checkout NGSI-LD
 
 ./services orion|scorpio
 ```

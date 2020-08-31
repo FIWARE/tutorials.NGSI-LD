@@ -6,7 +6,7 @@
 example usage of the various ways of amending context as detailed within the [NGSI-LD specification](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.03.01_60/gs_cim009v010301p.pdf). A series of entities representing temperature sensors are created, modified and deleted based on the temperature sensor model defined in an [earlier tutorial](https://github.com/FIWARE/tutorials.Understanding-At-Context).
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
-[Postman documentation](https://fiware.github.io/tutorials.NGSI-LD-Operations/).
+[Postman documentation](https://fiware.github.io/tutorials.CRUD-Operations/ngsi-ld.html).
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/cc52b59aaf5a55d04b42)
 
@@ -76,7 +76,7 @@ Therefore, the architecture will consist of three elements:
 Since all interactions between the three elements are initiated by HTTP requests, the elements can be containerized and
 run from exposed ports.
 
-![](https://fiware.github.io/tutorials.NGSI-LD-Operations/img/architecture.png)
+![](https://fiware.github.io/tutorials.CRUD-Operations/img/architecture-ld.png)
 
 The necessary configuration information can be seen in the services section of the associated `orion-ld.yml` file:
 
@@ -126,17 +126,18 @@ tutorial:
 ```
 
 The necessary configuration information can be seen in the services section of the associated `docker-compose.yml` file.
-It has been described in a [previous tutorial](https://github.com/FIWARE/tutorials.Working-with-At-Context/)
+It has been described in a [previous tutorial](working-with-@-context)
 
 # Start Up
 
 All services can be initialised from the command-line by running the
-[services](https://github.com/FIWARE/tutorials.NGSI-LD-Operations/blob/master/services) Bash script provided within the
+[services](https://github.com/FIWARE/tutorials.CRUD-Operations/blob/NGSI-LD/services) Bash script provided within the
 repository. Please clone the repository and create the necessary images by running the commands as shown:
 
 ```bash
-git clone https://github.com/FIWARE/tutorials.NGSI-LD-Operations.git
-cd tutorials.NGSI-LD-Operations
+git clone https://github.com/FIWARE/tutorials.CRUD-Operations.git
+cd tutorials.CRUD-Operations
+git checkout NGSI-LD
 
 ./services orion|scorpio
 ```
