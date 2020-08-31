@@ -13,6 +13,7 @@
 [submodule "tutorials.Understanding-At-Context"]
 	path = tutorials.Understanding-At-Context
 	url = https://github.com/FIWARE/tutorials.Understanding-At-Context
+	branch = NGSI-LD
 [submodule "tutorials.Getting-Started"]
 	path = tutorials.Getting-Started
 	url = https://github.com/FIWARE/tutorials.Getting-Started
