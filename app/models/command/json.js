@@ -37,16 +37,16 @@ function getResult(cmd, status) {
 // At the moment the API key and timestamp are unused by the simulator.
 
 class JSONCommand {
-    // The bell will respond to the "ring" command.
-    // this will briefly set the bell to on.
-    // The bell  is not a sensor - it will not report state northbound
-    actuateBell(req, res) {
+    // The water sprinkler responds to "on" and "off" commands
+    // Whilst On the soil humidity will increase.
+    // The waterSprinker is not a sensor - it will not report state northbound
+    actuateWaterSprinkler(req, res) {
         const command = getJSONCommand(req.body);
-        const deviceId = 'bell' + req.params.id;
+        const deviceId = 'water' + req.params.id;
 
         if (IoTDevices.notFound(deviceId)) {
             return res.status(404).send(getResult(command, NOT_OK));
-        } else if (IoTDevices.isUnknownCommand('bell', command)) {
+        } else if (IoTDevices.isUnknownCommand('water', command)) {
             return res.status(422).send(getResult(command, NOT_OK));
         }
 
@@ -55,33 +55,15 @@ class JSONCommand {
         return res.status(200).send(getResult(command, OK));
     }
 
-    // The door responds to "open", "close", "lock" and "unlock" commands
-    // Each command alters the state of the door. When the door is unlocked
-    // it can be opened and shut by external events.
-    actuateDoor(req, res) {
+    // The tractor responds to "start", "stop" commands
+    // Each command alters the state of the tractor. 
+    actuateTractor(req, res) {
         const command = getJSONCommand(req.body);
-        const deviceId = 'door' + req.params.id;
+        const deviceId = 'tractor' + req.params.id;
 
         if (IoTDevices.notFound(deviceId)) {
             return res.status(404).send(getResult(command, NOT_OK));
-        } else if (IoTDevices.isUnknownCommand('door', command)) {
-            return res.status(422).send(getResult(command, NOT_OK));
-        }
-
-        // Update device state
-        IoTDevices.actuateDevice(deviceId, command);
-        return res.status(200).send(getResult(command, OK));
-    }
-
-    // The lamp can be "on" or "off" - it also registers luminosity.
-    // It will slowly dim as time passes (provided no movement is detected)
-    actuateLamp(req, res) {
-        const command = getJSONCommand(req.body);
-        const deviceId = 'lamp' + req.params.id;
-
-        if (IoTDevices.notFound(deviceId)) {
-            return res.status(404).send(getResult(command, NOT_OK));
-        } else if (IoTDevices.isUnknownCommand('lamp', command)) {
+        } else if (IoTDevices.isUnknownCommand('tractor', command)) {
             return res.status(422).send(getResult(command, NOT_OK));
         }
 
@@ -107,7 +89,7 @@ class JSONCommand {
         return res.status(200).send(getResult(command, OK));
     }
 
-    // cmd topics are consumed by the actuators (bell, lamp and door)
+    // cmd topics are consumed by the actuators (filling, tractor and water-sprinkler)
     processMqttMessage(topic, message) {
         const path = topic.split('/');
         if (path.pop() === 'cmd') {

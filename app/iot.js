@@ -32,15 +32,14 @@ global.MQTT_CLIENT = mqtt.connect(mqttBrokerUrl);
 // If the Ultralight Dummy Devices are configured to use the HTTP transport, then
 // listen to the command endpoints using HTTP
 if (DEVICE_TRANSPORT === 'HTTP') {
-    debug('Listening on HTTP endpoints: /iot/bell, /iot/door, iot/lamp, /iot/filling');
+    debug('Listening on HTTP endpoints: /iot/water, iot/tractor, /iot/filling');
 
     const iotRouter = express.Router();
 
     // The router listening on the IoT port is responding to commands going southbound only.
     // Therefore we need a route for each actuator
-    iotRouter.post('/iot/bell:id', Southbound.HTTP.bell);
-    iotRouter.post('/iot/door:id', Southbound.HTTP.door);
-    iotRouter.post('/iot/lamp:id', Southbound.HTTP.lamp);
+    iotRouter.post('/iot/water:id', Southbound.HTTP.water);
+    iotRouter.post('/iot/tractor:id', Southbound.HTTP.tractor);
     iotRouter.post('/iot/filling:id', Southbound.HTTP.filling);
 
     iot.use('/', iotRouter);

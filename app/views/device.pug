@@ -15,41 +15,42 @@ mixin devicesForFarm(id)
           | &nbsp;
           span(id=`temperature${id}`)
 
-    //-    li.device(style="background-image: url('/img/door-locked.svg')")
-          code
-            strong door#{id}
-            | &nbsp;
-            span(id=`door${id}`)
-        li.device(style="background-image: url('/img/bell-off.svg')")
-          code 
-            strong bell#{id}
-            | &nbsp;
-            span(id=`bell${id}`)
-        li.device(style="background-image: url('/img/motion-sensor.svg')")
-          code 
-            strong motion#{id}
-            | &nbsp;
-            span(id=`motion${id}`)
-        li.device(style="background-image: url('/img/lamp-off.svg')")
-          code 
-            strong lamp#{id}
-            | &nbsp;
-            span(id=`lamp${id}`)
+      li.device(style="background-image: url('/img/tractor-idle.svg')")
+        code
+          strong tractor#{id}
+          | &nbsp;
+          span(id=`tractor${id}`)
+      li.device(style="background-image: url('/img/water-off.svg')")
+        code 
+          strong water#{id}
+          | &nbsp;
+          span(id=`water${id}`)
+      li.device(style="background-image: url('/img/soil-humidity-high.svg')")
+        code 
+          strong humidity#{id}
+          | &nbsp;
+          span(id=`humidity${id}`)
+      li.device(style="background-image: url('/img/pig.svg')")
+        code 
+          strong pig#{id}
+          | &nbsp;
+          span(id=`pig${id}`)
+      li.device(style="background-image: url('/img/cow.svg')")
+        code 
+          strong cow#{id}
+          | &nbsp;
+          span(id=`cow${id}`)
   form.device(action="/device/command")
     input(type="text" style="display:none"  name="id" value=`${id}`)
     select(name="action")
+      option(value="start") Start Tractor
+      option(value="stop") Stop Tractor
       option(value="refill") Refill Hay
       option(value="add") Add Hay
       option(value="remove") Remove Hay
       option(value="raise") Raise Temperature
       option(value="lower") Lower Temperature
-      //- option(value="ring") Ring Bell
-          option(value="presence") Detect Motion
-          option(value="unlock") Unlock Door
-          option(value="open") Open Door
-          option(value="close") Close Door
-          option(value="lock") Lock Door
-          option(value="on") Lamp On
-          option(value="off") Lamp Off
+      option(value="on") Water On
+      option(value="off") Water Off
     | &nbsp;
     input(type="submit" value=`Send` class="button")

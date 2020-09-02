@@ -38,18 +38,18 @@ function getUltralightCommand(string) {
 // At the moment the API key and timestamp are unused by the simulator.
 
 class UltralightCommand {
-    // The bell will respond to the "ring" command.
-    // this will briefly set the bell to on.
-    // The bell  is not a sensor - it will not report state northbound
-    actuateBell(req, res) {
+    // The water sprinkler responds to "on" and "off" commands
+    // Whilst On the soil humidity will increase.
+    // The waterSprinker is not a sensor - it will not report state northbound
+    actuateWaterSprinkler(req, res) {
         const keyValuePairs = req.body.split('|') || [''];
         const command = getUltralightCommand(keyValuePairs[0]);
-        const deviceId = 'bell' + req.params.id;
+        const deviceId = 'water' + req.params.id;
         const result = keyValuePairs[0] + '| ' + command;
 
         if (IoTDevices.notFound(deviceId)) {
             return res.status(404).send(result + NOT_OK);
-        } else if (IoTDevices.isUnknownCommand('bell', command)) {
+        } else if (IoTDevices.isUnknownCommand('water', command)) {
             return res.status(422).send(result + NOT_OK);
         }
 
@@ -58,18 +58,17 @@ class UltralightCommand {
         return res.status(200).send(result + OK);
     }
 
-    // The door responds to "open", "close", "lock" and "unlock" commands
-    // Each command alters the state of the door. When the door is unlocked
-    // it can be opened and shut by external events.
-    actuateDoor(req, res) {
+    // The tractor responds to "start", "stop" commands
+    // Each command alters the state of the tractor. 
+    actuateTractor(req, res) {
         const keyValuePairs = req.body.split('|') || [''];
         const command = getUltralightCommand(keyValuePairs[0]);
-        const deviceId = 'door' + req.params.id;
+        const deviceId = 'tractor' + req.params.id;
         const result = keyValuePairs[0] + '| ' + command;
 
         if (IoTDevices.notFound(deviceId)) {
             return res.status(404).send(result + NOT_OK);
-        } else if (IoTDevices.isUnknownCommand('door', command)) {
+        } else if (IoTDevices.isUnknownCommand('tractor', command)) {
             return res.status(422).send(result + NOT_OK);
         }
 
@@ -78,24 +77,6 @@ class UltralightCommand {
         return res.status(200).send(result + OK);
     }
 
-    // The lamp can be "on" or "off" - it also registers luminosity.
-    // It will slowly dim as time passes (provided no movement is detected)
-    actuateLamp(req, res) {
-        const keyValuePairs = req.body.split('|') || [''];
-        const command = getUltralightCommand(keyValuePairs[0]);
-        const deviceId = 'lamp' + req.params.id;
-        const result = keyValuePairs[0] + '| ' + command;
-
-        if (IoTDevices.notFound(deviceId)) {
-            return res.status(404).send(result + NOT_OK);
-        } else if (IoTDevices.isUnknownCommand('lamp', command)) {
-            return res.status(422).send(result + NOT_OK);
-        }
-
-        // Update device state
-        IoTDevices.actuateDevice(deviceId, command);
-        return res.status(200).send(result + OK);
-    }
 
     // The filling station can have items added or removed.
     // All changes are manual
@@ -116,7 +97,7 @@ class UltralightCommand {
         return res.status(200).send(result + OK);
     }
 
-    // cmd topics are consumed by the actuators (bell, lamp and door)
+    // cmd topics are consumed by the actuators (filling, tractor and water-sprinkler)
     processMqttMessage(topic, message) {
         const path = topic.split('/');
         if (path.pop() === 'cmd') {

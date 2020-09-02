@@ -63,33 +63,41 @@ block content
       $('span').each(function (index, value) { 
         const device = $(this).attr('id'); 
         socket.on( device, function(msg){
+
+
+
+
           $('#' + device).text(msg);
           const li = $('#' + device).parent().parent();
           switch (device.replace(/\d/g, '')){
-            case "door":
-              if (msg ==='s|OPEN'){
-                li.css( "background-image", "url('/img/door-open.svg')");
-              } else  if (msg ==='s|CLOSED'){
-                li.css( "background-image", "url('/img/door-closed.svg')");
+            case "humidity":
+              const humid = parseInt(msg.replace(/[^(\d\.)]/g, ''));
+              if (humid > 60){
+                li.css( "background-image", "url('/img/soil-humidity-high.svg')");
+              } else if (humid > 50) {
+                li.css( "background-image", "url('/img/soil-humidity.svg')" );
+              } else if (humid > 35) {
+                li.css( "background-image", "url('/img/soil-humidity-low.svg')" );
               } else {
-                li.css( "background-image", "url('/img/door-locked.svg')" );
+                li.css( "background-image", "url('/img/soil-humidity-none.svg')" );
               }
               break;
-            case "bell":
-              // ON or OFF - Switch off the bell if it is still ringing
+
+            case "water":
               if (msg ==='s|ON'){
-                 li.css( "background-image", "url('/img/bell-on.svg')");
+                li.css( "background-image", "url('/img/water-on.svg')");
                 beep();
               } else {
-                li.css( "background-image", "url('/img/bell-off.svg')" );
+                li.css( "background-image", "url('/img/water-off.svg')" );
               }
               break;
-            case "motion":
-              // ON or OFF - Switch off the bell if it is still ringing
-              if (msg ==='c|0'){
-                 li.css( "background-image", "url('/img/motion-sensor.svg')");
+            case "tractor":
+              if (msg.startsWith('s|MOVING')){
+                 li.css( "background-image", "url('/img/tractor-moving.svg')");
+              } else if (msg.startsWith('s|SOWING')){
+                 li.css( "background-image", "url('/img/tractor-sowing.svg')");
               } else {
-                li.css( "background-image", "url('/img/motion-sensor-active.svg')" );
+                li.css( "background-image", "url('/img/tractor-idle.svg')" );
               }
               break;
 

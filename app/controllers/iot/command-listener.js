@@ -17,14 +17,10 @@ const NGSI_PREFIX = process.env.NGSI_LD_PREFIX !== undefined ? process.env.NGSI_
 const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
 
 const COMMANDS = {
-    ring: 'Bell:',
-    on: 'Lamp:',
-    off: 'Lamp:',
-    unlock: 'Door:',
-    open: 'Door:',
-    close: 'Door:',
-    lock: 'Door:',
-    presence: 'Motion:',
+    on: 'Water:',
+    off: 'Water:',
+    start: 'Tractor:',
+    stop: 'Tractor:',
     add: 'Filling:',
     remove: 'Filling:',
     refill: 'Filling:',
@@ -53,9 +49,9 @@ function createNGSILDRequest(action, id) {
 // This function allows a Bell, Door or Lamp command to be sent to the Dummy IoT devices
 // via the Orion Context Broker and an IoT Agent.
 function sendCommand(req, res) {
-    debug('sendCommand: ' + req.body.id + ' ' + req.body.action);
     const id = req.body.id.split(':').pop();
     const action = req.body.action;
+    debug('sendCommand: ' +  (COMMANDS[action] || '') + id + ' ' + action);
     if (!res.locals.authorized) {
         // If the user is not authorized, return an error code.
         res.setHeader('Content-Type', 'application/json');
@@ -66,12 +62,6 @@ function sendCommand(req, res) {
         return res.status(404).send();
     }
 
-    // The motion sensor does not accept commands,
-    // Update the state of the device directly
-    if (action === 'presence') {
-        IoTDevices.fireMotionSensor('motion' + id);
-        return res.status(204).send();
-    }
 
     // The temperature Gauge does not accept commands,
     // Update the state of the device directly

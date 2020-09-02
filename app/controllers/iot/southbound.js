@@ -39,24 +39,17 @@ switch (DEVICE_PAYLOAD.toLowerCase()) {
 // The bell will respond to the "ring" command.
 // this will briefly set the bell to on.
 // The bell  is not a sensor - it will not report state northbound
-function bellHttpCommand(req, res) {
-    debug('bellHttpCommand');
-    return Command.actuateBell(req, res);
+function tractorHttpCommand(req, res) {
+    debug('tractorHttpCommand');
+    return Command.actuateTractor(req, res);
 }
 
 // The door responds to "open", "close", "lock" and "unlock" commands
 // Each command alters the state of the door. When the door is unlocked
 // it can be opened and shut by external events.
-function doorHttpCommand(req, res) {
-    debug('doorHttpCommand');
-    return Command.actuateDoor(req, res);
-}
-
-// The lamp can be "on" or "off" - it also registers luminosity.
-// It will slowly dim as time passes (provided no movement is detected)
-function lampHttpCommand(req, res) {
-    debug('lampHttpCommand');
-    return Command.actuateLamp(req, res);
+function waterHttpCommand(req, res) {
+    debug('waterHttpCommand');
+    return Command.actuateWaterSprinkler(req, res);
 }
 
 // The filling can re-filled, or a proportion can be removed.
@@ -76,9 +69,8 @@ function processMqttMessage(topic, message) {
 
 module.exports = {
     HTTP: {
-        bell: bellHttpCommand,
-        lamp: lampHttpCommand,
-        door: doorHttpCommand,
+        water: waterHttpCommand,
+        tractor: tractorHttpCommand,
         filling: fillingHttpCommand
     },
     MQTT: {

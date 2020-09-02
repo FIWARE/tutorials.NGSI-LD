@@ -12,27 +12,39 @@ const debug = require('debug')('tutorial:devices');
 const Northbound = require('../controllers/iot/northbound');
 
 // A series of constants used by our set of devices
-const DOOR_LOCKED = 's|LOCKED';
-const DOOR_OPEN = 's|OPEN';
-const DOOR_CLOSED = 's|CLOSED';
 
-//const BELL_OFF = 's|OFF';
-const BELL_ON = 's|ON';
+const WATER_OFF = 's|OFF';
+const WATER_ON = 's|ON';
 
-const LAMP_ON = 's|ON|l|1750';
-const LAMP_OFF = 's|OFF|l|0';
+const HUMIDITY_WET = 'h|80';
+const HUMIDITY_DRY = 'h|30';
+const TRACTOR_IDLE = 's|IDLE';
+const TRACTOR_SOWING = 's|SOWING';
+const TRACTOR_MOVING = 's|MOVING';
 
-//const NO_MOTION_DETECTED = 'c|0';
-const MOTION_DETECTED = 'c|1';
+const PIG_IDLE = 's|AT_REST';
+const COW_IDLE = 's|AT_REST';
+const PIG_STATE = ['AT_REST','FORAGING', 'FORAGING', 'FORAGING', 'DRINKING', 'WALLOWING'];
+const COW_STATE = ['AT_REST','AT_REST', 'GRAZING', 'GRAZING', 'GRAZING', 'DRINKING'];
+const OFFSET_RATE = {
+    AT_REST : 0,
+    GRAZING: 0,
+    FORAGING : 2,
+    DRINKING : 1,
+    WALLOWING: 5,
+}
+
+const COW_HEART_RATE = 50;
+const PIG_HEART_RATE = 60;
+
 
 const DEFAULT_TEMPERATURE = 't|25';
 const FILLING_STATION_FULL = 'f|1';
 const FILLING_STATION_EMPTY = 'f|0';
 
 const VALID_COMMANDS = {
-    door: ['open', 'close', 'lock', 'unlock'],
-    lamp: ['on', 'off'],
-    bell: ['ring'],
+    tractor: ['start', 'stop'],
+    water: ['on', 'off'],
     filling: ['fill', 'empty']
 };
 
@@ -40,27 +52,20 @@ const VALID_COMMANDS = {
 function actuateDevice(deviceId, command) {
     debug('actuateDevice: ' + deviceId + ' ' + command);
     switch (deviceId.replace(/\d/g, '')) {
-        case 'bell':
-            if (command === 'ring') {
-                setDeviceState(deviceId, BELL_ON, false);
-                SOCKET_IO.emit(deviceId, BELL_ON);
-            }
-            break;
-        case 'door':
-            if (command === 'open') {
-                setDeviceState(deviceId, DOOR_OPEN);
-            } else if (command === 'close' || command === 'unlock') {
-                setDeviceState(deviceId, DOOR_CLOSED);
-            } else if (command === 'lock') {
-                setDeviceState(deviceId, DOOR_LOCKED);
-            }
-            break;
-        case 'lamp':
+        case 'water':
             if (command === 'on') {
-                setDeviceState(deviceId, LAMP_ON);
+                setDeviceState(deviceId, WATER_ON, false);
+                SOCKET_IO.emit(deviceId, WATER_ON);
+            } else if (command === 'off') {
+                setDeviceState(deviceId, WATER_OFF, false);
+                SOCKET_IO.emit(deviceId, WATER_OFF);
             }
-            if (command === 'off') {
-                setDeviceState(deviceId, LAMP_OFF);
+            break;
+        case 'tractor':
+            if (command === 'start') {
+                setDeviceState(deviceId, TRACTOR_MOVING);
+            } else if (command === 'stop') {
+                setDeviceState(deviceId, TRACTOR_IDLE);
             }
             break;
         case 'filling':
@@ -99,37 +104,45 @@ function initDevices() {
 
     // Every few seconds, update the state of the dummy devices in a
     // semi-random fashion.
-    setInterval(activateDoor, 4999);
+    setInterval(activateTractor, 4999);
     // Every second, update the state of the dummy devices in a
     // semi-random fashion.
     setInterval(activateDevices, 997);
 }
 
-let isDoorActive = false;
+let isTractorActive = false;
 let isDevicesActive = false;
 let devicesInitialized = false;
 
-/*
-myCache.set('door001', DOOR_LOCKED);
-myCache.set('door002', DOOR_LOCKED);
-myCache.set('door003', DOOR_LOCKED);
-myCache.set('door004', DOOR_LOCKED);
+myCache.set('pig001', PIG_IDLE + '|y|52.0|x|13.6');
+myCache.set('pig002', PIG_IDLE + '|y|52.3|x|13.7');
+myCache.set('pig003', PIG_IDLE + '|y|52.2|x|13.8');
+myCache.set('pig004', PIG_IDLE + '|y|52.1|x|13.9');
 
-myCache.set('bell001', BELL_OFF, false);
-myCache.set('bell002', BELL_OFF, false);
-myCache.set('bell003', BELL_OFF, false);
-myCache.set('bell004', BELL_OFF, false);
+myCache.set('cow001', COW_IDLE + '|y|52.0|x|13.6');
+myCache.set('cow002', COW_IDLE + '|y|52.2|x|13.9');
+myCache.set('cow003', COW_IDLE + '|y|52.3|x|13.7');
+myCache.set('cow004', COW_IDLE + '|y|52.1|x|13.8');
 
-myCache.set('lamp001', LAMP_OFF);
-myCache.set('lamp002', LAMP_OFF);
-myCache.set('lamp003', LAMP_OFF);
-myCache.set('lamp004', LAMP_OFF);
+myCache.set('water001', WATER_OFF, false);
+myCache.set('water002', WATER_OFF, false);
+myCache.set('water003', WATER_OFF, false);
+myCache.set('water004', WATER_OFF, false);
 
-myCache.set('motion001', NO_MOTION_DETECTED);
-myCache.set('motion002', NO_MOTION_DETECTED);
-myCache.set('motion003', NO_MOTION_DETECTED);
-myCache.set('motion004', NO_MOTION_DETECTED);
-*/
+myCache.set('tractor001', TRACTOR_SOWING + '|y|52.0|x|13.6');
+myCache.set('tractor002', TRACTOR_IDLE + '|y|52.1|x|13.7');
+myCache.set('tractor003', TRACTOR_IDLE + '|y|52.2|x|13.8');
+myCache.set('tractor004', TRACTOR_IDLE + '|y|52.3|x|13.9');
+
+myCache.set('targetTractor001', 'x|0|y|1');
+myCache.set('targetTractor002', 'x|1|y|0');
+myCache.set('targetTractor003', 'x|-1|y|0');
+myCache.set('targetTractor004', 'x|0|y|-1');
+
+myCache.set('humidity001', HUMIDITY_WET);
+myCache.set('humidity002', HUMIDITY_WET);
+myCache.set('humidity003', HUMIDITY_WET);
+myCache.set('humidity004', HUMIDITY_WET);
 
 myCache.set('temperature001', DEFAULT_TEMPERATURE);
 myCache.set('temperature002', DEFAULT_TEMPERATURE);
@@ -146,13 +159,13 @@ myCache.set('filling002', FILLING_STATION_FULL);
 myCache.set('filling003', FILLING_STATION_FULL);
 myCache.set('filling004', FILLING_STATION_EMPTY);
 
-// Open and shut an unlocked door
-function activateDoor() {
-    if (isDoorActive) {
+// Update the state of a tractor
+function activateTractor() {
+    if (isTractorActive) {
         return;
     }
 
-    isDoorActive = true;
+    isTractorActive = true;
     const deviceIds = myCache.keys();
 
     _.forEach(deviceIds, (deviceId) => {
@@ -160,19 +173,39 @@ function activateDoor() {
         const isSensor = true;
 
         switch (deviceId.replace(/\d/g, '')) {
-            case 'door':
-                //  The door is OPEN or CLOSED or LOCKED,
-                if (state.s !== 'LOCKED') {
-                    // Randomly open and close the door if not locked.
+            case 'tractor':
+                //  The tractor is IDLE, MOVING or SOWING
+                if (state.s !== 'IDLE') {
+                    // Randomly open and close the tractor if not locked.
                     // lower the rate if the lamp is off.
-                    const rate = getLampState(deviceId, 'door') === 'ON' ? 3 : 6;
-                    state.s = getRandom() > rate ? 'OPEN' : 'CLOSED';
+                    const rate = getTractorState(deviceId, 'tractor') === 'MOVING' ? 3 : 6;
+                    state.s = getRandom() > rate ? 'MOVING' : 'SOWING';
                 }
                 setDeviceState(deviceId, toUltraLight(state), isSensor);
                 break;
         }
     });
-    isDoorActive = false;
+    isTractorActive = false;
+}
+
+function addAndTrim(value, add) {
+    const newValue = add ? parseFloat(value) + 0.001 : parseFloat(value) - 0.001;
+    return Math.round(newValue * 1000) / 1000;
+}
+
+function randomWalk(state){
+    if (getRandom() > 7) {
+        state.x = addAndTrim(state.x, true);
+    }
+    if (getRandom() > 7) {
+        state.x = addAndTrim(state.x, false);
+    }
+    if (getRandom() > 7) {
+        state.y = addAndTrim(state.y, true);
+    }
+    if (getRandom() > 7) {
+        state.y = addAndTrim(state.y, false);
+    }
 }
 
 // Update state of Lamps, Doors and Motion Sensors
@@ -187,54 +220,97 @@ function activateDevices() {
 
     _.forEach(deviceIds, (deviceId) => {
         const state = getDeviceState(deviceId);
-        let isSensor = true;
+        const isSensor = true;
+        let humid;
+        let isDry;
         let target;
         let targetTemp;
+        let pigState;
 
         switch (deviceId.replace(/\d/g, '')) {
-            case 'bell':
-                // ON or OFF - Switch off the bell if it is still ringing
-                if (state.s === 'ON') {
-                    state.s = 'OFF';
+            case 'humidity':
+                humid = parseInt(state.h);
+                isDry = (getRandom() > 5);
+
+                // If the water is ON, randomly increase the soil humidity.
+                if (getWaterState(deviceId, 'humidity') === 'ON') {
+                    state.h = humid + getRandom() % 3;
+                } else if (isDry && (humid > 50) ) {
+                    state.h = humid - getRandom() % 3;
+                } else if (isDry && (humid > 30) ) {
+                    state.h = humid - 3 + getRandom() % 4;
+                } else if (humid <= 30) {
+                    state.h = humid + 3 - getRandom() % 4;
                 }
-                isSensor = false;
+
+                if (state.h > 100) {
+                    state.h = 100;
+                }
+                if (state.h < 0) {
+                    state.h = 0;
+                }
                 break;
 
-            case 'motion':
-                // If the door is OPEN, randomly switch the count of the motion sensor
-                if (getDoorState(deviceId, 'motion') === 'OPEN') {
-                    if (state.c === 1) {
-                        state.c = 0;
-                    } else {
-                        state.c = getRandom() > 3 ? 1 : 0;
+            case 'pig':
+                state.bpm = PIG_HEART_RATE + 2 * OFFSET_RATE[state.s] + getRandom() % 4;
+                if (state.s === 'AT_REST'){
+                    if (getRandom() * getRandom() > 63){
+                        state.s = PIG_STATE [getRandom() % 6];
                     }
                 } else {
-                    state.c = 0;
+                    randomWalk(state);
+                    if (getRandom() > 7){
+
+                        state.s = (getRandom() > 3) ? PIG_STATE [getRandom() % 6] : 'AT_REST';
+                    }
                 }
-                setDeviceState(deviceId, toUltraLight(state), isSensor);
+
+
+
+                break;
+            case 'cow':
+                state.bpm = COW_HEART_RATE + 2 * OFFSET_RATE[state.s] + getRandom() % 4;
+                if (state.s === 'AT_REST'){
+                    if (getRandom() * getRandom() > 80){
+                        state.s =  COW_STATE [getRandom() % 6];
+                    }
+                
+                } else {
+                    randomWalk(state, COW_HEART_RATE);
+                    if (getRandom() > 8){
+                        state.s =  (getRandom() > 7) ? COW_STATE [getRandom() % 6] : 'GRAZING';
+                    }
+                }
+
                 break;
 
-            case 'lamp':
-                if (state.s === 'OFF') {
-                    state.l = 0;
-                } else if (getDoorState(deviceId, 'lamp') === 'OPEN') {
-                    // if the door is open set the light to full power
-                    state.l = parseInt(state.l) || 1000;
-                    state.l = state.l + getRandom() * getRandom();
-                    if (state.l < 1850) {
-                        state.l = state.l + 30 + getRandom() * getRandom();
+            case 'tractor':
+                target = getDeviceState('targetTractor' + deviceId.replace(/[a-zA-Z]/g, ''));
+
+                if (state.s === 'SOWING') {
+                    if (getRandom() > 9) {
+                        state.y = Math.round((parseFloat(state.y) + (0.001 * parseInt(target.x))) * 1000) / 1000;
+                        state.x = Math.round((parseFloat(state.x) + (0.001 * parseInt(target.y)))  * 1000) / 1000;
                     }
-                    if (state.l > 1990) {
-                        state.l = 1990 + getRandom();
-                    }
-                } else if (state.l > 1000) {
-                    // if the door is closed dim the light
-                    state.l = parseInt(state.l) || 1990;
-                    if (getRandom() > 3) {
-                        state.l = state.l - 30 - getRandom() * getRandom();
-                    }
-                    state.l = state.l + getRandom();
                 }
+
+                if (state.s === 'MOVING') {
+                    state.x = Math.round((parseFloat(state.x) + (parseInt(target.x) / 1000))  * 1000) / 1000;
+                    state.y = Math.round((parseFloat(state.y) + (parseInt(target.y) / 1000))  * 1000) / 1000;
+                }
+                
+
+                if (getRandom() > 9 && state.s === 'MOVING') {
+                        state.s = 'SOWING';
+                    } else if (getRandom() > 7 && state.s === 'SOWING') {
+                        target.x = -target.x;
+                        target.y = -target.y;
+                        setDeviceState('targetTractor' + deviceId.replace(/[a-zA-Z]/g, ''), toUltraLight(target), false);
+                        state.y = Math.round((parseFloat(state.y) + (Math.abs (parseInt(target.x)/1000))) * 1000) / 1000;
+                        state.x = Math.round((parseFloat(state.x) + (Math.abs (parseInt(target.y)/1000))) * 1000) / 1000;
+                        state.s = 'MOVING';
+                    }
+                
                 break;
 
             case 'temperature':
@@ -258,7 +334,7 @@ function activateDevices() {
 // Read the existing state of the dummy devices when requested.
 function sendDeviceReading(deviceId) {
     const state = toUltraLight(getDeviceState(deviceId));
-    const isSensor = deviceId.replace(/\d/g, '') !== 'bell';
+    const isSensor = deviceId.replace(/\d/g, '') !== 'water';
     setDeviceState(deviceId, state, isSensor, true);
 }
 
@@ -315,21 +391,20 @@ function toUltraLight(object) {
     return strArray.join('|');
 }
 
-// Return the state of the door with the same number as the current element
-// this is because no people will enter if the door is LOCKED, and therefore
-// both the motion sensor will not increment an the smart lamp will slowly
-// decrease
-function getDoorState(deviceId, type) {
-    const door = getDeviceState(deviceId.replace(type, 'door'));
-    return door.s || 'LOCKED';
+// Return the state of the tractor with the same number as the current element
+// this is because work will be done if the tractor is IDLE, and therefore
+// other devices will not update
+function getTractorState(deviceId, type) {
+    const tractor = getDeviceState(deviceId.replace(type, 'tractor'));
+    return tractor.s || 'IDLE';
 }
 
-// Return the state of the lamp with the same number as the current element
-// this is because fewer people will enter the building if the lamp is OFF,
-// and therefore the motion sensor will increment more slowly
-function getLampState(deviceId, type) {
-    const lamp = getDeviceState(deviceId.replace(type, 'lamp'));
-    return lamp.s || 'OFF';
+// Return the state of the water sprinkler with the same number as the current element
+// this is because the humidity sensor is linked to the water sprinker (along with
+// the weather)
+function getWaterState(deviceId, type) {
+    const water = getDeviceState(deviceId.replace(type, 'water'));
+    return water.s || 'OFF';
 }
 
 function fillingStationEmpty(deviceId) {
@@ -360,10 +435,10 @@ function getRandom() {
     return Math.floor(Math.random() * 10) + 1;
 }
 
-// Directly alter the state of a motion sensor.
-function fireMotionSensor(id) {
-    debug('fireMotionSensor');
-    setDeviceState(id, MOTION_DETECTED, true);
+// Directly alter the state of a water sprinkler
+function fireWaterSprinkler(id) {
+    debug('fireWaterSprinkler');
+    setDeviceState(id, WATER_ON, true);
 }
 
 // Indirectly alter the state of the temperature gauge
@@ -403,7 +478,7 @@ function isUnknownCommand(device, command) {
 
 module.exports = {
     actuateDevice,
-    fireMotionSensor,
+    fireWaterSprinkler,
     alterTemperature,
     alterFilling: fillingStationEmpty,
     notFound,
