@@ -2,7 +2,8 @@ const debug = require('debug')('tutorial:ngsi-v2-convert');
 const request = require('request');
 
 const basePath = process.env.CONTEXT_BROKER || 'http://localhost:1026/ngsi-ld/v1';
-const dataModelContext = 'https://fiware.github.io/tutorials.NGSI-LD/tutorials-context.jsonld';
+const dataModelContext = process.env.IOTA_JSON_LD_CONTEXT ||
+    'http://localhost:3000/data-models/ngsi-context.jsonld';
 const jsonLdHeader = 'application/ld+json';
 
 /* eslint-disable no-unused-vars */

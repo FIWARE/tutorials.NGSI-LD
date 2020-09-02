@@ -11,10 +11,13 @@ const Security = require('../security');
 const IoTDevices = require('../../models/devices');
 
 // Connect to the context broker and use fallback values if necessary
-const CONTEXT_BROKER = process.env.CONTEXT_BROKER || 'http://localhost:1026/v2';
+const CONTEXT_BROKER = process.env.CONTEXT_BROKER || 'http://localhost:1026/ngsi-ld/v1';
 const DEVICE_BROKER = process.env.DEVICE_BROKER || CONTEXT_BROKER;
-const NGSI_PREFIX = process.env.NGSI_LD_PREFIX !== undefined ? process.env.NGSI_LD_PREFIX : 'urn:ngsi-ld:';
+const NGSI_TENANT = process.env.NGSI_LD_TENANT !== undefined ? process.env.NGSI_LD_TENANT : 'openiot';
 const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
+
+const dataModelContext = process.env.IOTA_JSON_LD_CONTEXT ||
+    'http://localhost:3000/data-models/ngsi-context.jsonld';
 
 const COMMANDS = {
     on: 'Water:',
@@ -34,13 +37,15 @@ function createNGSILDRequest(action, id) {
         type: 'Property',
         value: ' '
     };
-    const url = DEVICE_BROKER + '/entities/' + NGSI_PREFIX + id + '/attrs/' + action;
+    const url = DEVICE_BROKER + '/entities/urn:ngsi-ld:' + id + '/attrs/' + action;
     const headers = {
         'Content-Type': 'application/json',
-        'NGSILD-Tenant': 'openiot',
+        'NGSILD-Tenant': NGSI_LD_TENANT,
         'NGSILD-Path': '/',
-        'fiware-service': 'openiot',
-        'fiware-servicepath': '/'
+        'fiware-service': NGSI_LD_TENANT,
+        'fiware-servicepath': '/',
+        Link:
+            '<' + dataModelContext + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
     };
 
     return { method, url, headers, body, json: true };
