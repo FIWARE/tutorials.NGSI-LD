@@ -25,7 +25,8 @@ function getResult(cmd, status) {
 
 // This processor sends JSON payload northbound to
 // the southport of the IoT Agent and sends measures
-// for the motion sensor, door and lamp.
+// for the animal collars, temperature sensor, filling sensor etc.
+
 
 // A device can report new measures to the IoT Platform using an HTTP GET request to the /iot/d path with the following query parameters:
 //

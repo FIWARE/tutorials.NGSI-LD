@@ -59,7 +59,7 @@ function fillingHttpCommand(req, res) {
 }
 
 // The device monitor will display all MQTT messages on screen.
-// cmd topics are consumed by the actuators (bell, lamp door and fillingStation)
+// cmd topics are consumed by the actuators (water sprinkler, tractor and fillingStation)
 function processMqttMessage(topic, message) {
     debug('processMqttMessage');
     const mqttBrokerUrl = process.env.MQTT_BROKER_URL || 'mqtt://mosquitto';

@@ -46,7 +46,7 @@ function createNGSILDRequest(action, id) {
     return { method, url, headers, body, json: true };
 }
 
-// This function allows a Bell, Door or Lamp command to be sent to the Dummy IoT devices
+// This function allows a Water Sprinkler, Tractor of FillingStation command to be sent to the Dummy IoT devices
 // via the Orion Context Broker and an IoT Agent.
 function sendCommand(req, res) {
     const id = req.body.id.split(':').pop();

@@ -36,7 +36,7 @@ function hashCode(str) {
 
 // This processor sends ultralight payload northbound to
 // the southport of the IoT Agent and sends measures
-// for the motion sensor, door and lamp.
+// for the animal collars, temperature sensor, filling sensor etc.
 
 // Ultralight 2.0 is a lightweight text based protocol aimed to constrained
 // devices and communications
@@ -85,7 +85,7 @@ class JSONMeasure {
         SOCKET_IO.emit('http', debugText + '  ' + ultralightToJSON(state));
     }
 
-    // measures sent over MQTT are posted as topics (motion sensor, lamp and door)
+    // measures sent over MQTT are posted as topics (animal collars, temperature sensor, filling sensor etc.)
     sendAsMQTT(deviceId, state) {
         const topic = '/' + getAPIKey(deviceId) + '/' + deviceId + '/attrs';
         MQTT_CLIENT.publish(topic, ultralightToJSON(state));

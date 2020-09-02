@@ -36,7 +36,7 @@ function hashCode(str) {
 
 // This processor sends XML payloads northbound to
 // the southport of the IoT Agent and sends measures
-// for the motion sensor, door and lamp.
+// for the animal collars, temperature sensor, filling sensor etc.
 
 function ultralightToXML(key, deviceId, state) {
     const keyValuePairs = state.split('|');
@@ -79,7 +79,7 @@ class XMLMeasure {
         );
     }
 
-    // measures sent over MQTT are posted as topics (motion sensor, lamp and door)
+    // measures sent over MQTT are posted as topics (animal collars, temperature sensor, filling sensor etc.)
     sendAsMQTT(deviceId, state) {
         const topic = '/' + getAPIKey(deviceId) + '/' + deviceId + '/attrs';
         MQTT_CLIENT.publish(topic, state);

@@ -22,7 +22,7 @@ function getResult(status, command, id, info) {
 
 // This processor sends XML payload northbound to
 // the southport of the IoT Agent and sends measures
-// for the motion sensor, door and lamp.
+// for the animal collars, temperature sensor, filling sensor etc.
 
 class XMLCommand {
     // The water sprinkler responds to "on" and "off" commands

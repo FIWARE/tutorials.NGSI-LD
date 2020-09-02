@@ -17,7 +17,6 @@ const WATER_OFF = 's|OFF';
 const WATER_ON = 's|ON';
 
 const HUMIDITY_WET = 'h|80';
-const HUMIDITY_DRY = 'h|30';
 const TRACTOR_IDLE = 's|IDLE';
 const TRACTOR_SOWING = 's|SOWING';
 const TRACTOR_MOVING = 's|MOVING';
@@ -84,30 +83,22 @@ function actuateDevice(deviceId, command) {
     }
 }
 
-// Set up 16 IoT devices, a door, bell, motion sensor and lamp for each of 4 locations.
+// Set up 36 IoT devices, animal collars, temperature sensors, filling sensors etc. for each of 4 locations.
 //
-// The door can be OPEN CLOSED or LOCKED
-// The bell can be ON or OFF - it does not report state.
+// The tractor can be IDLE, MOVING or SOWING and registers location
+// The water sprinkler can be ON or OFF - it does not report state.
 // The motion sensor counts the number of people passing by
-// The lamp can be ON or OFF. This also registers luminocity.
-// It will slowly dim as time passes (provided no movement is detected)
+// The animal collars register location and state fo the animal
+// The soil humidity sensor will slowly dry out unless water is added
+// The temperature sensor will drift towards a preferred target
+// The filling station will change level in response to add/remove c
 function initDevices() {
     debug('initDevices');
-
-    // Once a minute, read the existing state of the dummy devices
-    const deviceIds = myCache.keys();
-    let wait = 4000;
-    _.forEach(deviceIds, (deviceId) => {
-        wait = wait + 1999;
-        setTimeout(setUpSensorReading, wait, deviceId);
-    });
-
     // Every few seconds, update the state of the dummy devices in a
     // semi-random fashion.
-    setInterval(activateTractor, 4999);
-    // Every second, update the state of the dummy devices in a
-    // semi-random fashion.
-    setInterval(activateDevices, 997);
+    setInterval(activateTractor, 10000);
+    setInterval(activateAnimalCollars, 5000);
+    setInterval(activateDevices, 3000);
 }
 
 let isTractorActive = false;
@@ -208,7 +199,58 @@ function randomWalk(state){
     }
 }
 
-// Update state of Lamps, Doors and Motion Sensors
+function activateAnimalCollars(){
+    isDevicesActive = true;
+
+    const deviceIds = myCache.keys();
+
+    _.forEach(deviceIds, (deviceId) => {
+        const state = getDeviceState(deviceId);
+        const isSensor = true;
+
+        switch (deviceId.replace(/\d/g, '')) {
+
+            case 'pig':
+                state.bpm = PIG_HEART_RATE + 2 * OFFSET_RATE[state.s] + getRandom() % 4;
+                if (state.s === 'AT_REST'){
+                    if (getRandom() * getRandom() > 63){
+                        state.s = PIG_STATE [getRandom() % 6];
+                    }
+                } else {
+                    randomWalk(state);
+                    if (getRandom() > 7){
+
+                        state.s = (getRandom() > 3) ? PIG_STATE [getRandom() % 6] : 'AT_REST';
+                    }
+                }
+                setDeviceState(deviceId, toUltraLight(state), isSensor);
+                break;
+            case 'cow':
+                state.bpm = COW_HEART_RATE + 2 * OFFSET_RATE[state.s] + getRandom() % 4;
+                if (state.s === 'AT_REST'){
+                    if (getRandom() * getRandom() > 80){
+                        state.s =  COW_STATE [getRandom() % 6];
+                    }
+                
+                } else {
+                    randomWalk(state, COW_HEART_RATE);
+                    if (getRandom() > 8){
+                        state.s =  (getRandom() > 7) ? COW_STATE [getRandom() % 6] : 'GRAZING';
+                    }
+                }
+                setDeviceState(deviceId, toUltraLight(state), isSensor);
+                break;
+            default:
+                break;
+        }
+
+       
+    });
+    isDevicesActive = false;
+
+}
+
+// Update state of Sensors
 function activateDevices() {
     if (isDevicesActive) {
         return;
@@ -225,7 +267,6 @@ function activateDevices() {
         let isDry;
         let target;
         let targetTemp;
-        let pigState;
 
         switch (deviceId.replace(/\d/g, '')) {
             case 'humidity':
@@ -250,40 +291,6 @@ function activateDevices() {
                     state.h = 0;
                 }
                 break;
-
-            case 'pig':
-                state.bpm = PIG_HEART_RATE + 2 * OFFSET_RATE[state.s] + getRandom() % 4;
-                if (state.s === 'AT_REST'){
-                    if (getRandom() * getRandom() > 63){
-                        state.s = PIG_STATE [getRandom() % 6];
-                    }
-                } else {
-                    randomWalk(state);
-                    if (getRandom() > 7){
-
-                        state.s = (getRandom() > 3) ? PIG_STATE [getRandom() % 6] : 'AT_REST';
-                    }
-                }
-
-
-
-                break;
-            case 'cow':
-                state.bpm = COW_HEART_RATE + 2 * OFFSET_RATE[state.s] + getRandom() % 4;
-                if (state.s === 'AT_REST'){
-                    if (getRandom() * getRandom() > 80){
-                        state.s =  COW_STATE [getRandom() % 6];
-                    }
-                
-                } else {
-                    randomWalk(state, COW_HEART_RATE);
-                    if (getRandom() > 8){
-                        state.s =  (getRandom() > 7) ? COW_STATE [getRandom() % 6] : 'GRAZING';
-                    }
-                }
-
-                break;
-
             case 'tractor':
                 target = getDeviceState('targetTractor' + deviceId.replace(/[a-zA-Z]/g, ''));
 
@@ -295,8 +302,8 @@ function activateDevices() {
                 }
 
                 if (state.s === 'MOVING') {
-                    state.x = Math.round((parseFloat(state.x) + (parseInt(target.x) / 1000))  * 1000) / 1000;
-                    state.y = Math.round((parseFloat(state.y) + (parseInt(target.y) / 1000))  * 1000) / 1000;
+                    state.x = Math.round((parseFloat(state.x) + (parseInt(target.x) / 300))  * 1000) / 1000;
+                    state.y = Math.round((parseFloat(state.y) + (parseInt(target.y) / 300))  * 1000) / 1000;
                 }
                 
 
@@ -329,13 +336,6 @@ function activateDevices() {
         setDeviceState(deviceId, toUltraLight(state), isSensor);
     });
     isDevicesActive = false;
-}
-
-// Read the existing state of the dummy devices when requested.
-function sendDeviceReading(deviceId) {
-    const state = toUltraLight(getDeviceState(deviceId));
-    const isSensor = deviceId.replace(/\d/g, '') !== 'water';
-    setDeviceState(deviceId, state, isSensor, true);
 }
 
 //
@@ -448,14 +448,6 @@ function alterTemperature(id, raise) {
     const target = getDeviceState(id);
     target.t = raise ? parseInt(target.t) + 5 : parseInt(target.t) - 5;
     setDeviceState(id, toUltraLight(target), false);
-}
-
-// Once a minute, read the existing state of the dummy devices
-function setUpSensorReading(deviceId) {
-    const deviceType = deviceId.replace(/\d/g, '');
-    if (deviceType === 'lamp' || deviceType === 'motion') {
-        setInterval(sendDeviceReading, 59999, deviceId);
-    }
 }
 
 // Check to see if a deviceId has a corresponding entry in the cache

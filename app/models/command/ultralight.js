@@ -22,7 +22,7 @@ function getUltralightCommand(string) {
 
 // This processor sends ultralight payload northbound to
 // the southport of the IoT Agent and sends measures
-// for the motion sensor, door and lamp.
+// for the animal collars, temperature sensor, filling sensor etc.
 
 // Ultralight 2.0 is a lightweight text based protocol aimed to constrained
 // devices and communications
