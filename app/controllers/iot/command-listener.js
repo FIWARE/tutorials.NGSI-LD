@@ -13,7 +13,7 @@ const IoTDevices = require('../../models/devices');
 // Connect to the context broker and use fallback values if necessary
 const CONTEXT_BROKER = process.env.CONTEXT_BROKER || 'http://localhost:1026/ngsi-ld/v1';
 const DEVICE_BROKER = process.env.DEVICE_BROKER || CONTEXT_BROKER;
-const NGSI_TENANT = process.env.NGSI_LD_TENANT !== undefined ? process.env.NGSI_LD_TENANT : 'openiot';
+const NGSI_LD_TENANT = process.env.NGSI_LD_TENANT !== undefined ? process.env.NGSI_LD_TENANT : 'openiot';
 const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
 
 const dataModelContext = process.env.IOTA_JSON_LD_CONTEXT ||
