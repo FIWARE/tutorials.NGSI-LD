@@ -109,7 +109,7 @@ This example can be split down into the following Entities:
 -   **IoT Devices**:
     -   Temperature Senor
     -   Filling Level Sensor
-    
+
 ![](https://fiware.github.io/tutorials.Understanding-At-Context/img/entities.png)
 
 ## Baseline Data Models
@@ -447,7 +447,7 @@ applications. The file is structured into three parts:
 -   A list of attributes (e.g. `address`) and enumerations (e.g. `barn`)
 
 Effectively this NGSI-LD `@context` can be combined with a copy of the NGSI-LD core context
-[https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld)
+[https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.3.jsonld](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.3.jsonld)
 to mechanically define the following:
 
 If a computer encounters an entity of `type=Building` this really refers to a
@@ -498,7 +498,7 @@ For example this is a `Building` in _normalized_ NGSI-LD format:
     },
     "@context": [
         "https://example.com/data-models.context-ngsild.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.3.jsonld"
     ]
 }
 ```
