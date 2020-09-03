@@ -263,7 +263,10 @@
         "wetterbedingungen": "https://w3id.org/saref#weatherConditions",
         "gewicht": "https://w3id.org/saref#weight",
         "windrichtung": "https://w3id.org/saref#windDirection",
-        "windgeschwindigkeit": "https://w3id.org/saref#windSpeed"
+        "windgeschwindigkeit": "https://w3id.org/saref#windSpeed",
+
+        "zustand": "https://saref.etsi.org/core/hasState",
+        "herzschlagfrequenz": "https://purl.bioontology.org/ontology/MESH/D006339"
     },
     "@graph": [
         {

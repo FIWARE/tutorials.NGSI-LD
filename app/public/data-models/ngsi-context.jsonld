@@ -111,6 +111,9 @@
         "weatherConditions": "https://w3id.org/saref#weatherConditions",
         "weight": "https://w3id.org/saref#weight",
         "windDirection": "https://w3id.org/saref#windDirection",
-        "windSpeed": "https://w3id.org/saref#windSpeed"
+        "windSpeed": "https://w3id.org/saref#windSpeed",
+
+        "state": "https://saref.etsi.org/core/hasState",
+        "heartRate": "https://purl.bioontology.org/ontology/MESH/D006339"
     }
 }
