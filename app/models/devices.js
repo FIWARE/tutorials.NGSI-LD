@@ -18,7 +18,6 @@ const WATER_ON = 's|ON';
 
 const HUMIDITY_WET = 'h|80';
 const TRACTOR_IDLE = 's|IDLE';
-const TRACTOR_MOVING = 's|MOVING';
 
 const PIG_IDLE = 's|AT_REST';
 const COW_IDLE = 's|AT_REST';
@@ -49,6 +48,7 @@ const VALID_COMMANDS = {
 // Change the state of a dummy IoT device based on the command received.
 function actuateDevice(deviceId, command) {
     debug('actuateDevice: ' + deviceId + ' ' + command);
+    let state;
     switch (deviceId.replace(/\d/g, '')) {
         case 'water':
             if (command === 'on') {
@@ -60,11 +60,13 @@ function actuateDevice(deviceId, command) {
             }
             break;
         case 'tractor':
+            state = getDeviceState(deviceId);
             if (command === 'start') {
-                setDeviceState(deviceId, TRACTOR_MOVING);
+                state.s = 'MOVING';
             } else if (command === 'stop') {
-                setDeviceState(deviceId, TRACTOR_IDLE);
+                state.s = 'IDLE';
             }
+            setDeviceState(deviceId, state);
             break;
         case 'filling':
             if (command === 'refill') {
@@ -95,7 +97,7 @@ function initDevices() {
     debug('initDevices');
     // Every few seconds, update the state of the dummy devices in a
     // semi-random fashion.
-    setInterval(activateTractor, 10000);
+    setInterval(changeTractorState, 10000);
     setInterval(activateAnimalCollars, 5000);
     setInterval(activateDevices, 3000);
 }
@@ -150,7 +152,7 @@ myCache.set('filling003', FILLING_STATION_FULL);
 myCache.set('filling004', FILLING_STATION_EMPTY);
 
 // Update the state of a tractor
-function activateTractor() {
+function changeTractorState() {
     if (isTractorActive) {
         return;
     }
@@ -166,8 +168,6 @@ function activateTractor() {
             case 'tractor':
                 //  The tractor is IDLE, MOVING or SOWING
                 if (state.s !== 'IDLE') {
-                    // Randomly open and close the tractor if not locked.
-                    // lower the rate if the lamp is off.
                     const rate = getTractorState(deviceId, 'tractor') === 'MOVING' ? 3 : 6;
                     state.s = getRandom() > rate ? 'MOVING' : 'SOWING';
                 }
