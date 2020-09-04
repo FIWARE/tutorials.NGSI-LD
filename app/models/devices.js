@@ -105,25 +105,25 @@ let isTractorActive = false;
 let isDevicesActive = false;
 let devicesInitialized = false;
 
-myCache.set('pig001', PIG_IDLE + '|y|52.0|x|13.6');
-myCache.set('pig002', PIG_IDLE + '|y|52.3|x|13.7');
-myCache.set('pig003', PIG_IDLE + '|y|52.2|x|13.8');
-myCache.set('pig004', PIG_IDLE + '|y|52.1|x|13.9');
+myCache.set('pig001', PIG_IDLE + '|gps|13.3501, 52.5143');
+myCache.set('pig002', PIG_IDLE + '|gps|13.3696, 52.5163');
+myCache.set('pig003', PIG_IDLE + '|gps|13.3597, 52.5162');
+myCache.set('pig004', PIG_IDLE + '|gps|13.3124, 52.4898');
 
-myCache.set('cow001', COW_IDLE + '|y|52.0|x|13.6');
-myCache.set('cow002', COW_IDLE + '|y|52.2|x|13.9');
-myCache.set('cow003', COW_IDLE + '|y|52.3|x|13.7');
-myCache.set('cow004', COW_IDLE + '|y|52.1|x|13.8');
+myCache.set('cow001', COW_IDLE + '|gps|13.3504, 52.5140');
+myCache.set('cow002', COW_IDLE + '|gps|13.37, 52.516');
+myCache.set('cow003', COW_IDLE + '|gps|13.6,52.3');
+myCache.set('cow004', COW_IDLE + '|gps|13.3126, 52.4895');
 
 myCache.set('water001', WATER_OFF, false);
 myCache.set('water002', WATER_OFF, false);
 myCache.set('water003', WATER_OFF, false);
 myCache.set('water004', WATER_OFF, false);
 
-myCache.set('tractor001', TRACTOR_SOWING + '|y|52.0|x|13.6');
-myCache.set('tractor002', TRACTOR_IDLE + '|y|52.1|x|13.7');
-myCache.set('tractor003', TRACTOR_IDLE + '|y|52.2|x|13.8');
-myCache.set('tractor004', TRACTOR_IDLE + '|y|52.3|x|13.9');
+myCache.set('tractor001', TRACTOR_IDLE + '|gps|13.3505, 52.5144');
+myCache.set('tractor002', TRACTOR_IDLE + '|gps|13.3698, 52.5163');
+myCache.set('tractor003', TRACTOR_IDLE + '|gps|13.3598, 52.5165');
+myCache.set('tractor004', TRACTOR_IDLE + '|gps|13.3127, 52.4893');
 
 myCache.set('targetTractor001', 'x|0|y|1');
 myCache.set('targetTractor002', 'x|1|y|0');
@@ -185,18 +185,22 @@ function addAndTrim(value, add) {
 }
 
 function randomWalk(state){
+    const location = state.gps.split(',');
+    let y = location[0];
+    let x = location[1];
     if (getRandom() > 7) {
-        state.x = addAndTrim(state.x, true);
+        x = addAndTrim(x, true);
     }
     if (getRandom() > 7) {
-        state.x = addAndTrim(state.x, false);
+        x = addAndTrim(x, false);
     }
     if (getRandom() > 7) {
-        state.y = addAndTrim(state.y, true);
+        y = addAndTrim(y, true);
     }
     if (getRandom() > 7) {
-        state.y = addAndTrim(state.y, false);
+        y = addAndTrim(y, false);
     }
+    state.gps = y + "," + x;
 }
 
 function activateAnimalCollars(){
@@ -267,6 +271,9 @@ function activateDevices() {
         let isDry;
         let target;
         let targetTemp;
+        let location;
+        let x;
+        let y;
 
         switch (deviceId.replace(/\d/g, '')) {
             case 'humidity':
@@ -293,31 +300,38 @@ function activateDevices() {
                 break;
             case 'tractor':
                 target = getDeviceState('targetTractor' + deviceId.replace(/[a-zA-Z]/g, ''));
+                location = state.gps.split(',');
+                state.y = parseFloat(location[0]);
+                state.x = parseFloat(location[1]);
 
                 if (state.s === 'SOWING') {
                     if (getRandom() > 9) {
-                        state.y = Math.round((parseFloat(state.y) + (0.001 * parseInt(target.x))) * 1000) / 1000;
-                        state.x = Math.round((parseFloat(state.x) + (0.001 * parseInt(target.y)))  * 1000) / 1000;
+                        state.y = Math.round((state.y + (0.001 * parseInt(target.x))) * 1000) / 1000;
+                        state.x = Math.round((state.x + (0.001 * parseInt(target.y)))  * 1000) / 1000;
+
                     }
                 }
 
                 if (state.s === 'MOVING') {
-                    state.x = Math.round((parseFloat(state.x) + (parseInt(target.x) / 300))  * 1000) / 1000;
-                    state.y = Math.round((parseFloat(state.y) + (parseInt(target.y) / 300))  * 1000) / 1000;
+                    state.x = Math.round((state.x + (parseInt(target.x) / 300))  * 1000) / 1000;
+                    state.y = Math.round((state.y + (parseInt(target.y) / 300))  * 1000) / 1000;
                 }
                 
 
                 if (getRandom() > 9 && state.s === 'MOVING') {
-                        state.s = 'SOWING';
-                    } else if (getRandom() > 7 && state.s === 'SOWING') {
-                        target.x = -target.x;
-                        target.y = -target.y;
-                        setDeviceState('targetTractor' + deviceId.replace(/[a-zA-Z]/g, ''), toUltraLight(target), false);
-                        state.y = Math.round((parseFloat(state.y) + (Math.abs (parseInt(target.x)/1000))) * 1000) / 1000;
-                        state.x = Math.round((parseFloat(state.x) + (Math.abs (parseInt(target.y)/1000))) * 1000) / 1000;
-                        state.s = 'MOVING';
-                    }
+                    state.s = 'SOWING';
+                } else if (getRandom() > 7 && state.s === 'SOWING') {
+                    target.x = -target.x;
+                    target.y = -target.y;
+                    setDeviceState('targetTractor' + deviceId.replace(/[a-zA-Z]/g, ''), toUltraLight(target), false);
+                    state.y = Math.round((state.y + (Math.abs (parseInt(target.x)/1000))) * 1000) / 1000;
+                    state.x = Math.round((state.x + (Math.abs (parseInt(target.y)/1000))) * 1000) / 1000;
+                    state.s = 'MOVING';
+                }
                 
+                state.gps = state.y + "," + state.x;
+                delete state.y;
+                delete state.x;
                 break;
 
             case 'temperature':
@@ -343,7 +357,7 @@ function activateDevices() {
 // Ultralight is a series of pipe separated key-value pairs.
 // Each key and value is in turn separated by a pipe character
 //
-// e.g. s|ON|l|1000 becomes
+// e.g. s|ON|gps|1000 becomes
 // { s: 'ON', l: '1000'}
 //
 function getDeviceState(deviceId) {
