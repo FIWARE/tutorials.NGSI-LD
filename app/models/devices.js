@@ -18,7 +18,6 @@ const WATER_ON = 's|ON';
 
 const HUMIDITY_WET = 'h|80';
 const TRACTOR_IDLE = 's|IDLE';
-const TRACTOR_SOWING = 's|SOWING';
 const TRACTOR_MOVING = 's|MOVING';
 
 const PIG_IDLE = 's|AT_REST';
@@ -272,8 +271,6 @@ function activateDevices() {
         let target;
         let targetTemp;
         let location;
-        let x;
-        let y;
 
         switch (deviceId.replace(/\d/g, '')) {
             case 'humidity':
