@@ -20,15 +20,15 @@ const dataModelContext = process.env.IOTA_JSON_LD_CONTEXT ||
     'http://localhost:3000/data-models/ngsi-context.jsonld';
 
 const COMMANDS = {
-    on: 'Water:',
-    off: 'Water:',
-    start: 'Tractor:',
-    stop: 'Tractor:',
-    add: 'Filling:',
-    remove: 'Filling:',
-    refill: 'Filling:',
-    raise: 'Temperature:',
-    lower: 'Temperature:'
+    on: 'water',
+    off: 'water',
+    start: 'tractor',
+    stop: 'tractor',
+    add: 'filling',
+    remove: 'filling',
+    refill: 'filling',
+    raise: 'temperature',
+    lower: 'temperature'
 };
 
 function createNGSILDRequest(action, id) {
@@ -37,7 +37,7 @@ function createNGSILDRequest(action, id) {
         type: 'Property',
         value: ' '
     };
-    const url = DEVICE_BROKER + '/entities/urn:ngsi-ld:' + id + '/attrs/' + action;
+    const url = DEVICE_BROKER + '/entities/urn:ngsi-ld:Device:' + id + '/attrs/' + action;
     const headers = {
         'Content-Type': 'application/json',
         'NGSILD-Tenant': NGSI_LD_TENANT,
@@ -54,9 +54,9 @@ function createNGSILDRequest(action, id) {
 // This function allows a Water Sprinkler, Tractor of FillingStation command to be sent to the Dummy IoT devices
 // via the Orion Context Broker and an IoT Agent.
 function sendCommand(req, res) {
-    const id = req.body.id.split(':').pop();
     const action = req.body.action;
-    debug('sendCommand: ' +  (COMMANDS[action] || '') + id + ' ' + action);
+    const id = (COMMANDS[action] || '') + req.body.id;
+    debug('sendCommand: ' +  id + ' ' + action);
     if (!res.locals.authorized) {
         // If the user is not authorized, return an error code.
         res.setHeader('Content-Type', 'application/json');
@@ -75,7 +75,7 @@ function sendCommand(req, res) {
         return res.status(204).send();
     }
 
-    const options = createNGSILDRequest(action, COMMANDS[action] + id);
+    const options = createNGSILDRequest(action, id);
 
     if (req.session.access_token) {
         // If the system has been secured and we have logged in,
