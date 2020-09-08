@@ -42,7 +42,7 @@ const FILLING_STATION_EMPTY = 'f|0';
 const VALID_COMMANDS = {
     tractor: ['start', 'stop'],
     water: ['on', 'off'],
-    filling: ['fill', 'empty']
+    filling: ['add', 'remove', 'refill']
 };
 
 // Change the state of a dummy IoT device based on the command received.
@@ -66,7 +66,7 @@ function actuateDevice(deviceId, command) {
             } else if (command === 'stop') {
                 state.s = 'IDLE';
             }
-            setDeviceState(deviceId, state);
+            setDeviceState(deviceId, toUltraLight(state));
             break;
         case 'filling':
             if (command === 'refill') {
