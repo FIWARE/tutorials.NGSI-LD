@@ -8,7 +8,7 @@
 	branch = NGSI-LD
 [submodule "tutorials.IoT-Sensors"]
 	path = tutorials.IoT-Sensors
-	url = https://github.com/FIWARE/tutorials.IoT-Sensors
+	url = https://github.com/FIWARE/tutorials.IoT-Sensors.git
 	branch = NGSI-LD
 [submodule "tutorials.Understanding-At-Context"]
 	path = tutorials.Understanding-At-Context

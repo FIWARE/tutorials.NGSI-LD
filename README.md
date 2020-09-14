@@ -82,8 +82,12 @@ to provide a command-line functionality similar to a Linux distribution on Windo
 ### Core Context Management: NGSI-LD Fundamentals
 
 &nbsp; 101. [Understanding `@context`](https://github.com/FIWARE/tutorials.Understanding-At-Context)<br/>
-&nbsp; 102. [Working with `@context`](https://github.com/FIWARE/tutorials.Working-with-Context)<br/>
-&nbsp; 103. [CRUD Operations](https://github.com/FIWARE/tutorials.NGSI-LD-Operations)<br/>
+&nbsp; 102. [Working with `@context`](https://github.com/FIWARE/tutorials.Getting-Started/tree/NGSI-LD)<br/>
+&nbsp; 103. [CRUD Operations](https://github.com/FIWARE/tutorials.CRUD-Operations/tree/NGSI-LD)<br/>
+
+### Internet of Things, Robots and third-party systems
+
+&nbsp; 201. [Introduction to IoT Sensors](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)<br/>
 
 ## Usage
 
@@ -91,6 +95,7 @@ Most tutorials supply a `services` script to start the containers:
 
 ```console
 cd <tutorial-name>
+git checkout NGSI-LD
 ./services start
 ```
 
