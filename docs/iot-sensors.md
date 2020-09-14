@@ -424,8 +424,7 @@ urn:ngsi-ld:Device:tractor001@start| start OK
 
 The **Filling Station** is an electronic device which can be sent a command to request that feed is added or removed
 from the silo. It can also report on its load level. In reality such a device would be connected to the FMIS to request
-that a worker fills the silo when it gets too low, but in this case we are treating the device as both a sensor and and
-actuator.
+that a worker fills the silo when it gets too low, but in this case we are treating the device as both a sensor and actuator.
 
 Measurements will be sent to the IoT Agent as the state changes.
 
