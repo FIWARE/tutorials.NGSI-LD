@@ -110,3 +110,11 @@ use NGSI-LD
 &nbsp; 102. [Working with `@context`](working-with-@context)<br/>
 &nbsp; 103. [CRUD Operations](ngsi-ld-operations)<br/>
 
+<h3 style="box-shadow: 0px 4px 0px 0px #5dc0cf;">Internet of Things, Robots and third-party systems</h3>
+
+In order to make a context-based system aware of the state of the real world, it will need to access information from
+Robots, IoT Sensors or other suppliers of context data such as social media. It is also possible to generate commands
+from the context broker to alter the state of real-world objects themselves.
+
+&nbsp; 201. [Introduction to IoT Sensors](iot-sensors.md)<br/> &nbsp; 202.
+[Provisioning an IoT Agent](iot-agent.md)<br/>

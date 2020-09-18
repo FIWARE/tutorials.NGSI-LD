@@ -16,6 +16,7 @@ nav:
       - "CRUD Operations": "ngsi-ld-operations.md"
   - "IoT Agents & Robots":
       - "IoT Sensors": "iot-sensors.md"
+      - "IoT Agent (Ultralight)": "iot-agent.md"
   - "Appendix":
       - "Data Models": "datamodels.md"
   
