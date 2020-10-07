@@ -1,6 +1,6 @@
 {
   "name": "tutorials.NGSI-LD",
-  "description": "An Express App for providing context data to FIWARE Components",
+  "description": "An Express App for providing context data to FIWARE NGSI-LD Components",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/FIWARE/tutorials.NGSI-LD.git"
@@ -8,7 +8,7 @@
   "bugs": {
     "url": "https://github.com/FIWARE/tutorials.NGSI-LD/issues"
   },
-  "homepage": "https://fiware-tutorials.rtfd.io/",
+  "homepage": "https://ngsi-ld-tutorials.rtfd.io/",
   "author": "FIWARE Foundation e.V.",
   "keywords": [
     "node",
@@ -16,7 +16,7 @@
     "tutorial",
     "ngsi"
   ],
-  "version": "1.0.0",
+  "version": "0.0.1",
   "private": true,
   "license": "MIT",
   "engines": {
