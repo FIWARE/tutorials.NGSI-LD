@@ -4,7 +4,7 @@
 
 $(function () {
     const socket = io();
-    let snd;
+    let waterAudio;
 
     async function downloadFile() {
         const response = await fetch('/js/water.txt');
@@ -12,10 +12,9 @@ $(function () {
         if (response.status !== 200) {
             throw new Error('Server Error');
         }
-
         const data = await response.text();
-
-        snd = new Audio(data);
+        waterAudio = new Audio(data);
+        waterAudio.loop = true;
     }
 
     // eslint-disable-next-line no-unused-vars
@@ -44,10 +43,25 @@ $(function () {
                 case 'water':
                     if (msg === 's|ON') {
                         li.css('background-image', "url('/img/water-on.svg')");
-                        beep();
+                        $('#' + device).data('running', true);
                     } else {
                         li.css('background-image', "url('/img/water-off.svg')");
+                        $('#' + device).data('running', false);
                     }
+
+                    if (!!waterAudio) {
+                        if (
+                            $('#water001').data('running') ||
+                            $('#water002').data('running') ||
+                            $('#water003').data('running') ||
+                            $('#water004').data('running')
+                        ) {
+                            waterAudio.play();
+                        } else {
+                            waterAudio.pause();
+                        }
+                    }
+
                     break;
                 case 'tractor':
                     if (msg.startsWith('s|MOVING')) {
@@ -112,11 +126,9 @@ $(function () {
         }
     });
 
-    let playAudio = false;
     $('body').click(async function () {
         $('#audio').text('Audio ON');
         await downloadFile();
-        playAudio = true;
     });
 
     $('form.device').submit(function (event) {
@@ -133,10 +145,4 @@ $(function () {
             }
         });
     });
-
-    function beep() {
-        if (playAudio) {
-            snd.play();
-        }
-    }
 });
