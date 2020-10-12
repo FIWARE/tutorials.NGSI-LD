@@ -45,7 +45,7 @@ class XMLCommand {
     }
 
     // The tractor responds to "start", "stop" commands
-    // Each command alters the state of the tractor. 
+    // Each command alters the state of the tractor.
     actuateTractor(req, res) {
         const data = xmlParser(req.body);
         const deviceId = data.root.attributes.device;
@@ -61,7 +61,6 @@ class XMLCommand {
         IoTDevices.actuateDevice(deviceId, command);
         return res.status(200).send(getResult(OK, command, deviceId));
     }
-
 
     // The filling station can have items added or removed.
     // All changes are manual

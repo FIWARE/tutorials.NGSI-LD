@@ -16,8 +16,7 @@ const DEVICE_BROKER = process.env.DEVICE_BROKER || CONTEXT_BROKER;
 const NGSI_LD_TENANT = process.env.NGSI_LD_TENANT !== undefined ? process.env.NGSI_LD_TENANT : 'openiot';
 const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
 
-const dataModelContext = process.env.IOTA_JSON_LD_CONTEXT ||
-    'http://localhost:3000/data-models/ngsi-context.jsonld';
+const dataModelContext = process.env.IOTA_JSON_LD_CONTEXT || 'http://localhost:3000/data-models/ngsi-context.jsonld';
 
 const COMMANDS = {
     on: 'water',
@@ -44,8 +43,7 @@ function createNGSILDRequest(action, id) {
         'NGSILD-Path': '/',
         'fiware-service': NGSI_LD_TENANT,
         'fiware-servicepath': '/',
-        Link:
-            '<' + dataModelContext + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
+        Link: '<' + dataModelContext + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
     };
 
     return { method, url, headers, body, json: true };
@@ -56,7 +54,7 @@ function createNGSILDRequest(action, id) {
 function sendCommand(req, res) {
     const action = req.body.action;
     const id = (COMMANDS[action] || '') + req.body.id;
-    debug('sendCommand: ' +  id + ' ' + action);
+    debug('sendCommand: ' + id + ' ' + action);
     if (!res.locals.authorized) {
         // If the user is not authorized, return an error code.
         res.setHeader('Content-Type', 'application/json');
@@ -66,7 +64,6 @@ function sendCommand(req, res) {
     if (!Object.keys(COMMANDS).includes(action)) {
         return res.status(404).send();
     }
-
 
     // The temperature Gauge does not accept commands,
     // Update the state of the device directly

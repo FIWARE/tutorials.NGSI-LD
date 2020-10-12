@@ -27,7 +27,6 @@ function getResult(cmd, status) {
 // the southport of the IoT Agent and sends measures
 // for the animal collars, temperature sensor, filling sensor etc.
 
-
 // A device can report new measures to the IoT Platform using an HTTP GET request to the /iot/d path with the following query parameters:
 //
 //  i (device ID): Device ID (unique for the API Key).
@@ -57,7 +56,7 @@ class JSONCommand {
     }
 
     // The tractor responds to "start", "stop" commands
-    // Each command alters the state of the tractor. 
+    // Each command alters the state of the tractor.
     actuateTractor(req, res) {
         const command = getJSONCommand(req.body);
         const deviceId = 'tractor' + req.params.id;

@@ -59,7 +59,7 @@ class UltralightCommand {
     }
 
     // The tractor responds to "start", "stop" commands
-    // Each command alters the state of the tractor. 
+    // Each command alters the state of the tractor.
     actuateTractor(req, res) {
         const keyValuePairs = req.body.split('|') || [''];
         const command = getUltralightCommand(keyValuePairs[0]);
@@ -76,7 +76,6 @@ class UltralightCommand {
         IoTDevices.actuateDevice(deviceId, command);
         return res.status(200).send(result + OK);
     }
-
 
     // The filling station can have items added or removed.
     // All changes are manual

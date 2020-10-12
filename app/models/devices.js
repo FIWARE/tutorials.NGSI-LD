@@ -21,19 +21,18 @@ const TRACTOR_IDLE = 's|IDLE';
 
 const PIG_IDLE = 's|AT_REST';
 const COW_IDLE = 's|AT_REST';
-const PIG_STATE = ['AT_REST','FORAGING', 'FORAGING', 'FORAGING', 'DRINKING', 'WALLOWING'];
-const COW_STATE = ['AT_REST','AT_REST', 'GRAZING', 'GRAZING', 'GRAZING', 'DRINKING'];
+const PIG_STATE = ['AT_REST', 'FORAGING', 'FORAGING', 'FORAGING', 'DRINKING', 'WALLOWING'];
+const COW_STATE = ['AT_REST', 'AT_REST', 'GRAZING', 'GRAZING', 'GRAZING', 'DRINKING'];
 const OFFSET_RATE = {
-    AT_REST : 0,
+    AT_REST: 0,
     GRAZING: 0,
-    FORAGING : 2,
-    DRINKING : 1,
-    WALLOWING: 5,
-}
+    FORAGING: 2,
+    DRINKING: 1,
+    WALLOWING: 5
+};
 
 const COW_HEART_RATE = 50;
 const PIG_HEART_RATE = 60;
-
 
 const DEFAULT_TEMPERATURE = 't|25';
 const FILLING_STATION_FULL = 'f|1';
@@ -183,7 +182,7 @@ function addAndTrim(value, add) {
     return Math.round(newValue * 1000) / 1000;
 }
 
-function randomWalk(state){
+function randomWalk(state) {
     const location = state.gps.split(',');
     let y = location[0];
     let x = location[1];
@@ -199,10 +198,10 @@ function randomWalk(state){
     if (getRandom() > 7) {
         y = addAndTrim(y, false);
     }
-    state.gps = y + "," + x;
+    state.gps = y + ',' + x;
 }
 
-function activateAnimalCollars(){
+function activateAnimalCollars() {
     isDevicesActive = true;
 
     const deviceIds = myCache.keys();
@@ -212,33 +211,30 @@ function activateAnimalCollars(){
         const isSensor = true;
 
         switch (deviceId.replace(/\d/g, '')) {
-
             case 'pig':
-                state.bpm = PIG_HEART_RATE + 2 * OFFSET_RATE[state.s] + getRandom() % 4;
-                if (state.s === 'AT_REST'){
-                    if (getRandom() * getRandom() > 63){
-                        state.s = PIG_STATE [getRandom() % 6];
+                state.bpm = PIG_HEART_RATE + 2 * OFFSET_RATE[state.s] + (getRandom() % 4);
+                if (state.s === 'AT_REST') {
+                    if (getRandom() * getRandom() > 63) {
+                        state.s = PIG_STATE[getRandom() % 6];
                     }
                 } else {
                     randomWalk(state);
-                    if (getRandom() > 7){
-
-                        state.s = (getRandom() > 3) ? PIG_STATE [getRandom() % 6] : 'AT_REST';
+                    if (getRandom() > 7) {
+                        state.s = getRandom() > 3 ? PIG_STATE[getRandom() % 6] : 'AT_REST';
                     }
                 }
                 setDeviceState(deviceId, toUltraLight(state), isSensor);
                 break;
             case 'cow':
-                state.bpm = COW_HEART_RATE + 2 * OFFSET_RATE[state.s] + getRandom() % 4;
-                if (state.s === 'AT_REST'){
-                    if (getRandom() * getRandom() > 80){
-                        state.s =  COW_STATE [getRandom() % 6];
+                state.bpm = COW_HEART_RATE + 2 * OFFSET_RATE[state.s] + (getRandom() % 4);
+                if (state.s === 'AT_REST') {
+                    if (getRandom() * getRandom() > 80) {
+                        state.s = COW_STATE[getRandom() % 6];
                     }
-                
                 } else {
                     randomWalk(state, COW_HEART_RATE);
-                    if (getRandom() > 8){
-                        state.s =  (getRandom() > 7) ? COW_STATE [getRandom() % 6] : 'GRAZING';
+                    if (getRandom() > 8) {
+                        state.s = getRandom() > 7 ? COW_STATE[getRandom() % 6] : 'GRAZING';
                     }
                 }
                 setDeviceState(deviceId, toUltraLight(state), isSensor);
@@ -246,11 +242,8 @@ function activateAnimalCollars(){
             default:
                 break;
         }
-
-       
     });
     isDevicesActive = false;
-
 }
 
 // Update state of Sensors
@@ -275,17 +268,17 @@ function activateDevices() {
         switch (deviceId.replace(/\d/g, '')) {
             case 'humidity':
                 humid = parseInt(state.h);
-                isDry = (getRandom() > 5);
+                isDry = getRandom() > 5;
 
                 // If the water is ON, randomly increase the soil humidity.
                 if (getWaterState(deviceId, 'humidity') === 'ON') {
-                    state.h = humid + getRandom() % 3;
-                } else if (isDry && (humid > 50) ) {
-                    state.h = humid - getRandom() % 3;
-                } else if (isDry && (humid > 30) ) {
-                    state.h = humid - 3 + getRandom() % 4;
+                    state.h = humid + (getRandom() % 3);
+                } else if (isDry && humid > 50) {
+                    state.h = humid - (getRandom() % 3);
+                } else if (isDry && humid > 30) {
+                    state.h = humid - 3 + (getRandom() % 4);
                 } else if (humid <= 30) {
-                    state.h = humid + 3 - getRandom() % 4;
+                    state.h = humid + 3 - (getRandom() % 4);
                 }
 
                 if (state.h > 100) {
@@ -303,17 +296,15 @@ function activateDevices() {
 
                 if (state.s === 'SOWING') {
                     if (getRandom() > 9) {
-                        state.y = Math.round((state.y + (0.001 * parseInt(target.x))) * 1000) / 1000;
-                        state.x = Math.round((state.x + (0.001 * parseInt(target.y)))  * 1000) / 1000;
-
+                        state.y = Math.round((state.y + 0.001 * parseInt(target.x)) * 1000) / 1000;
+                        state.x = Math.round((state.x + 0.001 * parseInt(target.y)) * 1000) / 1000;
                     }
                 }
 
                 if (state.s === 'MOVING') {
-                    state.x = Math.round((state.x + (parseInt(target.x) / 300))  * 1000) / 1000;
-                    state.y = Math.round((state.y + (parseInt(target.y) / 300))  * 1000) / 1000;
+                    state.x = Math.round((state.x + parseInt(target.x) / 300) * 1000) / 1000;
+                    state.y = Math.round((state.y + parseInt(target.y) / 300) * 1000) / 1000;
                 }
-                
 
                 if (getRandom() > 9 && state.s === 'MOVING') {
                     state.s = 'SOWING';
@@ -321,12 +312,12 @@ function activateDevices() {
                     target.x = -target.x;
                     target.y = -target.y;
                     setDeviceState('targetTractor' + deviceId.replace(/[a-zA-Z]/g, ''), toUltraLight(target), false);
-                    state.y = Math.round((state.y + (Math.abs (parseInt(target.x)/1000))) * 1000) / 1000;
-                    state.x = Math.round((state.x + (Math.abs (parseInt(target.y)/1000))) * 1000) / 1000;
+                    state.y = Math.round((state.y + Math.abs(parseInt(target.x) / 1000)) * 1000) / 1000;
+                    state.x = Math.round((state.x + Math.abs(parseInt(target.y) / 1000)) * 1000) / 1000;
                     state.s = 'MOVING';
                 }
-                
-                state.gps = state.y + "," + state.x;
+
+                state.gps = state.y + ',' + state.x;
                 delete state.y;
                 delete state.x;
                 break;
