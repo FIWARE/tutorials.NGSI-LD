@@ -49,7 +49,7 @@ $(function () {
                         $('#' + device).data('running', false);
                     }
 
-                    if (!!waterAudio) {
+                    if (waterAudio) {
                         if (
                             $('#water001').data('running') ||
                             $('#water002').data('running') ||
