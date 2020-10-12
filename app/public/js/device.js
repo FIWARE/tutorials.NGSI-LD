@@ -14,7 +14,6 @@ $(function () {
         }
         const data = await response.text();
         waterAudio = new Audio(data);
-        waterAudio.loop = true;
     }
 
     // eslint-disable-next-line no-unused-vars
