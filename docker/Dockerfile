@@ -3,7 +3,7 @@ ARG GITHUB_ACCOUNT=fiware
 ARG GITHUB_REPOSITORY=tutorials.NGSI-LD
 ARG DOWNLOAD=latest
 ARG SOURCE_BRANCH=master
-
+ARG SOURCE_COMMIT=unknown
 
 ########################################################################################
 #
@@ -105,6 +105,8 @@ ARG TARGET
 ARG GITHUB_ACCOUNT
 ARG GITHUB_REPOSITORY
 ARG NODE_VERSION
+ARG SOURCE_COMMIT
+ENV GIT_COMMIT=$SOURCE_COMMIT
 
 LABEL "maintainer"="FIWARE Foundation <fiware.eu@gmail.com>"
 LABEL "org.opencontainers.image.authors"="https://www.fiware.org/contact-us/"
