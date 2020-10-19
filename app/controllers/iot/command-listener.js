@@ -68,7 +68,7 @@ function sendCommand(req, res) {
     // The temperature Gauge does not accept commands,
     // Update the state of the device directly
     if (action === 'raise' || action === 'lower') {
-        IoTDevices.alterTemperature('targetTemp' + id, action === 'raise');
+        IoTDevices.alterTemperature(id.replace('temperature', 'targetTemp'), action === 'raise');
         return res.status(204).send();
     }
 
