@@ -7,13 +7,22 @@
         "schema": "https://schema.org/",
         "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
         "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "tutorial": "https://https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html#",
         "Gebäude": "fiware:Building",
         "Weiblich": "schema:Female",
+        "Gerät": "fiware:Device",
         "Füllstandssensor": "fiware:FillingLevelSensor",
+        "Herbicide": "tutorial:Herbicide",
         "HVAC": "https://w3id.org/saref#HVAC",
         "Männlich": "schema:Male",
+        "PartField": "tutorial:PartField",
         "Person": "fiware:Person",
+        "SoilSensor": "tutorial:SoilSensor",
         "TemperatureSensor": "fiware:TemperatureSensor",
+        "Activität": "fiware:Activity",
+        "Traktor": "tutorial:Tractor",
+        "Wasser": "tutorial:Water",
+
         "aktuator": "https://w3id.org/saref#actuator",
         "zusätzlicherName": {
             "@id": "schema:additionalName",
@@ -266,7 +275,21 @@
         "windgeschwindigkeit": "https://w3id.org/saref#windSpeed",
 
         "zustand": "https://saref.etsi.org/core/hasState",
-        "herzschlagfrequenz": "https://purl.bioontology.org/ontology/MESH/D006339"
+        "herzschlagfrequenz": "https://purl.bioontology.org/ontology/MESH/D006339",
+        
+        "produkt": {
+            "@id": "fiware:refObject",
+            "@type": "@id"
+        },
+        "abeiter": {
+            "@id": "fiware:refAgent",
+            "@type": "@id"
+        },
+        "feld": {
+            "@id": "fiware:refTarget",
+            "@type": "@id"
+        }
+
     },
     "@graph": [
         {
