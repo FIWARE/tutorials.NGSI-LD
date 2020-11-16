@@ -18,3 +18,7 @@
 	path = tutorials.Getting-Started
 	url = https://github.com/FIWARE/tutorials.Getting-Started
 	branch = NGSI-LD
+[submodule "tutorials.Entity-Relationships"]
+	path = tutorials.Entity-Relationships
+	url = https://github.com/FIWARE/tutorials.Entity-Relationships
+	branch = NGSI-LD

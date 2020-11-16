@@ -14,6 +14,7 @@ nav:
       - "Understanding @context": "understanding-@context.md"
       - "Working with @context": "working-with-@context.md"
       - "CRUD Operations": "ngsi-ld-operations.md"
+      - "Entity Relationships": "ngsi-ld-operations.md"
   - "IoT Agents & Robots":
       - "IoT Sensors": "iot-sensors.md"
       - "IoT Agent (Ultralight)": "iot-agent.md"
