@@ -5,7 +5,7 @@
         "ngsi-ld": "https://uri.etsi.org/ngsi-ld/",
         "fiware": "https://uri.fiware.org/ns/data-models#",
         "schema": "https://schema.org/",
-        "tutorial": "https://https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html#",
+        "tutorial": "https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html#",
         "Building": "fiware:Building",
         "Device": "fiware:Device",
         "Female": "schema:Female",

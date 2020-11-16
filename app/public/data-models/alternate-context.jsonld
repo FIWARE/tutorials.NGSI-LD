@@ -7,7 +7,7 @@
         "schema": "https://schema.org/",
         "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
         "xsd": "http://www.w3.org/2001/XMLSchema#",
-        "tutorial": "https://https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html#",
+        "tutorial": "https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html#",
         "Gebäude": "fiware:Building",
         "Weiblich": "schema:Female",
         "Gerät": "fiware:Device",
@@ -275,6 +275,7 @@
         "windgeschwindigkeit": "https://w3id.org/saref#windSpeed",
 
         "zustand": "https://saref.etsi.org/core/hasState",
+        "status": "https://saref.etsi.org/core/status",
         "herzschlagfrequenz": "https://purl.bioontology.org/ontology/MESH/D006339",
         
         "produkt": {
