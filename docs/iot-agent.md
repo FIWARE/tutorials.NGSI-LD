@@ -10,7 +10,7 @@ requests sent to an NGSI-LD compliant context broker such as the
 [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/).
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
-[Postman documentation](https://fiware.github.io/tutorials.IoT-Agent/ngsi-ld)
+[Postman documentation](https://fiware.github.io/tutorials.IoT-Agent/ngsi-ld.html)
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/fbe8cabce2e1845952db)
 

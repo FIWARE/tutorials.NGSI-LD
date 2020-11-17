@@ -7,7 +7,7 @@ created in the previous [Smart Farm example](https://github.com/FIWARE/tutorials
 creates and associates a series of related data entities to create add sensors and farm workers to the farm.
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
-[Postman documentation](https://fiware.github.io/tutorials.Entity-Relationships/ngsi-ld).
+[Postman documentation](https://fiware.github.io/tutorials.Entity-Relationships/ngsi-ld.html).
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/d0f2b74c4beb8434595f)
 

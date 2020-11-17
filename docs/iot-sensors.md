@@ -9,7 +9,7 @@ defined in this tutorial is necessary before proceeding to connect the IoT devic
 real IoT Agent.
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
-[Postman documentation](https://fiware.github.io/tutorials.IoT-Sensors/ngsi-ld)
+[Postman documentation](https://fiware.github.io/tutorials.IoT-Sensors/ngsi-ld.html)
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/1805fa92c4d6abaa374f)
 
