@@ -8,7 +8,6 @@
 [![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/)
 [<img src="docs/img/logo.png" align="right" width="162">](https://www.fiware.org/)<br/>
 [![Documentation](https://img.shields.io/readthedocs/ngsi-ld-tutorials.svg)](https://ngsi-ld-tutorials.rtfd.io)
-.github
 [![CI](https://github.com/FIWARE/tutorials.NGSI-LD/workflows/CI/badge.svg)](https://github.com/FIWARE/tutorials.NGSI-LD/actions?query=workflow%3ACI)
 
 This is a collection of tutorials for the FIWARE ecosystem designed for **NGSI-LD** developers. Each tutorial consists
