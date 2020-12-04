@@ -3,6 +3,10 @@ extends layout
 include product
 
 block content
+
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js')
+  script(src='https://code.jquery.com/jquery-1.11.1.js')
+
   h1= title
   div
     div(style="float:left; border-width:1px; border:solid; padding:2px; background: #efefef;")
@@ -24,20 +28,65 @@ block content
       li category: #{building.category}
       li owner: #{building.owner}
 
-    form.device(action="/device/command" method="POST")
+    form(action="/device/command" method="POST")
       h3 Feedstock levels
       p Add, remove or refill the hay in the barn.
+      div(style="background-repeat: no-repeat;background-image: url('/img/warehouse-full.svg')") &nbsp;&nbsp;
+        code 
+          span.device(id=`filling${building.id.replace(/\D/g,'')}`) &nbsp;
+      p
       input(type="text" style="display:none"  name="id" value=`${building.id.replace(/\D/g,'')}`)
       input(type="submit" value="refill" name="action") 
       input(type="submit" value="add" name="action") 
       input(type="submit" value="remove" name="action") 
 
-    form.device(action="/device/command" method="POST")
+    form(action="/device/command" method="POST")
       h3 Thermostat
       p Raise or lower the desired temperature of the barn.
+      div(style="background-repeat: no-repeat;background-image: url('/img/temperature.svg')") &nbsp;&nbsp;
+        code 
+          span.device(id=`temperature${building.id.replace(/\D/g,'')}`) 25
+      p
       input(type="text" style="display:none"  name="id" value=`${building.id.replace(/\D/g,'')}`)
       input(type="submit" value="raise" name="action") 
       input(type="submit" value="lower" name="action") 
+
+
+  script.
+    $(function () {
+      const socket = io();
+      $('span.device').each(function (index, value) {
+        const device = $(this).attr('id');
+        socket.on(device, function (msg) {
+          $('#' + device).text(msg);
+          let measure;
+          const li = $('#' + device).parent().parent();
+          switch (device.replace(/\d/g, '')) {
+              case 'temperature':
+                  measure = parseFloat(msg.replace(/[^(\d.)]/g, ''));
+                  if (measure > 28) {
+                      li.css('background-image', "url('/img/temperature-high.svg')");
+                  } else if (measure < 23) {
+                      li.css('background-image', "url('/img/temperature-low.svg')");
+                  } else {
+                      li.css('background-image', "url('/img/temperature.svg')");
+                  }
+                  break;
+
+              case 'filling':
+                  measure = Math.round(parseFloat(msg.replace(/[^(\d.)]/g, '')) * 10);
+                  if (measure >= 10) {
+                      li.css('background-image', "url('/img/warehouse-full.svg')");
+                  } else if (measure === 0) {
+                      li.css('background-image', "url('/img/warehouse-empty.svg')");
+                  } else {
+                      li.css('background-image', "url('/img/warehouse-" + measure + ".svg')");
+                  }
+                  break;
+               }    
+            }); 
+        });
+      });
 
 //-    div(style="float: left; padding:0px 20px 20px 20px; border: none;")
       iframe(width='560', height='270', src=`/app/building/${building.id}/till`, frameborder='0')
