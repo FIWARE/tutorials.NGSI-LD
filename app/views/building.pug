@@ -32,7 +32,7 @@ block content
       h3 Feedstock levels
       p Add, remove or refill the hay in the barn.
       div(style="background-repeat: no-repeat;background-image: url('/img/warehouse-full.svg')") &nbsp;&nbsp;
-        code 
+        code(style="margin-left: 1em;")
           span.device(id=`filling${building.id.replace(/\D/g,'')}`) &nbsp;
       p
       input(type="text" style="display:none"  name="id" value=`${building.id.replace(/\D/g,'')}`)
@@ -44,7 +44,7 @@ block content
       h3 Thermostat
       p Raise or lower the desired temperature of the barn.
       div(style="background-repeat: no-repeat;background-image: url('/img/temperature.svg')") &nbsp;&nbsp;
-        code 
+        code(style="margin-left: 1em;")
           span.device(id=`temperature${building.id.replace(/\D/g,'')}`) 25
       p
       input(type="text" style="display:none"  name="id" value=`${building.id.replace(/\D/g,'')}`)
