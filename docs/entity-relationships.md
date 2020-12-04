@@ -252,9 +252,9 @@ curl -X GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=TemperatureSensor,F
 As you can see there are currently three additional property attributes present `description`, `category` and
 `controlledProperty`
 
-## Creating a one-to-many Relationship
+## Creating one-to-one or one-to-many Relationships
 
-In databases, foreign keys are often used to designate a one-to-many relationship - for example a building can hold many
+In databases, foreign keys are often used to designate one-to-one or  one-to-many relationships - for example a building has a single owner but can hold many
 devices. In order to remember this information we need to add an association relationship similar to a foreign key.
 Batch processing can again be used to amend the existing the **TemperatureSensor** and **FillingLevelSensor** entities
 to add a `controllingAsset` attribute holding the relationship to each building controlled by the device. According to

@@ -23,6 +23,22 @@ block content
       li location: #{building.location.coordinates}
       li category: #{building.category}
       li owner: #{building.owner}
+
+    form.device(action="/device/command" method="POST")
+      h3 Feedstock levels
+      p Add, remove or refill the hay in the barn.
+      input(type="text" style="display:none"  name="id" value=`${building.id.replace(/\D/g,'')}`)
+      input(type="submit" value="refill" name="action") 
+      input(type="submit" value="add" name="action") 
+      input(type="submit" value="remove" name="action") 
+
+    form.device(action="/device/command" method="POST")
+      h3 Thermostat
+      p Raise or lower the desired temperature of the barn.
+      input(type="text" style="display:none"  name="id" value=`${building.id.replace(/\D/g,'')}`)
+      input(type="submit" value="raise" name="action") 
+      input(type="submit" value="lower" name="action") 
+
 //-    div(style="float: left; padding:0px 20px 20px 20px; border: none;")
       iframe(width='560', height='270', src=`/app/building/${building.id}/till`, frameborder='0')
     div(style="clear: both;")
