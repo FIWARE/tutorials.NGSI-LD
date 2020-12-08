@@ -69,15 +69,22 @@ function actuateDevice(deviceId, command) {
             break;
         case 'filling':
             if (command === 'refill') {
-                setDeviceState(deviceId, FILLING_STATION_FULL, true);
+                alterFilling(deviceId, true);
+                setTimeout(alterFilling, 400, deviceId, true);
+                setTimeout(alterFilling, 800, deviceId, true);
+                setTimeout(alterFilling, 1200, deviceId, true);
+                setTimeout(alterFilling, 1600, deviceId, true);
+                setTimeout(alterFilling, 2000, deviceId, true);
+                setTimeout(alterFilling, 2400, deviceId, true);
+                setTimeout(alterFilling, 2800, deviceId, true);
             } else if (command === 'add') {
-                setTimeout(fillingStationFill, 1000, deviceId);
-                setTimeout(fillingStationFill, 2000, deviceId);
-                setTimeout(fillingStationFill, 3000, deviceId);
+                alterFilling(deviceId, true);
+                setTimeout(alterFilling, 1000, deviceId, true);
+                setTimeout(alterFilling, 2000, deviceId, true);
             } else if (command === 'remove') {
-                setTimeout(fillingStationEmpty, 1000, deviceId);
-                setTimeout(fillingStationEmpty, 2000, deviceId);
-                setTimeout(fillingStationEmpty, 3000, deviceId);
+                alterFilling(deviceId, false);
+                setTimeout(alterFilling, 1000, deviceId, false);
+                setTimeout(alterFilling, 2000, deviceId, false);
             }
             break;
     }
@@ -409,24 +416,19 @@ function getWaterState(deviceId, type) {
     return water.s || 'OFF';
 }
 
-function fillingStationEmpty(deviceId) {
+function alterFilling(deviceId, raise) {
+    debug('alterFilling');
     const state = getDeviceState(deviceId);
-    state.f = state.f - (getRandom() * getRandom()) / 1000;
-    state.f = Math.round(state.f * 100) / 100;
+    const fill = raise ? (getRandom() * getRandom()) / 1000 :
+      - (getRandom() * getRandom()) / 1000;
 
-    if (state.f < 0) {
-        setDeviceState(deviceId, FILLING_STATION_EMPTY, true);
-    } else {
-        setDeviceState(deviceId, toUltraLight(state), true);
-    }
-}
+    state.f = (Math.round ((parseFloat(state.f) + fill) * 100))/ 100;
 
-function fillingStationFill(deviceId) {
-    const state = getDeviceState(deviceId);
-    state.f = state.f - (getRandom() * getRandom()) / 1000;
-    state.f = Math.round(state.f * 100) / 100;
+
     if (state.f > 1) {
         setDeviceState(deviceId, FILLING_STATION_FULL, true);
+    } else if (state.f < 0) {
+        setDeviceState(deviceId, FILLING_STATION_EMPTY, true);
     } else {
         setDeviceState(deviceId, toUltraLight(state), true);
     }
@@ -474,7 +476,6 @@ module.exports = {
     actuateDevice,
     fireWaterSprinkler,
     alterTemperature,
-    alterFilling: fillingStationEmpty,
     notFound,
     isUnknownCommand
 };
