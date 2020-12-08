@@ -22,3 +22,6 @@
 	path = tutorials.Entity-Relationships
 	url = https://github.com/FIWARE/tutorials.Entity-Relationships
 	branch = NGSI-LD
+[submodule "tutorials.Subscriptions"]
+	path = tutorials.Subscriptions
+	url = https://github.com/FIWARE/tutorials.Subscriptions
