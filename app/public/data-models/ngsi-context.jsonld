@@ -55,7 +55,7 @@
         "farm": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dfarm",
         "farm_auxiliary": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dfarm_auxiliary",
         "faxNumber": "schema:faxNumber",
-        "fillingLevel": "https://w3id.org/saref#fillingLevel",
+        "filling": "https://w3id.org/saref#fillingLevel",
         "firmwareVersion": "fiware:firmwareVersion",
         "floorsAboveGround": "fiware:floorsAboveGround",
         "floorsBelowGround": "fiware:floorsBelowGround",

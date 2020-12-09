@@ -117,7 +117,7 @@
             "@id": "schema:faxNumber",
             "@type": "xsd:string"
         },
-        "fillingLevel": "https://w3id.org/saref#fillingLevel",
+        "filling": "https://w3id.org/saref#fillingLevel",
         "firmwareVersion": {
             "@id": "fiware:firmwareVersion",
             "@type": "xsd:string"
