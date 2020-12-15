@@ -2,9 +2,9 @@
 [![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.03.01_60/gs_cim009v010301p.pdf)
 [![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/) <br/>
 
-**Description:** This tutorial examines the interaction between **NGSI-LD** and **JSON-LD** `@context` files. The `@context` files
-generated in the [previous tutorial](understanding-@context.md) are used as the
-underlying data model for inputting context data and context information is queries and read back in different formats.
+**Description:** This tutorial examines the interaction between **NGSI-LD** and **JSON-LD** `@context` files. The
+`@context` files generated in the [previous tutorial](understanding-@context.md) are used as the underlying data model
+for inputting context data and context information is queries and read back in different formats.
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
 [Postman documentation](https://fiware.github.io/tutorials.Getting-Started/ngsi-ld.html)
@@ -19,11 +19,10 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 >
 > ― John Wyndham, The Midwich Cuckoos
 
-From the [previous tutorial](understanding-@context.md) we have generated two
-`@context` files defining the context data entities which will be offered in our simple Smart Farm Management System.
-This means that we have defined an agreed set of unique IDs (URNs or URLs) for all the data entities and every single
-attribute within those entities so that other external applications will be able to programmatically understand the data
-held within our broker.
+From the [previous tutorial](understanding-@context.md) we have generated two `@context` files defining the context data
+entities which will be offered in our simple Smart Farm Management System. This means that we have defined an agreed set
+of unique IDs (URNs or URLs) for all the data entities and every single attribute within those entities so that other
+external applications will be able to programmatically understand the data held within our broker.
 
 For example, the attribute `address` is within our smart application is defined as follows:
 
@@ -46,16 +45,16 @@ holds a JSON object with a sub-attribute containing the `streetAddress` by refer
 
 ```json
 {
-  "@id": "http://schema.org/streetAddress",
-  "@type": "rdf:Property",
-  "http://schema.org/domainIncludes": {
-    "@id": "http://schema.org/PostalAddress"
-  },
-  "http://schema.org/rangeIncludes": {
-    "@id": "http://schema.org/Text"
-  },
-  "rdfs:comment": "The street address. For example, 1600 Amphitheatre Pkwy.",
-  "rdfs:label": "streetAddress"
+    "@id": "http://schema.org/streetAddress",
+    "@type": "rdf:Property",
+    "http://schema.org/domainIncludes": {
+        "@id": "http://schema.org/PostalAddress"
+    },
+    "http://schema.org/rangeIncludes": {
+        "@id": "http://schema.org/Text"
+    },
+    "rdfs:comment": "The street address. For example, 1600 Amphitheatre Pkwy.",
+    "rdfs:label": "streetAddress"
 }
 ```
 
@@ -193,8 +192,8 @@ being part of the same network. The command-line initialization should be self e
 # Start Up
 
 All services can be initialised from the command-line by running the
-[services](https://github.com/FIWARE/tutorials.Getting-Started/blob/NGSI-LD/services) Bash script provided within
-the repository. Please clone the repository and create the necessary images by running the commands as shown:
+[services](https://github.com/FIWARE/tutorials.Getting-Started/blob/NGSI-LD/services) Bash script provided within the
+repository. Please clone the repository and create the necessary images by running the commands as shown:
 
 ```bash
 git clone https://github.com/FIWARE/tutorials.Getting-Started.git
@@ -458,8 +457,8 @@ Since no explicit `@context` was sent in the request, the response returns the C
 -   `address` has been mapped to `http://schema.org/address`
 -   `category` has been mapped to `https://uri.fiware.org/ns/data-models#category`
 
-Note that if an attribute has not been associated to an FQN when the entity was created, the short name will
-**always** be displayed.
+Note that if an attribute has not been associated to an FQN when the entity was created, the short name will **always**
+be displayed.
 
 ```json
 [
@@ -492,10 +491,7 @@ Note that if an attribute has not been associated to an FQN when the entity was 
             "type": "GeoProperty",
             "value": {
                 "type": "Point",
-                "coordinates": [
-                    13.3505,
-                    52.5144
-                ]
+                "coordinates": [13.3505, 52.5144]
             }
         }
     },
@@ -528,10 +524,7 @@ Note that if an attribute has not been associated to an FQN when the entity was 
             "type": "GeoProperty",
             "value": {
                 "type": "Point",
-                "coordinates": [
-                    13.3698,
-                    52.5163
-                ]
+                "coordinates": [13.3698, 52.5163]
             }
         }
     }
@@ -600,10 +593,7 @@ files explicitly as element in the array of `@context` sent. The response is nor
         "type": "GeoProperty",
         "value": {
             "type": "Point",
-            "coordinates": [
-                13.3505,
-                52.5144
-            ]
+            "coordinates": [13.3505, 52.5144]
         }
     }
 }
@@ -652,10 +642,7 @@ used as the `@context` returned in the response.
         "category": "farm",
         "location": {
             "type": "Point",
-            "coordinates": [
-                13.3505,
-                52.5144
-            ]
+            "coordinates": [13.3505, 52.5144]
         }
     },
     {
@@ -672,10 +659,7 @@ used as the `@context` returned in the response.
         "category": "barn",
         "location": {
             "type": "Point",
-            "coordinates": [
-                13.3698,
-                52.5163
-            ]
+            "coordinates": [13.3698, 52.5163]
         }
     }
 ]
@@ -721,10 +705,7 @@ The use of the `Link` header and the `options=keyValues` parameter reduces the r
         "category": "barn",
         "location": {
             "type": "Point",
-            "coordinates": [
-                13.3698,
-                52.5163
-            ]
+            "coordinates": [13.3698, 52.5163]
         }
     }
 ]
@@ -792,10 +773,7 @@ directly but would require an additional **JSON-LD** expansion/compaction operat
         "kategorie": "barn",
         "location": {
             "type": "Point",
-            "coordinates": [
-                13.3698,
-                52.5163
-            ]
+            "coordinates": [13.3698, 52.5163]
         }
     }
 ]
@@ -842,10 +820,7 @@ The response is returned in JSON-LD format with short form attribute names:
         "category": "barn",
         "location": {
             "type": "Point",
-            "coordinates": [
-                13.3698,
-                52.5163
-            ]
+            "coordinates": [13.3698, 52.5163]
         }
     }
 ]
@@ -889,10 +864,7 @@ Use of the `Link` header and the `options=keyValues` parameter reduces the respo
         "category": "farm",
         "location": {
             "type": "Point",
-            "coordinates": [
-                13.3505,
-                52.5144
-            ]
+            "coordinates": [13.3505, 52.5144]
         }
     },
     {
@@ -909,10 +881,7 @@ Use of the `Link` header and the `options=keyValues` parameter reduces the respo
         "category": "barn",
         "location": {
             "type": "Point",
-            "coordinates": [
-                13.3698,
-                52.5163
-            ]
+            "coordinates": [13.3698, 52.5163]
         }
     }
 ]

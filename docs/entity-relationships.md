@@ -2,9 +2,10 @@
 [![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.03.01_60/gs_cim009v010301p.pdf)
 [![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/)
 
-**Description:** This tutorial teaches **NGSI-LD** users about batch commands and entity relationships. The tutorial builds on the data
-created in the previous [Smart Farm example](https://github.com/FIWARE/tutorials.Getting-Started/tree/NGSI-LD) and
-creates and associates a series of related data entities to create add sensors and farm workers to the farm.
+**Description:** This tutorial teaches **NGSI-LD** users about batch commands and entity relationships. The tutorial
+builds on the data created in the previous
+[Smart Farm example](https://github.com/FIWARE/tutorials.Getting-Started/tree/NGSI-LD) and creates and associates a
+series of related data entities to create add sensors and farm workers to the farm.
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
 [Postman documentation](https://fiware.github.io/tutorials.Entity-Relationships/ngsi-ld.html).
@@ -98,7 +99,6 @@ run from exposed ports.
 
 The necessary configuration information can be seen in the services section of the associated `docker-compose.yml` file.
 It has been described in a [previous tutorial](working-with-@context.md)
-
 
 # Start Up
 
@@ -245,7 +245,7 @@ curl -X GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=TemperatureSensor,F
         "controlledProperty": "temperature",
         "temperature": 21
     },
-    ... etc
+    ...etc
 ]
 ```
 
@@ -254,11 +254,12 @@ As you can see there are currently three additional property attributes present 
 
 ## Creating one-to-one or one-to-many Relationships
 
-In databases, foreign keys are often used to designate one-to-one or  one-to-many relationships - for example a building has a single owner but can hold many
-devices. In order to remember this information we need to add an association relationship similar to a foreign key.
-Batch processing can again be used to amend the existing the **TemperatureSensor** and **FillingLevelSensor** entities
-to add a `controllingAsset` attribute holding the relationship to each building controlled by the device. According to
-the Smart Data Model [Device](https://swagger.lab.fiware.org/?url=https://smart-data-models.github.io/dataModel.Device/Device/swagger.yaml)
+In databases, foreign keys are often used to designate one-to-one or one-to-many relationships - for example a building
+has a single owner but can hold many devices. In order to remember this information we need to add an association
+relationship similar to a foreign key. Batch processing can again be used to amend the existing the
+**TemperatureSensor** and **FillingLevelSensor** entities to add a `controllingAsset` attribute holding the relationship
+to each building controlled by the device. According to the Smart Data Model
+[Device](https://swagger.lab.fiware.org/?url=https://smart-data-models.github.io/dataModel.Device/Device/swagger.yaml)
 definition `https://uri.fiware.org/ns/data-models#controllingAsset` is the URI long name to be used for this
 relationship, and the value of the `controllingAsset` attribute corresponds to a URN associated to a **Building** entity
 itself.
@@ -391,18 +392,18 @@ response is a JSON array as shown.
     {
         "@context": "http://context-provider:3000/data-models/ngsi-context.jsonld",
         "id": "urn:ngsi-ld:TemperatureSensor:001",
-        "type": "TemperatureSensor",
+        "type": "TemperatureSensor"
     },
     {
         "@context": "http://context-provider:3000/data-models/ngsi-context.jsonld",
         "id": "urn:ngsi-ld:FillingLevelSensor:001",
-        "type": "FillingLevelSensor",
+        "type": "FillingLevelSensor"
     }
 ]
 ```
 
-In plain English, this can be interpreted as _"There are two devices in `urn:ngsi-ld:Building:farm001`"_. The request can
-be altered use the `count=true` to return the number of entities which fulfill the criteria.
+In plain English, this can be interpreted as _"There are two devices in `urn:ngsi-ld:Building:farm001`"_. The request
+can be altered use the `count=true` to return the number of entities which fulfill the criteria.
 
 #### 8 Request:
 

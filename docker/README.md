@@ -44,8 +44,8 @@ in debug mode add `DEBUG=tutorial:*`
 
 ## How to build your own image
 
-The [Dockerfile](https://github.com/fiware/tutorials.NGSI-LD/blob/master/docker/Dockerfile) associated with this
-image can be used to build an image in several ways:
+The [Dockerfile](https://github.com/fiware/tutorials.NGSI-LD/blob/master/docker/Dockerfile) associated with this image
+can be used to build an image in several ways:
 
 -   By default, the `Dockerfile` retrieves the **latest** version of the codebase direct from GitHub (the `build-arg` is
     optional):

@@ -5,9 +5,8 @@
 [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual) IoT
 devices created in the [previous tutorial](https://github.com/FIWARE/tutorials.IoT-Sensors) so that measurements can be
 read and commands can be sent using
-[NGSI LD](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.03.01_60/gs_cim009v010301p.pdf)
-requests sent to an NGSI-LD compliant context broker such as the
-[Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/).
+[NGSI LD](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.03.01_60/gs_cim009v010301p.pdf) requests sent to an
+NGSI-LD compliant context broker such as the [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/).
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
 [Postman documentation](https://fiware.github.io/tutorials.IoT-Agent/ngsi-ld.html)
@@ -275,6 +274,7 @@ The `iot-agent` container is driven by environment variables as shown:
 | IOTA_PROVIDER_URL    | `http://iot-agent:4041`                               | URL passed to the Context Broker when commands are registered, used as a forwarding URL location when the Context Broker issues a command to a device |
 | IOTA_JSON_LD_CONTEXT | `http://context:3000/data-models/ngsi-context.jsonld` | The location of the `@context` file used to define the device data models                                                                             |
 | IOTA_FALLBACK_TENANT | `openiot`                                             | The tenant to use if no explicit tenant has been received from communications                                                                         |
+
 # Start Up
 
 Before you start you should ensure that you have obtained or built the necessary Docker images locally. Please clone the
@@ -1343,4 +1343,3 @@ curl -iX DELETE \
   -H 'fiware-service: openiot' \
   -H 'fiware-servicepath: /'
 ```
-

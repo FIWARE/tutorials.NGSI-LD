@@ -16,8 +16,7 @@ data within a simple Smart Solution either by connecting to a series of dummy Io
 directly or programmatically.
 
 | :books: [Documentation](https://ngsi-ld-tutorials.rtfd.io/) | :whale: [Docker Hub](https://hub.docker.com/r/fiware/tutorials.ngsi-ld/) | <img src="https://json-ld.org/favicon.ico" align="center" height="25"> [NGSI-LD Data Models](https://fiware.github.io/tutorials.Step-by-Step/schema/) | <img src="https://assets.getpostman.com/common-share/postman-logo-stacked.svg" align="center" height="25"> [Postman Collections](https://explore.postman.com/team/3mM5EY6ChBYp9D) |
-| --------------------------------------------------------- | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-
+| ----------------------------------------------------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 
 ## Install
 
@@ -39,7 +38,6 @@ API specifications can be written in YAML or JSON. The format is easy to learn a
 The complete OpenAPI Specification can be found on GitHub:
 [OpenAPI 3.0 Specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md). This is
 important since we will need a well defined structure to be able to generate `@context` files.
-
 
 ### Docker and Docker Compose <img src="https://www.docker.com/favicon.ico" align="left"  height="36" width="36">
 
@@ -81,15 +79,16 @@ to provide a command-line functionality similar to a Linux distribution on Windo
 
 ### Core Context Management: NGSI-LD Fundamentals
 
-&nbsp; 101. [Understanding `@context`](https://github.com/FIWARE/tutorials.Understanding-At-Context)<br/>
-&nbsp; 102. [Working with `@context`](https://github.com/FIWARE/tutorials.Getting-Started/tree/NGSI-LD)<br/>
-&nbsp; 103. [CRUD Operations](https://github.com/FIWARE/tutorials.CRUD-Operations/tree/NGSI-LD)<br/>
-&nbsp; 104. [Entity Relationships](https://github.com/FIWARE/tutorials.Entity-Relationships/tree/NGSI-LD)<br/>
+&nbsp; 101. [Understanding `@context`](https://github.com/FIWARE/tutorials.Understanding-At-Context)<br/> &nbsp; 102.
+[Working with `@context`](https://github.com/FIWARE/tutorials.Getting-Started/tree/NGSI-LD)<br/> &nbsp; 103.
+[CRUD Operations](https://github.com/FIWARE/tutorials.CRUD-Operations/tree/NGSI-LD)<br/> &nbsp; 104.
+[Entity Relationships](https://github.com/FIWARE/tutorials.Entity-Relationships/tree/NGSI-LD)<br/>&nbsp; 106.
+[Subscriptions](https://github.com/FIWARE/tutorials.Subscriptions/tree/NGSI-LD)<br/>
 
 ### Internet of Things, Robots and third-party systems
 
-&nbsp; 201. [Introduction to IoT Sensors](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)<br/>
-&nbsp; 202. [Provisioning the Ultralight IoT Agent](https://github.com/FIWARE/tutorials.IoT-Agent/tree/NGSI-LD)<br/>
+&nbsp; 201. [Introduction to IoT Sensors](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)<br/> &nbsp; 202.
+[Provisioning the Ultralight IoT Agent](https://github.com/FIWARE/tutorials.IoT-Agent/tree/NGSI-LD)<br/>
 
 ## Usage
 
