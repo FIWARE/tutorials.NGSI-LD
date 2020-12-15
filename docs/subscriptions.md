@@ -55,13 +55,13 @@ In a previous tutorial, a simple Node.js Express application was created. This t
 watch the status of recent requests, and the devices page to alter the machines on the farm. Once the services are
 running these pages can be accessed from the following URLs:
 
-#### Event Monitor
+<h4>Event Monitor</h4>
 
 The event monitor can be found at: `http://localhost:3000/app/monitor`
 
 ![FIWARE Monitor](https://fiware.github.io/tutorials.Subscriptions/img/monitor.png)
 
-#### Device Monitor
+<h4>Device Monitor</h4>
 
 For the purpose of this tutorial, a series of dummy agricultural IoT devices have been created, which will be attached
 to the context broker. Details of the architecture and protocol used can be found in the
@@ -138,7 +138,7 @@ provision a series of dummy devices on the farm.
 To follow the tutorial correctly please ensure you have the follow two pages available on separate tabs in your browser
 before you enter any cUrl commands.
 
-#### FMIS System
+<h4>FMIS System</h4>
 
 Details of various buildings around the farm can be found in the tutorial application. Open
 `http://localhost:3000/app/farm/urn:ngsi-ld:Building:farm001` to display a building with an associated filling sensor
@@ -146,7 +146,7 @@ and thermostat.
 
 ![](https://fiware.github.io/tutorials.Subscriptions/img/fmis.png)
 
-#### Event Monitor
+<h4>Event Monitor</h4>
 
 The event monitor can be found at: `http://localhost:3000/app/monitor`.
 
@@ -205,7 +205,7 @@ apart.
 Go to the Device Monitor `http://localhost:3000/app/farm/urn:ngsi-ld:Building:farm001` and start removing hay from the
 barn. Nothing happens until the barn is half-empty, then a request is sent to `subscription/low-stock-farm001` as shown:
 
-#### `http://localhost:3000/app/monitor`
+<h4>`http://localhost:3000/app/monitor`</h4>
 
 ![](https://fiware.github.io/tutorials.Subscriptions/img/low-stock-farm.png)
 
