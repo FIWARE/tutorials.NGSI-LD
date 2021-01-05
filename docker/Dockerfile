@@ -1,4 +1,4 @@
-ARG NODE_VERSION=10
+ARG NODE_VERSION=14
 ARG GITHUB_ACCOUNT=fiware
 ARG GITHUB_REPOSITORY=tutorials.NGSI-LD
 ARG DOWNLOAD=latest
@@ -55,7 +55,7 @@ RUN \
   fi && \
   RELEASE_CONCAT=$(echo "${RELEASE}" | tr / -); \
   curl -s -L https://github.com/"${GITHUB_ACCOUNT}"/"${GITHUB_REPOSITORY}"/archive/"${RELEASE}".zip > source.zip && \
-  unzip source.zip -x "*/docs/**" "*/.*" && \
+  unzip -qq source.zip -x "*/docs/**" "*/.*" && \
   rm source.zip && \
   mv "${GITHUB_REPOSITORY}-${RELEASE_CONCAT}/app" /opt/ngsi-tutorial && \
   # Remove unzip and clean apt cache
