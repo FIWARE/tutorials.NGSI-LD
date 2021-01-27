@@ -90,6 +90,10 @@ to provide a command-line functionality similar to a Linux distribution on Windo
 &nbsp; 201. [Introduction to IoT Sensors](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)<br/> &nbsp; 202.
 [Provisioning the Ultralight IoT Agent](https://github.com/FIWARE/tutorials.IoT-Agent/tree/NGSI-LD)<br/>
 
+### Core Context Management: Manipulating Context Data and Persisting Historic Data
+
+&nbsp; 304. [Querying Time Series Data](https://github.com/FIWARE/tutorials.Time-Series-Data/tree/NGSI-LD) (QuantumLeap)<br/>
+
 ## Usage
 
 Most tutorials supply a `services` script to start the containers:

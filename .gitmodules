@@ -25,3 +25,6 @@
 [submodule "tutorials.Subscriptions"]
 	path = tutorials.Subscriptions
 	url = https://github.com/FIWARE/tutorials.Subscriptions
+[submodule "tutorials.Time-Series-Data"]
+	path = tutorials.Time-Series-Data
+	url = https://github.com/FIWARE/tutorials.Time-Series-Data
