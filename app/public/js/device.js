@@ -55,8 +55,8 @@ $(function () {
                             $('#water003').data('running') ||
                             $('#water004').data('running')
                         ) {
-                            if (waterAudio.paused){
-                            	waterAudio.play();
+                            if (waterAudio.paused) {
+                                waterAudio.play();
                             }
                         } else {
                             waterAudio.pause();

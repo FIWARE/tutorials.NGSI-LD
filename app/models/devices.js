@@ -17,10 +17,10 @@ const WATER_OFF = 's|OFF';
 const WATER_ON = 's|ON';
 
 const HUMIDITY_WET = 'h|80';
-const TRACTOR_IDLE = 's|IDLE';
+const TRACTOR_IDLE = 'd|IDLE';
 
-const PIG_IDLE = 's|AT_REST';
-const COW_IDLE = 's|AT_REST';
+const PIG_IDLE = 'd|AT_REST';
+const COW_IDLE = 'd|AT_REST';
 const PIG_STATE = ['AT_REST', 'FORAGING', 'FORAGING', 'FORAGING', 'DRINKING', 'WALLOWING'];
 const COW_STATE = ['AT_REST', 'AT_REST', 'GRAZING', 'GRAZING', 'GRAZING', 'DRINKING'];
 const OFFSET_RATE = {
@@ -44,6 +44,39 @@ const VALID_COMMANDS = {
     filling: ['add', 'remove', 'refill']
 };
 
+function getStatusCode(status) {
+    let code = 0;
+    switch (status) {
+        case 'AT_REST':
+        case 'IDLE':
+        case 'OFF':
+            code = 0;
+            break;
+        case 'ON':
+            code = 1;
+            break;
+        case 'FORAGING':
+            code = 3;
+            break;
+        case 'DRINKING':
+            code = 4;
+            break;
+        case 'WALLOWING':
+            code = 5;
+            break;
+        case 'GRAZING':
+            code = 6;
+            break;
+        case 'MOVING':
+            code = 7;
+            break;
+        case 'SOWING':
+            code = 8;
+            break;
+    }
+    return code;
+}
+
 // Change the state of a dummy IoT device based on the command received.
 function actuateDevice(deviceId, command) {
     debug('actuateDevice: ' + deviceId + ' ' + command);
@@ -61,10 +94,11 @@ function actuateDevice(deviceId, command) {
         case 'tractor':
             state = getDeviceState(deviceId);
             if (command === 'start') {
-                state.s = 'MOVING';
+                state.d = 'MOVING';
             } else if (command === 'stop') {
-                state.s = 'IDLE';
+                state.d = 'IDLE';
             }
+            state.s = getStatusCode(state.d);
             setDeviceState(deviceId, toUltraLight(state));
             break;
         case 'filling':
@@ -173,10 +207,11 @@ function changeTractorState() {
         switch (deviceId.replace(/\d/g, '')) {
             case 'tractor':
                 //  The tractor is IDLE, MOVING or SOWING
-                if (state.s !== 'IDLE') {
+                if (state.d !== 'IDLE') {
                     const rate = getTractorState(deviceId, 'tractor') === 'MOVING' ? 3 : 6;
-                    state.s = getRandom() > rate ? 'MOVING' : 'SOWING';
+                    state.d = getRandom() > rate ? 'MOVING' : 'SOWING';
                 }
+                state.s = getStatusCode(state.d);
                 setDeviceState(deviceId, toUltraLight(state), isSensor);
                 break;
         }
@@ -219,31 +254,33 @@ function activateAnimalCollars() {
 
         switch (deviceId.replace(/\d/g, '')) {
             case 'pig':
-                state.bpm = PIG_HEART_RATE + 2 * OFFSET_RATE[state.s] + (getRandom() % 4);
-                if (state.s === 'AT_REST') {
+                state.bpm = PIG_HEART_RATE + 2 * OFFSET_RATE[state.d] + (getRandom() % 4);
+                if (state.d === 'AT_REST') {
                     if (getRandom() * getRandom() > 63) {
-                        state.s = PIG_STATE[getRandom() % 6];
+                        state.d = PIG_STATE[getRandom() % 6];
                     }
                 } else {
                     randomWalk(state);
                     if (getRandom() > 7) {
-                        state.s = getRandom() > 3 ? PIG_STATE[getRandom() % 6] : 'AT_REST';
+                        state.d = getRandom() > 3 ? PIG_STATE[getRandom() % 6] : 'AT_REST';
                     }
                 }
+                state.s = getStatusCode(state.d);
                 setDeviceState(deviceId, toUltraLight(state), isSensor);
                 break;
             case 'cow':
-                state.bpm = COW_HEART_RATE + 2 * OFFSET_RATE[state.s] + (getRandom() % 4);
-                if (state.s === 'AT_REST') {
+                state.bpm = COW_HEART_RATE + 2 * OFFSET_RATE[state.d] + (getRandom() % 4);
+                if (state.d === 'AT_REST') {
                     if (getRandom() * getRandom() > 80) {
-                        state.s = COW_STATE[getRandom() % 6];
+                        state.d = COW_STATE[getRandom() % 6];
                     }
                 } else {
                     randomWalk(state, COW_HEART_RATE);
                     if (getRandom() > 8) {
-                        state.s = getRandom() > 7 ? COW_STATE[getRandom() % 6] : 'GRAZING';
+                        state.d = getRandom() > 7 ? COW_STATE[getRandom() % 6] : 'GRAZING';
                     }
                 }
+                state.s = getStatusCode(state.d);
                 setDeviceState(deviceId, toUltraLight(state), isSensor);
                 break;
             default:
@@ -405,7 +442,7 @@ function toUltraLight(object) {
 // other devices will not update
 function getTractorState(deviceId, type) {
     const tractor = getDeviceState(deviceId.replace(type, 'tractor'));
-    return tractor.s || 'IDLE';
+    return tractor.d || 'IDLE';
 }
 
 // Return the state of the water sprinkler with the same number as the current element
@@ -419,11 +456,9 @@ function getWaterState(deviceId, type) {
 function alterFilling(deviceId, raise) {
     debug('alterFilling');
     const state = getDeviceState(deviceId);
-    const fill = raise ? (getRandom() * getRandom()) / 1000 :
-      - (getRandom() * getRandom()) / 1000;
+    const fill = raise ? (getRandom() * getRandom()) / 1000 : -(getRandom() * getRandom()) / 1000;
 
-    state.f = (Math.round ((parseFloat(state.f) + fill) * 100))/ 100;
-
+    state.f = Math.round((parseFloat(state.f) + fill) * 100) / 100;
 
     if (state.f > 1) {
         setDeviceState(deviceId, FILLING_STATION_FULL, true);

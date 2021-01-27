@@ -18,7 +18,6 @@ const DEVICE_PAYLOAD = process.env.DUMMY_DEVICES_PAYLOAD || 'ultralight';
 // It is just a user filling out the Username and password form and adding the access token to
 // subsequent requests.
 function setAuthToken(header, callback) {
-    
     Security.oa
         .getOAuthPasswordCredentials(process.env.DUMMY_DEVICES_USER, process.env.DUMMY_DEVICES_PASSWORD)
         .then((results) => {
@@ -32,11 +31,9 @@ function setAuthToken(header, callback) {
                 setAuthToken(header, callback);
             }, 5000);
         });
-    
 }
 
-
-function setDevice(){
+function setDevice() {
     switch (DEVICE_PAYLOAD.toLowerCase()) {
         case 'ultralight':
             Measure = new UltralightMeasure(headers);
