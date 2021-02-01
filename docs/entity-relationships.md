@@ -12,6 +12,8 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/d0f2b74c4beb8434595f)
 
+<hr class="core"/>
+
 # Understanding Entities and Relationships
 
 Within the FIWARE platform, the context of an entity represents the state of a physical or conceptual object which

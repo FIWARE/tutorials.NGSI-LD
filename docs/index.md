@@ -117,3 +117,10 @@ from the context broker to alter the state of real-world objects themselves.
 
 &nbsp; 201. [Introduction to IoT Sensors](iot-sensors.md)<br/> &nbsp; 202.
 [Provisioning an IoT Agent](iot-agent.md)<br/>
+
+<h3 style="box-shadow: 0px 4px 0px 0px #233c68;">Core Context Management: History Management</h3>
+
+These tutorials show how to manipulate and store context data so it can be used for further processesing
+
+&nbsp; 304.
+[Querying Time Series Data (Crate-DB)](time-series-data.md)<br/>
