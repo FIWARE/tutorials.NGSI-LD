@@ -15,8 +15,8 @@ jobs:
         fetch-depth: 0
         submodules: recursive
     - name: Build Images
-      run: | 
+      run: |
         git submodule foreach './services create' || true
     - name: Run Script
-      run: | 
-        git submodule foreach './services start && ./services stop' || true
+      run: |
+        git submodule foreach './services start && ./services stop'
