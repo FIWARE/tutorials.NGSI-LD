@@ -338,29 +338,30 @@ function activateDevices() {
                 state.y = parseFloat(location[0]);
                 state.x = parseFloat(location[1]);
 
-                if (state.s === 'SOWING') {
+                if (state.d === 'SOWING') {
                     if (getRandom() > 9) {
                         state.y = Math.round((state.y + 0.001 * parseInt(target.x)) * 1000) / 1000;
                         state.x = Math.round((state.x + 0.001 * parseInt(target.y)) * 1000) / 1000;
                     }
                 }
 
-                if (state.s === 'MOVING') {
+                if (state.d === 'MOVING') {
                     state.x = Math.round((state.x + parseInt(target.x) / 300) * 1000) / 1000;
                     state.y = Math.round((state.y + parseInt(target.y) / 300) * 1000) / 1000;
                 }
 
-                if (getRandom() > 9 && state.s === 'MOVING') {
-                    state.s = 'SOWING';
-                } else if (getRandom() > 7 && state.s === 'SOWING') {
+                if (getRandom() > 9 && state.d === 'MOVING') {
+                    state.d = 'SOWING';
+                } else if (getRandom() > 7 && state.d === 'SOWING') {
                     target.x = -target.x;
                     target.y = -target.y;
                     setDeviceState('targetTractor' + deviceId.replace(/[a-zA-Z]/g, ''), toUltraLight(target), false);
                     state.y = Math.round((state.y + Math.abs(parseInt(target.x) / 1000)) * 1000) / 1000;
                     state.x = Math.round((state.x + Math.abs(parseInt(target.y) / 1000)) * 1000) / 1000;
-                    state.s = 'MOVING';
+                    state.d = 'MOVING';
                 }
 
+                state.s = getStatusCode(state.d);
                 state.gps = state.y + ',' + state.x;
                 delete state.y;
                 delete state.x;

@@ -65,9 +65,9 @@ $(function () {
 
                     break;
                 case 'tractor':
-                    if (msg.startsWith('s|MOVING')) {
+                    if (msg.startsWith('d|MOVING')) {
                         li.css('background-image', "url('/img/tractor-moving.svg')");
-                    } else if (msg.startsWith('s|SOWING')) {
+                    } else if (msg.startsWith('d|SOWING')) {
                         li.css('background-image', "url('/img/tractor-sowing.svg')");
                     } else {
                         li.css('background-image', "url('/img/tractor-idle.svg')");
