@@ -24,7 +24,9 @@
 	branch = NGSI-LD
 [submodule "tutorials.Subscriptions"]
 	path = tutorials.Subscriptions
+	branch = NGSI-LD
 	url = https://github.com/FIWARE/tutorials.Subscriptions
 [submodule "tutorials.Time-Series-Data"]
 	path = tutorials.Time-Series-Data
+	branch = NGSI-LD
 	url = https://github.com/FIWARE/tutorials.Time-Series-Data
