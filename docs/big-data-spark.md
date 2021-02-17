@@ -9,9 +9,9 @@ enables easier Big Data analysis over context, integrated with one of the most p
 computations over unbounded and bounded data streams. Spark has been designed to run in all common cluster environments,
 perform computations at in-memory speed and at any scale.
 
-The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as Postman documentation:
+The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as [Postman documentation](https://fiware.github.io/tutorials.Big-Data-Spark/ngsi-ld.html)
 
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://www.getpostman.com/collections/9e508e30f737e7db4fa9)
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/e7c16fce79fa081ba529)
 
 <hr class="core"/>
 
