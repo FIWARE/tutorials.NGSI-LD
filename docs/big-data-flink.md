@@ -381,7 +381,7 @@ Sensor(Device,49)
 
 ### Logger - Analyzing the Code
 
-```scala
+```java
 package org.fiware.cosmos.tutorial
 
 
@@ -429,7 +429,7 @@ together the entity objects of all the NGSI-LD Events received in a period of ti
 Within each iteration, we create a custom object with the properties we need: the sensor `type` and the increment of
 each notification. For this purpose, we can define a case class as shown:
 
-```scala
+```java
 case class Sensor(device: String, sum: Int)
 ```
 
@@ -438,7 +438,7 @@ Therefter can group the created objects by the type of device (`keyBy("device")`
 
 After the processing, the results are output to the console:
 
-```scala
+```java
 processedDataStream.print().setParallelism(1)
 ```
 
@@ -514,7 +514,7 @@ Raise the temperature in Farm001 and wait until the humidity value is below 35, 
 
 ### Feedback Loop - Analyzing the Code
 
-```scala
+```java
 package org.fiware.cosmos.tutorial
 
 
