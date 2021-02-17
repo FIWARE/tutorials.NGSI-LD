@@ -90,7 +90,10 @@ to provide a command-line functionality similar to a Linux distribution on Windo
 
 ### Core Context Management: Manipulating Context Data and Persisting Historic Data
 
-&nbsp; 304. [Querying Time Series Data](https://github.com/FIWARE/tutorials.Time-Series-Data/tree/NGSI-LD) (QuantumLeap)<br/>
+&nbsp; 304.
+[Querying Time Series Data (QuantumLeap)](https://github.com/FIWARE/tutorials.Time-Series-Data/tree/NGSI-LD)<br/>
+&nbsp; 305. [Big Data Analysis (Flink)](https://github.com/FIWARE/tutorials.Big-Data-Flink/tree/NGSI-LD)<br/>
+&nbsp; 306. [Big Data Analysis (Spark)](https://github.com/FIWARE/tutorials.Big-Data-Spark/tree/NGSI-LD)
 
 ## Usage
 

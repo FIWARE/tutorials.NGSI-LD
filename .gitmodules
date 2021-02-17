@@ -30,3 +30,11 @@
 	path = tutorials.Time-Series-Data
 	branch = NGSI-LD
 	url = https://github.com/FIWARE/tutorials.Time-Series-Data
+[submodule "tutorials.Big-Data-Flink"]
+	path = tutorials.Big-Data-Flink
+	url = https://github.com/FIWARE/tutorials.Big-Data-Flink
+	branch = NGSI-LD
+[submodule "tutorials.Big-Data-Spark"]
+	path = tutorials.Big-Data-Spark
+	url = https://github.com/FIWARE/tutorials.Big-Data-Flink
+	branch = NGSI-LD
