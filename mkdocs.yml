@@ -21,6 +21,8 @@ nav:
       - "IoT Agent (Ultralight)": "iot-agent.md"
   - "<span style='font-size:105%;padding:0px'>Core Context Management: </span><span style='font-size:105%;padding:0px'>Processing & History Management</span>":
       - "Time-Series Data": "time-series-data.md"
+      - "Big Data Analysis (Flink)": "big-data-flink.md"
+      - "Big Data Analysis (Spark)": "big-data-spark.md"
   - "Appendix":
       - "Data Models": "datamodels.md"
   
