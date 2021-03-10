@@ -537,7 +537,7 @@ curl -L -X POST 'http://localhost:4041/iot/devices' \
 
 In the request we are associating the device `temperature001` with the URN `urn:ngsi-ld:Device:temperature001` and
 mapping the device reading `t` with the context attribute `temperature` (which is defined as **Property** with
-appropriate meta-data). A `controllingAsset` **Relationship** is also defined as a `static_attribute`, placing the
+appropriate meta-data). A `controlledAsset` **Relationship** is also defined as a `static_attribute`, placing the
 device within the **Building** `urn:ngsi-ld:Building:barn001`
 
 You can simulate a dummy IoT device measurement coming from the **Temperature Sensor** device `temperature001`, by
@@ -691,7 +691,7 @@ curl -L -X POST 'http://localhost:4041/iot/devices' \
         }
        ],
        "static_attributes": [
-         {"name":"controllingAsset", "type": "Relationship","value": "urn:ngsi-ld:Building:barn001"}
+         {"name":"controlledAsset", "type": "Relationship","value": "urn:ngsi-ld:Building:barn001"}
         ]
     }
   ]
@@ -756,7 +756,7 @@ curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:wat
         },
         "observedAt": "2020-09-14T15:27:11.066Z"
     },
-    "controllingAsset": {
+    "controlledAsset": {
         "type": "Relationship",
         "object": "urn:ngsi-ld:Building:barn001",
         "observedAt": "2020-09-14T15:27:11.066Z"
@@ -822,7 +822,7 @@ curl -L -X POST 'http://localhost:4041/iot/devices' \
       ],
        "static_attributes": [
         {
-          "name": "controllingAsset",
+          "name": "controlledAsset",
           "type": "Relationship",
           "value": "urn:ngsi-ld:Building:barn001"
         }
@@ -857,7 +857,7 @@ curl -L -X POST 'http://localhost:4041/iot/devices' \
         {"name": "stop","type": "command"}
        ],
        "static_attributes": [
-         {"name":"controllingAsset", "type": "Relationship","value": "urn:ngsi-ld:Building:barn001"}
+         {"name":"controlledAsset", "type": "Relationship","value": "urn:ngsi-ld:Building:barn001"}
         ]
     }
   ]
@@ -1197,7 +1197,7 @@ curl -iX POST 'http://localhost:4041/iot/devices' \
         }
        ],
        "static_attributes": [
-         {"name":"controllingAsset", "type": "Relationship","value": "urn:ngsi-ld:Building:barn002"}
+         {"name":"controlledAsset", "type": "Relationship","value": "urn:ngsi-ld:Building:barn002"}
         ]
     }
   ]
@@ -1249,7 +1249,7 @@ The response includes all the commands and attributes mappings associated with t
     ],
     "static_attributes": [
         {
-            "name": "controllingAsset",
+            "name": "controlledAsset",
             "type": "Relationship",
             "value": "urn:ngsi-ld:Building:barn002"
         }
@@ -1299,7 +1299,7 @@ The response includes all the commands and attributes mappings associated with a
           ],
           "static_attributes": [
               {
-                  "name": "controllingAsset",
+                  "name": "controlledAsset",
                   "type": "Relationship",
                   "value": "urn:ngsi-ld:Store:002"
               }

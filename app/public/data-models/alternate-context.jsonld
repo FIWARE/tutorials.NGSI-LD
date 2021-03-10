@@ -33,9 +33,8 @@
         "aufbau": "fiware:configuration",
         "wintergarten": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dconservatory",
         "anOrtEnthalten": "fiware:containedInPlace",
-        "kontrollierterVermögenswert": "fiware:controlledAsset",
-       
-        "kontrollierterVermögenswert": "fiware:controlledProperty",
+        "kontrollierterVermögenswert": "fiware:controlledAsset",       
+        "kontrolliertesAttribut": "fiware:controlledProperty",
         "kuhstall": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dcowshed",
         "datenanbieter": "fiware:dataProvider",
         "dateCreated": "fiware:dateCreated",

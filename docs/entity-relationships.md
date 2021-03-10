@@ -259,11 +259,11 @@ As you can see there are currently three additional property attributes present 
 In databases, foreign keys are often used to designate one-to-one or one-to-many relationships - for example a building
 has a single owner but can hold many devices. In order to remember this information we need to add an association
 relationship similar to a foreign key. Batch processing can again be used to amend the existing the
-**TemperatureSensor** and **FillingLevelSensor** entities to add a `controllingAsset` attribute holding the relationship
+**TemperatureSensor** and **FillingLevelSensor** entities to add a `controlledAsset` attribute holding the relationship
 to each building controlled by the device. According to the Smart Data Model
 [Device](https://swagger.lab.fiware.org/?url=https://smart-data-models.github.io/dataModel.Device/Device/swagger.yaml)
-definition `https://uri.fiware.org/ns/data-models#controllingAsset` is the URI long name to be used for this
-relationship, and the value of the `controllingAsset` attribute corresponds to a URN associated to a **Building** entity
+definition `https://uri.fiware.org/ns/data-models#controlledAsset` is the URI long name to be used for this
+relationship, and the value of the `controlledAsset` attribute corresponds to a URN associated to a **Building** entity
 itself.
 
 The URN follows a standard format: `urn:ngsi-ld:<entity-type>:<entity-id>`
@@ -282,38 +282,38 @@ curl -G -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/upsert' \
     {
         "id": "urn:ngsi-ld:TemperatureSensor:001",
         "type": "TemperatureSensor",
-        "controllingAsset": {"type": "Relationship", "object": "urn:ngsi-ld:Building:farm001"}
+        "controlledAsset": {"type": "Relationship", "object": "urn:ngsi-ld:Building:farm001"}
     },
     {
         "id": "urn:ngsi-ld:TemperatureSensor:002",
         "type": "TemperatureSensor",
-        "controllingAsset": {"type": "Relationship", "object": "urn:ngsi-ld:Building:barn002"}
+        "controlledAsset": {"type": "Relationship", "object": "urn:ngsi-ld:Building:barn002"}
     },
     {
         "id": "urn:ngsi-ld:FillingLevelSensor:003",
         "type": "FillingLevelSensor",
-        "controllingAsset": {"type": "Relationship", "object": "urn:ngsi-ld:Building:farm002"}
+        "controlledAsset": {"type": "Relationship", "object": "urn:ngsi-ld:Building:farm002"}
     },
     {
         "id": "urn:ngsi-ld:FillingLevelSensor:001",
         "type": "FillingLevelSensor",
-        "controllingAsset": {"type": "Relationship", "object": "urn:ngsi-ld:Building:farm001"}
+        "controlledAsset": {"type": "Relationship", "object": "urn:ngsi-ld:Building:farm001"}
     },
     {
         "id": "urn:ngsi-ld:FillingLevelSensor:002",
         "type": "FillingLevelSensor",
-        "controllingAsset": {"type": "Relationship", "object": "urn:ngsi-ld:Building:barn002"}
+        "controlledAsset": {"type": "Relationship", "object": "urn:ngsi-ld:Building:barn002"}
     },
     {
         "id": "urn:ngsi-ld:TemperatureSensor:003",
         "type": "TemperatureSensor",
-        "controllingAsset": {"type": "Relationship", "object": "urn:ngsi-ld:Building:farm002"}
+        "controlledAsset": {"type": "Relationship", "object": "urn:ngsi-ld:Building:farm002"}
     }
 ]'
 ```
 
 Now when the devcie information is requested again, the response has changed and includes a new property
-`controllingAsset`, which has been added in the previous step.
+`controlledAsset`, which has been added in the previous step.
 
 #### 5 Request:
 
@@ -325,7 +325,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Temperatu
 
 #### Response:
 
-The updated response including the `controllingAsset` attribute is shown below:
+The updated response including the `controlledAsset` attribute is shown below:
 
 ```json
 {
@@ -336,7 +336,7 @@ The updated response including the `controllingAsset` attribute is shown below:
     "category": "sensor",
     "controlledProperty": "temperature",
     "temperature": 20,
-    "controllingAsset": "urn:ngsi-ld:Building:farm001"
+    "controlledAsset": "urn:ngsi-ld:Building:farm001"
 }
 ```
 
@@ -344,7 +344,7 @@ The updated response including the `controllingAsset` attribute is shown below:
 
 ### Reading from Child Entity to Parent Entity
 
-We can also make a request to retrieve the `controllingAsset` attribute relationship information from a known **Device**
+We can also make a request to retrieve the `controlledAsset` attribute relationship information from a known **Device**
 entity by using the `options=keyValues` setting
 
 #### 6 Request:
@@ -352,7 +352,7 @@ entity by using the `options=keyValues` setting
 ```bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
 -d 'options=keyValues' \
--d 'attrs=controllingAsset' \
+-d 'attrs=controlledAsset' \
 -H 'Link: <http://context-provider:3000/data-models/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json'
 ```
@@ -363,7 +363,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Temperatu
 {
     "id": "urn:ngsi-ld:TemperatureSensor:001",
     "type": "TemperatureSensor",
-    "controllingAsset": "urn:ngsi-ld:Building:farm001"
+    "controlledAsset": "urn:ngsi-ld:Building:farm001"
 }
 ```
 
@@ -378,8 +378,8 @@ Reading from a parent to a child can be done using the following query:
 
 ```bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities' \
--d 'q=controllingAsset==%22urn:ngsi-ld:Building:farm001%22' \
--d 'attrs=controllingAsset' \
+-d 'q=controlledAsset==%22urn:ngsi-ld:Building:farm001%22' \
+-d 'attrs=controlledAsset' \
 -d 'options=keyValues' \
 -H 'Link: <http://context-provider:3000/data-models/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 ```
@@ -411,8 +411,8 @@ can be altered use the `count=true` to return the number of entities which fulfi
 
 ```bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities' \
--d 'q=controllingAsset==%22urn:ngsi-ld:Building:farm001%22' \
--d 'attrs=controllingAsset' \
+-d 'q=controlledAsset==%22urn:ngsi-ld:Building:farm001%22' \
+-d 'attrs=controlledAsset' \
 -d 'options=keyValues' \
 -d 'count=true' \
 -d 'limit=0' \

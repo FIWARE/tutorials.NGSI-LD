@@ -176,9 +176,9 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
   "type": "Subscription",
   "entities": [{"type": "FillingLevelSensor"}],
   "watchedAttributes": ["filling"],
-  "q": "filling>0.6;filling<0.8;controllingAsset==urn:ngsi-ld:Building:farm001",
+  "q": "filling>0.6;filling<0.8;controlledAsset==urn:ngsi-ld:Building:farm001",
   "notification": {
-    "attributes": ["filling", "controllingAsset"],
+    "attributes": ["filling", "controlledAsset"],
     "format": "keyValues",
     "endpoint": {
       "uri": "http://tutorial:3000/subscription/low-stock-farm001",
@@ -223,7 +223,7 @@ barn. Nothing happens until the barn is half-empty, then a request is sent to `s
         {
             "id": "urn:ngsi-ld:Device:filling001",
             "type": "FillingLevelSensor",
-            "controllingAsset": "urn:ngsi-ld:Building:farm001",
+            "controlledAsset": "urn:ngsi-ld:Building:farm001",
             "filling": 0.59
         }
     ]
@@ -233,7 +233,7 @@ barn. Nothing happens until the barn is half-empty, then a request is sent to `s
 Code within the Farm Management Information System handles received the POST request as shown:
 
 ```javascript
-const NOTIFY_ATTRIBUTES = ["controllingAsset", "type", "filling", "humidity", "temperature"];
+const NOTIFY_ATTRIBUTES = ["controlledAsset", "type", "filling", "humidity", "temperature"];
 
 router.post("/subscription/:type", (req, res) => {
     monitor("notify", req.params.type + " received", req.body);
@@ -270,9 +270,9 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
   "type": "Subscription",
   "entities": [{"type": "FillingLevelSensor"}],
   "watchedAttributes": ["filling"],
-  "q": "filling>0.4;filling<0.6;controllingAsset==urn:ngsi-ld:Building:farm001",
+  "q": "filling>0.4;filling<0.6;controlledAsset==urn:ngsi-ld:Building:farm001",
   "notification": {
-    "attributes": ["filling", "controllingAsset"],
+    "attributes": ["filling", "controlledAsset"],
     "format": "normalized",
     "endpoint": {
       "uri": "http://tutorial:3000/subscription/low-stock-farm001-ngsild",
@@ -303,7 +303,7 @@ When a `low-stock-farm001-ngsild` event is fired, the response is as shown:
                 "unitCode": "C62",
                 "observedAt": "2020-12-09T16:25:12.000Z"
             },
-            "controllingAsset": {
+            "controlledAsset": {
                 "type": "Relationship",
                 "object": "urn:ngsi-ld:Building:farm001",
                 "observedAt": "2020-12-09T16:25:12.000Z"
@@ -333,9 +333,9 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
   "type": "Subscription",
   "entities": [{"type": "FillingLevelSensor"}],
   "watchedAttributes": ["filling"],
-  "q": "filling<0.4;controllingAsset==urn:ngsi-ld:Building:farm001",
+  "q": "filling<0.4;controlledAsset==urn:ngsi-ld:Building:farm001",
   "notification": {
-    "attributes": ["filling", "controllingAsset"],
+    "attributes": ["filling", "controlledAsset"],
     "format": "x-ngsiv2-normalized",
     "endpoint": {
       "uri": "http://tutorial:3000/subscription/low-stock-farm001-ngsiv2",
@@ -369,7 +369,7 @@ When a `low-stock-farm001-ngsiv2` event is fired, the response is a normalzed NG
                     "observedAt": "2020-12-10T10:11:57.000Z"
                 }
             },
-            "https://uri.etsi.org/ngsi-ld/default-context/controllingAsset": {
+            "https://uri.etsi.org/ngsi-ld/default-context/controlledAsset": {
                 "type": "Relationship",
                 "value": "urn:ngsi-ld:Building:farm001",
                 "metadata": {

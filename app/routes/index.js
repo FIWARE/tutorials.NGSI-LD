@@ -15,7 +15,7 @@ const GIT_COMMIT = process.env.GIT_COMMIT || 'unknown';
 const SECURE_ENDPOINTS = process.env.SECURE_ENDPOINTS || false;
 const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
 
-const NOTIFY_ATTRIBUTES = ['controllingAsset', 'type', 'filling', 'humidity', 'temperature'];
+const NOTIFY_ATTRIBUTES = ['controlledAsset', 'type', 'filling', 'humidity', 'temperature'];
 
 const NGSI_LD_FARMS = [
     {
