@@ -11,7 +11,7 @@
         "Gebäude": "fiware:Building",
         "Weiblich": "schema:Female",
         "Gerät": "fiware:Device",
-        "Füllstandssensor": "fiware:FillingLevelSensor",
+        "Füllstandssensor": "tutorial:FillingLevelSensor",
         "Herbicide": "tutorial:Herbicide",
         "HVAC": "https://w3id.org/saref#HVAC",
         "Männlich": "schema:Male",

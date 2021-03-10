@@ -174,7 +174,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 --data-raw '{
   "description": "Notify me of low feedstock on Farm:001",
   "type": "Subscription",
-  "entities": [{"type": "FillingSensor"}],
+  "entities": [{"type": "FillingLevelSensor"}],
   "watchedAttributes": ["filling"],
   "q": "filling>0.6;filling<0.8;controllingAsset==urn:ngsi-ld:Building:farm001",
   "notification": {
@@ -191,12 +191,12 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 
 The body of the POST request consists of two parts, the first section of the request (consisting of `entities`, `type`,
 `watchedAttributes` and `q`)states that the subscription will be checked whenever the `filling` attribute of a
-**FillingSensor** entity is altered. This is further refined by the `q` parameter so that the actual subscription is
-only fired for any **FillingSensor** entity linked to the **Building** `urn:ngsi-ld:Building:farm001` and only when the
+**FillingLevelSensor** entity is altered. This is further refined by the `q` parameter so that the actual subscription is
+only fired for any **FillingLevelSensor** entity linked to the **Building** `urn:ngsi-ld:Building:farm001` and only when the
 `filling` attribute drops below 0.8
 
 The notification section of the body states that once the conditions of the subscription have been met, a POST request
-containing all affected **FillingSensor** entities will be sent to the URL
+containing all affected **FillingLevelSensor** entities will be sent to the URL
 `http://tutorial:3000/subscription/low-stock-farm001` which is handled by the contractor's own system.
 
 It should be noted that the subscription is using the `NGSILD-Tenant` header because the IoT Devices have been
@@ -222,7 +222,7 @@ barn. Nothing happens until the barn is half-empty, then a request is sent to `s
     "data": [
         {
             "id": "urn:ngsi-ld:Device:filling001",
-            "type": "FillingSensor",
+            "type": "FillingLevelSensor",
             "controllingAsset": "urn:ngsi-ld:Building:farm001",
             "filling": 0.59
         }
@@ -268,7 +268,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 --data-raw '{
   "description": "Notify me of low feedstock on Farm:001",
   "type": "Subscription",
-  "entities": [{"type": "FillingSensor"}],
+  "entities": [{"type": "FillingLevelSensor"}],
   "watchedAttributes": ["filling"],
   "q": "filling>0.4;filling<0.6;controllingAsset==urn:ngsi-ld:Building:farm001",
   "notification": {
@@ -296,7 +296,7 @@ When a `low-stock-farm001-ngsild` event is fired, the response is as shown:
     "data": [
         {
             "id": "urn:ngsi-ld:Device:filling001",
-            "type": "FillingSensor",
+            "type": "FillingLevelSensor",
             "filling": {
                 "type": "Property",
                 "value": 0.25,
@@ -331,7 +331,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 --data-raw '{
   "description": "Notify me of low feedstock on Farm:001",
   "type": "Subscription",
-  "entities": [{"type": "FillingSensor"}],
+  "entities": [{"type": "FillingLevelSensor"}],
   "watchedAttributes": ["filling"],
   "q": "filling<0.4;controllingAsset==urn:ngsi-ld:Building:farm001",
   "notification": {
@@ -356,7 +356,7 @@ When a `low-stock-farm001-ngsiv2` event is fired, the response is a normalzed NG
     "data": [
         {
             "id": "urn:ngsi-ld:Device:filling001",
-            "type": "https://uri.etsi.org/ngsi-ld/default-context/FillingSensor",
+            "type": "https://uri.etsi.org/ngsi-ld/default-context/FillingLevelSensor",
             "https://w3id.org/saref#fillingLevel": {
                 "type": "Property",
                 "value": 0.33,

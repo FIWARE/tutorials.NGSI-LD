@@ -225,7 +225,7 @@ This is done by making a POST request to the `/ngsi-ld/v1/subscriptions/` endpoi
 
 -   The `NGSILD-Tenant` headers is used to filter the subscription to only listen to measurements from the attached IoT
     Sensors
--   The `entities` `type` in the request body ensures that **QuantumLeap** will be informed of all **FillingSensor**
+-   The `entities` `type` in the request body ensures that **QuantumLeap** will be informed of all **FillingLevelSensor**
     data changes.
 -   The `notification` URL must match the exposed port.
 
@@ -243,7 +243,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 --data-raw '{
   "description": "Notify me of all feedstock changes",
   "type": "Subscription",
-  "entities": [{"type": "FillingSensor"}],
+  "entities": [{"type": "FillingLevelSensor"}],
   "watchedAttributes": ["filling"],
   "notification": {
     "attributes": ["filling", "location"],
@@ -319,7 +319,7 @@ curl -X GET \
         "description": "Notify me of all feedstock changes",
         "entities": [
             {
-                "type": "FillingSensor"
+                "type": "FillingLevelSensor"
             }
         ],
         "watchedAttributes": ["filling"],
@@ -716,7 +716,7 @@ curl -X POST \
 {
     "cols": ["table_schema", "table_name"],
     "rows": [
-        ["mtopeniot", "etfillingsensor"],
+        ["mtopeniot", "etFillingLevelSensor"],
         ["mtopeniot", "etdevice"]
     ],
     "rowcount": 3,
@@ -738,7 +738,7 @@ The SQL statement uses `ORDER BY` and `LIMIT` clauses to sort the data. More det
 curl -iX POST \
   'http://localhost:4200/_sql' \
   -H 'Content-Type: application/json' \
-  -d '{"stmt":"SELECT * FROM mtopeniot.etfillingsensor WHERE entity_id = '\''urn:ngsi-ld:Device:filling001'\'' ORDER BY time_index ASC LIMIT 3"}'
+  -d '{"stmt":"SELECT * FROM mtopeniot.etFillingLevelSensor WHERE entity_id = '\''urn:ngsi-ld:Device:filling001'\'' ORDER BY time_index ASC LIMIT 3"}'
 ```
 
 #### Response:
@@ -747,9 +747,9 @@ curl -iX POST \
 {
     "cols": ["entity_id", "entity_type", "fiware_servicepath", "filling", "time_index"],
     "rows": [
-        ["urn:ngsi-ld:Device:filling001", "FillingSensor", "/", 0.87, 1530262765000],
-        ["urn:ngsi-ld:Device:filling001", "FillingSensor", "/", 0.65, 1530262770000],
-        ["urn:ngsi-ld:Device:filling001", "FillingSensor", "/", 0.6, 1530262775000]
+        ["urn:ngsi-ld:Device:filling001", "FillingLevelSensor", "/", 0.87, 1530262765000],
+        ["urn:ngsi-ld:Device:filling001", "FillingLevelSensor", "/", 0.65, 1530262770000],
+        ["urn:ngsi-ld:Device:filling001", "FillingLevelSensor", "/", 0.6, 1530262775000]
     ],
     "rowcount": 3,
     "duration": 21.8338
@@ -767,7 +767,7 @@ The SQL statement uses an `OFFSET` clause to retrieve the required rows. More de
 curl -iX POST \
   'http://localhost:4200/_sql' \
   -H 'Content-Type: application/json' \
-  -d '{"stmt":"SELECT * FROM mtopeniot.etfillingsensor WHERE entity_id = '\''urn:ngsi-ld:Device:filling001'\'' order by time_index ASC LIMIT 3 OFFSET 3"}'
+  -d '{"stmt":"SELECT * FROM mtopeniot.etFillingLevelSensor WHERE entity_id = '\''urn:ngsi-ld:Device:filling001'\'' order by time_index ASC LIMIT 3 OFFSET 3"}'
 ```
 
 #### Response:
@@ -776,9 +776,9 @@ curl -iX POST \
 {
     "cols": ["filling", "entity_id", "entity_type", "fiware_servicepath", "time_index"],
     "rows": [
-        [0.75, "urn:ngsi-ld:Device:filling001", "FillingSensor", "/", 1530262791452],
-        [0.63, "urn:ngsi-ld:Device:filling001", "FillingSensor", "/", 1530262792469],
-        [0.5, "urn:ngsi-ld:Device:filling001", "FillingSensor", "/", 1530262793472]
+        [0.75, "urn:ngsi-ld:Device:filling001", "FillingLevelSensor", "/", 1530262791452],
+        [0.63, "urn:ngsi-ld:Device:filling001", "FillingLevelSensor", "/", 1530262792469],
+        [0.5, "urn:ngsi-ld:Device:filling001", "FillingLevelSensor", "/", 1530262793472]
     ],
     "rowcount": 3,
     "duration": 54.215
@@ -797,7 +797,7 @@ details can be found under within the **CrateDB**
 curl -iX POST \
   'http://localhost:4200/_sql' \
   -H 'Content-Type: application/json' \
-  -d '{"stmt":"SELECT * FROM mtopeniot.etfillingsensor WHERE entity_id = '\''urn:ngsi-ld:Device:filling001'\''  ORDER BY time_index DESC LIMIT 3"}'
+  -d '{"stmt":"SELECT * FROM mtopeniot.etFillingLevelSensor WHERE entity_id = '\''urn:ngsi-ld:Device:filling001'\''  ORDER BY time_index DESC LIMIT 3"}'
 ```
 
 #### Response:
@@ -806,9 +806,9 @@ curl -iX POST \
 {
     "cols": ["filling", "entity_id", "entity_type", "fiware_servicepath", "time_index"],
     "rows": [
-        [0.51, "urn:ngsi-ld:Device:filling001", "FillingSensor", "/", 1530263896550],
-        [0.43, "urn:ngsi-ld:Device:filling001", "FillingSensor", "/", 1530263894491],
-        [0.4, "urn:ngsi-ld:Device:filling001", "FillingSensor", "/", 1530263892483]
+        [0.51, "urn:ngsi-ld:Device:filling001", "FillingLevelSensor", "/", 1530263896550],
+        [0.43, "urn:ngsi-ld:Device:filling001", "FillingLevelSensor", "/", 1530263894491],
+        [0.4, "urn:ngsi-ld:Device:filling001", "FillingLevelSensor", "/", 1530263892483]
     ],
     "rowcount": 3,
     "duration": 18.591
@@ -828,7 +828,7 @@ to truncate and convert the timestamps into data which can be grouped.
 curl -iX POST \
   'http://localhost:4200/_sql' \
   -H 'Content-Type: application/json' \
-  -d '{"stmt":"SELECT DATE_FORMAT (DATE_TRUNC ('\''minute'\'', time_index)) AS minute, SUM (filling) AS sum FROM mtopeniot.etfillingsensor WHERE entity_id = '\''urn:ngsi-ld:Device:filling001'\'' GROUP BY minute LIMIT 3"}'
+  -d '{"stmt":"SELECT DATE_FORMAT (DATE_TRUNC ('\''minute'\'', time_index)) AS minute, SUM (filling) AS sum FROM mtopeniot.etFillingLevelSensor WHERE entity_id = '\''urn:ngsi-ld:Device:filling001'\'' GROUP BY minute LIMIT 3"}'
 ```
 
 #### Response:
@@ -861,7 +861,7 @@ to truncate and convert the timestamps into data which can be grouped.
 curl -iX POST \
   'http://localhost:4200/_sql' \
   -H 'Content-Type: application/json' \
-  -d '{"stmt":"SELECT DATE_FORMAT (DATE_TRUNC ('\''minute'\'', time_index)) AS minute, MIN (filling) AS min FROM mtopeniot.etfillingsensor WHERE entity_id = '\''urn:ngsi-ld:Device:filling001'\'' GROUP BY minute"}'
+  -d '{"stmt":"SELECT DATE_FORMAT (DATE_TRUNC ('\''minute'\'', time_index)) AS minute, MIN (filling) AS min FROM mtopeniot.etFillingLevelSensor WHERE entity_id = '\''urn:ngsi-ld:Device:filling001'\'' GROUP BY minute"}'
 ```
 
 #### Response:
@@ -893,7 +893,7 @@ aggregate data in different ways.
 curl -iX POST \
   'http://localhost:4200/_sql' \
   -H 'Content-Type: application/json' \
-  -d '{"stmt":"SELECT MAX(filling) AS max FROM mtopeniot.etfillingsensor WHERE entity_id = '\''urn:ngsi-ld:Device:filling001'\'' and time_index >= '\''2018-06-27T09:00:00'\'' and time_index < '\''2018-06-30T23:59:59'\''"}'
+  -d '{"stmt":"SELECT MAX(filling) AS max FROM mtopeniot.etFillingLevelSensor WHERE entity_id = '\''urn:ngsi-ld:Device:filling001'\'' and time_index >= '\''2018-06-27T09:00:00'\'' and time_index < '\''2018-06-30T23:59:59'\''"}'
 ```
 
 #### Response:
@@ -929,7 +929,7 @@ function readCrateSensorfilling(id, aggMethod) {
             aggMethod +
             "(filling) AS " +
             aggMethod +
-            " FROM mtopeniot.etfillingsensor WHERE entity_id = 'urn:ngsi-ld:Device:" +
+            " FROM mtopeniot.etFillingLevelSensor WHERE entity_id = 'urn:ngsi-ld:Device:" +
             id +
             "' GROUP BY minute ORDER BY minute";
         const options = {
@@ -978,7 +978,7 @@ here: `http://localhost:3000/device/history/urn:ngsi-ld:Farm:001`.
 [many other benefits](https://quantumleap.readthedocs.io/en/latest/), it integrates seamlessly with the
 [Grafana](https://grafana.com/) time series analytics tool. Grafana can be used to display the aggregated sensor data -
 a full tutorial on building dashboards can be found [here](https://www.youtube.com/watch?v=sKNZMtoSHN4). The simpified
-instructions below summarize how to connect and display a graph of the FillingSensor `filling` data.
+instructions below summarize how to connect and display a graph of the FillingLevelSensor `filling` data.
 
 ### Logging in
 
@@ -1008,7 +1008,7 @@ To display a new dashboard, you can either click the **+** button and select **D
 The following values in **bold text** need to be placed in the graphing wizard
 
 -   Queries to **CrateDB** (the previously created Data Source)
--   FROM **etfillingsensor**
+-   FROM **etFillingLevelSensor**
 -   Time column **time_index**
 -   Metric column **entity_id**
 -   Select value **column:filling**
@@ -1031,7 +1031,7 @@ In the map layout options set the following values:
 Click on `Queries` tab on the left and set as follows:
 
 -   Format as: **Table**
--   FROM **etfillingsensor**
+-   FROM **etFillingLevelSensor**
 -   Time column **time_index**
 -   Metric column **entity_id**
 -   Select value
@@ -1044,7 +1044,7 @@ Click on `Queries` tab on the left and set as follows:
 Click on `Visualisation` tab on the left and set as follows:
 
 -   Map Layers:
-    -   FillingSensor:
+    -   FillingLevelSensor:
         -   Icon: **lightbulb-o**
         -   ClusterType: **average**
         -   ColorType: **fix**
