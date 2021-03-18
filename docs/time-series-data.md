@@ -69,7 +69,7 @@ web page found at: `http://localhost:3000/device/history/urn:ngsi-ld:Farm:001`
 
 ![](https://fiware.github.io/tutorials.Time-Series-Data/img/history-graphs.png)
 
-# Architecture
+## Architecture
 
 This application builds on the components and dummy IoT devices created in
 [previous tutorials](https://github.com/FIWARE/tutorials.IoT-Agent/). It will use three FIWARE components: the
@@ -117,7 +117,7 @@ The overall architecture can be seen below:
 
 ![](https://fiware.github.io/tutorials.Time-Series-Data/img/architecture.png)
 
-# Connecting FIWARE to a CrateDB Database via QuantumLeap
+## Connecting FIWARE to a CrateDB Database via QuantumLeap
 
 In the configuration, **QuantumLeap** listens to NGSI LD notifications on port `8868` and persists historic context data
 to the **CrateDB**. **CrateDB** is accessible using port `4200` and can either be queried directly or attached to the
@@ -905,7 +905,7 @@ curl -iX POST \
 }
 ```
 
-# Accessing Time Series Data Programmatically
+## Accessing Time Series Data Programmatically
 
 Once the JSON response for a specified time series has been retrieved, displaying the raw data is of little use to an
 end user. It must be manipulated to be displayed in a bar chart, line graph or table listing. This is not within the

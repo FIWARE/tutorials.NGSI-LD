@@ -123,7 +123,7 @@ seen on the UltraLight device monitor web page found at: `http://localhost:3000/
 
 ![FIWARE Monitor](https://fiware.github.io/tutorials.IoT-Agent/img/farm-devices.png)
 
-# Architecture
+## Architecture
 
 This application builds on the components created in
 [previous tutorials](https://github.com/FIWARE/tutorials.Subscriptions/). It will make use of two FIWARE components - an
@@ -275,7 +275,7 @@ The `iot-agent` container is driven by environment variables as shown:
 | IOTA_JSON_LD_CONTEXT | `http://context:3000/data-models/ngsi-context.jsonld` | The location of the `@context` file used to define the device data models                                                                             |
 | IOTA_FALLBACK_TENANT | `openiot`                                             | The tenant to use if no explicit tenant has been received from communications                                                                         |
 
-# Start Up
+## Start Up
 
 Before you start you should ensure that you have obtained or built the necessary Docker images locally. Please clone the
 repository and create the necessary images by running the commands as shown:
@@ -306,7 +306,7 @@ git checkout NGSI-LD
 > ./services stop
 > ```
 
-# Provisioning an IoT Agent
+## Provisioning an IoT Agent
 
 To follow the tutorial correctly please ensure you have the device monitor page available in your browser and click on
 the page to enable audio before you enter any cUrl commands. The device monitor displays the current state of an array
@@ -950,7 +950,7 @@ curl -L -X PATCH 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:f
 }'
 ```
 
-# Service Group CRUD Actions
+## Service Group CRUD Actions
 
 The **CRUD** operations for provisioning a service group map on to the expected HTTP verbs under the `/iot/services`
 endpoint
@@ -1151,7 +1151,7 @@ curl -iX DELETE \
   -H 'fiware-servicepath: /'
 ```
 
-# Device CRUD Actions
+## Device CRUD Actions
 
 The **CRUD** operations for provisioning individual devices map on to the expected HTTP verbs under the `/iot/devices`
 endpoint

@@ -69,7 +69,7 @@ Click on the image above to watch an introductory video on linked data concepts
 
 Click on the image above to watch a video describing the basic concepts behind JSON-LD.
 
-# Start Up
+## Start Up
 
 In order to initialize the generator tool run:
 
@@ -77,7 +77,7 @@ In order to initialize the generator tool run:
 ./services create
 ```
 
-# Creating NGSI-LD Data Models
+## Creating NGSI-LD Data Models
 
 Within the FIWARE platform, every entity represents the state of a physical or conceptual object. Each entity provides
 the digital twin of an object which exists in the real world.

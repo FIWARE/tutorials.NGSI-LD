@@ -72,7 +72,7 @@ seen on the UltraLight device monitor web page found at: `http://localhost:3000/
 
 ![FIWARE Monitor](https://fiware.github.io/tutorials.Subscriptions/img/farm-devices.png)
 
-# Architecture
+## Architecture
 
 This application will make use of two FIWARE components - the
 [Orion-LD Context Broker](https://fiware-orion.readthedocs.io/en/latest/)and the
@@ -112,7 +112,7 @@ from exposed ports.
 The necessary configuration information can be seen in the services section of the associated `docker-compose.yml` file.
 It has been described in a previous tutorial
 
-# Start Up
+## Start Up
 
 All services can be initialized from the command-line by running the bash script provided within the repository. Please
 clone the repository and create the necessary images by running the commands as shown:
@@ -135,7 +135,7 @@ provision a series of dummy devices on the farm.
 > ./services stop
 > ```
 
-# Using Subscriptions
+## Using Subscriptions
 
 To follow the tutorial correctly please ensure you have the follow two pages available on separate tabs in your browser
 before you enter any cUrl commands.
@@ -391,7 +391,7 @@ Orion-LD context broker pre-applies a compaction operation to the payload.
 
 The set of available custom formats will vary between Context Brokers.
 
-# Subscription CRUD Actions
+## Subscription CRUD Actions
 
 The **CRUD** operations for subscriptions map on to the expected HTTP verbs under the `/ngsi-ld/v1/subscriptions/`
 endpoint.

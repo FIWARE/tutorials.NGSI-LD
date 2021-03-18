@@ -19,7 +19,7 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 Within the FIWARE platform, the context of an entity represents the state of a physical or conceptual object which
 exists in the real world.
 
-## Entities within a Farm Management Information System (FMIS)
+<h3>Entities within a Farm Management Information System (FMIS)</h3>
 
 To illustrate entity relationships within an FMIS system based on NGSI-LD, we will need to create a series of entities.
 For this simplified FMIS, we will only need a small number entities. The relationship between our entities is defined as
@@ -68,7 +68,7 @@ be reduced and so on.
 > Therefore a person in the real world is represented in the context data by a **Person** entity, and a real world barn
 > owned by a person is represented in the context data by a **Building** entity which has a `owner` attribute.
 
-# Architecture
+## Architecture
 
 The demo FMIS application will send and receive NGSI-LD calls to a compliant context broker. Since the standardized
 NGSI-LD interface is available across multiple context brokers, so we only need to pick one - for example the
@@ -102,7 +102,7 @@ run from exposed ports.
 The necessary configuration information can be seen in the services section of the associated `docker-compose.yml` file.
 It has been described in a [previous tutorial](working-with-@context.md)
 
-# Start Up
+## Start Up
 
 All services can be initialised from the command-line by running the
 [services](https://github.com/FIWARE/tutorials.Entity-Relationships/blob/NGSI-LD/services) Bash script provided within
@@ -125,7 +125,7 @@ This command will also import seed data (**Building**, **Person**, **Temperature
 > ./services stop
 > ```
 
-# Creating and Associating Data Entities
+## Creating and Associating Data Entities
 
 ## Creating Several Entities at Once
 

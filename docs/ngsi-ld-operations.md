@@ -33,7 +33,7 @@ operations. Since **NGSI-LD** is based on **JSON-LD** passing of `@context` as p
 `@context` attribute as part of the body of the request if `Content-Type: application/ld+json`. However for GET
 requests, the `@context` cannot be placed in the payload body technique as GET requests have no body.
 
-## Context Entity CRUD Operations
+<h3>Context Entity CRUD Operations</h3>
 
 There are four endpoints used for CRUD operations on an individual data entity. These follow the usual rules for
 hierarchical entities within RESTful applications.
@@ -54,7 +54,7 @@ When requesting data or modifying individual entities, the various CRUD operatio
 -   **PATCH** - for amending entities and attributes
 -   **DELETE** - for deleting entities and attributes
 
-## Context Entity Batch Operations
+<h3>Context Entity Batch Operations</h3>
 
 Batch operations allow users to modify multiple data entities with a single request. All batch operations are mapped to
 the **POST** HTTP verb.
@@ -64,7 +64,7 @@ the **POST** HTTP verb.
 -   `/entityOperations/upsert`
 -   `/entityOperations/delete`
 
-# Architecture
+## Architecture
 
 The demo application will send and receive NGSI-LD calls to a compliant context broker. Since the standardized NGSI-LD
 interface is available across multiple context brokers, so we only need to pick one - for example the
@@ -145,7 +145,7 @@ tutorial:
 The necessary configuration information can be seen in the services section of the associated `docker-compose.yml` file.
 It has been described in a [previous tutorial](working-with-@-context)
 
-# Start Up
+## Start Up
 
 All services can be initialised from the command-line by running the
 [services](https://github.com/FIWARE/tutorials.CRUD-Operations/blob/NGSI-LD/services) Bash script provided within the

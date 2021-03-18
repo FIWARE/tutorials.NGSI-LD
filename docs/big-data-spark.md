@@ -48,7 +48,7 @@ Obviously, in reality, our existing Supermarket scenario is far too small to req
 will serve as a basis for demonstrating the type of real-time processing which may be required in a larger solution
 which is processing a continuous stream of context-data events.
 
-# Architecture
+## Architecture
 
 This application builds on the components and dummy IoT devices created in
 [previous tutorials](https://github.com/FIWARE/tutorials.IoT-Agent/). It will make use of three FIWARE components - the
@@ -134,7 +134,7 @@ The `spark-worker-1` container is listening on one port:
 -   Port `9001` is exposed so that the installation can receive context data subscriptions.
 -   Ports `8081` is exposed so we can see the web frontend of the Apache Spark-Worker-1 Dashboard.
 
-# Start Up
+## Start Up
 
 Before you start, you should ensure that you have obtained or built the necessary Docker images locally. Please clone
 the repository and create the necessary images by running the commands shown below. Note that you might need to run some
@@ -161,7 +161,7 @@ To start the system, run the following command:
 > ./services stop
 > ```
 
-# Real-time Processing Operations
+## Real-time Processing Operations
 
 According to the [Apache Spark documentation](https://spark.apache.org/documentation.html), Spark Streaming is an
 extension of the core Spark API that enables scalable, high-throughput, fault-tolerant stream processing of live data
@@ -575,7 +575,7 @@ The arguments of the **`OrionSinkObject`** are:
     `Map("NGSILD-Tenant" -> "openiot", "Link" -> "<http://context-provider:3000/data-models/ngsi-context.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"; type=\"application/ld+json\"" )`.
     We add the headers we need in the HTTP Request.
 
-# Next Steps
+## Next Steps
 
 If you would rather use Flink as your data processing engine, we have
 [this tutorial available for Flink](https://github.com/ging/tutorials.Big-Data-Analysis) as well

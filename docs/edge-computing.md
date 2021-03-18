@@ -25,16 +25,16 @@ this tutorial, which are relatable to the figure below.
 3.  FogFlow orchestrates processing flows at edges in no time. These processing flows may change the state of an
     actuator or publish some data back to FogFlow, it is all about what user wants to do.
 
-# Architecture
+## Architecture
 
 The FogFlow framework operates on a geo-distributed, hierarchical, and heterogeneous ICT infrastructure that includes
 cloud nodes, edge nodes, and IoT devices. Now, Fogflow has become more dynamic because it supports NGSI-LD format, that
 means Fogflow is now NGSI-LD compliant. The following figure illustrates the system architecture of FogFlow and its
 major components across three logical layers.
 
-![](https://fiware.github.io/tutorials.Edge-Computing/img/ngsi-ld-architecture.png)
+![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/Ngsi-ld-architecture.png)
 
-## Layered Architecture
+### Layered Architecture
 
 Logically, FogFlow consists of the following three layers:
 
@@ -47,7 +47,7 @@ Logically, FogFlow consists of the following three layers:
     interfaces provided by the context management layer. Edge workers (and of course the cloud worker) come under this
     layer.
 
-# NGSI-LD Support In Fogflow
+## NGSI-LD Support In Fogflow
 
 The FIWARE NGSI v2 information model has been evolved to better support linked data (entity relationships), property
 graphs and semantics (exploiting the capabilities offered by JSON-LD). The new era of data representation and data
@@ -58,9 +58,9 @@ potential use cases.
 To know more about NGSI-LD supported APIs in Fogflow, follow this
 [link](https://fogflow.readthedocs.io/en/latest/api.html#ngsi-ld-supported-api-s)
 
-![](https://fiware.github.io/tutorials.Edge-Computing/img/ngsild_support.png)
+![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/ngsild_support.png)
 
-## Setup FogFlow Cloud Node
+### Setup FogFlow Cloud Node
 
 **Prerequisites** for starting up a cloud node are as follows:
 
@@ -99,7 +99,7 @@ To know more about NGSI-LD supported APIs in Fogflow, follow this
 }
 ```
 
-> ## Important !
+> **Important !**
 >
 > Please DO NOT use “127.0.0.1” as the IP address of my_hostip, because it is only accessible to a running task inside a
 > docker container.
@@ -145,7 +145,7 @@ To know more about NGSI-LD supported APIs in Fogflow, follow this
 
 ![](https://fiware.github.io/tutorials.Edge-Computing/img/dashboard.png)
 
-## Setup FogFlow Edge Node
+### Setup FogFlow Edge Node
 
 **Prerequisites** for starting up an edge node are as follows:
 
@@ -188,7 +188,7 @@ To know more about NGSI-LD supported APIs in Fogflow, follow this
   ./stop.sh
 ```
 
-# Connect IoT Devices to FogFlow
+## Connect IoT Devices to FogFlow
 
 When data flow from a sensor device towards broker, it is called Northbound Flow, whereas it is Southbound Flow, when
 data flow from broker towards the actuator devices. FogFlow relies on this bi-directional data flow to realize the
@@ -206,7 +206,7 @@ This tutorial also contains examples of both NGSI and Non-NGSI devices (especial
 To get a basic idea of how Southbound actually works in the context of FIWARE, refer
 [this](https://fiware-tutorials.readthedocs.io/en/latest/iot-agent/index.html#southbound-traffic-commands) tutorial.
 
-# Dynamic Orchestration at Edges using FogFlow
+### Dynamic Orchestration at Edges using FogFlow
 
 Before moving further, users must have a look at the following:
 
@@ -242,7 +242,7 @@ To register Operator, open fogflow dashboard. Select Operator Registry Tab from 
 menu on left and then click register button. Right click on workspace and select operator from drop down list and enter
 details as shown and at last click on submit.
 
-![](https://fiware.github.io/tutorials.Edge-Computing/img/operator_creation.png)
+![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/operator_creation.png)
 
 > **Note :**
 >
@@ -270,7 +270,7 @@ The form is explained as the following.
     otherwise, the operator docker image is fetched on demand, only when edge nodes need to run a scheduled task
     associated with this operator.
 
-> # Note:
+> **Note:**
 >
 > Use "fogflow/overspeedvd" while registering the docker image for tutorial of NGSI-LD.
 >
@@ -279,7 +279,7 @@ The form is explained as the following.
 > To register the image, select DockerImage from left menu, under Operator Registry from dashboard and click register
 > button.
 
-![](https://fiware.github.io/tutorials.Edge-Computing/img/docker_image_registry.png)
+![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/docker_image_registry.png)
 
 ### Define a "OverSpeed_Vehicle" Fog Function
 
@@ -289,20 +289,20 @@ Right click inside the task design board, a menu will be displayed that includes
     output streams.
 -   **EntityStream**: is the input data element which can be linked with a fog function Task as its input data stream.
 
-![](https://fiware.github.io/tutorials.Edge-Computing/img/fog_ff_1.png)
+![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/Fog_ff_1.png)
 
 Choose "Task", a Task element will be placed on the design board, as shown below.
 
-![](https://fiware.github.io/tutorials.Edge-Computing/img/fog_ff_2.png)
+![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/Fog_ff_2.png)
 
 Click the configuration button on the top-right corner of the task element, as illustrated in the following figure.
 Specify the name of the Task and choose an operator out of a list of some pre-registered operators.
 
-![](https://fiware.github.io/tutorials.Edge-Computing/img/fog_ff_3.png)
+![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/Fog_ff_3.png)
 
 Add an "EntityStream" from the pop-up menu to the design board.
 
-![](https://fiware.github.io/tutorials.Edge-Computing/img/fog_ff_4.png)
+![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/Fog_ff_4.png)
 
 It contains the following fields:
 
@@ -320,12 +320,12 @@ It contains the following fields:
 Configure the EntityStream by clicking on its configuration button as shown below. "Vehicle" is shown as example here,
 as it is the entity type of input data for the "overspeed_vehicle" fog function.
 
-![](https://fiware.github.io/tutorials.Edge-Computing/img/fog_ff_5.png)
+![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/Fog_ff_5.png)
 
 There can be multiple EntityStreams for a Task and they must be connected to the Task as shown below. After this click
 on submit button.
 
-![](https://fiware.github.io/tutorials.Edge-Computing/img/fog_ff_6.png)
+![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/Fog_ff_6.png)
 
 ### Trigger the "OverSpeed_Vehicle" Fog Function
 
@@ -379,11 +379,11 @@ Verify whether the fog function is triggered or not in the following way.
 
 -   check the task instance of this fog function, as shown in the following picture
 
-![](https://fiware.github.io/tutorials.Edge-Computing/img/task_instance.png)
+![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/Task_Instance.png)
 
 -   check the result generated by its running task instance, as shown in the following picture
 
-![](https://fiware.github.io/tutorials.Edge-Computing/img/task_stream.png)
+![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/Task_Stream.png)
 
 ## Define and trigger a Service Topology
 
@@ -463,7 +463,7 @@ Outputs of the Service Topology will be published to the Broker, any application
 the notification. An actuator device can also receive these streams as inputs from the Broker. Resulting streams will
 also be visible in the Streams menu on FogFlow dashboard.
 
-# Next Steps
+## Next Steps
 
 For additional material to understand how FogFlow works, visit
 [FogFlow tutorial](https://fogflow.readthedocs.io/en/latest/introduction.html). FogFlow can also be integrated with

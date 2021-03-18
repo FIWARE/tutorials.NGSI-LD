@@ -106,7 +106,7 @@ The **GeoJSON** format is only used when querying a context broker for existing 
 suitable for GIS systems. It is a recent addition to the **NGSI-LD** specification and therefore will not be discussed
 further here.
 
-# Architecture
+## Architecture
 
 The demo application will send and receive NGSI-LD calls to a compliant context broker. Since the standardized NGSI-LD
 interface is available across multiple context brokers, so we only need to pick one - for example the
@@ -189,7 +189,7 @@ listening on the default port `27017` and the tutorial app is listening on port 
 the same ports externally - this is purely for the tutorial access - so that cUrl or Postman can access them without
 being part of the same network. The command-line initialization should be self explanatory.
 
-# Start Up
+## Start Up
 
 All services can be initialised from the command-line by running the
 [services](https://github.com/FIWARE/tutorials.Getting-Started/blob/NGSI-LD/services) Bash script provided within the
@@ -211,7 +211,7 @@ git checkout NGSI-LD
 
 ---
 
-# Creating NGSI-LD data entities
+## Creating NGSI-LD data entities
 
 This tutorial creates some initial farm building entities to be used by the Farm Management system.
 
