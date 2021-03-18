@@ -2,11 +2,11 @@
 [![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.03.01_60/gs_cim009v010301p.pdf)
 [![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/)
 
-**Description:**  This is an introductory **NGSI-LD** tutorial for [FIWARE FogFlow](https://fogflow.readthedocs.io/en/latest/) that allows its users
-to dynamically orchestrate the processing flows on edges. It explains how to enable FogFlow on a distributed or a single
-node system, register user defined workload patterns and orchestrate them on the edges in the form of running tasks. For
-better understanding, examples have been included in the tutorial.
-
+**Description:** This is an introductory **NGSI-LD** tutorial for
+[FIWARE FogFlow](https://fogflow.readthedocs.io/en/latest/) that allows its users to dynamically orchestrate the
+processing flows on edges. It explains how to enable FogFlow on a distributed or a single node system, register user
+defined workload patterns and orchestrate them on the edges in the form of running tasks. For better understanding,
+examples have been included in the tutorial.
 
 <hr class="processing"/>
 
@@ -28,7 +28,9 @@ this tutorial, which are relatable to the figure below.
 # Architecture
 
 The FogFlow framework operates on a geo-distributed, hierarchical, and heterogeneous ICT infrastructure that includes
-cloud nodes, edge nodes, and IoT devices. Now, Fogflow has become more dynamic because it supports NGSI-LD format, that means Fogflow is now NGSI-LD compliant. The following figure illustrates the system architecture of FogFlow and its major components across three logical layers.
+cloud nodes, edge nodes, and IoT devices. Now, Fogflow has become more dynamic because it supports NGSI-LD format, that
+means Fogflow is now NGSI-LD compliant. The following figure illustrates the system architecture of FogFlow and its
+major components across three logical layers.
 
 ![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/Ngsi-ld-architecture.png)
 
@@ -47,12 +49,16 @@ Logically, FogFlow consists of the following three layers:
 
 # NGSI-LD Support In Fogflow
 
-The FIWARE NGSI v2 information model has been evolved to better support linked data (entity relationships), property graphs and semantics (exploiting the capabilities offered by JSON-LD). The new era of data representation and data utilisation has opened up new horizion of possiblities with Fogflow. With the incorporation of NGSI-LD support, Fogflow has gained the power of interacting with other NGSI-LD compliant broker to build a more robust architecture and potential use cases.
+The FIWARE NGSI v2 information model has been evolved to better support linked data (entity relationships), property
+graphs and semantics (exploiting the capabilities offered by JSON-LD). The new era of data representation and data
+utilisation has opened up new horizion of possiblities with Fogflow. With the incorporation of NGSI-LD support, Fogflow
+has gained the power of interacting with other NGSI-LD compliant broker to build a more robust architecture and
+potential use cases.
 
-To know more about NGSI-LD supported API's in Fogflow, follow this [link](https://fogflow.readthedocs.io/en/latest/api.html#ngsi-ld-supported-api-s)
+To know more about NGSI-LD supported API's in Fogflow, follow this
+[link](https://fogflow.readthedocs.io/en/latest/api.html#ngsi-ld-supported-api-s)
 
 ![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/ngsild_support.png)
-
 
 ## Setup FogFlow Cloud Node
 
@@ -270,8 +276,8 @@ The form is explained as the following.
 >
 > The above operator will notify Fogflow, When speed of a vehicle goes beyond 50.
 >
->  To register the image, select DockerImage from left menu, under Operator Registry from dashboard and click register button.
-
+> To register the image, select DockerImage from left menu, under Operator Registry from dashboard and click register
+> button.
 
 ![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/docker_image_registry.png)
 
@@ -311,15 +317,15 @@ It contains the following fields:
     recorded in the Entity and False is used in case of broadcasted data, for example, some rule or threshold data that
     holds true for all locations, not for a specific location.
 
-Configure the EntityStream by clicking on its configuration button as shown below. "Vehicle" is shown as example
-here, as it is the entity type of input data for the "overspeed_vehicle" fog function.
+Configure the EntityStream by clicking on its configuration button as shown below. "Vehicle" is shown as example here,
+as it is the entity type of input data for the "overspeed_vehicle" fog function.
 
 ![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/Fog_ff_5.png)
 
-There can be multiple EntityStreams for a Task and they must be connected to the Task as shown below. After this click on submit button.
+There can be multiple EntityStreams for a Task and they must be connected to the Task as shown below. After this click
+on submit button.
 
 ![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/Fog_ff_6.png)
-
 
 ### Trigger the "OverSpeed_Vehicle" Fog Function
 
@@ -400,14 +406,19 @@ the rule for anomaly detection.
 
 ### Implement the Operator Functions
 
-Users can implement there own set of computations in form of operator. For designing and implementing a service topology, it is necessary to implement an operational processing logic in corresponding data format (i.e. NGSI-v2, NGSI-LD etc). For example, if service topology comprises of NGSI-LD data format, then it is important that operators are designed keeping NGSI-LD format in mind.
+Users can implement there own set of computations in form of operator. For designing and implementing a service
+topology, it is necessary to implement an operational processing logic in corresponding data format (i.e. NGSI-v2,
+NGSI-LD etc). For example, if service topology comprises of NGSI-LD data format, then it is important that operators are
+designed keeping NGSI-LD format in mind.
 
-To refer templates for NGSI-LD operator creation, use these [templates](https://github.com/pradumnnec/tutorials.Edge-Computing/tree/NSGI-LD/template/NGSILD).
+To refer templates for NGSI-LD operator creation, use these
+[templates](https://github.com/pradumnnec/tutorials.Edge-Computing/tree/NSGI-LD/template/NGSILD).
 
 ### Specify the Service Topology
 
 Assume that the tasks to be used in the service topology have been implemented and registered, just specify the service
-topology in the following way using FogFlow Topology Editor. For example,the image below shows the flow to impement a service topology.
+topology in the following way using FogFlow Topology Editor. For example,the image below shows the flow to impement a
+service topology.
 
 ![](https://fiware.github.io/tutorials.Edge-Computing/img/retail-topology-1.png)
 
@@ -448,7 +459,6 @@ The intent object is sent using the FogFlow dashboard with the following propert
 -   **Geoscope:** is a defined geographical area where input streams should be selected. Global as well as custom
     geoscopes can be set.
 
-
 Outputs of the Service Topology will be published to the Broker, any application subscribing to the data will receive
 the notification. An actuator device can also receive these streams as inputs from the Broker. Resulting streams will
 also be visible in the Streams menu on FogFlow dashboard.
@@ -483,7 +493,6 @@ other FIWARE GEs.
     [tutorial](https://fogflow.readthedocs.io/en/latest/quantumleapIntegration.html).
 
 -   **Integrate FogFlow with WireCloud**: FogFlow has pitched in with different and versatile edge platform technology.
-    WireCloud builds on cutting-edge end user development, RIA and semantic technologies to offer a next-generation
-    end user centred web application mashup platform aimed at leveraging the long tail of the Internet of Services. For
-    more on Fogflow and WireCloud, follow the
-    [tutorial](https://fogflow.readthedocs.io/en/latest/wirecloudIntegration.html).
+    WireCloud builds on cutting-edge end user development, RIA and semantic technologies to offer a next-generation end
+    user centred web application mashup platform aimed at leveraging the long tail of the Internet of Services. For more
+    on Fogflow and WireCloud, follow the [tutorial](https://fogflow.readthedocs.io/en/latest/wirecloudIntegration.html).

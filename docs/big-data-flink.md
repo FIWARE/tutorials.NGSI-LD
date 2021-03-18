@@ -2,11 +2,12 @@
 [![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.03.01_60/gs_cim009v010301p.pdf)
 [![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/)
 
-**Description:** This tutorial is an introduction to the [FIWARE Cosmos Orion Flink Connector](http://fiware-cosmos-flink.rtfd.io), which
-facilitates Big Data analysis of context data, through an integration with [Apache Flink](https://flink.apache.org/),
-one of the most popular Big Data platforms. Apache Flink is a framework and distributed processing engine for stateful
-computations both over unbounded and bounded data streams. Flink has been designed to run in all common cluster
-environments, perform computations at in-memory speed and at any scale.
+**Description:** This tutorial is an introduction to the
+[FIWARE Cosmos Orion Flink Connector](http://fiware-cosmos-flink.rtfd.io), which facilitates Big Data analysis of
+context data, through an integration with [Apache Flink](https://flink.apache.org/), one of the most popular Big Data
+platforms. Apache Flink is a framework and distributed processing engine for stateful computations both over unbounded
+and bounded data streams. Flink has been designed to run in all common cluster environments, perform computations at
+in-memory speed and at any scale.
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
 [Postman documentation](https://fiware.github.io/tutorials.Big-Data-Flink/ngsi-ld.html)
@@ -151,7 +152,6 @@ The containers within the flink cluster are driven by a single environment varia
 | ----------------------- | ------------ | --------------------------------------------------------------------- |
 | JOB_MANAGER_RPC_ADDRESS | `jobmanager` | URL of the _master_ Job Manager which coordinates the task processing |
 
-
 # Start Up
 
 Before you start, you should ensure that you have obtained or built the necessary Docker images locally. Please clone
@@ -243,9 +243,8 @@ A new JAR file called `cosmos-examples-1.2.jar` will be created within the `cosm
 
 For the purpose of this tutorial, we must be monitoring a system in which the context is periodically being updated. The
 dummy IoT Sensors can be used to do this. Open the device monitor page at `http://localhost:3000/device/monitor` and
-start a tractor moving. This can be done by selecting an appropriate the command from
-the drop down list and pressing the `send` button. The stream of measurements coming from the devices can then be seen
-on the same page:
+start a tractor moving. This can be done by selecting an appropriate the command from the drop down list and pressing
+the `send` button. The stream of measurements coming from the devices can then be seen on the same page:
 
 ![](https://fiware.github.io/tutorials.Big-Data-Flink/img/farm-devices.png)
 
@@ -280,8 +279,8 @@ inform **Flink** of changes in context.
 
 This is done by making a POST request to the `/ngsi-ld/v1/subscriptions` endpoint of the Orion Context Broker.
 
--   The `NGSILD-Tenant` header is used to filter the subscription to only listen to
-    measurements from the attached IoT Sensors, since they had been provisioned using these settings
+-   The `NGSILD-Tenant` header is used to filter the subscription to only listen to measurements from the attached IoT
+    Sensors, since they had been provisioned using these settings
 
 -   The notification `uri` must match the one our Flink program is listening to.
 
@@ -327,24 +326,24 @@ curl -X GET \
 
 ```json
 [
-  {
-    "id": "urn:ngsi-ld:Subscription:60216f404dae3a1f22b705e6",
-    "type": "Subscription",
-    "description": "Notify Flink of all animal and farm vehicle movements",
-    "entities": [{"type": "Tractor"}, {"type": "Device"}],
-    "watchedAttributes": ["location"],
-    "notification": {
-      "attributes": ["location"],
-      "format": "normalized",
-      "endpoint": {
-        "uri": "http://taskmanager:9001",
-        "accept": "application/json"
-      },
-      "timesSent": 74,
-      "lastNotification": "2021-02-08T17:06:06.043Z"
-    },
-    "@context": "http://context-provider:3000/data-models/ngsi-context.jsonld"
-  }
+    {
+        "id": "urn:ngsi-ld:Subscription:60216f404dae3a1f22b705e6",
+        "type": "Subscription",
+        "description": "Notify Flink of all animal and farm vehicle movements",
+        "entities": [{ "type": "Tractor" }, { "type": "Device" }],
+        "watchedAttributes": ["location"],
+        "notification": {
+            "attributes": ["location"],
+            "format": "normalized",
+            "endpoint": {
+                "uri": "http://taskmanager:9001",
+                "accept": "application/json"
+            },
+            "timesSent": 74,
+            "lastNotification": "2021-02-08T17:06:06.043Z"
+        },
+        "@context": "http://context-provider:3000/data-models/ngsi-context.jsonld"
+    }
 ]
 ```
 
@@ -413,18 +412,18 @@ case class Sensor(device: String, sum: Int)
 ```
 
 The first lines of the program are aimed at importing the necessary dependencies, including the connector. The next step
-is to create an instance of the `NGSILDSource` using the class provided by the connector and to add it to the environment
-provided by Flink.
+is to create an instance of the `NGSILDSource` using the class provided by the connector and to add it to the
+environment provided by Flink.
 
 The `NGSILDSource` constructor accepts a port number (`9001`) as a parameter. This port is used to listen to the
-subscription notifications coming from the context broker and converted to a `DataStream` of `NgsiEventLD` objects. The definition of
-these objects can be found within the
+subscription notifications coming from the context broker and converted to a `DataStream` of `NgsiEventLD` objects. The
+definition of these objects can be found within the
 [Orion-Flink Connector documentation](https://github.com/ging/fiware-cosmos-orion-flink-connector/blob/master/README.md#NGSILDSource).
 
 The stream processing consists of five separate steps. The first step (`flatMap()`) is performed in order to put
-together the entity objects of all the NGSI-LD Events received in a period of time. Thereafter the code iterates over them
-(with the `map()` operation) and extracts the desired attributes. In this case, we are interested in the entity `type`
-(`Device`  or `Tractor`).
+together the entity objects of all the NGSI-LD Events received in a period of time. Thereafter the code iterates over
+them (with the `map()` operation) and extracts the desired attributes. In this case, we are interested in the entity
+`type` (`Device` or `Tractor`).
 
 Within each iteration, we create a custom object with the properties we need: the sensor `type` and the increment of
 each notification. For this purpose, we can define a case class as shown:
@@ -444,9 +443,12 @@ processedDataStream.print().setParallelism(1)
 
 ## Feedback Loop - Persisting Context Data
 
-The second example turns on a water faucet when the soil humidity is too low and turns it back off it when the soil humidity it is back to normal levels. This way, the soil humidity is always kept at an adequate level.
+The second example turns on a water faucet when the soil humidity is too low and turns it back off it when the soil
+humidity it is back to normal levels. This way, the soil humidity is always kept at an adequate level.
 
-The dataflow stream uses the `NGSILDSource` operator in order to receive notifications and filters the input to only respond to motion senseors and then uses the `NGSILDSink` to push processed context back to the Context Broker. You can find the source code of the example in
+The dataflow stream uses the `NGSILDSource` operator in order to receive notifications and filters the input to only
+respond to motion senseors and then uses the `NGSILDSink` to push processed context back to the Context Broker. You can
+find the source code of the example in
 [org/fiware/cosmos/tutorial/FeedbackLD.scala](https://github.com/FIWARE/tutorials.Big-Data-Flink/blob/master/cosmos-examples/src/main/scala/org/fiware/cosmos/tutorial/FeedbackLD.scala)
 
 ### Feedback Loop - Installing the JAR
@@ -468,7 +470,8 @@ Submit new job
 
 ### Feedback Loop - Subscribing to context changes
 
-A new subscription needs to be set up to run this example. The subscription is listening to changes of context on the soil humidity sensor.
+A new subscription needs to be set up to run this example. The subscription is listening to changes of context on the
+soil humidity sensor.
 
 #### 3 Request:
 
@@ -504,13 +507,13 @@ curl -X GET \
 -H 'NGSILD-Tenant: openiot'
 ```
 
-
-
 ### Feedback Loop - Checking the Output
 
 Go to `http://localhost:3000/device/monitor`
 
-Raise the temperature in Farm001 and wait until the humidity value is below 35, then the water faucet will be automatically turned on to increase the soil humidity. When the humidity rises above 50, the water faucet will be turned off automatically as well.
+Raise the temperature in Farm001 and wait until the humidity value is below 35, then the water faucet will be
+automatically turned on to increase the soil humidity. When the humidity rises above 50, the water faucet will be turned
+off automatically as well.
 
 ### Feedback Loop - Analyzing the Code
 
@@ -573,15 +576,17 @@ object FeedbackLD {
 }
 ```
 
-As you can see, it is similar to the previous example. The main difference is that it writes the processed data back in the Context Broker through the **`OrionSink`**.
+As you can see, it is similar to the previous example. The main difference is that it writes the processed data back in
+the Context Broker through the **`OrionSink`**.
 
 The arguments of the **`OrionSinkObject`** are:
 
--   **Message**: `"{\n  \"type\" : \"Property\",\n  \"value\" : \" \" \n}"`.
--   **URL**: `"http://orion:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:water"+sensor._1.takeRight(3)+"/attrs/on"` or `"http://orion:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:water"+sensor._1.takeRight(3)+"/attrs/off"`, depending on whether we are turning on or off the water faucet. TakeRight(3) gets the number of
-    the sensor, for example '001'.
+-   **Message**: `"{\n \"type\" : \"Property\",\n \"value\" : \" \" \n}"`.
+-   **URL**: `"http://orion:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:water"+sensor._1.takeRight(3)+"/attrs/on"` or
+    `"http://orion:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:water"+sensor._1.takeRight(3)+"/attrs/off"`, depending on
+    whether we are turning on or off the water faucet. TakeRight(3) gets the number of the sensor, for example '001'.
 -   **Content Type**: `ContentType.JSON`.
 -   **HTTP Method**: `HTTPMethod.PATCH`.
--   **Headers**: `Map("NGSILD-Tenant" -> "openiot", "Link" -> "<http://context-provider:3000/data-models/ngsi-context.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"; type=\"application/ld+json\"" )`.
+-   **Headers**:
+    `Map("NGSILD-Tenant" -> "openiot", "Link" -> "<http://context-provider:3000/data-models/ngsi-context.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"; type=\"application/ld+json\"" )`.
     We add the headers we need in the HTTP Request.
-

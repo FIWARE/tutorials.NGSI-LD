@@ -537,8 +537,8 @@ curl -L -X POST 'http://localhost:4041/iot/devices' \
 
 In the request we are associating the device `temperature001` with the URN `urn:ngsi-ld:Device:temperature001` and
 mapping the device reading `t` with the context attribute `temperature` (which is defined as **Property** with
-appropriate meta-data). A `controlledAsset` **Relationship** is also defined as a `static_attribute`, placing the
-device within the **Building** `urn:ngsi-ld:Building:barn001`
+appropriate meta-data). A `controlledAsset` **Relationship** is also defined as a `static_attribute`, placing the device
+within the **Building** `urn:ngsi-ld:Building:barn001`
 
 You can simulate a dummy IoT device measurement coming from the **Temperature Sensor** device `temperature001`, by
 making the following request

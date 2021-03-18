@@ -1,12 +1,13 @@
 [![FIWARE Core Context Management](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/core.svg)](https://github.com/FIWARE/catalogue/blob/master/core/README.md)
 [![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.03.01_60/gs_cim009v010301p.pdf)
 
-**Description:** This tutorial is an introduction to [FIWARE QuantumLeap](https://smartsdk.github.io/ngsi-timeseries-api/) - a generic
-enabler which is used to persist context data into a **CrateDB** database. The tutorial activates the IoT sensors
-connected in the [previous tutorial](https://github.com/FIWARE/tutorials.IoT-Agent) and persists measurements from those
-sensors into the database. To retrieve time-based aggregations of such data, users can either use **QuantumLeap** query
-API or connect directly to the **CrateDB** HTTP endpoint. Results are visualised on a graph or via the **Grafana** time
-series analytics tool.
+**Description:** This tutorial is an introduction to
+[FIWARE QuantumLeap](https://smartsdk.github.io/ngsi-timeseries-api/) - a generic enabler which is used to persist
+context data into a **CrateDB** database. The tutorial activates the IoT sensors connected in the
+[previous tutorial](https://github.com/FIWARE/tutorials.IoT-Agent) and persists measurements from those sensors into the
+database. To retrieve time-based aggregations of such data, users can either use **QuantumLeap** query API or connect
+directly to the **CrateDB** HTTP endpoint. Results are visualised on a graph or via the **Grafana** time series
+analytics tool.
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
 [Postman documentation](https://fiware.github.io/tutorials.Time-Series-Data/ngsi-ld.html)
@@ -225,8 +226,8 @@ This is done by making a POST request to the `/ngsi-ld/v1/subscriptions/` endpoi
 
 -   The `NGSILD-Tenant` headers is used to filter the subscription to only listen to measurements from the attached IoT
     Sensors
--   The `entities` `type` in the request body ensures that **QuantumLeap** will be informed of all **FillingLevelSensor**
-    data changes.
+-   The `entities` `type` in the request body ensures that **QuantumLeap** will be informed of all
+    **FillingLevelSensor** data changes.
 -   The `notification` URL must match the exposed port.
 
 With NGSI-LD the `observedAt` _property-of-property_ holds the timestamp of the measure. Because the attribute being
@@ -555,8 +556,8 @@ curl -X GET \
 ### QuantumLeap API - List the latest N Sampled Values of Devices near a Point
 
 This example shows the latest heart rate sampled `heartRate` values of animal that are within a 5 km radius from
-`52°31'04.8"N 13°21'25.2"E` (Tiergarten, Berlin, Germany). If you have turned on any device the animals will
-wander around the Berlin Tiergarten and on the device monitor page, you should be able to see data for
+`52°31'04.8"N 13°21'25.2"E` (Tiergarten, Berlin, Germany). If you have turned on any device the animals will wander
+around the Berlin Tiergarten and on the device monitor page, you should be able to see data for
 `urn:ngsi-ld:Device:cow001` and `urn:ngsi-ld:Device:pig001` .
 
 > :information_source: **Note:** Geographical queries are only available starting from version `0.5` of QuantumLeap
@@ -577,28 +578,25 @@ curl -X GET \
 
 ```json
 {
-  "attrName": "heartRate",
-  "entities": [
-    {
-      "entityId": "urn:ngsi-ld:Device:cow001",
-      "index": [
-        "2021-01-27T16:52:05.925+00:00",
-        "2021-01-27T16:52:30.769+00:00"
-      ],
-      "values": [53, 50]
-    },
-    {
-      "entityId": "urn:ngsi-ld:Device:cow002",
-      "index": ["2021-01-27T16:50:50.792+00:00"],
-      "values": [53]
-    },
-    {
-      "entityId": "urn:ngsi-ld:Device:cow004",
-      "index": ["2021-01-27T16:51:55.798+00:00"],
-      "values": [51]
-    }
-  ],
-  "entityType": "Device"
+    "attrName": "heartRate",
+    "entities": [
+        {
+            "entityId": "urn:ngsi-ld:Device:cow001",
+            "index": ["2021-01-27T16:52:05.925+00:00", "2021-01-27T16:52:30.769+00:00"],
+            "values": [53, 50]
+        },
+        {
+            "entityId": "urn:ngsi-ld:Device:cow002",
+            "index": ["2021-01-27T16:50:50.792+00:00"],
+            "values": [53]
+        },
+        {
+            "entityId": "urn:ngsi-ld:Device:cow004",
+            "index": ["2021-01-27T16:51:55.798+00:00"],
+            "values": [51]
+        }
+    ],
+    "entityType": "Device"
 }
 ```
 
@@ -1056,4 +1054,3 @@ Click on `Visualisation` tab on the left and set as follows:
 The final result can be seen below:
 
 ![](https://fiware.github.io/tutorials.Time-Series-Data/img/grafana-result.png)
-
