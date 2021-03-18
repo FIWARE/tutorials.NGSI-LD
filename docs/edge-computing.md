@@ -334,7 +334,7 @@ The defined "OverSpeed_Vehicle" fog function is triggered only when its required
 The way to trigger the fog function is to send an NGSI-LD entity update in the form of a POST request to the FogFlow
 broker to create the "Vehicle" sensor entity. With creation of this entity, Fogflow automatically launches fogfunction.
 
-#### :one: Request
+#### 1 Request
 
 ```bash
 curl --location --request POST '<Fogflow_Broker_IP>:8070/ngsi-ld/v1/entities/' \
