@@ -1,30 +1,33 @@
-site_name: "Step-by-Step <br/>for <span style='color:#d6604d'>NGSI-LD</span>"
-site_url: https://ngsi-ld.tutorials.readthedocs.org
-repo_url: https://github.com/fiware/tutorials.NGSI-LD
+site_name: 'Step-by-Step <br/>for <span style=''color:#d6604d''>NGSI-LD</span>'
+site_url: 'https://ngsi-ld.tutorials.readthedocs.org'
+repo_url: 'https://github.com/fiware/tutorials.NGSI-LD'
 site_description: Fiware Tutorial Documentation
 docs_dir: docs
 site_dir: html
 use_directory_urls: false
 theme: readthedocs
-google_analytics: ["UA-83719923-1", "ngsi-ld.readthedocs.io"]
-extra_css: ["https://www.fiware.org/style/fiware_readthedocs.css", "https://www.fiware.org/style/fiware_readthedocs_neutral.css"]
-nav:
-  - Home: "index.md"
-  - "<span style='font-size:105%;padding:0px'>Core Context Management: </span><span style='font-size:105%;padding:0px'>The NGSI-LD Interface</span>":
-      - "Understanding @context": "understanding-@context.md"
-      - "Working with @context": "working-with-@context.md"
-      - "CRUD Operations": "ngsi-ld-operations.md"
-      - "Entity Relationships": "entity-relationships.md"
-      - "Subscriptions": "subscriptions.md"
-  - "IoT Agents & Robots":
-      - "IoT Sensors": "iot-sensors.md"
-      - "IoT Agent (Ultralight)": "iot-agent.md"
-  - "<span style='font-size:105%;padding:0px'>Core Context Management: </span><span style='font-size:105%;padding:0px'>Processing & History Management</span>":
-      - "Time-Series Data": "time-series-data.md"
-      - "Big Data Analysis (Flink)": "big-data-flink.md"
-      - "Big Data Analysis (Spark)": "big-data-spark.md"
-  - "Processing, Analysis and Visualization":
-      - "Cloud Edge Computing": "edge-computing.md"
-  - "Appendix":
-      - "Data Models": "datamodels.md"
-  
+google_analytics:
+  - UA-83719923-1
+  - ngsi-ld.readthedocs.io
+extra_css:
+  - 'https://www.fiware.org/style/fiware_readthedocs.css'
+  - 'https://www.fiware.org/style/fiware_readthedocs_neutral.css'
+pages:
+  - Home: index.md
+  - '<span style=''font-size:105%;padding:0px''>Core Context Management: </span><span style=''font-size:105%;padding:0px''>The NGSI-LD Interface</span>':
+      - Understanding @context: understanding-@context.md
+      - Working with @context: working-with-@context.md
+      - CRUD Operations: ngsi-ld-operations.md
+      - Entity Relationships: entity-relationships.md
+      - Subscriptions: subscriptions.md
+  - IoT Agents & Robots:
+      - IoT Sensors: iot-sensors.md
+      - IoT Agent (Ultralight): iot-agent.md
+  - '<span style=''font-size:105%;padding:0px''>Core Context Management: </span><span style=''font-size:105%;padding:0px''>Processing & History Management</span>':
+      - Time-Series Data: time-series-data.md
+      - Big Data Analysis (Flink): big-data-flink.md
+      - Big Data Analysis (Spark): big-data-spark.md
+  - 'Processing, Analysis and Visualization':
+      - Cloud Edge Computing: edge-computing.md
+  - Appendix:
+      - Data Models: datamodels.md
