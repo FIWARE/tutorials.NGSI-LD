@@ -23,6 +23,8 @@ nav:
       - "Time-Series Data": "time-series-data.md"
       - "Big Data Analysis (Flink)": "big-data-flink.md"
       - "Big Data Analysis (Spark)": "big-data-spark.md"
+  - "Processing, Analysis and Visualization":
+      - "Cloud Edge Computing": "edge-computing.md"
   - "Appendix":
       - "Data Models": "datamodels.md"
   

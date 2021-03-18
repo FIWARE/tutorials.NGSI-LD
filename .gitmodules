@@ -38,3 +38,7 @@
 	path = tutorials.Big-Data-Spark
 	url = https://github.com/FIWARE/tutorials.Big-Data-Spark
 	branch = NGSI-LD
+[submodule "tutorials.Edge-Computing"]
+	path = tutorials.Edge-Computing
+	url = https://github.com/FIWARE/tutorials.Edge-Computing
+	branch = NGSI-LD

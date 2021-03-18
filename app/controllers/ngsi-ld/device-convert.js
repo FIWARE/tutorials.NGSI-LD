@@ -53,6 +53,9 @@ function convertAttributeToLD(attr) {
                 case 'observedAt':
                     obj[key] = attr.metadata[key].value;
                     break;
+                case 'unitCode':
+                    obj[key] = attr.metadata[key].value;
+                    break;
                 default:
                     obj[key] = convertAttributeToLD(attr.metadata[key]);
             }
