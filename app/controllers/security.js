@@ -6,7 +6,8 @@ const keyrockUrl = (process.env.KEYROCK_URL || 'http://localhost') + ':' + keyro
 const keyrockIPAddress = (process.env.KEYROCK_IP_ADDRESS || 'http://127.0.0.1') + ':' + keyrockPort;
 const clientId = process.env.KEYROCK_CLIENT_ID || 'tutorial-dckr-site-0000-xpresswebapp';
 const clientSecret = process.env.KEYROCK_CLIENT_SECRET || 'tutorial-dkcr-site-0000-clientsecret';
-const callbackURL = process.env.CALLBACK_URL || 'http://localhost:3000/login';
+const port = process.env.WEB_APP_PORT || '3000';
+const callbackURL = process.env.CALLBACK_URL || 'http://localhost:' + port + '/login';
 const SECURE_ENDPOINTS = process.env.SECURE_ENDPOINTS || false;
 
 // Creates oauth library object with the config data
