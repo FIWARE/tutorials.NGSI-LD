@@ -16,7 +16,8 @@ const DEVICE_BROKER = process.env.DEVICE_BROKER || CONTEXT_BROKER;
 const NGSI_LD_TENANT = process.env.NGSI_LD_TENANT !== undefined ? process.env.NGSI_LD_TENANT : 'openiot';
 const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
 
-const dataModelContext = process.env.IOTA_JSON_LD_CONTEXT || 'http://localhost:3000/data-models/ngsi-context.jsonld';
+const port = process.env.WEB_APP_PORT || '3000';
+const dataModelContext = process.env.IOTA_JSON_LD_CONTEXT || 'http://localhost:' + port + '/data-models/ngsi-context.jsonld';
 
 const COMMANDS = {
     on: 'water',
