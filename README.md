@@ -72,7 +72,7 @@ Postman collections can downloaded directly from the
 We will start up our services using a simple Bash script. Windows users should download [cygwin](http://www.cygwin.com/)
 to provide a command-line functionality similar to a Linux distribution on Windows.
 
-## Tutorials List
+## Tutorials List[<img src="https://img.shields.io/badge/NGSI-LD-d6604d.svg" width="90"  align="left" />]("https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.03.01_60/gs_cim009v010301p.pdf)
 
 ### Core Context Management: NGSI-LD Fundamentals
 
