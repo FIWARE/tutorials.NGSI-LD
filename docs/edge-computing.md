@@ -289,7 +289,7 @@ Right click inside the task design board, a menu will be displayed that includes
     output streams.
 -   **EntityStream**: is the input data element which can be linked with a fog function Task as its input data stream.
 
-![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/Fog_ff_1.png)
+![](https://fiware.github.io/tutorials.Edge-Computing/img/fog_ff_1.png)
 
 Choose "Task", a Task element will be placed on the design board, as shown below.
 
