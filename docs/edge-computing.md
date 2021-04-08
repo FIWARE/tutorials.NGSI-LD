@@ -230,7 +230,7 @@ FogFlow allows the developers to specify their own function code inside a regist
 know how to create a customized operator.
 
 Python, Java and JavaScript templates to write an operator can be found
-[here](https://github.com/pradumnnec/tutorials.Edge-Computing/tree/NSGI-LD/template).
+[here](https://github.com/pradumnnec/tutorials.Edge-Computing/tree/NGSI-LD/template).
 
 For the current tutorial, refer the below mentioned steps.
 
@@ -293,16 +293,16 @@ Right click inside the task design board, a menu will be displayed that includes
 
 Choose "Task", a Task element will be placed on the design board, as shown below.
 
-![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/Fog_ff_2.png)
+![](https://fiware.github.io/tutorials.Edge-Computing/img/fog_ff_2.png)
 
 Click the configuration button on the top-right corner of the task element, as illustrated in the following figure.
 Specify the name of the Task and choose an operator out of a list of some pre-registered operators.
 
-![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/Fog_ff_3.png)
+![](https://fiware.github.io/tutorials.Edge-Computing/img/fog_ff_3.png)
 
 Add an "EntityStream" from the pop-up menu to the design board.
 
-![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/Fog_ff_4.png)
+![](https://fiware.github.io/tutorials.Edge-Computing/img/fog_ff_4.png)
 
 It contains the following fields:
 
@@ -320,12 +320,12 @@ It contains the following fields:
 Configure the EntityStream by clicking on its configuration button as shown below. "Vehicle" is shown as example here,
 as it is the entity type of input data for the "overspeed_vehicle" fog function.
 
-![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/Fog_ff_5.png)
+![](https://fiware.github.io/tutorials.Edge-Computing/img/fog_ff_5.png)
 
 There can be multiple EntityStreams for a Task and they must be connected to the Task as shown below. After this click
 on submit button.
 
-![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/Fog_ff_6.png)
+![](https://fiware.github.io/tutorials.Edge-Computing/img/fog_ff_6.png)
 
 ### Trigger the "OverSpeed_Vehicle" Fog Function
 
