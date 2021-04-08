@@ -242,7 +242,7 @@ To register Operator, open fogflow dashboard. Select Operator Registry Tab from 
 menu on left and then click register button. Right click on workspace and select operator from drop down list and enter
 details as shown and at last click on submit.
 
-![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/operator_creation.png)
+![](https://fiware.github.io/tutorials.Edge-Computing/img/operator_creation.png)
 
 > **Note :**
 >
