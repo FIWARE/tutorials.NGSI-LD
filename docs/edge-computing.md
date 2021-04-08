@@ -279,7 +279,7 @@ The form is explained as the following.
 > To register the image, select DockerImage from left menu, under Operator Registry from dashboard and click register
 > button.
 
-![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/docker_image_registry.png)
+![](https://fiware.github.io/tutorials.Edge-Computing/img/docker_image_registry.png)
 
 ### Define a "OverSpeed_Vehicle" Fog Function
 
