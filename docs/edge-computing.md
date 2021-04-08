@@ -58,7 +58,7 @@ potential use cases.
 To know more about NGSI-LD supported APIs in Fogflow, follow this
 [link](https://fogflow.readthedocs.io/en/latest/api.html#ngsi-ld-supported-api-s)
 
-![](https://github.com/pradumnnec/tutorials.Edge-Computing/blob/NSGI-LD/images/ngsild_support.png)
+![](https://fiware.github.io/tutorials.Edge-Computing/img/ngsild_support.png)
 
 ### Setup FogFlow Cloud Node
 
