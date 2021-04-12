@@ -19,7 +19,7 @@ directly or programmatically.
 
 The following NGSI-LD Data models are used within the tutorials:
 
--   <img src="https://json-ld.org/favicon.ico" align="center" height="25"> [NGSI-LD Data Models](https://fiware.github.io/tutorials.Step-by-Step/schema/)
+-   <img src="https://json-ld.org/favicon.ico" align="center" height="25"> [NGSI-LD Data Models](https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html)
 -   <img src="https://json-ld.org/favicon.ico" align="center" height="25"> [Smart Data Models](https://smartdatamodels.org) 
 
 ## Install
