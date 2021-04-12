@@ -17,9 +17,10 @@ directly or programmatically.
 
 ## Data models
 
-The following NGSI-LD Data models are used within the tutorials:
+The tutorials defines a series of data-models to be used within the `@context`. More information about the  classes and attributes 
+used can be found in the following:
 
--   <img src="https://json-ld.org/favicon.ico" align="center" height="25"> [NGSI-LD Data Models](https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html)
+-   <img src="https://json-ld.org/favicon.ico" align="center" height="25"> [Tutorial-specific Data Models](https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html)
 -   <img src="https://json-ld.org/favicon.ico" align="center" height="25"> [Smart Data Models](https://smartdatamodels.org) 
 
 ## Install
