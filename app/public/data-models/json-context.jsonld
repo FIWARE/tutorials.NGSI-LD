@@ -287,7 +287,9 @@
         "field": {
             "@id": "fiware:refTarget",
             "@type": "@id"
-        }
+        },
+        "on": "https://w3id.org/saref#on",
+        "off": "https://w3id.org/saref#off"
     },
     "@graph": [
         {

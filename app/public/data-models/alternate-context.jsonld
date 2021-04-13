@@ -127,7 +127,10 @@
         "herzschlagfrequenz": "https://purl.bioontology.org/ontology/MESH/D006339",       
         "produkt":  "fiware:refObject",
         "abeiter": "fiware:refAgent",
-        "feld": "fiware:refTarget"
+        "feld": "fiware:refTarget",
+
+        "ein": "https://w3id.org/saref#on",
+        "aus": "https://w3id.org/saref#off"
 
     },
     "@graph": [

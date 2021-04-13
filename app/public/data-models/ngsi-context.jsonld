@@ -125,6 +125,9 @@
         "heartRate": "https://purl.bioontology.org/ontology/MESH/D006339",
         "product": "fiware:refObject",
         "worker": "fiware:refAgent",
-        "field": "fiware:refTarget"
+        "field": "fiware:refTarget",
+
+        "on": "https://w3id.org/saref#on",
+        "off": "https://w3id.org/saref#off"
     }
 }
