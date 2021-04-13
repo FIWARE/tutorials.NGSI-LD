@@ -17,11 +17,11 @@ directly or programmatically.
 
 <h3>Data models</h3>
 
-The tutorials defines a series of data-models to be used within the `@context`. More information about the  classes and attributes 
+The tutorials defines a series of data-models to be used within the `@context`. More information about the  classes and attributes
 used can be found in the following:
 
 -   <img src="https://json-ld.org/favicon.ico" align="center" height="25"> [Tutorial-specific Data Models](https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html)
--   <img src="https://json-ld.org/favicon.ico" align="center" height="25"> [Smart Data Models](https://smartdatamodels.org) 
+-   <img src="https://json-ld.org/favicon.ico" align="center" height="25"> [Smart Data Models](https://smartdatamodels.org)
 
 ## Install
 
@@ -93,7 +93,8 @@ to provide a command-line functionality similar to a Linux distribution on Windo
 ### Internet of Things, Robots and third-party systems
 
 &nbsp; 201. [Introduction to IoT Sensors](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)<br/> &nbsp; 202.
-[Provisioning the Ultralight IoT Agent](https://github.com/FIWARE/tutorials.IoT-Agent/tree/NGSI-LD)<br/>
+[Provisioning the Ultralight IoT Agent](https://github.com/FIWARE/tutorials.IoT-Agent/tree/NGSI-LD)<br/> &nbsp; 203.
+[Provisioning the JSON IoT Agent](https://github.com/FIWARE/tutorials.IoT-Agent-JSON/tree/NGSI-LD)<br/>
 
 ### Core Context Management: Manipulating Context Data and Persisting Historic Data
 

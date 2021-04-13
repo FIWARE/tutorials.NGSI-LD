@@ -101,11 +101,11 @@ Scala code into a JAR file.
 
 ## Data models
 
-The tutorials defines a series of data-models to be used within the `@context`. More information about the  classes and attributes 
+The tutorials defines a series of data-models to be used within the `@context`. More information about the  classes and attributes
 used can be found in the following:
 
 -   <img src="https://json-ld.org/favicon.ico" align="center" height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent"> [Tutorial-specific Data Models](https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html)
--   <img src="https://json-ld.org/favicon.ico" align="center" height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent"> [Smart Data Models](https://smartdatamodels.org) 
+-   <img src="https://json-ld.org/favicon.ico" align="center" height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent"> [Smart Data Models](https://smartdatamodels.org)
 
 ## List of Tutorials
 
@@ -124,7 +124,8 @@ Robots, IoT Sensors or other suppliers of context data such as social media. It 
 from the context broker to alter the state of real-world objects themselves.
 
 &nbsp; 201. [Introduction to IoT Sensors](iot-sensors.md)<br/> &nbsp; 202.
-[Provisioning an IoT Agent](iot-agent.md)<br/>
+[Provisioning the Ultralight IoT Agent](iot-agent.md)<br/>  &nbsp; 203.
+[Provisioning the JSON IoT Agent](iot-agent-json.md)<br/>
 
 <h3 style="box-shadow: 0px 4px 0px 0px #233c68;">Core Context Management: History Management</h3>
 

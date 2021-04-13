@@ -42,3 +42,7 @@
 	path = tutorials.Edge-Computing
 	url = https://github.com/FIWARE/tutorials.Edge-Computing
 	branch = NGSI-LD
+[submodule "tutorials.IoT-Agent-JSON"]
+	path = tutorials.IoT-Agent-JSON
+	url = https://github.com/FIWARE/tutorials.IoT-Agent-JSON.git
+	branch = NGSI-LD
