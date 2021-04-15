@@ -62,15 +62,22 @@ function sendCommand(req, res) {
         return res.status(403).send({ message: 'Forbidden' });
     }
 
-    if (!Object.keys(COMMANDS).includes(action)) {
-        return res.status(404).send();
-    }
-
     // The temperature Gauge does not accept commands,
     // Update the state of the device directly
     if (action === 'raise' || action === 'lower') {
         IoTDevices.alterTemperature(id.replace('temperature', 'targetTemp'), action === 'raise');
         return res.status(204).send();
+    }
+
+    // The Weather does not accept commands,
+    // Update the state of the weather directly to simulate changing conditions
+    if (action === 'sunny' || action === 'cloudy' || action === 'raining') {
+        IoTDevices.alterWeather(action);
+        return res.status(204).send();
+    }
+
+    if (!Object.keys(COMMANDS).includes(action)) {
+        return res.status(404).send();
     }
 
     const options = createNGSILDRequest(action, id);

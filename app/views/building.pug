@@ -51,10 +51,22 @@ block content
       input(type="submit" value="raise" name="action") 
       input(type="submit" value="lower" name="action") 
 
+    form(action="/device/command" method="POST")
+      h3 Current Weather Conditions: 
+        span(id="weather") cloudy
+      p Alter the current weather
+      p
+      input(type="text" style="display:none"  name="id" value="weather")
+      input(type="submit" value="sunny" name="action") 
+      input(type="submit" value="raining" name="action")
+      input(type="submit" value="cloudy" name="action") 
 
   script.
     $(function () {
       const socket = io();
+      socket.on('weather', function (msg) {
+         $('#weather').text(msg);
+      });
       $('span.device').each(function (index, value) {
         const device = $(this).attr('id');
         socket.on(device, function (msg) {
@@ -83,7 +95,7 @@ block content
                       li.css('background-image', "url('/img/warehouse-" + measure + ".svg')");
                   }
                   break;
-               }    
+               }
             }); 
         });
       });

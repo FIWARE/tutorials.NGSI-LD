@@ -52,6 +52,8 @@ const numberOfPigs = process.env.PIG_COUNT || 4;
 const numberOfCows = process.env.COW_COUNT || 4;
 const numberOfSoilSensors = process.env.SOIL_SENSOR_COUNT || 4;
 
+let weather = 'cloudy';
+
 function getStatusCode(status) {
     let code = 0;
     switch (status) {
@@ -149,20 +151,22 @@ function initDevices() {
     setInterval(activateAnimalCollars, 5000);
     setInterval(activateDevices, 3000);
 }
+// Broadcast weather conditions
+setInterval(emitWeatherConditions, 10000);
 
 let isTractorActive = false;
 let isDevicesActive = false;
 let devicesInitialized = false;
 
 for (let i = 1; i < numberOfPigs; i++) {
-    const lng = addAndTrim(13.35, true);
-    const lat = addAndTrim(52.51, true);
-    myCache.set('pig' + i.toString().padStart(3, '0'), PIG_IDLE + '|gps|' + lng + ', ' + lat);
+    const lng = addAndTrim(13.35 + 0.001 * (getRandom() + i), true);
+    const lat = addAndTrim(52.51 + 0.001 * (getRandom() + i), true);
+    myCache.set('pig' + i.toString().padStart(3, '0'), PIG_IDLE + '|bpm|60|gps|' + lng + ',' + lat);
 }
 for (let i = 1; i < numberOfCows; i++) {
-    const lng = addAndTrim(13.37, true);
-    const lat = addAndTrim(52.3, true);
-    myCache.set('cow' + i.toString().padStart(3, '0'), COW_IDLE + '|gps|' + lng + ', ' + lat);
+    const lng = addAndTrim(13.37 + 0.001 * (getRandom() + i), true);
+    const lat = addAndTrim(52.3 + 0.001 * (getRandom() + i), true);
+    myCache.set('cow' + i.toString().padStart(3, '0'), COW_IDLE + '|bpm|50|gps|' + lng + ',' + lat);
 }
 
 myCache.set('water001', WATER_OFF, false);
@@ -199,6 +203,9 @@ myCache.set('filling002', FILLING_STATION_FULL);
 myCache.set('filling003', FILLING_STATION_FULL);
 myCache.set('filling004', FILLING_STATION_EMPTY);
 
+function emitWeatherConditions() {
+    SOCKET_IO.emit('weather', weather);
+}
 // Update the state of a tractor
 function changeTractorState() {
     if (isTractorActive) {
@@ -227,15 +234,23 @@ function changeTractorState() {
     isTractorActive = false;
 }
 
-function addAndTrim(value, add) {
-    const newValue = add ? parseFloat(value) + 0.001 : parseFloat(value) - 0.001;
+function addAndTrim(value, add, weather) {
+    let newValue;
+    if (weather === 'sunny') {
+        newValue = add ? parseFloat(value) + 0.003 : parseFloat(value) - 0.003;
+    } else {
+        newValue = add ? parseFloat(value) + 0.001 : parseFloat(value) - 0.001;
+    }
+
     return Math.round(newValue * 1000) / 1000;
 }
 
 function randomWalk(state, deviceId) {
     let moveFactor = 6;
 
-    if (lactatingAnimalIds.includes(deviceId)) {
+    if (weather === 'raining') {
+        moveFactor = 8;
+    } else if (lactatingAnimalIds.includes(deviceId)) {
         moveFactor = 7;
     } else if (lameAnimalIds.includes(deviceId)) {
         moveFactor = 8;
@@ -244,16 +259,16 @@ function randomWalk(state, deviceId) {
     let y = location[0];
     let x = location[1];
     if (getRandom() > moveFactor) {
-        x = addAndTrim(x, true);
+        x = addAndTrim(x, true, weather);
     }
     if (getRandom() > moveFactor) {
-        x = addAndTrim(x, false);
+        x = addAndTrim(x, false, weather);
     }
     if (getRandom() > moveFactor) {
-        y = addAndTrim(y, true);
+        y = addAndTrim(y, true, weather);
     }
     if (getRandom() > moveFactor) {
-        y = addAndTrim(y, false);
+        y = addAndTrim(y, false, weather);
     }
     state.gps = y + ',' + x;
 }
@@ -272,9 +287,9 @@ function activateAnimalCollars() {
             case 'pig':
                 targetRate = PIG_HEART_RATE + 2 * OFFSET_RATE[state.d] + (getRandom() % 4);
 
-                if (targetRate < state.bpm) {
+                if (targetRate > state.bpm) {
                     state.bpm++;
-                } else if (targetRate > state.bpm) {
+                } else if (targetRate < state.bpm) {
                     state.bpm--;
                 }
                 if (state.d === 'AT_REST') {
@@ -292,10 +307,9 @@ function activateAnimalCollars() {
                 break;
             case 'cow':
                 targetRate = COW_HEART_RATE + 2 * OFFSET_RATE[state.d] + (getRandom() % 4);
-
-                if (targetRate < state.bpm) {
+                if (targetRate > state.bpm) {
                     state.bpm++;
-                } else if (targetRate > state.bpm) {
+                } else if (targetRate < state.bpm) {
                     state.bpm--;
                 }
                 if (state.d === 'AT_REST') {
@@ -340,10 +354,10 @@ function activateDevices() {
         switch (deviceId.replace(/\d/g, '')) {
             case 'humidity':
                 humid = parseInt(state.h);
-                isDry = getRandom() > 5;
+                isDry = weather == 'sunny' ? getRandom() > 5 : getRandom() > 7;
 
                 // If the water is ON, randomly increase the soil humidity.
-                if (getWaterState(deviceId, 'humidity') === 'ON') {
+                if (weather == 'raining' || getWaterState(deviceId, 'humidity') === 'ON') {
                     state.h = humid + (getRandom() % 3);
                 } else if (isDry && humid > 50) {
                     state.h = humid - (getRandom() % 3);
@@ -518,6 +532,12 @@ function alterTemperature(id, raise) {
     setDeviceState(id, toUltraLight(target), false);
 }
 
+function alterWeather(newWeather) {
+    debug('The weather is: ' + newWeather);
+    weather = newWeather;
+    SOCKET_IO.emit('weather', newWeather);
+}
+
 // Check to see if a deviceId has a corresponding entry in the cache
 function notFound(deviceId) {
     const deviceUnknown = _.indexOf(myCache.keys(), deviceId) === -1;
@@ -540,6 +560,7 @@ module.exports = {
     actuateDevice,
     fireWaterSprinkler,
     alterTemperature,
+    alterWeather,
     notFound,
     isUnknownCommand
 };
