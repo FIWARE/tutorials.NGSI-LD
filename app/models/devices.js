@@ -248,13 +248,12 @@ function addAndTrim(value, add, weather) {
 function randomWalk(state, deviceId) {
     let moveFactor = 6;
 
-    if (weather === 'raining') {
+    if (weather === 'raining' || lameAnimalIds.includes(deviceId)) {
         moveFactor = 8;
     } else if (lactatingAnimalIds.includes(deviceId)) {
         moveFactor = 7;
-    } else if (lameAnimalIds.includes(deviceId)) {
-        moveFactor = 8;
     }
+    
     const location = state.gps.split(',');
     let y = location[0];
     let x = location[1];
@@ -354,10 +353,10 @@ function activateDevices() {
         switch (deviceId.replace(/\d/g, '')) {
             case 'humidity':
                 humid = parseInt(state.h);
-                isDry = weather == 'sunny' ? getRandom() > 5 : getRandom() > 7;
+                isDry = weather === 'sunny' ? getRandom() > 5 : getRandom() > 7;
 
                 // If the water is ON, randomly increase the soil humidity.
-                if (weather == 'raining' || getWaterState(deviceId, 'humidity') === 'ON') {
+                if (weather === 'raining' || getWaterState(deviceId, 'humidity') === 'ON') {
                     state.h = humid + (getRandom() % 3);
                 } else if (isDry && humid > 50) {
                     state.h = humid - (getRandom() % 3);
