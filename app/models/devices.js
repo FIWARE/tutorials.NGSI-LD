@@ -44,6 +44,14 @@ const VALID_COMMANDS = {
     filling: ['add', 'remove', 'refill']
 };
 
+const lameAnimalIds = process.env.LAME_ANIMAL ? process.env.LAME_ANIMAL.split(',').map((ctx) => ctx.trim()) : [];
+const lactatingAnimalIds = process.env.LACTATING_ANIMAL
+    ? process.env.LACTATING_ANIMAL.split(',').map((ctx) => ctx.trim())
+    : [];
+const numberOfPigs = process.env.PIG_COUNT || 4;
+const numberOfCows = process.env.COW_COUNT || 4;
+const numberOfSoilSensors = process.env.SOIL_SENSOR_COUNT || 4;
+
 function getStatusCode(status) {
     let code = 0;
     switch (status) {
@@ -146,15 +154,16 @@ let isTractorActive = false;
 let isDevicesActive = false;
 let devicesInitialized = false;
 
-myCache.set('pig001', PIG_IDLE + '|gps|13.3501, 52.5143');
-myCache.set('pig002', PIG_IDLE + '|gps|13.3696, 52.5163');
-myCache.set('pig003', PIG_IDLE + '|gps|13.3597, 52.5162');
-myCache.set('pig004', PIG_IDLE + '|gps|13.3124, 52.4898');
-
-myCache.set('cow001', COW_IDLE + '|gps|13.3504, 52.5140');
-myCache.set('cow002', COW_IDLE + '|gps|13.37, 52.516');
-myCache.set('cow003', COW_IDLE + '|gps|13.6,52.3');
-myCache.set('cow004', COW_IDLE + '|gps|13.3126, 52.4895');
+for (let i = 1; i < numberOfPigs; i++) {
+    const lng = addAndTrim(13.35, true);
+    const lat = addAndTrim(52.51, true);
+    myCache.set('pig' + i.toString().padStart(3, '0'), PIG_IDLE + '|gps|' + lng + ', ' + lat);
+}
+for (let i = 1; i < numberOfCows; i++) {
+    const lng = addAndTrim(13.37, true);
+    const lat = addAndTrim(52.3, true);
+    myCache.set('cow' + i.toString().padStart(3, '0'), COW_IDLE + '|gps|' + lng + ', ' + lat);
+}
 
 myCache.set('water001', WATER_OFF, false);
 myCache.set('water002', WATER_OFF, false);
@@ -171,10 +180,9 @@ myCache.set('targetTractor002', 'x|1|y|0');
 myCache.set('targetTractor003', 'x|-1|y|0');
 myCache.set('targetTractor004', 'x|0|y|-1');
 
-myCache.set('humidity001', HUMIDITY_WET);
-myCache.set('humidity002', HUMIDITY_WET);
-myCache.set('humidity003', HUMIDITY_WET);
-myCache.set('humidity004', HUMIDITY_WET);
+for (let i = 1; i < numberOfSoilSensors; i++) {
+    myCache.set('humidity' + i.toString().padStart(3, '0'), HUMIDITY_WET);
+}
 
 myCache.set('temperature001', DEFAULT_TEMPERATURE);
 myCache.set('temperature002', DEFAULT_TEMPERATURE);
@@ -224,20 +232,27 @@ function addAndTrim(value, add) {
     return Math.round(newValue * 1000) / 1000;
 }
 
-function randomWalk(state) {
+function randomWalk(state, deviceId) {
+    let moveFactor = 6;
+
+    if (lactatingAnimalIds.includes(deviceId)) {
+        moveFactor = 7;
+    } else if (lameAnimalIds.includes(deviceId)) {
+        moveFactor = 8;
+    }
     const location = state.gps.split(',');
     let y = location[0];
     let x = location[1];
-    if (getRandom() > 7) {
+    if (getRandom() > moveFactor) {
         x = addAndTrim(x, true);
     }
-    if (getRandom() > 7) {
+    if (getRandom() > moveFactor) {
         x = addAndTrim(x, false);
     }
-    if (getRandom() > 7) {
+    if (getRandom() > moveFactor) {
         y = addAndTrim(y, true);
     }
-    if (getRandom() > 7) {
+    if (getRandom() > moveFactor) {
         y = addAndTrim(y, false);
     }
     state.gps = y + ',' + x;
@@ -251,16 +266,23 @@ function activateAnimalCollars() {
     _.forEach(deviceIds, (deviceId) => {
         const state = getDeviceState(deviceId);
         const isSensor = true;
+        let targetRate;
 
         switch (deviceId.replace(/\d/g, '')) {
             case 'pig':
-                state.bpm = PIG_HEART_RATE + 2 * OFFSET_RATE[state.d] + (getRandom() % 4);
+                targetRate = PIG_HEART_RATE + 2 * OFFSET_RATE[state.d] + (getRandom() % 4);
+
+                if (targetRate < state.bpm) {
+                    state.bpm++;
+                } else if (targetRate > state.bpm) {
+                    state.bpm--;
+                }
                 if (state.d === 'AT_REST') {
                     if (getRandom() * getRandom() > 63) {
                         state.d = PIG_STATE[getRandom() % 6];
                     }
                 } else {
-                    randomWalk(state);
+                    randomWalk(state, deviceId);
                     if (getRandom() > 7) {
                         state.d = getRandom() > 3 ? PIG_STATE[getRandom() % 6] : 'AT_REST';
                     }
@@ -269,13 +291,19 @@ function activateAnimalCollars() {
                 setDeviceState(deviceId, toUltraLight(state), isSensor);
                 break;
             case 'cow':
-                state.bpm = COW_HEART_RATE + 2 * OFFSET_RATE[state.d] + (getRandom() % 4);
+                targetRate = COW_HEART_RATE + 2 * OFFSET_RATE[state.d] + (getRandom() % 4);
+
+                if (targetRate < state.bpm) {
+                    state.bpm++;
+                } else if (targetRate > state.bpm) {
+                    state.bpm--;
+                }
                 if (state.d === 'AT_REST') {
                     if (getRandom() * getRandom() > 80) {
                         state.d = COW_STATE[getRandom() % 6];
                     }
                 } else {
-                    randomWalk(state, COW_HEART_RATE);
+                    randomWalk(state, deviceId);
                     if (getRandom() > 8) {
                         state.d = getRandom() > 7 ? COW_STATE[getRandom() % 6] : 'GRAZING';
                     }
