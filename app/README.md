@@ -111,3 +111,4 @@ The Program includes additional icons downloaded from www.flaticon.com which wer
 -   Those Icons - [https://www.flaticon.com/authors/those-icons](https://www.flaticon.com/authors/those-icons) - CC 3.0
     BY
 -   Freepik - [http://www.freepik.com/](http://www.freepik.com/) - CC 3.0 BY
+-   Bootstrap - [https://github.com/twbs/icons](https://github.com/twbs/icons) - MIT

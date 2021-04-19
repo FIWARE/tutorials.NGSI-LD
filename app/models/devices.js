@@ -48,9 +48,9 @@ const lameAnimalIds = process.env.LAME_ANIMAL ? process.env.LAME_ANIMAL.split(',
 const lactatingAnimalIds = process.env.LACTATING_ANIMAL
     ? process.env.LACTATING_ANIMAL.split(',').map((ctx) => ctx.trim())
     : [];
-const numberOfPigs = process.env.PIG_COUNT || 4;
-const numberOfCows = process.env.COW_COUNT || 4;
-const numberOfSoilSensors = process.env.SOIL_SENSOR_COUNT || 4;
+const numberOfPigs = process.env.PIG_COUNT || 5;
+const numberOfCows = process.env.COW_COUNT || 5;
+const numberOfSoilSensors = process.env.SOIL_SENSOR_COUNT || 5;
 
 let weather = 'cloudy';
 
@@ -69,7 +69,7 @@ function getStatusCode(status) {
             code = 3;
             break;
         case 'DRINKING':
-            code = 4;
+            code = 5;
             break;
         case 'WALLOWING':
             code = 5;

@@ -66,6 +66,7 @@ block content
       const socket = io();
       socket.on('weather', function (msg) {
          $('#weather').text(msg);
+         $('#weathericon').css('background-image', "url('/img/" + msg + ".svg')");
       });
       $('span.device').each(function (index, value) {
         const device = $(this).attr('id');

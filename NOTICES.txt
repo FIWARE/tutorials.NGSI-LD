@@ -1,0 +1,28 @@
+NGSI-LD Smart Farm Tutorials: Third Party Notices
+
+This Notices file contains certain notices and important information that the NGSI-LD Smart Farm Tutorials licensors and contributors (the “Tutorials”) are required to provide to you with respect to certain third party components included in the NGSI-LD Smart Farm Tutorials (the “Program”).
+
+Your use of the Program is governed by the license terms set forth in the “LICENSE” file or other license terms and conditions accompanying the Program, and NOT by any terms contained in this Notices file below.  The notices and information below are provided for informational purposes only.
+
+This Notices file may identify information or components listed in the agreements for the Program that are not used by, or that were not shipped with, the Program as you installed it.
+
+IMPORTANT: The Tutorials does not represent or warrant that the information in this Notices file is accurate. Third party websites are independent of the Tutorials and the Tutorials does not represent or warrant that the information on any third party web site referenced in this Notices file is accurate. The Tutorials disclaims any and all liability for errors and omissions or for any damages accruing from the use of this Notices file or its contents, including without limitation URLs or references to any third party websites.
+
+===============================================================================
+
+The Program includes the following software components, which were obtained under the following terms and conditions: 
+
+* img/cloudy.svg
+* img/sunny.svg
+* img/raining.svg
+
+
+The MIT License (MIT)
+
+Copyright (c) 2019-2020 The Bootstrap Authors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

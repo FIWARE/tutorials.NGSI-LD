@@ -24,7 +24,7 @@ block content
   script(src='https://code.jquery.com/jquery-1.11.1.js')
   script.
     $(function () {
-        var socket = io();
+        const socket = io();
         socket.on('NGSI', function(msg){
             $('#messages').append($('<li>').text(msg));
             if($('#messages li').size() > 5){

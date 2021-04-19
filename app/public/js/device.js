@@ -16,6 +16,10 @@ $(function () {
         waterAudio = new Audio(data);
     }
 
+    socket.on('weather', function (msg) {
+        $('#weathericon').css('background-image', "url('/img/" + msg + ".svg')");
+    });
+
     // eslint-disable-next-line no-unused-vars
     $('span').each(function (index, value) {
         const device = $(this).attr('id');
