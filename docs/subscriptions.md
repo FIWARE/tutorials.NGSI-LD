@@ -348,7 +348,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 
 #### Subscription Payload:
 
-When a `low-stock-farm001-ngsiv2` event is fired, the response is a normalzed NGSI-v2 payload as shown:
+When a `low-stock-farm001-ngsiv2` event is fired, the response is a normalized NGSI-v2 payload as shown:
 
 ```json
 {
