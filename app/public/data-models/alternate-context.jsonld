@@ -9,6 +9,7 @@
         "xsd": "http://www.w3.org/2001/XMLSchema#",
         "tutorial": "https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html#",
         "Gebäude": "fiware:Building",
+        "Tier": "fiware:Animal",
         "Weiblich": "schema:Female",
         "Gerät": "fiware:Device",
         "Füllstandssensor": "tutorial:FillingLevelSensor",
@@ -130,8 +131,11 @@
         "feld": "fiware:refTarget",
 
         "ein": "https://w3id.org/saref#on",
-        "aus": "https://w3id.org/saref#off"
+        "aus": "https://w3id.org/saref#off",
 
+        "spezies": "fiware:species",
+        "sex": "fiware:sex",
+        "rechtlicheIdentität": "fiware:legalID"
     },
     "@graph": [
         {

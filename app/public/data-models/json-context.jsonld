@@ -10,6 +10,7 @@
         "tutorial": "https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html#",
         "Building": "fiware:Building",
         "Device": "fiware:Device",
+        "Animal": "fiware:Animal",
         "Female": "schema:Female",
         "FillingLevelSensor": "tutorial:FillingLevelSensor",
         "Herbicide": "tutorial:Product",
@@ -289,7 +290,11 @@
             "@type": "@id"
         },
         "on": "https://w3id.org/saref#on",
-        "off": "https://w3id.org/saref#off"
+        "off": "https://w3id.org/saref#off",
+
+        "species": "fiware:species",
+        "sex": "fiware:sex",
+        "legalID": "fiware:legalID"
     },
     "@graph": [
         {
