@@ -159,13 +159,13 @@ let isDevicesActive = false;
 let devicesInitialized = false;
 
 for (let i = 1; i < numberOfPigs; i++) {
-    const lng = addAndTrim(13.35 + 0.001 * (getRandom() + i), true);
-    const lat = addAndTrim(52.51 + 0.001 * (getRandom() + i), true);
+    const lng = addAndTrim(13.356 + 0.001 * (getRandom(-10)), true);
+    const lat = addAndTrim(52.515 + 0.001 * (getRandom(-10)), true);
     myCache.set('pig' + i.toString().padStart(3, '0'), PIG_IDLE + '|bpm|60|gps|' + lng + ',' + lat);
 }
 for (let i = 1; i < numberOfCows; i++) {
-    const lng = addAndTrim(13.37 + 0.001 * (getRandom() + i), true);
-    const lat = addAndTrim(52.3 + 0.001 * (getRandom() + i), true);
+    const lng = addAndTrim(13.410 + 0.001 * (getRandom(-10)), true);
+    const lat = addAndTrim(52.471 + 0.001 * (getRandom(-10)), true);
     myCache.set('cow' + i.toString().padStart(3, '0'), COW_IDLE + '|bpm|50|gps|' + lng + ',' + lat);
 }
 
@@ -512,8 +512,8 @@ function alterFilling(deviceId, raise) {
 }
 
 // Pick a random number between 1 and 10
-function getRandom() {
-    return Math.floor(Math.random() * 10) + 1;
+function getRandom(add=1) {
+    return Math.floor(Math.random() * 10) + add;
 }
 
 // Directly alter the state of a water sprinkler
