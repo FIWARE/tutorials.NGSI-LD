@@ -158,14 +158,14 @@ let isTractorActive = false;
 let isDevicesActive = false;
 let devicesInitialized = false;
 
-for (let i = 1; i < numberOfPigs; i++) {
-    const lng = addAndTrim(13.356 + 0.001 * (getRandom(-10)), true);
-    const lat = addAndTrim(52.515 + 0.001 * (getRandom(-10)), true);
+for (let i = 1; i <= numberOfPigs; i++) {
+    const lng = addAndTrim(13.356 + 0.0004 * getRandom(-10), true);
+    const lat = addAndTrim(52.515 + 0.0003 * getRandom(-10), true);
     myCache.set('pig' + i.toString().padStart(3, '0'), PIG_IDLE + '|bpm|60|gps|' + lng + ',' + lat);
 }
-for (let i = 1; i < numberOfCows; i++) {
-    const lng = addAndTrim(13.410 + 0.001 * (getRandom(-10)), true);
-    const lat = addAndTrim(52.471 + 0.001 * (getRandom(-10)), true);
+for (let i = 1; i <= numberOfCows; i++) {
+    const lng = addAndTrim(13.41 + 0.0003 * getRandom(-10), true);
+    const lat = addAndTrim(52.471 + 0.0004 * getRandom(-10), true);
     myCache.set('cow' + i.toString().padStart(3, '0'), COW_IDLE + '|bpm|50|gps|' + lng + ',' + lat);
 }
 
@@ -204,7 +204,7 @@ myCache.set('filling003', FILLING_STATION_FULL);
 myCache.set('filling004', FILLING_STATION_EMPTY);
 
 function emitWeatherConditions() {
-    SOCKET_IO.emit('weather', weather);
+    SOCKET_IO && SOCKET_IO.emit('weather', weather);
 }
 // Update the state of a tractor
 function changeTractorState() {
@@ -245,7 +245,7 @@ function addAndTrim(value, add, weather) {
     return Math.round(newValue * 1000) / 1000;
 }
 
-function randomWalk(state, deviceId) {
+function randomWalk(state, deviceId, lng, lat) {
     let moveFactor = 6;
 
     if (weather === 'raining' || lameAnimalIds.includes(deviceId)) {
@@ -253,20 +253,22 @@ function randomWalk(state, deviceId) {
     } else if (lactatingAnimalIds.includes(deviceId)) {
         moveFactor = 7;
     }
-    
+
     const location = state.gps.split(',');
     let y = location[0];
     let x = location[1];
-    if (getRandom() > moveFactor) {
+    let yOffset = y - lng;
+    let xOffset = x - lat;
+    if (getRandom() > moveFactor || xOffset < -0.015) {
         x = addAndTrim(x, true, weather);
     }
-    if (getRandom() > moveFactor) {
+    if (getRandom() > moveFactor || xOffset > 0.015) {
         x = addAndTrim(x, false, weather);
     }
-    if (getRandom() > moveFactor) {
+    if (getRandom() > moveFactor  || yOffset < -0.015) {
         y = addAndTrim(y, true, weather);
     }
-    if (getRandom() > moveFactor) {
+    if (getRandom() > moveFactor || yOffset > 0.015) {
         y = addAndTrim(y, false, weather);
     }
     state.gps = y + ',' + x;
@@ -296,7 +298,7 @@ function activateAnimalCollars() {
                         state.d = PIG_STATE[getRandom() % 6];
                     }
                 } else {
-                    randomWalk(state, deviceId);
+                    randomWalk(state, deviceId, 13.356, 52.515);
                     if (getRandom() > 7) {
                         state.d = getRandom() > 3 ? PIG_STATE[getRandom() % 6] : 'AT_REST';
                     }
@@ -316,7 +318,7 @@ function activateAnimalCollars() {
                         state.d = COW_STATE[getRandom() % 6];
                     }
                 } else {
-                    randomWalk(state, deviceId);
+                    randomWalk(state, deviceId, 13.41, 52.471);
                     if (getRandom() > 8) {
                         state.d = getRandom() > 7 ? COW_STATE[getRandom() % 6] : 'GRAZING';
                     }
@@ -512,7 +514,7 @@ function alterFilling(deviceId, raise) {
 }
 
 // Pick a random number between 1 and 10
-function getRandom(add=1) {
+function getRandom(add = 1) {
     return Math.floor(Math.random() * 10) + add;
 }
 

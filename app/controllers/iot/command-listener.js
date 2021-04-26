@@ -17,7 +17,8 @@ const NGSI_LD_TENANT = process.env.NGSI_LD_TENANT !== undefined ? process.env.NG
 const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
 
 const port = process.env.WEB_APP_PORT || '3000';
-const dataModelContext = process.env.IOTA_JSON_LD_CONTEXT || 'http://localhost:' + port + '/data-models/ngsi-context.jsonld';
+const dataModelContext =
+    process.env.IOTA_JSON_LD_CONTEXT || 'http://localhost:' + port + '/data-models/ngsi-context.jsonld';
 
 const COMMANDS = {
     on: 'water',
