@@ -204,7 +204,9 @@ myCache.set('filling003', FILLING_STATION_FULL);
 myCache.set('filling004', FILLING_STATION_EMPTY);
 
 function emitWeatherConditions() {
-    SOCKET_IO && SOCKET_IO.emit('weather', weather);
+    if (SOCKET_IO) {
+        SOCKET_IO.emit('weather', weather);
+    }
 }
 // Update the state of a tractor
 function changeTractorState() {
@@ -257,15 +259,15 @@ function randomWalk(state, deviceId, lng, lat) {
     const location = state.gps.split(',');
     let y = location[0];
     let x = location[1];
-    let yOffset = y - lng;
-    let xOffset = x - lat;
+    const yOffset = y - lng;
+    const xOffset = x - lat;
     if (getRandom() > moveFactor || xOffset < -0.015) {
         x = addAndTrim(x, true, weather);
     }
     if (getRandom() > moveFactor || xOffset > 0.015) {
         x = addAndTrim(x, false, weather);
     }
-    if (getRandom() > moveFactor  || yOffset < -0.015) {
+    if (getRandom() > moveFactor || yOffset < -0.015) {
         y = addAndTrim(y, true, weather);
     }
     if (getRandom() > moveFactor || yOffset > 0.015) {
