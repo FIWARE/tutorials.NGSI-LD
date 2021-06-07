@@ -142,6 +142,18 @@ It should be noted that definitions of the models examined so far are very gener
 to be of use in a working system, however using these models as the basis of interoperability will ensure that the
 resulting `@context` file will be understandable to the widest number of systems.
 
+> **Note:** The Data Models used here for `@context` generation are defined using OpenAPI 3.0
+> [Swagger format](https://swagger.io/specification). To help with the generation of IRIs the specification has been
+> extended with additional annotations as necessary. The `x-ngsi` attribute, as the name suggests is just a simple
+> [Specification Extension](https://swagger.io/specification/#specificationExtensions) - usually it is not relevant to
+> Swagger, and indeed you could generate a simple `@context` file without it, but the data held within in has been used
+> to help generate a rich [`@graph`](https://w3c.github.io/json-ld-syntax/#dfn-graph-object) and more comprehensive
+> documentation.
+>
+> The simple NGSI-LD `@context` generator in the tutorial defaults to using `uri.fiware.org` namespaces and updates with
+> corrected URIs based on the `x-ngsi.uri` and `x-ngsi.uri-prefix` attributes. The code and defaults found within this
+> tutorial can be altered if necessary.
+
 ## Amending Models
 
 The base data models are useful as a starting point but some enumerated values or attributes will be redundant other
