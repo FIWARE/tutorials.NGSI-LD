@@ -538,7 +538,28 @@ curl -L -X POST 'http://localhost:4041/iot/devices' \
 In the request we are associating the device `temperature001` with the URN `urn:ngsi-ld:Device:temperature001` and
 mapping the device reading `t` with the context attribute `temperature` (which is defined as **Property** with
 appropriate meta-data). A `controlledAsset` **Relationship** is also defined as a `static_attribute`, placing the device
-within the **Building** `urn:ngsi-ld:Building:barn001`
+within the **Building** `urn:ngsi-ld:Building:barn001`.
+
+> Static attributes are useful as additional data on an entity to enable querying using the `q` parameter. For example
+> the Smart Data Models [Device](https://github.com/smart-data-models/dataModel.Device/blob/master/Device/doc/spec.md)
+> model defines attributes such as `category` or `controlledProperty` which enable queries to be made like:
+>
+> -   _Which **Actuators** currently have a low `batteryLevel`?_
+>
+> `/ngsi-ld/v1/entities?q=category=="actuator";batteryLevel<0.1`
+>
+> -   _Which **Devices** measuring `fillingLevel` were installed before January 2020?_
+>
+> `/ngsi-ld/v1/entities?q=controlledProperty=="fillingLevel";dateInstalled<"2020-01-25T00:00:00.000Z"`
+>
+> Obviously static data can be extended as necessary and can also include additional data such as a unique `name` or
+> `serialNumber` for each device should the entity ID be too inflexible for queries.
+>
+> `/ngsi-ld/v1/entities?q=serialNumber=="XS403001-002"`
+>
+> Additionally devices with a fixed `location` static attribute can also be queried using the Geofencing parameters.
+>
+> `/ngsi-ld/v1/entities?georel=near;maxDistance:1500&geometry=point&coords=52.5162,13.3777`
 
 You can simulate a dummy IoT device measurement coming from the **Temperature Sensor** device `temperature001`, by
 making the following request
