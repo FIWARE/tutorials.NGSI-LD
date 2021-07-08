@@ -302,7 +302,7 @@ git checkout NGSI-LD
 
 > **Note:** If you want to clean up and start over again you can do so with the following command:
 >
-> ```bash
+> ```
 > ./services stop
 > ```
 
@@ -348,7 +348,7 @@ The response will look similar to the following:
 >
 > -   To check that the docker containers are running try the following:
 >
-> ```bash
+> ```
 > docker ps
 > ```
 >

@@ -494,7 +494,7 @@ This example shows minimum `filling` values from `urn:ngsi-ld:Device:filling001`
 
 > You need QuantumLeap **version >= 0.4.1**. You can check your version with a simple GET like:
 
-> ```bash
+> ```
 > curl -X GET \
 >   'http://localhost:8668/version' \
 >   -H 'Accept: application/json'

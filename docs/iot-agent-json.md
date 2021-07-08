@@ -347,7 +347,7 @@ git checkout NGSI-LD
 
 > **Note:** If you want to clean up and start over again you can do so with the following command:
 >
-> ```bash
+> ```
 > ./services stop
 > ```
 
@@ -393,7 +393,7 @@ The response will look similar to the following:
 >
 > -   To check that the docker containers are running try the following:
 >
-> ```bash
+> ```
 > docker ps
 > ```
 >
@@ -404,14 +404,14 @@ The response will look similar to the following:
 >     [Virtual Box](https://www.virtualbox.org/), the context broker, IoT Agent and Dummy Device docker containers may
 >     be running from another IP address - you will need to retrieve the virtual host IP as shown:
 >
-> ```bash
+> ```
 > curl -X GET \
 >  'http://$(docker-machine ip default):4041/version'
 > ```
 >
 > Alternatively run all your curl commands from within the container network:
 >
-> ```bash
+> ```
 > docker run --network fiware_default --rm appropriate/curl -s \
 >  -X GET 'http://iot-agent:4041/iot/about'
 > ```
