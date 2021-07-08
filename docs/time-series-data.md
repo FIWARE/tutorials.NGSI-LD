@@ -254,7 +254,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
       "accept": "application/json"
     }
   },
-   "@context": "http://context-provider:3000/data-models/ngsi-context.jsonld"
+   "@context": "http://context/ngsi-context.jsonld"
 }'
 ```
 
@@ -293,7 +293,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
     }
   },
    "throttling": 10,
-   "@context": "http://context-provider:3000/data-models/ngsi-context.jsonld"
+   "@context": "http://context/ngsi-context.jsonld"
 }'
 ```
 
@@ -332,7 +332,7 @@ curl -X GET \
                 "accept": "application/json"
             }
         },
-        "@context": "http://context-provider:3000/data-models/ngsi-context.jsonld"
+        "@context": "http://context/ngsi-context.jsonld"
     },
     {
         "id": "urn:ngsi-ld:Subscription:601157e3bc8ec912978db6e5",
@@ -353,7 +353,7 @@ curl -X GET \
             }
         },
         "throttling": 10,
-        "@context": "http://context-provider:3000/data-models/ngsi-context.jsonld"
+        "@context": "http://context/ngsi-context.jsonld"
     }
 ]
 ```
@@ -560,7 +560,7 @@ This example shows the latest heart rate sampled `heartRate` values of animal th
 around the Berlin Tiergarten and on the device monitor page, you should be able to see data for
 `urn:ngsi-ld:Device:cow001` and `urn:ngsi-ld:Device:pig001` .
 
-> :information_source: **Note:** Geographical queries are only available starting from version `0.5` of QuantumLeap
+> **Note:** Geographical queries are only available starting from version `0.5` of QuantumLeap
 > which implements the full set of queries detailed in the Geographical Queries section of the
 > [NGSI v2 specification](http://fiware.github.io/specifications/ngsiv2/stable/).
 
@@ -606,7 +606,7 @@ This example shows the latest four sampled `filling` values of fillins sensors t
 centred at `52°33'16.9"N 13°23'55.0"E` (Bornholmer Straße 65, Berlin, Germany). Even if you have turned on all the
 filling sensors available on the device monitor page, you should only see data for `urn:ngsi-ld:Device:filling001`.
 
-> :information_source: **Note:** Geographical queries are only available starting from version `0.5` of QuantumLeap
+> **Note:** Geographical queries are only available starting from version `0.5` of QuantumLeap
 > which implements the full set of queries detailed in the Geographical Queries section of the
 > [NGSI v2 specification](http://fiware.github.io/specifications/ngsiv2/stable/).
 

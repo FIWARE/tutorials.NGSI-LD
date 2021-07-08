@@ -185,7 +185,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
       "accept": "application/json"
     }
   },
-   "@context": "http://context-provider:3000/data-models/ngsi-context.jsonld"
+   "@context": "http://context/ngsi-context.jsonld"
 }'
 ```
 
@@ -279,7 +279,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
       "accept": "application/json"
     }
   },
-   "@context": "http://context-provider:3000/data-models/ngsi-context.jsonld"
+   "@context": "http://context/ngsi-context.jsonld"
 }'
 ```
 
@@ -342,7 +342,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
       "accept": "application/json"
     }
   },
-   "@context": "http://context-provider:3000/data-models/ngsi-context.jsonld"
+   "@context": "http://context/ngsi-context.jsonld"
 }'
 ```
 
@@ -434,7 +434,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
       "accept": "application/json"
     }
   },
-   "@context": "http://context-provider:3000/data-models/ngsi-context.jsonld"
+   "@context": "http://context/ngsi-context.jsonld"
 }'
 ```
 

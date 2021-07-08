@@ -318,7 +318,7 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
         "type": "Property",
         "value": "Victory Farm"
     },
-    "@context": "http://context-provider:3000/data-models/ngsi-context.jsonld"
+    "@context": "http://context/ngsi-context.jsonld"
 }'
 ```
 
@@ -335,7 +335,7 @@ This means that the actual `@context` is:
 ```json
 {
     "@context": [
-        "http://context-provider:3000/data-models/ngsi-context.jsonld",
+        "http://context/ngsi-context.jsonld",
         "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.3.jsonld"
     ]
 }
@@ -351,7 +351,7 @@ Each subsequent entity must have a unique `id` for the given `type`
 ```bash
 curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Content-Type: application/json' \
--H 'Link: <http://context-provider:3000/data-models/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 --d '{
     "id": "urn:ngsi-ld:Building:barn002",
     "type": "Building",
@@ -551,7 +551,7 @@ the resource in question. In the case of NGSI-LD, the metadata is a file in `app
 ```bash
 curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
 -H 'Accept: application/ld+json' \
--H 'Link: <http://context-provider:3000/data-models/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
+-H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 ```
 
 #### Response:
@@ -565,7 +565,7 @@ files explicitly as element in the array of `@context` sent. The response is nor
 
 ```json
 {
-    "@context": "http://context-provider:3000/data-models/ngsi-context.jsonld",
+    "@context": "http://context/ngsi-context.jsonld",
     "id": "urn:ngsi-ld:Building:farm001",
     "type": "Building",
     "address": {
@@ -614,7 +614,7 @@ parameter reduces the response down to standard JSON-LD.
 ```bash
 curl -G -X GET \
     'http://localhost:1026/ngsi-ld/v1/entities' \
--H 'Link: <http://context-provider:3000/data-models/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/ld+json' \
     -d 'type=Building' \
     -d 'options=keyValues'
@@ -629,7 +629,7 @@ used as the `@context` returned in the response.
 ```json
 [
     {
-        "@context": "http://context-provider:3000/data-models/ngsi-context.jsonld",
+        "@context": "http://context/ngsi-context.jsonld",
         "id": "urn:ngsi-ld:Building:farm001",
         "type": "Building",
         "address": {
@@ -646,7 +646,7 @@ used as the `@context` returned in the response.
         }
     },
     {
-        "@context": "http://context-provider:3000/data-models/ngsi-context.jsonld",
+        "@context": "http://context/ngsi-context.jsonld",
         "id": "urn:ngsi-ld:Building:barn002",
         "type": "Building",
         "address": {
@@ -807,7 +807,7 @@ The response is returned in JSON-LD format with short form attribute names:
 ```json
 [
     {
-        "@context": "http://context-provider:3000/data-models/ngsi-context.jsonld",
+        "@context": "http://context/ngsi-context.jsonld",
         "id": "urn:ngsi-ld:Building:barn002",
         "type": "Building",
         "address": {
