@@ -189,7 +189,7 @@ The necessary configuration information can be seen in the services section of t
 
 <h3>Tutorial Configuration</h3>
 
-```yaml
+``` yaml
 tutorial:
     image: fiware/tutorials.ngsi-ld
     hostname: iot-sensors
@@ -253,7 +253,7 @@ playing the role of an IoT Agent making commands to devices and receiving measur
 All services can be initialized from the command-line by running the bash script provided within the repository. Please
 clone the repository and create the necessary images by running the commands as shown:
 
-```bash
+``` bash
 git clone https://github.com/FIWARE/tutorials.IoT-Sensors.git
 cd tutorials.IoT-Sensors
 git checkout NGSI-LD
@@ -297,7 +297,7 @@ endpoint `/iot/water001` where it is listening for commands.
 
 #### :one: Request:
 
-```bash
+``` bash
 curl -iX POST 'localhost:3001/iot/water001' \
 -H 'Content-Type: text/plain' \
 --data-raw 'urn:ngsi-ld:Device:water001@on'
@@ -325,7 +325,7 @@ commands off a single endpoint and interpreting the payload body.
 
 #### :two: Request:
 
-```bash
+``` bash
 curl -L -X POST 'localhost:3001/iot/water001' \
 -H 'Content-Type: text/plain' \
 --data-raw 'urn:ngsi-ld:Device:water001@off'
@@ -356,7 +356,7 @@ listening for commands.
 
 #### :three: Request:
 
-```bash
+``` bash
 curl -iX POST \
   --url 'http://localhost:3001/iot/tractor001' \
   --data urn:ngsi-ld:Device:tractor001@start
@@ -384,7 +384,7 @@ an idle state. The **Tractor** has already supplied an endpoint `/iot/tractor001
 
 #### :four: Request:
 
-```bash
+``` bash
 curl -iX POST \
   --url 'http://localhost:3001/iot/tractor001' \
   --data urn:ngsi-ld:Device:tractor001@stop
@@ -408,7 +408,7 @@ To turn the **Tractor** back on again repeat the following command:
 
 #### :five: Request:
 
-```bash
+``` bash
 curl -iX POST \
   --url 'http://localhost:3001/iot/tractor001' \
   --data urn:ngsi-ld:Device:tractor001@start
@@ -436,7 +436,7 @@ The **Filling Station** has already supplied an endpoint `/iot/filling001` where
 
 #### :five: Request:
 
-```bash
+``` bash
 curl -iX POST \
   --url 'http://localhost:3001/iot/filling001' \
   --data urn:ngsi-ld:Device:filling001@remove
@@ -474,7 +474,7 @@ The request to the previously provisioned resource `iot/d` is in UltraLight 2.0 
 
 #### :six: Request:
 
-```bash
+``` bash
 curl -L -X POST 'http://localhost:7896/iot/d?k=4jggokgpepnvsb2uv4s40d59ov&i=humidity001' \
 -H 'Content-Type: text/plain' \
 --data-raw 'h|20'

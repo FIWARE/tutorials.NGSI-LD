@@ -108,7 +108,7 @@ All services can be initialised from the command-line by running the
 [services](https://github.com/FIWARE/tutorials.Entity-Relationships/blob/NGSI-LD/services) Bash script provided within
 the repository. Please clone the repository and create the necessary images by running the commands as shown:
 
-```bash
+``` bash
 git clone https://github.com/FIWARE/tutorials.Entity-Relationships.git
 cd tutorials.Entity-Relationships
 git checkout NGSI-LD
@@ -140,7 +140,7 @@ properties such as `category` have been added as properties to each device.
 
 #### 1 Request:
 
-```bash
+``` bash
 curl -X POST 'http://locahost:1026/ngsi-ld/v1/entityOperations/upsert' \
 -H 'Content-Type: application/json' \
 -H 'Link: <'http://context/ngsi-context.jsonld'>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -177,7 +177,7 @@ Similarly, we can create a series of **FillingLevelSensors** entities by using t
 
 #### 2 Request:
 
-```bash
+``` bash
 curl -X POST 'http://locahost:1026/ngsi-ld/v1/entityOperations/upsert' \
 -H 'Content-Type: application/json' \
 -H 'Link: <'http://context/ngsi-context.jsonld'>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -220,14 +220,14 @@ return the context data of the devices
 
 #### 3 Request:
 
-```bash
+``` bash
 curl -X GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=TemperatureSensor,FillingLevelSensor&options=keyValues' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 ```
 
 #### Response:
 
-```json
+``` json
 [
     {
         "@context": "http://context/ngsi-context.jsonld",
@@ -273,7 +273,7 @@ The URN follows a standard format: `urn:ngsi-ld:<entity-type>:<entity-id>`
 The following request associates six devices to `urn:ngsi-ld:Building:farm001`, `urn:ngsi-ld:Building:barn002` and
 `urn:ngsi-ld:Building:farm002`
 
-```bash
+``` bash
 curl -G -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/upsert' \
 -d 'options=update' \
 -H 'Content-Type: application/json' \
@@ -317,7 +317,7 @@ Now when the devcie information is requested again, the response has changed and
 
 #### 5 Request:
 
-```bash
+``` bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor001' \
 -d 'options=keyValues' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
@@ -327,7 +327,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Temperatu
 
 The updated response including the `controlledAsset` attribute is shown below:
 
-```json
+``` json
 {
     "@context": "http://context/ngsi-context.jsonld",
     "id": "urn:ngsi-ld:TemperatureSensor:001",
@@ -349,7 +349,7 @@ entity by using the `options=keyValues` setting
 
 #### 6 Request:
 
-```bash
+``` bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
 -d 'options=keyValues' \
 -d 'attrs=controlledAsset' \
@@ -359,7 +359,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Temperatu
 
 #### Response:
 
-```json
+``` json
 {
     "id": "urn:ngsi-ld:TemperatureSensor:001",
     "type": "TemperatureSensor",
@@ -376,7 +376,7 @@ Reading from a parent to a child can be done using the following query:
 
 #### 7 Request:
 
-```bash
+``` bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities' \
 -d 'q=controlledAsset==%22urn:ngsi-ld:Building:farm001%22' \
 -d 'attrs=controlledAsset' \
@@ -389,7 +389,7 @@ response is a JSON array as shown.
 
 #### Response:
 
-```json
+``` json
 [
     {
         "@context": "http://context/ngsi-context.jsonld",
@@ -409,7 +409,7 @@ can be altered use the `count=true` to return the number of entities which fulfi
 
 #### 8 Request:
 
-```bash
+``` bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities' \
 -d 'q=controlledAsset==%22urn:ngsi-ld:Building:farm001%22' \
 -d 'attrs=controlledAsset' \
@@ -443,7 +443,7 @@ properties (such as `description` and `status`)
 
 #### 9 Request:
 
-```bash
+``` bash
 curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Content-Type: application/json' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -468,7 +468,7 @@ After creating at least one **Task** entity we can query _Which workers are assi
 
 #### 10 Request:
 
-```bash
+``` bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities' \
 -d 'q=field==%22urn:ngsi-ld:PartField:002%22' \
 -d 'options=keyValues' \
@@ -480,7 +480,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities' \
 
 #### Response:
 
-```json
+``` json
 [
     {
         "id": "urn:ngsi-ld:Task:001",
@@ -494,7 +494,7 @@ Similarly we can request _Which fields are treated using `urn:ngsi-ld:Herbicide:
 
 #### 11 Request:
 
-```bash
+``` bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities' \
 -d 'q=product==%22urn:ngsi-ld:Herbicide:001%22' \
 -d 'options=keyValues' \
@@ -506,7 +506,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities' \
 
 #### Response:
 
-```json
+``` json
 [
     {
         "id": "urn:ngsi-ld:Task:001",
@@ -531,7 +531,7 @@ can be retrieved with a GET request:
 
 #### 1:two: Request:
 
-```bash
+``` bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
 -d 'attrs=temperature' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -540,7 +540,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:
 
 #### Response:
 
-```json
+``` json
 {
     "id": "urn:ngsi-ld:Building:farm001",
     "type": "Building",

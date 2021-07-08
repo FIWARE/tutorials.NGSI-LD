@@ -99,7 +99,7 @@ The necessary configuration information can be seen in the services section of t
 
 <h3>Orion-LD Configuration</h3>
 
-```yaml
+``` yaml
 orion:
     image: fiware/orion-ld
     hostname: orion
@@ -115,7 +115,7 @@ orion:
         test: curl --fail -s http://orion:1026/version || exit 1
 ```
 
-```yaml
+``` yaml
 mongo-db:
     image: mongo:4.2
     hostname: mongo-db
@@ -129,7 +129,7 @@ mongo-db:
     command: --nojournal
 ```
 
-```yaml
+``` yaml
 tutorial:
     image: fiware/tutorials.ngsi-ld
     hostname: tutorial
@@ -151,7 +151,7 @@ All services can be initialised from the command-line by running the
 [services](https://github.com/FIWARE/tutorials.CRUD-Operations/blob/NGSI-LD/services) Bash script provided within the
 repository. Please clone the repository and create the necessary images by running the commands as shown:
 
-```bash
+``` bash
 git clone https://github.com/FIWARE/tutorials.CRUD-Operations.git
 cd tutorials.CRUD-Operations
 git checkout NGSI-LD
@@ -186,7 +186,7 @@ This example adds a new **TemperatureSensor** entity to the context.
 
 #### 1 Request:
 
-```bash
+``` bash
 curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Content-Type: application/json' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -213,7 +213,7 @@ The request will fail if the entity already exists in the context.
 
 You can check to see if the new **TemperatureSensor** can be found in the context by making a GET request
 
-```bash
+``` bash
 curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 ```
@@ -225,7 +225,7 @@ This example adds a new `batteryLevel` Property and a `controlledAsset` Relation
 
 #### 3 Request:
 
-```bash
+``` bash
 curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001/attrs' \
 -H 'Content-Type: application/json' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -257,7 +257,7 @@ Subsequent requests using the same `id` will update the value of the attribute i
 
 You can check to see if the new **TemperatureSensor** can be found in the context by making a GET request
 
-```bash
+``` bash
 curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 ```
@@ -273,7 +273,7 @@ context. Batch create uses the `/ngsi-ld/v1/entityOperations/create` endpoint.
 
 #### 5 Request:
 
-```bash
+``` bash
 curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/create' \
 -H 'Content-Type: application/json' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -324,7 +324,7 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/create' \
 The request will fail if any of the attributes already exist in the context. The response highlights which actions have
 been successful and the reason for failure (if any has occurred).
 
-```json
+``` json
 {
     "@context": "http://context/ngsi-context.jsonld",
     "success": [
@@ -346,7 +346,7 @@ context.
 
 #### 6 Request:
 
-```bash
+``` bash
 curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/upsert' \
 -H 'Content-Type: application/json' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -404,7 +404,7 @@ This example reads the full context from an existing **TemperatureSensor** entit
 
 #### 7 Request:
 
-```bash
+``` bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -d 'options=sysAttrs'
@@ -416,7 +416,7 @@ TemperatureSensor `urn:ngsi-ld:TemperatureSensor:001` is returned as _normalized
 returned because `options=sysAttrs`. By default the `@context` is returned in the payload body (although this could be
 moved due to content negotiation if the `Accept:application/json` had been set. The full response is shown below:
 
-```json
+``` json
 {
     "@context": "http://context/ngsi-context.jsonld",
     "id": "urn:ngsi-ld:TemperatureSensor:001",
@@ -462,7 +462,7 @@ known `id`.
 
 #### 8 Request:
 
-```bash
+``` bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -d 'attrs=temperature'
@@ -472,7 +472,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Temperatu
 
 The sensor `urn:ngsi-ld:TemperatureSensor:001` is reading at 25°C. The response is shown below:
 
-```json
+``` json
 {
     "@context": "http://context/ngsi-context.jsonld",
     "id": "urn:ngsi-ld:TemperatureSensor:001",
@@ -495,7 +495,7 @@ This example reads the key-value pairs from the context of an existing **Tempera
 
 #### 9 Request:
 
-```bash
+``` bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
 -H 'Link: <http://context-provider:3000/data-models/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
@@ -506,7 +506,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Temperatu
 
 The sensor `urn:ngsi-ld:TemperatureSensor:001` is reading at 25°C. The response is shown below:
 
-```json
+``` json
 {
     "id": "urn:ngsi-ld:TemperatureSensor:001",
     "type": "TemperatureSensor",
@@ -530,7 +530,7 @@ This example reads the value of two attributes (`category` and `temperature`) fr
 
 #### 10 Request:
 
-```bash
+``` bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
 -H 'Link: <http://context-provider:3000/data-models/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
@@ -542,7 +542,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Temperatu
 
 The sensor `urn:ngsi-ld:TemperatureSensor:001` is reading at 25°C. The response is shown below:
 
-```json
+``` json
 {
     "id": "urn:ngsi-ld:TemperatureSensor:001",
     "type": "TemperatureSensor",
@@ -559,7 +559,7 @@ This example lists the full context of all **TemperatureSensor** entities.
 
 #### 11 Request:
 
-```bash
+``` bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -d 'type=TemperatureSensor'
@@ -570,7 +570,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
 On start-up the context was empty, four **TemperatureSensor** entities have been added by create operations so the full
 context will now contain four sensors.
 
-```json
+``` json
 [
     {
         "@context": "http://context/ngsi-context.jsonld",
@@ -646,7 +646,7 @@ This example lists the `temperature` attribute of all **TemperatureSensor** enti
 
 #### 12 Request:
 
-```bash
+``` bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Link: <http://context-provider:3000/data-models/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
@@ -659,7 +659,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
 
 The full context contains four sensors, they are returned in a random order:
 
-```json
+``` json
 [
     {
         "id": "urn:ngsi-ld:TemperatureSensor:004",
@@ -695,7 +695,7 @@ unique, so `type` is not required for this request. To filter by `id` add the en
 
 #### 13 Request:
 
-```bash
+``` bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/'' \
 -H 'Link: <http://context-provider:3000/data-models/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
@@ -708,7 +708,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/'' \
 
 The response details the selected attributes from the selected entities.
 
-```json
+``` json
 [
     {
         "id": "urn:ngsi-ld:TemperatureSensor:002",
@@ -736,7 +736,7 @@ This example updates the value of the `category` attribute of the Entity with `i
 
 #### 14 Request:
 
-```bash
+``` bash
 curl -iX PATCH 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001/attrs/category' \
 -H 'Content-Type: application/json' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -757,7 +757,7 @@ with `id=urn:ngsi-ld:TemperatureSensor:001`.
 
 #### 15 Request:
 
-```bash
+``` bash
 curl -iX PATCH 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001/attrs' \
 -H 'Content-Type: application/json' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -782,7 +782,7 @@ This example uses the convenience batch processing endpoint to update existing p
 
 #### 16 Request:
 
-```bash
+``` bash
 curl -G -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/upsert' \
 -H 'Content-Type: application/json' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -826,7 +826,7 @@ This example uses the convenience batch processing endpoint to replace entity da
 
 #### 17 Request:
 
-```bash
+``` bash
 curl -G -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/update' \
 -H 'Content-Type: application/json' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -884,7 +884,7 @@ This example deletes the entity with `id=urn:ngsi-ld:TemperatureSensor:004` from
 
 #### 18 Request:
 
-```bash
+``` bash
 curl -iX DELETE 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:004'
 ```
 
@@ -899,7 +899,7 @@ This example removes the `batteryLevel` attribute from the entity with `id=urn:n
 
 #### 19 Request:
 
-```bash
+``` bash
 curl -L -X DELETE 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001/attrs/batteryLevel' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 ```
@@ -917,7 +917,7 @@ This example uses the convenience batch processing endpoint to delete some **Tem
 
 #### 20 Request:
 
-```bash
+``` bash
 curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/delete' \
 -H 'Content-Type: application/json' \
 --data-raw '[
@@ -938,7 +938,7 @@ This example uses the PATCH `/ngsi-ld/v1/entities/<entity-id>/attrs` endpoint to
 
 #### 21 Request:
 
-```bash
+``` bash
 curl -L -X PATCH 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001/attrs' \
 -H 'Content-Type: application/json' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -963,7 +963,7 @@ This example returns a header indicating whether any linked data relationships r
 
 #### 22 Request:
 
-```bash
+``` bash
 curl -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=TemperatureSensor&limit=0&count=true&q=controlledAsset==%22urn:ngsi-ld:Building:barn002%22' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json'
@@ -971,7 +971,7 @@ curl -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=TemperatureSensor&
 
 #### Response:
 
-```json
+``` json
 []
 ```
 

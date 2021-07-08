@@ -125,7 +125,7 @@ Grafana analytics tool. The rest of the system providing the context data has be
 
 <h3>CrateDB Database Server Configuration</h3>
 
-```yaml
+``` yaml
 crate-db:
     image: crate:4.1.4
     hostname: crate-db
@@ -148,7 +148,7 @@ within the CrateDB
 
 <h3>QuantumLeap Configuration</h3>
 
-```yaml
+``` yaml
 quantumleap:
     image: smartsdk/quantumleap
     hostname: quantumleap
@@ -162,7 +162,7 @@ quantumleap:
 
 <h3>Grafana Configuration</h3>
 
-```yaml
+``` yaml
 grafana:
     image: grafana/grafana
     depends_on:
@@ -237,7 +237,7 @@ the record within the **CrateDB** itself.
 
 #### 1 Request:
 
-```bash
+``` bash
 curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'Content-Type: application/ld+json' \
 -H 'NGSILD-Tenant: openiot' \
@@ -275,7 +275,7 @@ including the `throttling` attribute in the request body.
 
 #### 2 Request:
 
-```bash
+``` bash
 curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'Content-Type: application/ld+json' \
 -H 'NGSILD-Tenant: openiot' \
@@ -304,7 +304,7 @@ notification for each was sent).
 
 #### 3 Request:
 
-```bash
+``` bash
 curl -X GET \
   'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
   -H 'NGSILD-Tenant: openiot'
@@ -312,7 +312,7 @@ curl -X GET \
 
 #### Response:
 
-```json
+``` json
 [
     {
         "id": "urn:ngsi-ld:Subscription:601157b4bc8ec912978db6e4",
@@ -376,7 +376,7 @@ in no data being returned.
 
 #### 4 Request:
 
-```bash
+``` bash
 curl -X GET \
   'http://localhost:8668/v2/entities/urn:ngsi-ld:Device:filling001/attrs/filling?limit=3' \
   -H 'Accept: application/json' \
@@ -386,7 +386,7 @@ curl -X GET \
 
 #### Response:
 
-```json
+``` json
 {
     "data": {
         "attrName": "filling",
@@ -403,7 +403,7 @@ This example shows the fourth, fifth and sixth sampled `filling` values of `urn:
 
 #### 5 Request:
 
-```bash
+``` bash
 curl -X GET \
   'http://localhost:8668/v2/entities/urn:ngsi-ld:Device:filling001/attrs/filling?offset=3&limit=3' \
   -H 'Accept: application/json' \
@@ -413,7 +413,7 @@ curl -X GET \
 
 #### Response:
 
-```json
+``` json
 {
     "data": {
         "attrName": "filling",
@@ -430,7 +430,7 @@ This example shows the latest three sampled `filling` values from `urn:ngsi-ld:D
 
 #### 6 Request:
 
-```bash
+``` bash
 curl -X GET \
   'http://localhost:8668/v2/entities/urn:ngsi-ld:Device:filling001/attrs/filling?lastN=3' \
   -H 'Accept: application/json' \
@@ -440,7 +440,7 @@ curl -X GET \
 
 #### Response:
 
-```json
+``` json
 {
     "data": {
         "attrName": "filling",
@@ -457,7 +457,7 @@ This example shows last 3 total `filling` values of `urn:ngsi-ld:Device:filling0
 
 You need QuantumLeap **version >= 0.4.1**. You can check your version with a simple GET like:
 
-```bash
+``` bash
 curl -X GET \
   'http://localhost:8668/version' \
   -H 'Accept: application/json'
@@ -465,7 +465,7 @@ curl -X GET \
 
 #### 7 Request:
 
-```bash
+``` bash
 curl -X GET \
   'http://localhost:8668/v2/entities/urn:ngsi-ld:Device:filling001/attrs/filling?aggrMethod=count&aggrPeriod=minute&lastN=3' \
   -H 'Accept: application/json' \
@@ -475,7 +475,7 @@ curl -X GET \
 
 #### Response:
 
-```json
+``` json
 {
     "data": {
         "attrName": "filling",
@@ -504,7 +504,7 @@ This example shows minimum `filling` values from `urn:ngsi-ld:Device:filling001`
 
 #### 8 Request:
 
-```bash
+``` bash
 curl -X GET \
   'http://localhost:8668/v2/entities/urn:ngsi-ld:Device:filling001/attrs/filling?aggrMethod=min&aggrPeriod=minute&lastN=3' \
   -H 'Accept: application/json' \
@@ -514,7 +514,7 @@ curl -X GET \
 
 #### Response:
 
-```json
+``` json
 {
     "data": {
         "attrName": "filling",
@@ -532,7 +532,7 @@ This example shows maximum `filling` value of `urn:ngsi-ld:Device:filling001` th
 
 #### 9 Request:
 
-```bash
+``` bash
 curl -X GET \
   'http://localhost:8668/v2/entities/urn:ngsi-ld:Device:filling001/attrs/filling?aggrMethod=max&fromDate=2018-06-27T09:00:00&toDate=2018-06-30T23:59:59' \
   -H 'Accept: application/json' \
@@ -542,7 +542,7 @@ curl -X GET \
 
 #### Response:
 
-```json
+``` json
 {
     "data": {
         "attrName": "filling",
@@ -566,7 +566,7 @@ around the Berlin Tiergarten and on the device monitor page, you should be able 
 
 #### 10 Request:
 
-```bash
+``` bash
 curl -X GET \
   'http://localhost:8668/v2/types/Device/attrs/heartRate?lastN=4&georel=near;maxDistance:5000&geometry=point&coords=52.518,13.357' \
   -H 'Accept: application/json' \
@@ -576,7 +576,7 @@ curl -X GET \
 
 #### Response:
 
-```json
+``` json
 {
     "attrName": "heartRate",
     "entities": [
@@ -612,7 +612,7 @@ filling sensors available on the device monitor page, you should only see data f
 
 #### 11 Request:
 
-```bash
+``` bash
 curl -X GET \
   'http://localhost:8668/v2/types/Device/attrs/heartRate?lastN=4&georel=coveredBy&geometry=polygon&coords=52.5537,13.3996;52.5557,13.3996;52.5557,13.3976;52.5537,13.3976;52.5537,13.3996' \
   -H 'Accept: application/json' \
@@ -622,7 +622,7 @@ curl -X GET \
 
 #### Response:
 
-```json
+``` json
 {
     "data": {
         "attrName": "bpm",
@@ -671,7 +671,7 @@ making a request to the **CrateDB** HTTP endpoint as shown:
 
 #### 12 Request:
 
-```bash
+``` bash
 curl -iX POST \
   'http://localhost:4200/_sql' \
   -H 'Content-Type: application/json' \
@@ -680,7 +680,7 @@ curl -iX POST \
 
 #### Response:
 
-```json
+``` json
 {
     "cols": ["schema_name"],
     "rows": [["blob"], ["doc"], ["information_schema"], ["mtopeniot"], ["pg_catalog"], ["sys"]],
@@ -701,7 +701,7 @@ names are formed with the `et` prefix and the entity type name in lowercase.
 
 #### 13 Request:
 
-```bash
+``` bash
 curl -X POST \
   'http://localhost:4200/_sql' \
   -H 'Content-Type: application/json' \
@@ -710,7 +710,7 @@ curl -X POST \
 
 #### Response:
 
-```json
+``` json
 {
     "cols": ["table_schema", "table_name"],
     "rows": [
@@ -732,7 +732,7 @@ The SQL statement uses `ORDER BY` and `LIMIT` clauses to sort the data. More det
 
 #### 14 Request:
 
-```bash
+``` bash
 curl -iX POST \
   'http://localhost:4200/_sql' \
   -H 'Content-Type: application/json' \
@@ -741,7 +741,7 @@ curl -iX POST \
 
 #### Response:
 
-```json
+``` json
 {
     "cols": ["entity_id", "entity_type", "fiware_servicepath", "filling", "time_index"],
     "rows": [
@@ -761,7 +761,7 @@ The SQL statement uses an `OFFSET` clause to retrieve the required rows. More de
 
 #### 15 Request:
 
-```bash
+``` bash
 curl -iX POST \
   'http://localhost:4200/_sql' \
   -H 'Content-Type: application/json' \
@@ -770,7 +770,7 @@ curl -iX POST \
 
 #### Response:
 
-```json
+``` json
 {
     "cols": ["filling", "entity_id", "entity_type", "fiware_servicepath", "time_index"],
     "rows": [
@@ -791,7 +791,7 @@ details can be found under within the **CrateDB**
 
 #### 16 Request:
 
-```bash
+``` bash
 curl -iX POST \
   'http://localhost:4200/_sql' \
   -H 'Content-Type: application/json' \
@@ -800,7 +800,7 @@ curl -iX POST \
 
 #### Response:
 
-```json
+``` json
 {
     "cols": ["filling", "entity_id", "entity_type", "fiware_servicepath", "time_index"],
     "rows": [
@@ -822,7 +822,7 @@ to truncate and convert the timestamps into data which can be grouped.
 
 #### 17 Request:
 
-```bash
+``` bash
 curl -iX POST \
   'http://localhost:4200/_sql' \
   -H 'Content-Type: application/json' \
@@ -831,7 +831,7 @@ curl -iX POST \
 
 #### Response:
 
-```json
+``` json
 {
     "cols": ["minute", "sum"],
     "rows": [
@@ -855,7 +855,7 @@ to truncate and convert the timestamps into data which can be grouped.
 
 #### 18 Request:
 
-```bash
+``` bash
 curl -iX POST \
   'http://localhost:4200/_sql' \
   -H 'Content-Type: application/json' \
@@ -864,7 +864,7 @@ curl -iX POST \
 
 #### Response:
 
-```json
+``` json
 {
     "cols": ["minute", "min"],
     "rows": [
@@ -887,7 +887,7 @@ aggregate data in different ways.
 
 #### 19 Request:
 
-```bash
+``` bash
 curl -iX POST \
   'http://localhost:4200/_sql' \
   -H 'Content-Type: application/json' \
@@ -896,7 +896,7 @@ curl -iX POST \
 
 #### Response:
 
-```json
+``` json
 {
     "cols": ["max"],
     "rows": [[1]],

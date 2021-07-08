@@ -174,7 +174,7 @@ section of the associated `docker-compose.yml` file:
 
 <h3>Dummy IoT Devices Configuration</h3>
 
-```yaml
+``` yaml
 tutorial:
     image: fiware/tutorials.ngsi-ld
     hostname: iot-sensors
@@ -227,7 +227,7 @@ The [IoT Agent for JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/)
 container. An official Docker image is available from [Docker Hub](https://hub.docker.com/r/fiware/iotagent-json/)
 tagged `fiware/iotagent-json`. The necessary configuration can be seen below:
 
-```yaml
+``` yaml
 iot-agent:
     image: fiware/iotagent-json:latest
     hostname: iot-agent
@@ -307,7 +307,7 @@ users will need to follow the instructions found [here](https://docs.docker.com/
 
 You can check your current **Docker** and **Docker Compose** versions using the following commands:
 
-```bash
+``` bash
 docker-compose -v
 docker version
 ```
@@ -325,7 +325,7 @@ to provide a command-line functionality similar to a Linux distribution on Windo
 Before you start you should ensure that you have obtained or built the necessary Docker images locally. Please clone the
 repository and create the necessary images by running the commands as shown:
 
-```bash
+``` bash
 git clone https://github.com/FIWARE/tutorials.IoT-Agent.git
 cd tutorials.IoT-Agent
 git checkout NGSI-LD
@@ -337,7 +337,7 @@ Thereafter, all services can be initialized from the command-line by running the
 [services](https://github.com/FIWARE/tutorials.IoT-Agent-JSON/blob/NGSI-LD/services) Bash script provided within the
 repository:
 
-```bash
+``` bash
 git clone https://github.com/FIWARE/tutorials.IoT-Agent.git
 cd tutorials.IoT-Agent
 git checkout NGSI-LD
@@ -367,14 +367,14 @@ You can check if the IoT Agent is running by making an HTTP request to the expos
 
 #### 1 Request:
 
-```bash
+``` bash
 curl -X GET \
   'http://localhost:4041/iot/about'
 ```
 
 The response will look similar to the following:
 
-```json
+``` json
 {
     "libVersion": "2.12.0-next",
     "port": "4041",
@@ -464,7 +464,7 @@ messages to the `IOTA_HTTP_PORT` (where the IoT Agent is listening for **Northbo
 
 #### 2 Request:
 
-```bash
+``` bash
 curl -iX POST 'http://localhost:4041/iot/services' \
 -H 'fiware-service: openiot' \
 -H 'fiware-servicepath: /' \
@@ -542,7 +542,7 @@ Three types of measurement attributes can be provisioned:
 
 #### 3 Request:
 
-```bash
+``` bash
 curl -L -X POST 'http://localhost:4041/iot/devices' \
     -H 'fiware-service: openiot' \
     -H 'fiware-servicepath: /' \
@@ -610,7 +610,7 @@ making the following request
 
 #### 4 Request:
 
-```bash
+``` bash
 curl -L -X POST 'http://localhost:7896/iot/json?k=4jggokgpepnvsb2uv4s40d59ov&i=temperature001' \
     -H 'Content-Type: application/json' \
     --data-raw '{ "t": 3}'
@@ -632,7 +632,7 @@ add the `fiware-service` and `fiware-service-path` headers.
 
 #### 5 Request:
 
-```bash
+``` bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:temperature001' \
     -H 'fiware-service: openiot' \
     -H 'fiware-servicepath: /' \
@@ -642,7 +642,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:te
 
 #### Response:
 
-```jsonld
+``` jsonld
 {
     "@context": "http://context/ngsi-context.jsonld",
     "id": "urn:ngsi-ld:Device:temperature001",
@@ -671,7 +671,7 @@ For example, consider this request to the `/iot/json` endpoint:
 
 #### 6 Request:
 
-```bash
+``` bash
 curl -iX POST 'http://localhost:7896/iot/json?k=4jggokgpepnvsb2uv4s40d59ov&i=motion003' \
 -H 'Content-Type: application/json' \
 --data-raw '{"c": 1}'
@@ -683,7 +683,7 @@ based on the knowledge of the service group
 
 #### 7 Request:
 
-```bash
+``` bash
 curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=Device' \
 -H 'NGSILD-Tenant: openiot' \
 -H 'NGSILD-Path: /' \
@@ -692,7 +692,7 @@ curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=Device' \
 
 #### Response:
 
-```jsonld
+``` jsonld
 [
     {
         "@context": "http://context/ngsi-context.jsonld",
@@ -731,7 +731,7 @@ communications protocol to be used.
 
 #### 8 Request:
 
-```bash
+``` bash
 curl -L -X POST 'http://localhost:4041/iot/devices' \
     -H 'fiware-service: openiot' \
     -H 'fiware-servicepath: /' \
@@ -771,7 +771,7 @@ command directly as shown:
 
 #### 9 Request:
 
-```bash
+``` bash
 curl -L -X PATCH 'http://localhost:4041/ngsi-ld/v1/entities/urn:ngsi-ld:Device:water001/attrs/on' \
     -H 'fiware-service: openiot' \
     -H 'fiware-servicepath: /' \
@@ -792,7 +792,7 @@ The result of the command to turn on the irrigation system can be read by queryi
 
 #### 10 Request:
 
-```bash
+``` bash
 curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:water001' \
     -H 'NGSILD-Tenant: openiot' \
     -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -801,7 +801,7 @@ curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:wat
 
 #### Response:
 
-```json
+``` json
 {
     "id": "urn:ngsi-ld:Device:water001",
     "type": "Device",
@@ -847,7 +847,7 @@ both `attributes` and `command` attributes in the body of the request.
 
 #### 11 Request:
 
-```bash
+``` bash
 curl -L -X POST 'http://localhost:4041/iot/devices' \
 -H 'fiware-service: openiot' \
 -H 'fiware-servicepath: /' \
@@ -903,7 +903,7 @@ Similarly, a **Tractor** with two commands (`start` and `stop`) and two attribut
 
 #### 12 Request:
 
-```bash
+``` bash
 curl -L -X POST 'http://localhost:4041/iot/devices' \
     -H 'fiware-service: openiot' \
     -H 'fiware-servicepath: /' \
@@ -937,7 +937,7 @@ The full list of provisioned devices can be obtained by making a GET request to 
 
 #### 13 Request:
 
-```bash
+``` bash
 curl -L -X GET 'http://localhost:4041/iot/devices' \
     -H 'fiware-service: openiot' \
     -H 'fiware-servicepath: /'
@@ -959,7 +959,7 @@ To invoke the `on` command, the `on` attribute must be updated in the context.
 
 #### 14 Request:
 
-```bash
+``` bash
 curl -L -X PATCH 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:water001/attrs/on' \
 -H 'NGSILD-Tenant: openiot' \
 -H 'Content-Type: application/json' \
@@ -982,7 +982,7 @@ To invoke the `start` command, the `start` attribute must be updated in the cont
 
 #### 15 Request:
 
-```bash
+``` bash
 curl -L -X PATCH 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:tractor001/attrs/start' \
     -H 'NGSILD-Tenant: openiot' \
     -H 'Content-Type: application/json' \
@@ -1001,7 +1001,7 @@ Change the state of the **Fillling System**, the `add` attribute must be updated
 
 #### 16 Request:
 
-```bash
+``` bash
 curl -L -X PATCH 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:filling001/attrs/add' \
     -H 'NGSILD-Tenant: openiot' \
     -H 'Content-Type: application/json' \
@@ -1033,7 +1033,7 @@ messages to the `IOTA_HTTP_PORT` (where the IoT Agent is listening for **Northbo
 
 #### 17 Request:
 
-```bash
+``` bash
 curl -iX POST \
   'http://localhost:4041/iot/services' \
   -H 'Content-Type: application/json' \
@@ -1060,7 +1060,7 @@ parameter.
 
 #### 18 Request:
 
-```bash
+``` bash
 curl -X GET \
   'http://localhost:4041/iot/services?resource=/iot/d' \
   -H 'fiware-service: openiot' \
@@ -1069,7 +1069,7 @@ curl -X GET \
 
 #### Response:
 
-```json
+``` json
 {
     "count": 1,
     "services": [
@@ -1122,7 +1122,7 @@ This example lists all provisioned services by making a GET request to the `/iot
 
 #### 19 Request:
 
-```bash
+``` bash
 curl -X GET \
   'http://localhost:4041/iot/services' \
   -H 'fiware-service: openiot' \
@@ -1131,7 +1131,7 @@ curl -X GET \
 
 #### Response:
 
-```json
+``` json
 {
     "count": 1,
     "services": [
@@ -1187,7 +1187,7 @@ and `apikey` parameters.
 
 #### 20 Request:
 
-```bash
+``` bash
 curl -iX PUT \
   'http://localhost:4041/iot/services?resource=/iot/d&apikey=4jggokgpepnvsb2uv4s40d59ov' \
   -H 'Content-Type: application/json' \
@@ -1208,7 +1208,7 @@ Agent is listening for **Northbound** communications) should no longer be proces
 
 #### 21 Request:
 
-```bash
+``` bash
 curl -iX DELETE \
   'http://localhost:4041/iot/services/?resource=/iot/d&apikey=4jggokgpepnvsb2uv4s40d59ov' \
   -H 'fiware-service: openiot' \
@@ -1236,7 +1236,7 @@ and gives the entity a type `water`. The IoT Agent has been informed that the de
 
 #### 22 Request:
 
-```bash
+``` bash
 curl -iX POST 'http://localhost:4041/iot/devices' \
     -H 'fiware-service: openiot' \
     -H 'fiware-servicepath: /' \
@@ -1277,7 +1277,7 @@ Provisioned Device details can be read by making a GET request to the `/iot/devi
 
 #### 23 Request:
 
-```bash
+``` bash
 curl -X GET \
   'http://localhost:4041/iot/devices/water002' \
   -H 'fiware-service: openiot' \
@@ -1288,7 +1288,7 @@ curl -X GET \
 
 The response includes all the commands and attributes mappings associated with the device.
 
-```json
+``` json
 {
     "device_id": "water002",
     "service": "openiot",
@@ -1329,7 +1329,7 @@ This example lists all provisioned devices by making a GET request to the `/iot/
 
 #### 24 Request:
 
-```bash
+``` bash
 curl -X GET \
   'http://localhost:4041/iot/devices' \
   -H 'fiware-service: openiot' \
@@ -1340,7 +1340,7 @@ curl -X GET \
 
 The response includes all the commands and attributes mappings associated with all devices.
 
-```json
+``` json
 {
     "count": 5,
     "devices": [
@@ -1381,7 +1381,7 @@ This example updates an existing provisioned device by making a PUT request to t
 
 #### 25 Request:
 
-```bash
+``` bash
 curl -iX PUT \
   'http://localhost:4041/iot/devices/water002' \
   -H 'Content-Type: application/json' \
@@ -1401,7 +1401,7 @@ active measurements, they will still be handled with default values if the assoc
 
 #### 26 Request:
 
-```bash
+``` bash
 curl -iX DELETE \
   'http://localhost:4041/iot/devices/water002' \
   -H 'fiware-service: openiot' \

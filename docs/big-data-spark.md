@@ -95,7 +95,7 @@ The overall architecture can be seen below:
 
 <h3>Spark Cluster Configuration</h3>
 
-```yaml
+``` yaml
 spark-master:
     image: bde2020/spark-master:2.4.5-hadoop2.7
     container_name: spark-master
@@ -111,7 +111,7 @@ spark-master:
         - "constraint:node==spark-master"
 ```
 
-```yaml
+``` yaml
 spark-worker-1:
     image: bde2020/spark-worker:2.4.5-hadoop2.7
     container_name: spark-worker-1
@@ -140,7 +140,7 @@ Before you start, you should ensure that you have obtained or built the necessar
 the repository and create the necessary images by running the commands shown below. Note that you might need to run some
 of the commands as a privileged user:
 
-```bash
+``` bash
 git clone https://github.com/FIWARE/tutorials.Big-Data-Spark.git
 cd tutorials.Big-Data-Spark
 git checkout NGSI-LD
@@ -151,7 +151,7 @@ This command will also import seed data from the previous tutorials and provisio
 
 To start the system, run the following command:
 
-```bash
+``` bash
 ./services start
 ```
 
@@ -200,7 +200,7 @@ An existing `pom.xml` file has been created which holds the necessary prerequisi
 In order to use the Orion Spark Connector we first need to manually install the connector JAR as an artifact using
 Maven:
 
-```bash
+``` bash
 cd cosmos-examples
 curl -LO https://github.com/ging/fiware-cosmos-orion-spark-connector/releases/download/FIWARE_7.9.1/orion.spark.connector-1.2.2.jar
 mvn install:install-file \
@@ -214,7 +214,7 @@ mvn install:install-file \
 Thereafter the source code can be compiled by running the `mvn package` command within the same directory
 (`cosmos-examples`):
 
-```bash
+``` bash
 mvn package
 ```
 
@@ -240,13 +240,13 @@ find the source code of the example in
 
 Restart the containers if necessary, then access the worker container:
 
-```bash
+``` bash
 docker exec -it spark-worker-1 bin/bash
 ```
 
 And run the following command to run the generated JAR package in the Spark cluster:
 
-```bash
+``` bash
 /spark/bin/spark-submit \
 --class  org.fiware.cosmos.tutorial.LoggerLD \
 --master  spark://spark-master:7077 \
@@ -272,8 +272,8 @@ Open another terminal and run the following command:
 
 #### 1 Request:
 
-````bash
-```bash
+```` bash
+``` bash
 curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'Content-Type: application/ld+json' \
 -H 'NGSILD-Tenant: openiot' \
@@ -301,7 +301,7 @@ If a subscription has been created, we can check to see if it is firing by makin
 
 #### 2 Request:
 
-```bash
+``` bash
 curl -X GET \
 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'NGSILD-Tenant: openiot'
@@ -309,7 +309,7 @@ curl -X GET \
 
 #### Response:
 
-```json
+``` json
 [
     {
         "id": "urn:ngsi-ld:Subscription:60216f404dae3a1f22b705e6",
@@ -437,7 +437,7 @@ find the source code of the example in
 
 ### Feedback Loop - Installing the JAR
 
-```bash
+``` bash
 /spark/bin/spark-submit  \
 --class  org.fiware.cosmos.tutorial.FeedbackLD \
 --master  spark://spark-master:7077 \
@@ -452,7 +452,7 @@ soil humidity sensor.
 
 #### 3 Request:
 
-```bash
+``` bash
 curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'Content-Type: application/ld+json' \
 -H 'NGSILD-Tenant: openiot' \
@@ -478,7 +478,7 @@ If a subscription has been created, we can check to see if it is firing by makin
 
 #### 4 Request:
 
-```bash
+``` bash
 curl -X GET \
 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'NGSILD-Tenant: openiot'

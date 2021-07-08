@@ -117,7 +117,7 @@ It has been described in a previous tutorial
 All services can be initialized from the command-line by running the bash script provided within the repository. Please
 clone the repository and create the necessary images by running the commands as shown:
 
-```bash
+``` bash
 git clone https://github.com/FIWARE/tutorials.Subscriptions.git
 cd tutorials.Subscriptions
 git checkout NGSI-LD
@@ -167,7 +167,7 @@ below:
 
 #### 1 Request:
 
-```bash
+``` bash
 curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'Content-Type: application/ld+json' \
 -H 'NGSILD-Tenant: openiot' \
@@ -213,7 +213,7 @@ barn. Nothing happens until the barn is half-empty, then a request is sent to `s
 
 #### Subscription Payload:
 
-```json
+``` json
 {
     "id": "urn:ngsi-ld:Notification:5fd0f3824eb81930c97005d8",
     "type": "Notification",
@@ -261,7 +261,7 @@ barn.)
 This second subscription will fire when the `filling` level is between 0.6 and 0.4. The `format` attribute has been
 altered to inform the subscriber using NGSI-LD normalized format.
 
-```bash
+``` bash
 curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'Content-Type: application/ld+json' \
 -H 'NGSILD-Tenant: openiot' \
@@ -287,7 +287,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 
 When a `low-stock-farm001-ngsild` event is fired, the response is as shown:
 
-```json
+``` json
 {
     "id": "urn:ngsi-ld:Notification:5fd0fa684eb81930c97005f3",
     "type": "Notification",
@@ -324,7 +324,7 @@ offers a backward compatible **NGSI-v2** payload option for legacy systems.
 This third subscription will fire when the `filling` level is below 0.4. The `format` attribute has been altered to
 inform the subscriber using NGSI-v2 normalized format.
 
-```bash
+``` bash
 curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'Content-Type: application/ld+json' \
 -H 'NGSILD-Tenant: openiot' \
@@ -350,7 +350,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 
 When a `low-stock-farm001-ngsiv2` event is fired, the response is a normalized NGSI-v2 payload as shown:
 
-```json
+``` json
 {
     "subscriptionId": "urn:ngsi-ld:Subscription:5fd1f31e8b9b83697b855a5d",
     "data": [
@@ -419,7 +419,7 @@ The notification section of the body states that a POST request containing all a
 
 #### 4 Request:
 
-```bash
+``` bash
 curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'Content-Type: application/ld+json' \
 --data-raw '{
@@ -446,7 +446,7 @@ Subscriptions can be deleted by making a DELETE request to the `/ngsi-ld/v1/subs
 
 #### 5 Request:
 
-```bash
+``` bash
 curl -X DELETE \
   --url 'http://localhost:1026/ngsi-ld/v1/subscriptions/urn:ngsi-ld:Subscription:5fd228838b9b83697b855a72'
 ```
@@ -460,7 +460,7 @@ Subscriptions can be updated making a PATCH request to the `/ngsi-ld/v1/subscrip
 
 #### 6 Request:
 
-```bash
+``` bash
 curl -iX PATCH \
   --url 'http://localhost:1026/ngsi-ld/v1/subscriptions/urn:ngsi-ld:Subscription:5fd228838b9b83697b855a72' \
   --header 'content-type: application/json' \
@@ -486,7 +486,7 @@ met, and whether associated the POST action was successful.
 
 #### 7 Request:
 
-```bash
+``` bash
 curl -X GET \
   --url 'http://localhost:1026/ngsi-ld/v1/subscriptions/
 ```
@@ -502,7 +502,7 @@ Subscription details can be read by making a GET request to the `/ngsi-ld/v1/sub
 
 #### 8 Request:
 
-```bash
+``` bash
 curl -X GET \
   --url 'http://localhost:1026/ngsi-ld/v1/subscriptions/5aead3361587e1918de90aba'
 ```
