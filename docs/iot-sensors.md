@@ -254,6 +254,7 @@ All services can be initialized from the command-line by running the bash script
 clone the repository and create the necessary images by running the commands as shown:
 
 ``` bash
+#!/bin/bash
 git clone https://github.com/FIWARE/tutorials.IoT-Sensors.git
 cd tutorials.IoT-Sensors
 git checkout NGSI-LD

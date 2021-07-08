@@ -141,6 +141,7 @@ the repository and create the necessary images by running the commands shown bel
 of the commands as a privileged user:
 
 ``` bash
+#!/bin/bash
 git clone https://github.com/FIWARE/tutorials.Big-Data-Spark.git
 cd tutorials.Big-Data-Spark
 git checkout NGSI-LD

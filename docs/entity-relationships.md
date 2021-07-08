@@ -109,6 +109,7 @@ All services can be initialised from the command-line by running the
 the repository. Please clone the repository and create the necessary images by running the commands as shown:
 
 ``` bash
+#!/bin/bash
 git clone https://github.com/FIWARE/tutorials.Entity-Relationships.git
 cd tutorials.Entity-Relationships
 git checkout NGSI-LD

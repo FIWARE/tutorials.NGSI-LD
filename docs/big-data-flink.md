@@ -159,6 +159,7 @@ the repository and create the necessary images by running the commands shown bel
 of the commands as a privileged user:
 
 ``` bash
+#!/bin/bash
 git clone https://github.com/FIWARE/tutorials.Big-Data-Flink.git
 cd tutorials.Big-Data-Flink
 git checkout NGSI-LD
