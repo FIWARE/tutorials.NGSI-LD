@@ -91,8 +91,8 @@ Therefore, the architecture will consist of three elements:
 -   The underlying [MongoDB](https://www.mongodb.com/) database :
     -   Used by the Orion Context Broker to hold context data information such as data entities, subscriptions and
         registrations
+-   An HTTP **Web-Server** which offers static `@context` files defining the context entities within the system.
 -   The **Tutorial Application** does the following:
-    -   Offers static `@context` files defining the context entities within the system.
 
 Since all interactions between the two elements are initiated by HTTP requests, the entities can be containerized and
 run from exposed ports.

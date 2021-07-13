@@ -103,8 +103,8 @@ Therefore the overall architecture will consist of the following elements:
     -   Used as a data sink to hold time-based historical context data
     -   offers an HTTP endpoint to interpret time-based data queries
 
+-   An HTTP **Web-Server** which offers static `@context` files defining the context entities within the system.
 -   The **Tutorial Application** does the following:
-    -   Offers static `@context` files defining the context entities within the system.
     -   Acts as set of dummy [agricultural IoT devices](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)
         using the
         [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
