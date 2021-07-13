@@ -6,7 +6,8 @@ docs_dir: docs
 site_dir: html
 use_directory_urls: false
 theme: readthedocs
-markdown_extensions: [fenced_code, codehilite]
+markdown_extensions:
+  - fenced_code
 google_analytics:
   - UA-83719923-1
   - ngsi-ld.readthedocs.io
