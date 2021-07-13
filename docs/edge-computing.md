@@ -83,7 +83,7 @@ To know more about NGSI-LD supported APIs in Fogflow, follow this
     -   **worker.capacity**: It means the maximal number of docker containers that the FogFlow node can invoke. By
         default its value is "8"
 
-``` json
+```json
 {
     "my_hostip": "10.156.0.9",
     "physical_location": {
@@ -114,7 +114,7 @@ To know more about NGSI-LD supported APIs in Fogflow, follow this
 
 2.  Pull the docker images of FogFlow components and start them.
 
-``` bash
+```bash
   docker-compose pull
   docker-compose up -d
 ```
@@ -123,7 +123,7 @@ To know more about NGSI-LD supported APIs in Fogflow, follow this
 
 -   Check if all the containers are up and running using `docker ps -a`.
 
-``` bash
+```bash
   docker ps -a
 ```
 
@@ -157,7 +157,7 @@ To know more about NGSI-LD supported APIs in Fogflow, follow this
 1.  Change the configuration file similar to the cloud node, but now **coreservice_ip** will remain uniform because it
     is the IP address of the cloud node. **my_hostip** will change to the public IP address of edge node.
 
-``` json
+```json
 {
     "coreservice_ip": "10.156.0.9",
     "my_hostip": "172.17.0.1",
@@ -178,13 +178,13 @@ To know more about NGSI-LD supported APIs in Fogflow, follow this
 2.  Start both Edge IoT Broker and FogFlow Worker. If the edge node is ARM-based, then attach arm as the command
     parameter.
 
-``` bash
+```bash
   ./start.sh
 ```
 
 3.  Stop both Edge IoT Broker and FogFlow Worker:
 
-``` bash
+```bash
   ./stop.sh
 ```
 
@@ -336,7 +336,7 @@ broker to create the "Vehicle" sensor entity. With creation of this entity, Fogf
 
 #### 1 Request
 
-``` bash
+```bash
 curl --location --request POST '<Fogflow_Broker_IP>:8070/ngsi-ld/v1/entities/' \
 --header 'Content-Type: application/json' \
 --header 'Accept: application/ld+json' \

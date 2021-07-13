@@ -56,7 +56,7 @@ users will need to follow the instructions found [here](https://docs.docker.com/
 
 You can check your current **Docker** and **Docker Compose** versions using the following commands:
 
-``` bash
+```bash
 docker-compose -v
 docker version
 ```
@@ -66,7 +66,7 @@ necessary.
 
 If using a linux distro with an outdated docker-compose, the files can be installed directly as shown:
 
-``` bash
+```bash
 sudo curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 ```
@@ -76,7 +76,7 @@ daemon at http+docker://localunixsocket - is it running?_
 
 It can be solved by owning the `/var/run/docker.sock` Unix socket as shown:
 
-``` bash
+```bash
 sudo chown $USER /var/run/docker.sock
 ```
 

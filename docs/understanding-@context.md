@@ -73,7 +73,7 @@ Click on the image above to watch a video describing the basic concepts behind J
 
 In order to initialize the generator tool run:
 
-``` bash
+```bash
 ./services create
 ```
 
@@ -214,7 +214,7 @@ mean we will need things such as:
 -   When was the measurement taken
 -   and so on.
 
-``` json
+```json
 ({
     "temperature": {
         "type": "Property",
@@ -260,7 +260,7 @@ sensors.
 
 The following models are defined within the Smart Data Models domain.
 
-``` yaml
+```yaml
 components:
     schemas:
         # This is the base definition of a building
@@ -303,7 +303,7 @@ The source file for the Baseline Date Models, `baseline.yaml` can be found
 1.  **Building** must be updated to accommodate `temperature` and `fillingLevel`. Both of these properties have been
     defined within SAREF terms.
 
-``` yaml
+```yaml
 Building:
     allOf:
         - $ref: "https://fiware.github.io/tutorials.NGSI-LD/models/building.yaml#/Building"
@@ -321,7 +321,7 @@ Building:
 3.  The base Device can be removed and replaced with two new models which extend it - `TemperatureSensor` and
     `FillingLevelSensor`. Once again these add additional SAREF terms to the base `Device` class.
 
-``` yaml
+```yaml
 TemperatureSensor:
     type: object
     required:
@@ -333,7 +333,7 @@ TemperatureSensor:
             $ref: https://fiware.github.io/tutorials.NGSI-LD/models/saref-terms.yaml#/temperature
 ```
 
-``` yaml
+```yaml
 FillingLevelSensor:
     type: object
     required:
@@ -380,7 +380,7 @@ for use by other agents.
 It is necessary to check that the model is valid before processing, this can be done by viewing it online or by using a
 simple validator tool.
 
-``` bash
+```bash
 ./services validate [file]
 ```
 
@@ -404,7 +404,7 @@ The NGSI-LD `@context` needs to hold defined URIs for the following:
 
 An NGSI-LD `@context` file can be generated from a Swagger data model as follows:
 
-``` bash
+```bash
 ./services ngsi [file]
 ```
 
@@ -417,7 +417,7 @@ datamodels.context-ngsi.jsonld created
 
 Opening the generated file, the following structure can be found:
 
-``` json
+```json
 {
     "@context": {
         "type": "@type",
@@ -480,7 +480,7 @@ the default _normalized_ format. The _normalized_ format includes a structure of
 
 For example this is a `Building` in _normalized_ NGSI-LD format:
 
-``` json
+```json
 {
     "id": "urn:ngsi-ld:Building:001",
     "type": "Building",
@@ -537,7 +537,7 @@ building used for storage_) may be returned.
 
 An JSON-LD `@context` file can be generated from a Swagger data model as follows:
 
-``` bash
+```bash
 ./services jsonld [file]
 ```
 
@@ -550,7 +550,7 @@ datamodels.context.jsonld created
 
 Opening the generated file, the following structure can be found:
 
-``` json
+```json
 {
     "@context": {
         "type": "@type",
@@ -640,7 +640,7 @@ Further information about `@graph` can be found in the section on
 If NGSI-LD requests are made using the `options=keyValues` parameter, the response a generic JSON-LD object (as shown
 below) rather than a full NGSI-LD object:
 
-``` json
+```json
 {
     "id": "urn:ngsi-ld:Building:001",
     "type": "Building",
@@ -676,7 +676,7 @@ too.
 
 Basic documentation about NGSI-LD entities can be generated from a Swagger data model as follows:
 
-``` bash
+```bash
 ./services markdown [file]
 ```
 

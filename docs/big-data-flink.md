@@ -102,7 +102,7 @@ the associated `docker-compose.yml` file:
 
 <h3>Flink Cluster Configuration</h3>
 
-``` yaml
+```yaml
 jobmanager:
     image: flink:1.9.0-scala_2.11
     hostname: jobmanager
@@ -118,7 +118,7 @@ jobmanager:
         - JOB_MANAGER_RPC_ADDRESS=jobmanager
 ```
 
-``` yaml
+```yaml
 taskmanager:
     image: flink:1.9.0-scala_2.11
     hostname: taskmanager
@@ -158,7 +158,7 @@ Before you start, you should ensure that you have obtained or built the necessar
 the repository and create the necessary images by running the commands shown below. Note that you might need to run some
 of the commands as a privileged user:
 
-``` bash
+```bash
 #!/bin/bash
 git clone https://github.com/FIWARE/tutorials.Big-Data-Flink.git
 cd tutorials.Big-Data-Flink
@@ -170,7 +170,7 @@ This command will also import seed data from the previous tutorials and provisio
 
 To start the system, run the following command:
 
-``` bash
+```bash
 ./services start
 ```
 
@@ -220,7 +220,7 @@ An existing `pom.xml` file has been created which holds the necessary prerequisi
 In order to use the Orion Flink Connector we first need to manually install the connector JAR as an artifact using
 Maven:
 
-``` bash
+```bash
 cd cosmos-examples
 curl -LO https://github.com/ging/fiware-cosmos-orion-flink-connector/releases/download/1.2.4/orion.flink.connector-1.2.4.jar
 mvn install:install-file \
@@ -234,7 +234,7 @@ mvn install:install-file \
 Thereafter the source code can be compiled by running the `mvn package` command within the same directory
 (`cosmos-examples`):
 
-``` bash
+```bash
 mvn package
 ```
 
@@ -269,7 +269,7 @@ Submit new job
 
 An alternative would be to use curl on the command-line as shown:
 
-``` bash
+```bash
 curl -X POST -H "Expect:" -F "jarfile=@/cosmos-examples-1.2.jar" http://localhost:8081/jars/upload
 ```
 
@@ -289,7 +289,7 @@ This is done by making a POST request to the `/ngsi-ld/v1/subscriptions` endpoin
 
 #### 1 Request:
 
-``` bash
+```bash
 curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'Content-Type: application/ld+json' \
 -H 'NGSILD-Tenant: openiot' \
@@ -317,7 +317,7 @@ If a subscription has been created, we can check to see if it is firing by makin
 
 #### 2 Request:
 
-``` bash
+```bash
 curl -X GET \
 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'NGSILD-Tenant: openiot'
@@ -325,7 +325,7 @@ curl -X GET \
 
 #### Response:
 
-``` json
+```json
 [
     {
         "id": "urn:ngsi-ld:Subscription:60216f404dae3a1f22b705e6",
@@ -367,7 +367,7 @@ Finally, check that the `status` of the subscription is `active` - an expired su
 
 Leave the subscription running for **one minute**, then run the following:
 
-``` bash
+```bash
 docker logs flink-taskmanager -f --until=60s > stdout.log 2>stderr.log
 cat stderr.log
 ```
@@ -476,7 +476,7 @@ soil humidity sensor.
 
 #### 3 Request:
 
-``` bash
+```bash
 curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'Content-Type: application/ld+json' \
 -H 'NGSILD-Tenant: openiot' \
@@ -502,7 +502,7 @@ If a subscription has been created, we can check to see if it is firing by makin
 
 #### 4 Request:
 
-``` bash
+```bash
 curl -X GET \
 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'NGSILD-Tenant: openiot'

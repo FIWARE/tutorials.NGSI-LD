@@ -26,7 +26,7 @@ external applications will be able to programmatically understand the data held 
 
 For example, the attribute `address` is within our smart application is defined as follows:
 
-``` json
+```json
 "@context": {
     "schema": "https://schema.org/",
     "address": "schema:address"
@@ -43,7 +43,7 @@ A program written by a third party would therefore be able to extract informatio
 holds a JSON object with a sub-attribute containing the `streetAddress` by referring to the full
 [schema.org **JSON-LD** schema](https://schema.org/version/latest/schemaorg-current-http.jsonld)
 
-``` json
+```json
 {
     "@id": "http://schema.org/streetAddress",
     "@type": "rdf:Property",
@@ -141,7 +141,7 @@ The necessary configuration information can be seen in the services section of t
 
 <h3>Orion-LD Configuration</h3>
 
-``` yaml
+```yaml
 orion:
     image: fiware/orion-ld
     hostname: orion
@@ -157,7 +157,7 @@ orion:
         test: curl --fail -s http://orion:1026/version || exit 1
 ```
 
-``` yaml
+```yaml
 mongo-db:
     image: mongo:4.2
     hostname: mongo-db
@@ -171,7 +171,7 @@ mongo-db:
     command: --nojournal
 ```
 
-``` yaml
+```yaml
 tutorial:
     image: fiware/tutorials.ngsi-ld
     hostname: tutorial
@@ -195,7 +195,7 @@ All services can be initialised from the command-line by running the
 [services](https://github.com/FIWARE/tutorials.Getting-Started/blob/NGSI-LD/services) Bash script provided within the
 repository. Please clone the repository and create the necessary images by running the commands as shown:
 
-``` bash
+```bash
 #!/bin/bash
 git clone https://github.com/FIWARE/tutorials.Getting-Started.git
 cd tutorials.Getting-Started
@@ -251,7 +251,7 @@ As usual, you can check if the Orion Context Broker is running by making an HTTP
 
 #### 1 Request:
 
-``` bash
+```bash
 curl -X GET \
   'http://localhost:1026/version'
 ```
@@ -260,7 +260,7 @@ curl -X GET \
 
 The response will look similar to the following:
 
-``` json
+```json
 {
     "orion": {
         "version": "1.15.0-next",
@@ -285,7 +285,7 @@ New context data entities can be created by making a POST request to the `/ngsi-
 
 #### 2 Request:
 
-``` bash
+```bash
 curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Content-Type: application/ld+json' \
 --data-raw '{
@@ -333,7 +333,7 @@ is implicitly included as well.
 
 This means that the actual `@context` is:
 
-``` json
+```json
 {
     "@context": [
         "http://context/ngsi-context.jsonld",
@@ -349,7 +349,7 @@ with the core `@context` being processed **last** and therefore overriding any t
 
 Each subsequent entity must have a unique `id` for the given `type`
 
-``` bash
+```bash
 curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Content-Type: application/json' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -442,7 +442,7 @@ body.
 
 #### 4 Request:
 
-``` bash
+```bash
 curl -G -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities' \
   -H 'Accept: application/ld+json' \
@@ -461,7 +461,7 @@ Since no explicit `@context` was sent in the request, the response returns the C
 Note that if an attribute has not been associated to an FQN when the entity was created, the short name will **always**
 be displayed.
 
-``` json
+```json
 [
     {
         "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.3.jsonld",
@@ -549,7 +549,7 @@ the resource in question. In the case of NGSI-LD, the metadata is a file in `app
 
 #### 5 Request:
 
-``` bash
+```bash
 curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
 -H 'Accept: application/ld+json' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
@@ -564,7 +564,7 @@ Note that the inclusion of the core `@context` is always implied. It would be al
 files explicitly as element in the array of `@context` sent. The response is normalized **NGSI-LD** and therefore valid
 **JSON-LD** as well, and the `@context` can be used by the receiving program for **JSON-LD** operations.
 
-``` json
+```json
 {
     "@context": "http://context/ngsi-context.jsonld",
     "id": "urn:ngsi-ld:Building:farm001",
@@ -612,7 +612,7 @@ parameter reduces the response down to standard JSON-LD.
 
 #### 6 Request:
 
-``` bash
+```bash
 curl -G -X GET \
     'http://localhost:1026/ngsi-ld/v1/entities' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -627,7 +627,7 @@ Because of the use of the `options=keyValues`, the response consists of JSON onl
 `type="Property"` or any _properties-of-properties_ elements. You can see that `Link` header from the request has been
 used as the `@context` returned in the response.
 
-``` json
+```json
 [
     {
         "@context": "http://context/ngsi-context.jsonld",
@@ -675,7 +675,7 @@ Since `options=keyValues` is sent, this will effect the structure of the payload
 
 #### 7 Request:
 
-``` bash
+```bash
 curl -G -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Link: <http://context-provider:3000/data-models/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -690,7 +690,7 @@ curl -G -X GET \
 The use of the `Link` header and the `options=keyValues` parameter reduces the response to short form key-values
 **JSON-LD** as shown:
 
-``` json
+```json
 [
     {
         "@context": "http://context-provider:3000/data-models/json-context.jsonld",
@@ -716,7 +716,7 @@ This **JSON-LD** is no longer **NGSI-LD** (since the `type` and `value` elements
 used reflects this. The `json-context.jsonld` file does not merely define the attribute names, it also includes
 additional **JSON-LD** information within it such as the following:
 
-``` json-ld
+```json
 {
     "barn": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn",
     "category": {
@@ -742,7 +742,7 @@ the request a query can be made using alternate short names (e.g. `type=Building
 
 #### 8 Request:
 
-``` bash
+```bash
 curl -G -X GET \
     'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Link: <http://context-provider:3000/data-models/alternate-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -758,7 +758,7 @@ The response is returned in JSON-LD format with short form attribute names (`add
 the short names provided in the alternate context. Note that core context terms (`id`, `type` etc.) cannot be overridden
 directly but would require an additional **JSON-LD** expansion/compaction operation.
 
-``` json
+```json
 [
     {
         "@context": "http://context-provider:3000/data-models/alternate-context.jsonld",
@@ -791,7 +791,7 @@ done using the `q` parameter, comma separating the acceptable values.
 
 #### 9 Request:
 
-``` bash
+```bash
 curl -G -X GET \
     'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Link: <http://context-provider:3000/data-models/nsgi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -805,7 +805,7 @@ curl -G -X GET \
 
 The response is returned in JSON-LD format with short form attribute names:
 
-``` json
+```json
 [
     {
         "@context": "http://context/ngsi-context.jsonld",
@@ -836,7 +836,7 @@ Filtering can be done using the `q` parameter - sub-attributes are annotated usi
 
 #### 10 Request:
 
-``` bash
+```bash
 curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Link: <http://context-provider:3000/data-models/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/ld+json' \
@@ -849,7 +849,7 @@ curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
 
 Use of the `Link` header and the `options=keyValues` parameter reduces the response to JSON-LD.
 
-``` json
+```json
 [
     {
         "@context": "http://context-provider:3000/data-models/json-context.jsonld",
@@ -897,7 +897,7 @@ Metadata queries (i.e. Properties of Properties) are annotated using the dot syn
 
 #### 11 Request:
 
-``` bash
+```bash
 curl -G -X GET \
     'http://localhost:1026/ngsi-ld/v1/entities' \
     -H 'Link: <http://context-provider:3000/data-models/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -912,7 +912,7 @@ curl -G -X GET \
 Because of the use of the `options=keyValues` together with the Accept HTTP header (`application/json`), the response
 consists of JSON only without the attribute `type` and `metadata` elements.
 
-``` json
+```json
 [
     {
         "id": "urn:ngsi-ld:Building:farm001",
@@ -964,7 +964,7 @@ If another attribute is to be used, an additional `geoproperty` parameter is req
 
 #### 12 Request:
 
-``` bash
+```bash
 curl -G -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities' \
   -H 'Link: <https://fiware.github.io/data-models/context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -981,7 +981,7 @@ curl -G -X GET \
 Because of the use of the `options=keyValues` together with the Accept HTTP header (`application/json`), the response
 consists of JSON only without the attribute `type` and `metadata` elements.
 
-``` json
+```json
 [
     {
         "id": "urn:ngsi-ld:Building:barn002",
