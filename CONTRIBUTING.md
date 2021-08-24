@@ -7,8 +7,8 @@ Thank you for contributing to the FIWARE Step-by-Step Tutorials
 To test your changes run:
 
 ```console
-npm install -C ./context-provider
-npm test -C ./context-provider
+npm install -C ./app
+npm test -C ./app
 ```
 
 This will check the text for obvious typos, informal grammar and dead links
@@ -36,8 +36,8 @@ Separate Pull requests should be raised for code and documentation changes since
 The code and Markdown files are formatted by [prettier](https://prettier.io), you can also run the formatter directly:
 
 ```console
-npm run prettier -C ./context-provider
-npm run prettier:text -C ./context-provider
+npm run prettier -C ./app
+npm run prettier:text -C ./app
 ```
 
 Start reading our code and documentation and you'll get the hang of it:

@@ -78,7 +78,7 @@ Alternatively, if you want to build directly from your own sources, please copy 
 root of the repository and amend it to copy over your local source using :
 
 ```Dockerfile
-COPY context-provider /usr/src/app
+COPY app /usr/src/app
 ```
 
 Full instructions can be found within the `Dockerfile` itself.

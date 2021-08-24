@@ -702,7 +702,7 @@ curl -L -X POST 'http://localhost:4041/iot/devices' \
       "entity_type": "Device",
       "protocol": "PDI-IoTA-UltraLight",
       "transport": "HTTP",
-      "endpoint": "http://context-provider:3001/iot/water001",
+      "endpoint": "http://iot-sensors:3001/iot/water001",
       "commands": [
         {
           "name": "on",
@@ -819,7 +819,7 @@ curl -L -X POST 'http://localhost:4041/iot/devices' \
       "entity_type": "FillingLevelSensor",
       "protocol": "PDI-IoTA-UltraLight",
       "transport": "HTTP",
-      "endpoint": "http://context-provider:3001/iot/filling001",
+      "endpoint": "http://iot-sensors:3001/iot/filling001",
       "commands": [
         {
           "name": "add",
@@ -874,7 +874,7 @@ curl -L -X POST 'http://localhost:4041/iot/devices' \
       "entity_type": "Tractor",
       "protocol": "PDI-IoTA-UltraLight",
       "transport": "HTTP",
-      "endpoint": "http://context-provider:3001/iot/tractor001",
+      "endpoint": "http://iot-sensors:3001/iot/tractor001",
       "commands": [
         {"name": "start","type": "command"},
         {"name": "stop","type": "command"}
@@ -1208,7 +1208,7 @@ curl -iX POST 'http://localhost:4041/iot/devices' \
       "entity_type": "Device",
       "protocol": "PDI-IoTA-UltraLight",
       "transport": "HTTP",
-      "endpoint": "http://context-provider:3001/iot/water002",
+      "endpoint": "http://iot-sensors:3001/iot/water002",
       "commands": [
         {
           "name": "on",
@@ -1254,7 +1254,7 @@ The response includes all the commands and attributes mappings associated with t
     "service_path": "/",
     "entity_name": "urn:ngsi-ld:Device:water002",
     "entity_type": "Device",
-    "endpoint": "http://context-provider:3001/iot/water002",
+    "endpoint": "http://iot-sensors:3001/iot/water002",
     "transport": "HTTP",
     "attributes": [],
     "lazy": [],
