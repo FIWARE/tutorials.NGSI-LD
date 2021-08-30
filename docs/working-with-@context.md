@@ -181,8 +181,8 @@ ld-context:
 ```
 
 All containers are residing on the same network - the Orion Context Broker is listening on Port `1026` and MongoDB is
-listening on the default port `27017` and the httpd is listening on port `80`. All containers are also exposing
-the ports externally - this is purely for the tutorial access - so that cUrl or Postman can access them without
+listening on the default port `27017` and httpd is offering `@context` files on port `80`. All containers are also
+exposing the ports externally - this is purely for the tutorial access - so that cUrl or Postman can access them without
 being part of the same network. The command-line initialization should be self explanatory.
 
 ## Start Up
@@ -221,19 +221,19 @@ necessary prerequisites are in place.
 
 Three `@context` files have been generated and hosted on the tutorial application. They serve different roles.
 
--   [`ngsi-context.jsonld`](http://localhost:3000/data-models/ngsi-context.jsonld) -The **NGSI-LD** `@context` serves to
-    define all attributes when sending data to the context broker or retrieving data in _normalized_ format. This
-    `@context` must be used for all **NGSI-LD** to **NGSI-LD** interactions
+-   [`ngsi-context.jsonld`](http://localhost:3004/ngsi-context.jsonld) -The **NGSI-LD** `@context` serves to define all
+    attributes when sending data to the context broker or retrieving data in _normalized_ format. This `@context` must
+    be used for all **NGSI-LD** to **NGSI-LD** interactions
 
 -   The **JSON-LD** `@context` can be used when querying the data and returning _key-values_ data. Responses are
     **JSON** or **JSON-LD** and the data can be easily ingested and processed further by the receiving application.
 
-    -   [`json-context.jsonld`](http://localhost:3000/data-models/json-context.jsonld) is a richer **JSON-LD**
-        definition of the attributes of the data models.
-    -   [`alternate-context.jsonld`](http://localhost:3000/data-models/alternate-context.jsonld) is an alternative
-        **JSON-LD** definition of the attributes of the data models used by a third-party (the German sub-contractor of
-        farm labourers). Internally their billing application used different short names for attributes. Their
-        `@context` file reflects the agreed mapping between attribute names.
+    -   [`json-context.jsonld`](http://localhost:3004/json-context.jsonld) is a richer **JSON-LD** definition of the
+        attributes of the data models.
+    -   [`alternate-context.jsonld`](http://localhost:3004/alternate-context.jsonld) is an alternative **JSON-LD**
+        definition of the attributes of the data models used by a third-party (the German sub-contractor of farm
+        labourers). Internally their billing application used different short names for attributes. Their `@context`
+        file reflects the agreed mapping between attribute names.
 
 The full data model description for a **Building** entity as used in this tutorial can be found
 [here](https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html#building) it is based on the standard Smart

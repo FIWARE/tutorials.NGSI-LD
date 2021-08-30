@@ -67,8 +67,15 @@ docker-compose -v
 docker version
 ```
 
-Please ensure that you are using Docker version 18.03 or higher and Docker Compose 1.21 or higher and upgrade if
+Please ensure that you are using Docker version 20.10 or higher and Docker Compose 1.29 or higher and upgrade if
 necessary.
+
+Although not officially supported, older versions of docker without an integrated docker-compose can be run by adding
+`legacy` to all bash script commands:
+
+```console
+./services start legacy
+```
 
 ### Postman <img src="https://www.postman.com/favicon-32x32.png" align="left"  height="32" width="32">
 

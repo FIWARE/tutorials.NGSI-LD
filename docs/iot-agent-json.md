@@ -207,16 +207,16 @@ The `tutorial` container is listening on two ports:
 
 The `tutorial` container is driven by environment variables as shown:
 
-| Key                     | Value                                                 | Description                                                                                                                         |
-| ----------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| DEBUG                   | `tutorial:*`                                          | Debug flag used for logging                                                                                                         |
-| WEB_APP_PORT            | `3000`                                                | Port used by web-app which displays the dummy device data                                                                           |
-| IOTA_HTTP_HOST          | `iot-agent`                                           | The hostname of the IoT Agent for JSON - see below                                                                                  |
-| IOTA_HTTP_PORT          | `7896`                                                | The port that the IoT Agent for JSON will be listening on. `7896` is a common default for JSON over HTTP                            |
-| DUMMY_DEVICES_PORT      | `3001`                                                | Port used by the dummy IoT devices to receive commands                                                                              |
-| DUMMY_DEVICES_API_KEY   | `4jggokgpepnvsb2uv4s40d59ov`                          | Random security key used for JSON interactions - used to ensure the integrity of interactions between the devices and the IoT Agent |
-| DUMMY_DEVICES_TRANSPORT | `HTTP`                                                | The transport protocol used by the dummy IoT devices                                                                                |
-| DUMMY_DEVICES_PAYLOAD   | `JSON`                                                | The payload format used by the dummy IoT devices                                                                                    |
+| Key                     | Value                                | Description                                                                                                                         |
+| ----------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| DEBUG                   | `tutorial:*`                         | Debug flag used for logging                                                                                                         |
+| WEB_APP_PORT            | `3000`                               | Port used by web-app which displays the dummy device data                                                                           |
+| IOTA_HTTP_HOST          | `iot-agent`                          | The hostname of the IoT Agent for JSON - see below                                                                                  |
+| IOTA_HTTP_PORT          | `7896`                               | The port that the IoT Agent for JSON will be listening on. `7896` is a common default for JSON over HTTP                            |
+| DUMMY_DEVICES_PORT      | `3001`                               | Port used by the dummy IoT devices to receive commands                                                                              |
+| DUMMY_DEVICES_API_KEY   | `4jggokgpepnvsb2uv4s40d59ov`         | Random security key used for JSON interactions - used to ensure the integrity of interactions between the devices and the IoT Agent |
+| DUMMY_DEVICES_TRANSPORT | `HTTP`                               | The transport protocol used by the dummy IoT devices                                                                                |
+| DUMMY_DEVICES_PAYLOAD   | `JSON`                               | The payload format used by the dummy IoT devices                                                                                    |
 | IOTA_JSON_LD_CONTEXT    | `http://context/ngsi-context.jsonld` | The location of the `@context` file used to define the device data models                                                           |
 
 The other `tutorial` container configuration values described in the YAML file are not used in this tutorial.
@@ -270,23 +270,23 @@ information such as device URLs and Keys. The container is listening on two port
 
 The `iot-agent` container is driven by environment variables as shown:
 
-| Key                  | Value                                                 | Description                                                                                                                                           |
-| -------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| IOTA_CB_HOST         | `orion`                                               | Hostname of the context broker to update context                                                                                                      |
-| IOTA_CB_PORT         | `1026`                                                | Port that context broker listens on to update context                                                                                                 |
-| IOTA_NORTH_PORT      | `4041`                                                | Port used for Configuring the IoT Agent and receiving context updates from the context broker                                                         |
-| IOTA_REGISTRY_TYPE   | `mongodb`                                             | Whether to hold IoT device info in memory or in a database                                                                                            |
-| IOTA_LOG_LEVEL       | `DEBUG`                                               | The log level of the IoT Agent                                                                                                                        |
-| IOTA_TIMESTAMP       | `true`                                                | Whether to supply timestamp information with each measurement received from attached devices                                                          |
-| IOTA_CB_NGSI_VERSION | `LD`                                                  | Whether to supply use NGSI-LD when sending updates for active attributes                                                                              |
-| IOTA_AUTOCAST        | `true`                                                | Ensure JSON number values are read as numbers not strings                                                                                             |
-| IOTA_MONGO_HOST      | `context-db`                                          | The hostname of mongoDB - used for holding device information                                                                                         |
-| IOTA_MONGO_PORT      | `27017`                                               | The port mongoDB is listening on                                                                                                                      |
-| IOTA_MONGO_DB        | `iotagentul`                                          | The name of the database used in mongoDB                                                                                                              |
-| IOTA_HTTP_PORT       | `7896`                                                | The port where the IoT Agent listens for IoT device traffic over HTTP                                                                                 |
-| IOTA_PROVIDER_URL    | `http://iot-agent:4041`                               | URL passed to the Context Broker when commands are registered, used as a forwarding URL location when the Context Broker issues a command to a device |
+| Key                  | Value                                | Description                                                                                                                                           |
+| -------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| IOTA_CB_HOST         | `orion`                              | Hostname of the context broker to update context                                                                                                      |
+| IOTA_CB_PORT         | `1026`                               | Port that context broker listens on to update context                                                                                                 |
+| IOTA_NORTH_PORT      | `4041`                               | Port used for Configuring the IoT Agent and receiving context updates from the context broker                                                         |
+| IOTA_REGISTRY_TYPE   | `mongodb`                            | Whether to hold IoT device info in memory or in a database                                                                                            |
+| IOTA_LOG_LEVEL       | `DEBUG`                              | The log level of the IoT Agent                                                                                                                        |
+| IOTA_TIMESTAMP       | `true`                               | Whether to supply timestamp information with each measurement received from attached devices                                                          |
+| IOTA_CB_NGSI_VERSION | `LD`                                 | Whether to supply use NGSI-LD when sending updates for active attributes                                                                              |
+| IOTA_AUTOCAST        | `true`                               | Ensure JSON number values are read as numbers not strings                                                                                             |
+| IOTA_MONGO_HOST      | `context-db`                         | The hostname of mongoDB - used for holding device information                                                                                         |
+| IOTA_MONGO_PORT      | `27017`                              | The port mongoDB is listening on                                                                                                                      |
+| IOTA_MONGO_DB        | `iotagentul`                         | The name of the database used in mongoDB                                                                                                              |
+| IOTA_HTTP_PORT       | `7896`                               | The port where the IoT Agent listens for IoT device traffic over HTTP                                                                                 |
+| IOTA_PROVIDER_URL    | `http://iot-agent:4041`              | URL passed to the Context Broker when commands are registered, used as a forwarding URL location when the Context Broker issues a command to a device |
 | IOTA_JSON_LD_CONTEXT | `http://context/ngsi-context.jsonld` | The location of the `@context` file used to define the device data models                                                                             |
-| IOTA_FALLBACK_TENANT | `openiot`                                             | The tenant to use if no explicit tenant has been received from communications                                                                         |
+| IOTA_FALLBACK_TENANT | `openiot`                            | The tenant to use if no explicit tenant has been received from communications                                                                         |
 
 # Prerequisites
 
@@ -312,7 +312,7 @@ docker-compose -v
 docker version
 ```
 
-Please ensure that you are using Docker version 18.03 or higher and Docker Compose 1.21 or higher and upgrade if
+Please ensure that you are using Docker version 20.10 or higher and Docker Compose 1.29 or higher and upgrade if
 necessary.
 
 ## Cygwin
