@@ -46,3 +46,7 @@
 	path = tutorials.IoT-Agent-JSON
 	url = https://github.com/FIWARE/tutorials.IoT-Agent-JSON.git
 	branch = NGSI-LD
+[submodule "tutorials.Short-Term-History"]
+	path = tutorials.Short-Term-History
+	url = https://github.com/FIWARE/tutorials.Short-Term-History
+	branch = NGSI-LD
