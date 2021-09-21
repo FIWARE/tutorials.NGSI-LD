@@ -208,7 +208,7 @@ apart.
 Go to the Device Monitor `http://localhost:3000/app/farm/urn:ngsi-ld:Building:farm001` and start removing hay from the
 barn. Nothing happens until the barn is half-empty, then a request is sent to `subscription/low-stock-farm001` as shown:
 
-<h4>`http://localhost:3000/app/monitor`</h4>
+<h4><code>http://localhost:3000/app/monitor</code></h4>
 
 ![](https://fiware.github.io/tutorials.Subscriptions/img/low-stock-farm.png)
 

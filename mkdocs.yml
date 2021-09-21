@@ -22,6 +22,7 @@ pages:
       - CRUD Operations: ngsi-ld-operations.md
       - Entity Relationships: entity-relationships.md
       - Subscriptions: subscriptions.md
+      - Temporal Operations: short-term-history.md
   - IoT Agents & Robots:
       - IoT Sensors: iot-sensors.md
       - IoT Agent (Ultralight): iot-agent.md

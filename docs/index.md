@@ -83,7 +83,7 @@ sudo chown $USER /var/run/docker.sock
 ### Postman <img src="https://www.getpostman.com/favicon-32x32.png" align="left"  height="32" width="32" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
 The tutorials which use HTTP requests supply a collection for use with the Postman utility. Postman is a testing
-framework for REST APIs. The tool can be downloaded from [www.getpostman.com](www.getpostman.com). All the FIWARE
+framework for REST APIs. The tool can be downloaded from [www.getpostman.com](http://www.getpostman.com). All the FIWARE
 Postman collections can downloaded directly from the
 [Postman API network](https://explore.postman.com/team/3mM5EY6ChBYp9D)
 
@@ -117,7 +117,9 @@ These first tutorials are an introduction to the NGSI-LD Context Brokers, and ar
 to use NGSI-LD
 
 &nbsp; 101. [Understanding `@context`](understanding-@context.md)<br/> &nbsp; 102.
-[Working with `@context`](working-with-@context)<br/> &nbsp; 103. [CRUD Operations](ngsi-ld-operations)<br/>
+[Working with `@context`](working-with-@context)<br/> &nbsp; 103. [CRUD Operations](ngsi-ld-operations)<br/> &nbsp; 104.
+[Entity Relationships](entity-relationships.md)<br/>&nbsp; 106. [Subscriptions](subscriptions.md)<br/> &nbsp; 107.
+[Temporal Operations](short-term-history.md)<br/>
 
 <h3 style="box-shadow: 0px 4px 0px 0px #5dc0cf;">Internet of Things, Robots and third-party systems</h3>
 

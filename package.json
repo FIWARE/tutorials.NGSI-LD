@@ -53,13 +53,11 @@
 	},
 	"lint-staged": {
 		"*.md": [
-			"prettier --parser markdown --tab-width 4 --print-width 120 --write --prose-wrap always",
-			"git add"
+			"prettier --parser markdown --tab-width 4 --print-width 120 --write --prose-wrap always"
 		],
 		"*.js": [
 			"prettier --parser flow --config app/.prettierrc.json --write",
-			"eslint --fix",
-			"git add"
+			"eslint --fix"
 		]
 	},
 	"remarkConfig": {
