@@ -14,6 +14,7 @@ const SECRET = process.env.SESSION_SECRET || crypto.randomBytes(20).toString('he
 
 const app = express();
 const mongoose = require('mongoose');
+const MongoStore = require('connect-mongo');
 
 const MONGO_DB = process.env.MONGO_URL || 'mongodb://localhost:27017';
 
@@ -46,13 +47,16 @@ app.use(flash());
 
 if (process.env.NODE_ENV === 'production') {
     // Use Mongo-DB to store session data.
-    const MongoStore = require('connect-mongo')(session);
     app.use(
         session({
             resave: false,
             saveUninitialized: true,
             secret: SECRET,
-            store: new MongoStore({ url: MONGO_DB + '/sessions' })
+            store: MongoStore.create({
+                mongoUrl: MONGO_DB + '/sessions',
+                mongooseConnection: mongoose.connection,
+                ttl: 14 * 24 * 60 * 60 // save session for 14 days
+            })
         })
     );
 } else {

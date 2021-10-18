@@ -21,7 +21,7 @@ app.set('port', port);
  */
 
 const server = http.createServer(app);
-global.SOCKET_IO = require('socket.io')(server, { wsEngine: 'ws' });
+global.SOCKET_IO = require('socket.io')(server);
 
 /**
  * Listen on provided port, on all network interfaces.

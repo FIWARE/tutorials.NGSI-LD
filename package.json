@@ -20,24 +20,24 @@
 	"private": true,
 	"license": "MIT",
 	"engines": {
-		"node": ">=10"
+		"node": ">=12"
 	},
 	"devDependencies": {
-		"eslint": "^7.5.0",
-		"eslint-config-tamia": "^7.2.5",
-		"eslint-plugin-prettier": "^3.1.4",
-		"husky": "^4.2.5",
-		"lint-staged": "^10.2.11",
-		"memfs": "3.2.0",
-		"prettier": "^2.0.5",
-		"remark-cli": "^8.0.1",
-		"remark-preset-lint-recommended": "^4.0.1",
-		"textlint": "^11.7.6",
+		"eslint": "^8.0.1",
+		"eslint-config-tamia": "^7.2.7",
+		"eslint-plugin-prettier": "^4.0.0",
+		"husky": "^7.0.2",
+		"lint-staged": "^11.2.3",
+		"memfs": "3.3.0",
+		"prettier": "^2.4.1",
+		"remark-cli": "^10.0.0",
+		"remark-preset-lint-recommended": "^6.1.1",
+		"textlint": "^12.0.2",
 		"textlint-filter-rule-comments": "^1.2.2",
 		"textlint-rule-common-misspellings": "^1.0.1",
 		"textlint-rule-no-dead-link": "^4.7.0",
-		"textlint-rule-terminology": "^2.1.4",
-		"textlint-rule-write-good": "^1.6.2"
+		"textlint-rule-terminology": "^2.1.5",
+		"textlint-rule-write-good": "^2.0.0"
 	},
 	"scripts": {
 		"precommit": "lint-staged",
