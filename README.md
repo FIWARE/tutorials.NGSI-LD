@@ -20,10 +20,10 @@ directly or programmatically.
 The tutorials defines a series of data-models to be used within the `@context`. More information about the classes and
 attributes used can be found in the following:
 
--   <img src="https://json-ld.org/favicon.ico" align="center" height="25">
-    [Tutorial-specific Data Models](https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html)
--   <img src="https://json-ld.org/favicon.ico" align="center" height="25">
-    [Smart Data Models](https://smartdatamodels.org)
+-   <img src="https://json-ld.org/favicon.ico" align="center" height="25"/>
+    <a href="https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html">Tutorial-specific Data Models</a>
+-   <img src="https://json-ld.org/favicon.ico" align="center" height="25"/>
+    <a href="https://smartdatamodels.org">Smart Data Models</a>
 
 ## Install
 
