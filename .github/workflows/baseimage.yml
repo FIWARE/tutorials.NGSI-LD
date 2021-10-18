@@ -8,7 +8,7 @@ on:
   push:
     paths:
       - docker/**
-      - context-provider/**
+      - app/**
     branches:
       - master
   workflow_dispatch:
