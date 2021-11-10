@@ -23,15 +23,15 @@ chapter hence the an introduction to a given enabler will occur before the full 
 explored in more depth.
 
 It is recommended to start with reading the full **Core Context Management: The NGSI-LD Interface** Chapter before
-moving on to other subjects, as this will give you an fuller understanding of the role of context data in general.
-However it is not necessary to follow all the subsequent tutorials sequentially - as FIWARE is a modular system, you can
+moving on to other subjects, as this will give you a fuller understanding of the role of context data in general.
+However, it is not necessary to follow all the subsequent tutorials sequentially - as FIWARE is a modular system, you can
 choose which enablers are of interest to you.
 
 ## Prerequisites
 
 ### Swagger <img src="https://static1.smartbear.co/swagger/media/assets/swagger_fav.png" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
-The OpenAPI Specification (commonly known as Swagger) is an API description format for REST APIs. A Swaggger spec allows
+The OpenAPI Specification (commonly known as Swagger) is an API description format for REST APIs. A Swagger spec allows
 you to describe an entire API (such as NGSI-LD itself) however in this tutorial we shall be concentrating on using
 Swagger to define data models.
 
@@ -42,7 +42,7 @@ important since we will need a well defined structure to be able to generate `@c
 
 ### Docker and Docker Compose <img src="https://www.docker.com/favicon.ico" align="left"  height="36" width="36" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
-To keep things simple all components will be run using [Docker](https://www.docker.com). **Docker** is a container
+To keep things simple, all components will be run using [Docker](https://www.docker.com). **Docker** is a container
 technology which allows to different components isolated into their respective environments.
 
 -   To install Docker on Windows follow the instructions [here](https://docs.docker.com/docker-for-windows/)
@@ -50,7 +50,7 @@ technology which allows to different components isolated into their respective e
 -   To install Docker on Linux follow the instructions [here](https://docs.docker.com/install/)
 
 **Docker Compose** is a tool for defining and running multi-container Docker applications. A series of `*.yaml` files
-are used configure the required services for the application. This means all container services can be brought up in a
+are used to configure the required services for the application. This means all container services can be brought up in a
 single command. Docker Compose is installed by default as part of Docker for Windows and Docker for Mac, however Linux
 users will need to follow the instructions found [here](https://docs.docker.com/compose/install/)
 
@@ -80,11 +80,11 @@ It can be solved by owning the `/var/run/docker.sock` Unix socket as shown:
 sudo chown $USER /var/run/docker.sock
 ```
 
-### Postman <img src="https://www.getpostman.com/favicon-32x32.png" align="left"  height="32" width="32" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
+### Postman <img src="https://www.postman.com/favicon-32x32.png" align="left"  height="32" width="32" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
 The tutorials which use HTTP requests supply a collection for use with the Postman utility. Postman is a testing
 framework for REST APIs. The tool can be downloaded from [www.getpostman.com](http://www.getpostman.com). All the FIWARE
-Postman collections can downloaded directly from the
+Postman collections can be downloaded directly from the
 [Postman API network](https://explore.postman.com/team/3mM5EY6ChBYp9D)
 
 ### Cygwin for Windows <img src="https://www.cygwin.com/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
@@ -117,7 +117,7 @@ These first tutorials are an introduction to the NGSI-LD Context Brokers, and ar
 to use NGSI-LD
 
 &nbsp; 101. [Understanding `@context`](understanding-@context.md)<br/> &nbsp; 102.
-[Working with `@context`](working-with-@context)<br/> &nbsp; 103. [CRUD Operations](ngsi-ld-operations)<br/> &nbsp; 104.
+[Working with `@context`](working-with-@context.md)<br/> &nbsp; 103. [CRUD Operations](ngsi-ld-operations.md)<br/> &nbsp; 104.
 [Entity Relationships](entity-relationships.md)<br/>&nbsp; 106. [Subscriptions](subscriptions.md)<br/> &nbsp; 107.
 [Temporal Operations](short-term-history.md)<br/>
 
@@ -133,10 +133,10 @@ from the context broker to alter the state of real-world objects themselves.
 
 <h3 style="box-shadow: 0px 4px 0px 0px #233c68;">Core Context Management: History Management</h3>
 
-These tutorials show how to manipulate and store context data so it can be used for further processesing
+These tutorials show how to manipulate and store context data so it can be used for further processing
 
 &nbsp; 304. [Querying Time Series Data (Crate-DB)](time-series-data.md)<br/> &nbsp; 305.
-[Big Data Analysis (Flink)](big-data-flink.md)<br/> &nbsp; 306. [Big Data Analysis (Spark)](big-data-flink.md)<br/>
+[Big Data Analysis (Flink)](big-data-flink.md)<br/> &nbsp; 306. [Big Data Analysis (Spark)](big-data-spark.md)<br/>
 
 <h3 style="box-shadow: 0px 4px 0px 0px #88a1ce;">Processing, Analysis and Visualization</h3>
 
