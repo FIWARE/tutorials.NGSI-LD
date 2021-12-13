@@ -7,21 +7,22 @@ contact_links:
   - name: Community Support
     url: https://stackoverflow.com/questions/ask?tags=fiware-orion+fiware
     about: |
-      <b>test</b>
-      Volunteers from the Open Source FIWARE community monitor the 
-      [![Support badge](https://img.shields.io/badge/tag-fiware-orange.svg?logo=stackoverflow)](https://stackoverflow.com/questions/tagged/fiware)
-      and related tags over on Stack Overflow. For **development questions only** you can [ask questions](https://stackoverflow.com/help/how-to-ask)
+      Volunteers from the Open Source FIWARE community monitor the https://stackoverflow.com/questions/tagged/fiware tag
+      and related tags over on Stack Overflow. For development questions only you can ask questions
       over on Stack Overflow provided you follow their rules and guidance on posting questions. Each question should include
       
+
       -  A title that summarizes the specific problem
       -  Background as to what you have already tried to do to solve this
       -  Sufficient code/config/log statements etc. to allow others to reproduce the problem. 
       -  Include all relevant tags 
       
-      Please remember to proof-read before posting and respond to any feedback given. 
+
+      Please remember to proof-read before posting and follow all the rules defined at https://stackoverflow.com/help/how-to-ask  and respond to any feedback given. 
+      
       
       Stack Overflow is a crowd-sourced question and answer website for professional and enthusiast programmers. It is not affliated with this
-      software and does not answer [customer service related questions](https://meta.stackoverflow.com/questions/255745/why-cant-i-ask-customer-service-related-questions)
+      software and does not answer customer service related questions - see this discussion for more details:
+      https://meta.stackoverflow.com/questions/255745/why-cant-i-ask-customer-service-related-questions
       
       Do not raise a Stack Overflow question for a bug reports or feature request, stick with opening an issue in the tutorials.NGSI-LD repository.
-
