@@ -6,4 +6,12 @@ contact_links:
       check the documentation before asking help or reporting a bug.
   - name: Community Support
     url: https://stackoverflow.com/questions/ask?tags=fiware-orion+fiware
-    about: "Volunteers from the Open Source FIWARE community monitor\n\n the https://stackoverflow.com/questions/tagged/fiware tag\n\nand related tags over on Stack Overflow. For development questions only you can ask questions"
+    about: |
+      Volunteers from the Open Source FIWARE community monitor the fiware tag
+      and related tags over on Stack Overflow. For development questions only you can ask questions
+      over on Stack Overflow provided you follow their rules and guidance on posting questions and respond to any feedback given.
+      
+      Stack Overflow is a crowd-sourced question and answer website for professional and enthusiast programmers. It is not affliated with this
+      software and does not answer customer service related questions.
+      
+      Do not raise a Stack Overflow question for a bug reports or feature request, stick with opening an issue in this repository.
