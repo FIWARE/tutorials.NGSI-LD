@@ -7,6 +7,7 @@ contact_links:
   - name: Community Support
     url: https://stackoverflow.com/questions/ask?tags=fiware-orion+fiware
     about: |
+      <b>test</b>
       Volunteers from the Open Source FIWARE community monitor the 
       [![Support badge](https://img.shields.io/badge/tag-fiware-orange.svg?logo=stackoverflow)](https://stackoverflow.com/questions/tagged/fiware)
       and related tags over on Stack Overflow. For **development questions only** you can [ask questions](https://stackoverflow.com/help/how-to-ask)
