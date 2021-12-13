@@ -288,38 +288,6 @@ The `iot-agent` container is driven by environment variables as shown:
 | IOTA_JSON_LD_CONTEXT | `http://context/ngsi-context.jsonld` | The location of the `@context` file used to define the device data models                                                                             |
 | IOTA_FALLBACK_TENANT | `openiot`                            | The tenant to use if no explicit tenant has been received from communications                                                                         |
 
-# Prerequisites
-
-## Docker
-
-To keep things simple all components will be run using [Docker](https://www.docker.com). **Docker** is a container
-technology which allows to different components isolated into their respective environments.
-
--   To install Docker on Windows follow the instructions [here](https://docs.docker.com/docker-for-windows/)
--   To install Docker on Mac follow the instructions [here](https://docs.docker.com/docker-for-mac/)
--   To install Docker on Linux follow the instructions [here](https://docs.docker.com/install/)
-
-**Docker Compose** is a tool for defining and running multi-container Docker applications. A
-[YAML file](https://raw.githubusercontent.com/FIWARE/tutorials.IoT-Agent-JSON/NGSI-LD/docker-compose/orion-ld.yml) is
-used configure the required services for the application. This means all container services can be brought up in a
-single command. Docker Compose is installed by default as part of Docker for Windows and Docker for Mac, however Linux
-users will need to follow the instructions found [here](https://docs.docker.com/compose/install/)
-
-You can check your current **Docker** and **Docker Compose** versions using the following commands:
-
-```bash
-docker-compose -v
-docker version
-```
-
-Please ensure that you are using Docker version 20.10 or higher and Docker Compose 1.29 or higher and upgrade if
-necessary.
-
-## Cygwin
-
-We will start up our services using a simple bash script. Windows users should download [cygwin](http://www.cygwin.com/)
-to provide a command-line functionality similar to a Linux distribution on Windows.
-
 # Start Up
 
 Before you start you should ensure that you have obtained or built the necessary Docker images locally. Please clone the

@@ -24,8 +24,8 @@ explored in more depth.
 
 It is recommended to start with reading the full **Core Context Management: The NGSI-LD Interface** Chapter before
 moving on to other subjects, as this will give you a fuller understanding of the role of context data in general.
-However, it is not necessary to follow all the subsequent tutorials sequentially - as FIWARE is a modular system, you can
-choose which enablers are of interest to you.
+However, it is not necessary to follow all the subsequent tutorials sequentially - as FIWARE is a modular system, you
+can choose which enablers are of interest to you.
 
 ## Prerequisites
 
@@ -50,8 +50,8 @@ technology which allows to different components isolated into their respective e
 -   To install Docker on Linux follow the instructions [here](https://docs.docker.com/install/)
 
 **Docker Compose** is a tool for defining and running multi-container Docker applications. A series of `*.yaml` files
-are used to configure the required services for the application. This means all container services can be brought up in a
-single command. Docker Compose is installed by default as part of Docker for Windows and Docker for Mac, however Linux
+are used to configure the required services for the application. This means all container services can be brought up in
+a single command. Docker Compose is installed by default as part of Docker for Windows and Docker for Mac, however Linux
 users will need to follow the instructions found [here](https://docs.docker.com/compose/install/)
 
 You can check your current **Docker** and **Docker Compose** versions using the following commands:
@@ -61,8 +61,10 @@ docker-compose -v
 docker version
 ```
 
-Please ensure that you are using Docker version 20.10 or higher and Docker Compose 1.29 or higher and upgrade if
-necessary.
+> **Important** In recent versions, `docker-compose` is already included as part of of the main `docker` client, Please
+> ensure that you are using Docker version 20.10 or higher and Docker Compose 1.29 or higher and upgrade if necessary.
+> If you are unable to upgrade and stuck using an older version you can still run the tutorials by adding a `legacy`
+> parameter at the end the `./services` script commands e.g. `services start legacy`
 
 If using a linux distro with an outdated docker-compose, the files can be installed directly as shown:
 
@@ -117,9 +119,9 @@ These first tutorials are an introduction to the NGSI-LD Context Brokers, and ar
 to use NGSI-LD
 
 &nbsp; 101. [Understanding `@context`](understanding-@context.md)<br/> &nbsp; 102.
-[Working with `@context`](working-with-@context.md)<br/> &nbsp; 103. [CRUD Operations](ngsi-ld-operations.md)<br/> &nbsp; 104.
-[Entity Relationships](entity-relationships.md)<br/>&nbsp; 106. [Subscriptions](subscriptions.md)<br/> &nbsp; 107.
-[Temporal Operations](short-term-history.md)<br/>
+[Working with `@context`](working-with-@context.md)<br/> &nbsp; 103. [CRUD Operations](ngsi-ld-operations.md)<br/>
+&nbsp; 104. [Entity Relationships](entity-relationships.md)<br/>&nbsp; 106. [Subscriptions](subscriptions.md)<br/>
+&nbsp; 107. [Temporal Operations](short-term-history.md)<br/>
 
 <h3 style="box-shadow: 0px 4px 0px 0px #5dc0cf;">Internet of Things, Robots and third-party systems</h3>
 
