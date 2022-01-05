@@ -140,6 +140,14 @@ These tutorials show how to manipulate and store context data so it can be used 
 &nbsp; 304. [Querying Time Series Data (Crate-DB)](time-series-data.md)<br/> &nbsp; 305.
 [Big Data Analysis (Flink)](big-data-flink.md)<br/> &nbsp; 306. [Big Data Analysis (Spark)](big-data-spark.md)<br/>
 
+<h3 style="box-shadow: 0px 4px 0px 0px #ff7059;">Security: Identity Management</h3>
+
+These tutorials show how to create and administer users within an application, and how to restrict access to assets, by
+assigning roles and permissions.
+
+&nbsp; 401. [Administrating Users and Organizations](identity-management.md)<br/> &nbsp; 402.
+[Managing Roles and Permissions](roles-permissions.md)<br/>
+
 <h3 style="box-shadow: 0px 4px 0px 0px #88a1ce;">Processing, Analysis and Visualization</h3>
 
 These tutorials show how to create, process, analyze or visualize context information
