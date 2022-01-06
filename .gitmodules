@@ -52,9 +52,9 @@
 	branch = NGSI-LD
 [submodule "tutorials.Identity-Management"]
 	path = tutorials.Identity-Management
-	url = git@github.com:FIWARE/tutorials.Identity-Management.git
+	url = https://github.com/FIWARE/tutorials.Identity-Management.git
 	branch = NGSI-LD
 [submodule "tutorials.Roles-Permissions"]
 	path = tutorials.Roles-Permissions
-	url = git@github.com:FIWARE/tutorials.Roles-Permissions.git
+	url = https://github.com/FIWARE/tutorials.Roles-Permissions.git
 	branch = NGSI-LD
