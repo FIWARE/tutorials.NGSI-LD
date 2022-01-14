@@ -295,7 +295,7 @@ repository and create the necessary images by running the commands as shown:
 
 ```bash
 #!/bin/bash
-git clone https://github.com/FIWARE/tutorials.IoT-Agent.git
+git clone https://github.com/FIWARE/tutorials.IoT-Agent-JSON.git
 cd tutorials.IoT-Agent
 git checkout NGSI-LD
 
@@ -308,7 +308,7 @@ repository:
 
 ```bash
 #!/bin/bash
-git clone https://github.com/FIWARE/tutorials.IoT-Agent.git
+git clone https://github.com/FIWARE/tutorials.IoT-Agent-JSON.git
 cd tutorials.IoT-Agent
 git checkout NGSI-LD
 
