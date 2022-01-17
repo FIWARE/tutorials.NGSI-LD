@@ -296,7 +296,7 @@ repository and create the necessary images by running the commands as shown:
 ```bash
 #!/bin/bash
 git clone https://github.com/FIWARE/tutorials.IoT-Agent-JSON.git
-cd tutorials.IoT-Agent
+cd tutorials.IoT-Agent-JSON
 git checkout NGSI-LD
 
 ./services create
@@ -309,7 +309,7 @@ repository:
 ```bash
 #!/bin/bash
 git clone https://github.com/FIWARE/tutorials.IoT-Agent-JSON.git
-cd tutorials.IoT-Agent
+cd tutorials.IoT-Agent-JSON
 git checkout NGSI-LD
 
 ./services orion|scorpio
