@@ -23,42 +23,56 @@
     "node": ">=12"
   },
   "dependencies": {
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.19.2",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^4.6.0",
-    "cookie-parser": "~1.4.5",
-    "debug": "~4.3.2",
-    "express": "~4.17.1",
+    "cookie-parser": "~1.4.6",
+    "debug": "~4.3.3",
+    "express": "~4.17.3",
     "express-session": "^1.17.2",
-    "http-errors": "^1.8.0",
+    "http-errors": "^2.0.0",
     "jsonld": "^5.2.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
-    "mongoose": "^6.0.11",
+    "mongoose": "^6.2.2",
     "morgan": "^1.10.0",
-    "mqtt": "^4.2.8",
+    "mqtt": "^4.3.6",
     "node-cache": "^5.1.2",
     "parse-links": "^0.1.0",
     "pug": "3.0.2",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
-    "socket.io": "^4.3.1",
+    "socket.io": "^4.4.1",
     "twitter": "^1.7.1",
     "xml-parser": "^1.2.1",
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
-    "ajv": "^8.6.3",
-    "eslint": "^8.0.1",
+    "ajv": "^8.10.0",
+    "eslint": "^8.9.0",
     "eslint-config-tamia": "^7.2.7",
     "eslint-plugin-prettier": "^4.0.0",
-    "memfs": "3.3.0",
-    "prettier": "^2.4.1"
+    "memfs": "3.4.1",
+    "prettier": "^2.5.1",
+    "lint-staged": "^12.3.4"
   },
   "scripts": {
+    "pre-commit": "lint-staged",
     "start": "node ./bin/www",
     "lint": "eslint . --cache --fix",
     "prettier": "prettier --parser flow --config ./.prettierrc.json --write **/**/*.js  **/*.js *.js",
     "test": "eslint ."
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --config .prettierrc.json --write",
+      "eslint --fix"
+    ],
+    "*.md": [
+      "prettier --parser markdown --tab-width 4 --print-width 120 --write --prose-wrap always"
+    ],
+    "*.yml": [
+      "prettier --no-config --tab-width 4 --print-width 120 --write"
+    ]
   }
 }

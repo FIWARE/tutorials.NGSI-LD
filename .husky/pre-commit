@@ -2,3 +2,6 @@
 . "$(dirname "$0")/_/husky.sh"
 
 npm run pre-commit
+
+cd app
+npm run pre-commit 
