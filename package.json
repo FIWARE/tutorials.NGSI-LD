@@ -1,6 +1,6 @@
 {
 	"name": "tutorials.ngsi-ld",
-	"description": "An Express App for providing NGSI-LD context data to FIWARE Components",
+	"description": "A series of NGSI-LD tutorials using FIWARE Components",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/fiware/tutorials.ngsi-ld.git"
@@ -20,7 +20,7 @@
 	"private": true,
 	"license": "MIT",
 	"engines": {
-		"node": ">=12"
+		"node": ">=16"
 	},
 	"devDependencies": {
 		"husky": "^7.0.0",
