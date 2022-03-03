@@ -58,3 +58,6 @@
 	path = tutorials.Roles-Permissions
 	url = https://github.com/FIWARE/tutorials.Roles-Permissions.git
 	branch = NGSI-LD
+[submodule "tutorials.Concise-Format"]
+	path = tutorials.Concise-Format
+	url = https://github.com/FIWARE/tutorials.Concise-Format.git
