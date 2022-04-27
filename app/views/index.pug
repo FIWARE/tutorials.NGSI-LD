@@ -1,8 +1,8 @@
 extends layout
 
 block content
-  h1= title
-
+  - if (title)
+    h1= title
   - if (success)
     .message.success
       each item in success
@@ -21,7 +21,7 @@ block content
   - if (securityEnabled)
     - if (!session.username)
       div(style='width:20em;line-height: 1.6;')
-        ul
+        ul(style='list-style-type: none;')
           li
             a.button(href="authCodeGrant") Authorization Code
           li
@@ -36,7 +36,7 @@ block content
             label(for='password') password: &nbsp;
               input(id='password',type='password',value='',placeholder='',name='password')
           div  
-            ul
+            ul(style='list-style-type: none;')
               li
                 input.button(type='submit',value='User Credentials')
   div

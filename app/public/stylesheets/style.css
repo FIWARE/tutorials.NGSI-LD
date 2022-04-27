@@ -53,11 +53,15 @@ strong {
 }
 a {
   font-weight: 500;
-  color: #002e67 !important;
+  color: #002e67;
 }
 a:hover {
   color: #002452;
   text-decoration: underline;
+}
+a.button:hover {
+  color: #fff;
+  text-decoration: none;
 }
 h1,
 h2,
@@ -155,6 +159,7 @@ ul.devices {
     line-height: .7em;
     color: #fff;
     transition: all 0.3s ease-in-out;
+    text-decoration: none;
 }
 
 .card {
