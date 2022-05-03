@@ -80,11 +80,11 @@ Therefore the overall architecture will consist of the following elements:
 -   A [Timescale](https://www.timescale.com/) timeseries database for persisting historic context.
 -   The **Mintaka** add-on which services the temporal interface and is also responsible for persisting the context
 -   The **Tutorial Application** does the following:
-    -   Offers static `@context` files defining the context entities within the system.
     -   Acts as set of dummy [agricultural IoT devices](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)
         using the
         [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
         protocol running over HTTP.
+-   An HTTP **Web-Server** which offers static `@context` files defining the context entities within the system.
 
 Since all interactions between the elements are initiated by HTTP requests, the entities can be containerized and run
 from exposed ports.
