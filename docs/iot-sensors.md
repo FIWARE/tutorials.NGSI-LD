@@ -18,7 +18,7 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 # What are IoT devices?
 
 > "A farm is a manipulative creature. There is no such thing as finished. Work comes in a stream and has no end. There
-> are only the things that must be done now and things that can be done later.."
+> are only the things that must be done now and things that can be done later..."
 >
 > — Kristin Kimball, The Dirty Life: On Farming, Food, and Love
 
@@ -27,7 +27,7 @@ which are able to connect to a network and exchange data. Each "thing" or "smart
 electronics and software which can act as a sensor or actuator. Sensors are able to report the state of the real-world
 around them. Actuators are responsible for altering the state of the system, by responding to a control signal.
 
-Each device is uniquely identifiable through its embedded computing system but is able to inter-operate within the
+Each device is uniquely identifiable through its embedded computing system but is able to interoperate within the
 existing internet infrastructure.
 
 FIWARE is a system for managing context information. For a smart solution based on the internet of Things, the context
@@ -37,16 +37,16 @@ world, it will eventually be represented as a unique entity within the context.
 IoT devices can range from simple to complex. Here are some examples of agricultural IoT devices which will be used
 within this tutorial:
 
--   A **Soil Sensor** can report on the amount of moisture in the ground
--   A **Temperature Sensor** can be queried to return current air or soil temperature
--   A **Filling Sensor** can report the amount of feed left in a silo
--   An **Irrigation System** can be sent a command to activate and turn on for a short period
--   **Animal Collars** can be used to track the location, health and stress-levels of livestock
+-   A **Soil Sensor** can report on the amount of moisture in the ground.
+-   A **Temperature Sensor** can be queried to return current air or soil temperature.
+-   A **Filling Sensor** can report the amount of feed left in a silo.
+-   An **Irrigation System** can be sent a command to activate and turn on for a short period.
+-   **Animal Collars** can be used to track the location, health and stress-levels of livestock.
 -   **Farm Management Information Systems** placed in agricultural machinery can be used send and receive instructions
     to labourers, track the state of tasks and follow the progress of them.
 
 As you can see, the **Irrigation System** is an example of a pure actuator, as it only reacts to the given commands.
-Meanwhile the **Soil Sensor** is an example of a pure sensor, since it will only report on the state of the world as it
+Meanwhile, the **Soil Sensor** is an example of a pure sensor, since it will only report on the state of the world as it
 sees it. Some devices such as an **FMIS** are able to both respond to commands and report on state in a meaningful way.
 
 The state information held within each device, as it will eventually be seen within the Context Broker is defined in the
@@ -63,7 +63,7 @@ are limited. The payload for measurement requests is a list of key-value pairs s
 e.g.
 
 ```
-<key>|<value>|<key>|<value>|<key>|<value> etc..
+<key>|<value>|<key>|<value>|<key>|<value> etc...
 ```
 
 For example a payload such as:
@@ -100,7 +100,7 @@ The payload for Ultralight commands has the following format:
 ```
 
 Where `<device_name>` is the entity `id` as held in the context broker, `<command>` is one of the supported commands and
-any additional required values are passed in subsequent parameters for example
+any additional required values are passed in subsequent parameters for example:
 
 ```
 urn:ngsi-ld:Robot:001@turn|left|30
@@ -132,7 +132,7 @@ Requests generated from an IoT device and passed back upwards towards the Contex
 northbound traffic. Northbound traffic consists of **measurements** made by sensor devices and relays the state of the
 real world into the context data of the system. For example a measurement from a humidity sensor could be relayed back
 into the context broker to indicate that the moisture level of the entity has changed. A subscription could be made to
-be informed of such changes and there provoke further actions (such as turning on a sprinkler)
+be informed of such changes and there provoke further actions (such as turning on a sprinkler).
 
 ### Measurement using HTTP GET
 
@@ -170,8 +170,8 @@ Once again the `i` and `k` parameters are mandatory.
 #### Device Monitor
 
 For the purpose of this tutorial, a series of dummy IoT devices have been created, which will eventually be attached to
-the context broker. The state of each device can be seen on the UltraLight device monitor web page found at:
-`http://localhost:3000/device/monitor`
+the context broker. The state of each device can be seen on the UltraLight device monitor web page found at
+`http://localhost:3000/device/monitor`:
 
 ![FIWARE Monitor](https://fiware.github.io/tutorials.IoT-Sensors/img/farm-devices.png)
 
@@ -220,7 +220,7 @@ The `tutorial` container is listening on two ports:
 The `tutorial` container is driven by environment variables as shown:
 
 | Key                   | Value                        | Description                                                                                                                                                                        |
-| --------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|-----------------------|------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | DEBUG                 | `tutorial:*`                 | Debug flag used for logging                                                                                                                                                        |
 | WEB_APP_PORT          | `3000`                       | Port used by web-app which displays the dummy device data                                                                                                                          |
 | IOTA_HTTP_HOST        | `iot-agent`                  | The hostname of the missing IoT Agent - used in a later tutorial                                                                                                                   |
@@ -235,7 +235,7 @@ are not used in this tutorial, but will be needed to complete the system subsequ
 
 -   The [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) is used for holding the context data of
     the smart solution. As you know all interactions with the context broker must be made using
-    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
+    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json).
 -   An IoT Agent acts as a middleware component converting
     [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
     requests (from the context broker) into a protocol (such as
@@ -275,7 +275,7 @@ This command will also import seed data from the previous
 
 To follow the tutorial correctly please ensure you have the device monitor page available in your browser and click on
 the page to enable audio before you enter any cUrl commands. The device monitor displays the current state of an array
-of dummy devices using Ultralight 2.0 syntax
+of dummy devices using Ultralight 2.0 syntax.
 
 #### Device Monitor
 
@@ -459,7 +459,7 @@ actively reported to the IoT Broker when they occur, and the updated state of th
 device monitor page.
 
 The **SoilSensor**, **AnimalCollars** and **TemperatureSensors** found on the farm are not actuators since they do not
-respond to commands, however they does actively monitor and measures the state of things in the real world. If any of
+respond to commands, however they do actively monitor and measures the state of things in the real world. If any of
 the other commands have been sent, the various dummy sensors will also start to respond.
 
 The Northbound HTTP requests generated by the sensors can be also viewed on the device monitor page.
@@ -468,7 +468,7 @@ The Northbound HTTP requests generated by the sensors can be also viewed on the 
 
 ## Sending Measures
 
-This example simulates a request coming from the device `humidity001`
+This example simulates a request coming from the device `humidity001`.
 
 The request to the previously provisioned resource `iot/d` is in UltraLight 2.0 format and identifies the device
 `humidity` and passes a known API key.
@@ -483,5 +483,5 @@ curl -L -X POST 'http://localhost:7896/iot/d?k=4jggokgpepnvsb2uv4s40d59ov&i=humi
 
 #### Response:
 
-The example as written won't work unless the IoT Agent exists and is listening on the appropriate endpoint (`/iot/d`) to
-process the measure. However this measure is the class of request generated by all Ultralight 2.0. sensors.
+The example as written will not work unless the IoT Agent exists and is listening on the appropriate endpoint (`/iot/d`)
+to process the measure. However, this measure is the class of request generated by all Ultralight 2.0. sensors.

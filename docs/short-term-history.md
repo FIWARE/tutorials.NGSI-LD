@@ -8,7 +8,7 @@ context broker implementations. The tutorial activates the IoT animal collars co
 sensors into a database and retrieves time-based aggregations of that data.
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
-[Postman documentation](https://fiware.github.io/tutorials.Short-Term-History/ngsi-ld.html)
+[Postman documentation](https://fiware.github.io/tutorials.Short-Term-History/ngsi-ld.html).
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/4824d3171f823935dcab)
 
@@ -26,9 +26,9 @@ offer historical context data in a variety of JSON based formats. Temporal funct
 interface for NGSI-LD context brokers, since the additional functionality comes at a cost, and is not mandatory by
 default for performance reasons.
 
-Context broker with the temporal inteface enabled can persist historic context using the database of their choice. The
+Context broker with the temporal interface enabled can persist historic context using the database of their choice. The
 NGSI-LD temporal interface is agnostic to the actual persistence mechanism to be used by the context broker - the
-interface merely specifies the outputs required when various queries take place. Furthermore NGSI-LD also specifies a
+interface merely specifies the outputs required when various queries take place. Furthermore, NGSI-LD also specifies a
 mechanism for amending values of historic context using the `instanceId` attribute.
 
 The result is a series of data points timestamped using the `observedAt` _property-of-a-property_. Each time-stamped
@@ -52,7 +52,7 @@ satisfy a subscription.
 For the purpose of this tutorial, a series of dummy animal collar IoT devices have been created, which will be attached
 to the context broker. Details of the architecture and protocol used can be found in the
 [IoT Sensors tutorial](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD). The state of each device can be
-seen on the UltraLight device monitor web page found at: `http://localhost:3000/device/monitor`
+seen on the UltraLight device monitor web page found at: `http://localhost:3000/device/monitor`.
 
 ![FIWARE Monitor](https://fiware.github.io/tutorials.Time-Series-Data/img/farm-devices.png)
 
@@ -61,24 +61,24 @@ seen on the UltraLight device monitor web page found at: `http://localhost:3000/
 This application builds on the components and dummy IoT devices created in
 [previous tutorials](https://github.com/FIWARE/tutorials.IoT-Agent/tree/NGSI-LD). It will use two FIWARE components: the
 [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) and the
-[IoT Agent for Ultralight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/). In addition the optional temporal
+[IoT Agent for Ultralight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/). In addition, the optional temporal
 interface is serviced using an add-on called **Mintaka**.
 
 Therefore the overall architecture will consist of the following elements:
 
 -   The [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests using
-    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
+    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json).
 -   The FIWARE [IoT Agent for UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/) which will receive
     northbound device measures requests using
     [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
     syntax and convert them to
-    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
+    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json).
 -   The underlying [MongoDB](https://www.mongodb.com/) database :
     -   Used by the **Orion Context Broker** to hold context data information such as data entities, subscriptions and
-        registrations
-    -   Used by the **IoT Agent** to hold device information such as device URLs and Keys
+        registrations.
+    -   Used by the **IoT Agent** to hold device information such as device URLs and Keys.
 -   A [Timescale](https://www.timescale.com/) timeseries database for persisting historic context.
--   The **Mintaka** add-on which services the temporal interface and is also responsible for persisting the context
+-   The **Mintaka** add-on which services the temporal interface and is also responsible for persisting the context.
 -   The **Tutorial Application** does the following:
     -   Acts as set of dummy [agricultural IoT devices](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)
         using the
@@ -118,17 +118,17 @@ repository:
 
 <h2>Configuring Orion and Mintaka for Temporal Operations</h2>
 
-Within our Smart Farm, context data about the state of the animals is received via various devices. Therefore an IoT
+Within our Smart Farm, context data about the state of the animals is received via various devices. Therefore, an IoT
 Agent is used to convert the data into NGSI-LD format. This is then received at the context broker. Normally the context
 broker would only hold the latest state of the system (in Mongo-DB), however with a temporally enabled context broker,
 Orion also persists data into a Timescale database. In this instance Orion is only responsible for writing data into the
-timescale datebase. This keeps the system fast and responsive. The Mintaka component is responsible for listening for
+timescale database. This keeps the system fast and responsive. The Mintaka component is responsible for listening for
 temporal interface requests and constructing the relevant query to run against Timescale. The overall architecture can
 be seen below:
 
 ![](https://fiware.github.io/tutorials.Short-Term-History/img/architecture-ld.png)
 
-<h3>Minitaka Configuration</h3>
+<h3>Mintaka Configuration</h3>
 
 ```yaml
 mintaka:
@@ -151,12 +151,12 @@ mintaka:
 
 The `mintaka` container is listening on one port:
 
--   Temporal operations must be requested on port `8080` is where the service will be listening
+-   Temporal operations must be requested on port `8080` is where the service will be listening.
 
 The `mintaka` container is driven by environment variables as shown:
 
 | Key                                   | Value          | Description                                                                                             |
-| ------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------- |
+|---------------------------------------|----------------|---------------------------------------------------------------------------------------------------------|
 | DATASOURCES_DEFAULT_HOST              | `timescale-db` | The address where the Timescale database is hosted                                                      |
 | DATASOURCES_DEFAULT_USERNAME          | `orion`        | User to log in as when accessing the Timescale database                                                 |
 | DATASOURCES_DEFAULT_PASSWORD          | `orion`        | The password to use if none is provided                                                                 |
@@ -189,7 +189,7 @@ The `orion` container is listening on its standard port `1026`, the `troePoolSiz
 of concurrent connections to use.
 
 | Key                      | Value          | Description                                             |
-| ------------------------ | -------------- | ------------------------------------------------------- |
+|--------------------------|----------------|---------------------------------------------------------|
 | ORIONLD_TROE             | `TRUE`         | Whether to offer temporal representation of entities    |
 | ORIONLD_TROE_USER        | `orion`        | User to log in as when accessing the Timescale database |
 | ORIONLD_TROE_PWD         | `orion`        | The password to use if none is provided                 |
@@ -207,7 +207,7 @@ To start the system, run the following command:
 
 Once Mintaka is running, you can check the status by making an HTTP request to the `info` endpoint on the exposed port.
 Since the configuration includes `ENDPOINTS_INFO_ENABLED=true` and `ENDPOINTS_INFO_SENSITIVE=false` the endpoint should
-return a response
+return a response.
 
 #### 1 Request:
 
@@ -238,7 +238,7 @@ The response will look similar to the following:
 
 > **Troubleshooting:** What if the response is blank ?
 >
-> -   To check that a docker container is running try
+> -   To check that a docker container is running try:
 >
 > ```bash
 > docker ps
@@ -273,11 +273,9 @@ file of course.
 
 ### List the last N sampled values for an entity
 
-This example shows the last 3 changes from the entity `urn:ngsi-ld:Animal:cow002`.
-
-To obtain temporal data of a context entity attribute, send a GET request to `../temporal/entities/<entity-id>`
-
-the `lastN` parameter restricts the result to N values.
+This example shows the last 3 changes from the entity `urn:ngsi-ld:Animal:cow002`. To obtain temporal data of a context 
+entity attribute, send a GET request to `../temporal/entities/<entity-id>`, the `lastN` parameter restricts the result 
+to N values.
 
 #### :one: Request:
 
@@ -402,7 +400,7 @@ In the example below, `heartRate` and `location` have been provided by a single 
 
 ### List the last N sampled values of an attribute of an entity
 
-All of the usual query parameters from the `/entities` endpoint are also supported with `/temporal/entities` - to obtain
+All the usual query parameters from the `/entities` endpoint are also supported with `/temporal/entities` - to obtain
 results for a single attribute, just add the `attrs` parameter and include a comma-delimited list of attributes to
 receive.
 
@@ -420,7 +418,7 @@ curl -G -X GET 'http://localhost:8080/temporal/entities/urn:ngsi-ld:Animal:cow00
 
 #### Response:
 
-The response is a single entity with a single attribute array holding values of`heartRate`
+The response is a single entity with a single attribute array holding values of`heartRate`:
 
 ```json
 {
@@ -518,7 +516,7 @@ returned.
 
 Temporal Operations rely heavily on the use of the `observedAt` _property of a property_, queries but can also be made
 against static attributes using the `timeproperty` parameter to switch the time index for the query to make a look-up
-against `modifiedAt`
+against `modifiedAt`.
 
 #### 4 Request:
 
@@ -542,13 +540,13 @@ curl -G -X GET 'http://localhost:8080/temporal/entities/' \
 ```
 
 `timerel=before` and `timeAt=<current_time>` are required parameters. `<current_time>` is a date-time expressed in UTC
-format like `2021-09-16T11:00Z` - seconds and milliseconds are optional
+format like `2021-09-16T11:00Z` - seconds and milliseconds are optional.
 
 #### Response:
 
 The response returns two entities along with the two requested attributes as shown. As can be seen. the `heartRate` is
 returning three previous values and the `sex` is returning a single property. Single value static attributes are reduced
-from an Array of one element down to an object because this is the format specified in JSON-LD syntax
+from an Array of one element down to an object because this is the format specified in JSON-LD syntax:
 
 ```json
 [
@@ -657,7 +655,7 @@ from an Array of one element down to an object because this is the format specif
 ]
 ```
 
-The equivalent simplified format can be retrived by setting `options=temporalValues`
+The equivalent simplified format can be retrived by setting `options=temporalValues`.
 
 #### 5 Request:
 
@@ -684,7 +682,7 @@ curl -G -X GET 'http://localhost:8080/temporal/entities/' \
 
 The response returns two entities along with the two requested attributes as shown. As can be seen. the `heartRate` is
 returning three previous values and the `sex` is returning a single property. The second element within each tuple - the
-timestamp represents the `modifiedAt` property.
+timestamp represents the `modifiedAt` property:
 
 ```json
 [
@@ -747,7 +745,7 @@ curl -G -I -X GET 'http://localhost:8080/temporal/entities/' \
 
 It should be noted that the API also responded with a **206 Partial Content** HTTP Code, indicating that more data is
 available which would match the query. Adding `count` to the `options` parameter returns additional information in the
-headers of the response
+headers of the response:
 
 #### Response Headers:
 
@@ -764,14 +762,14 @@ connection: keep-alive
 ```
 
 -   The **Content-Range** header describes the overall range of timestamps retrieved.
--   The **Page-Size** header returns the number entries in the array - this may be fewer than requested
+-   The **Page-Size** header returns the number entries in the array - this may be fewer than requested.
 -   The **Next-Page** header indicates the next entity to be retrieved.
 -   The **NGSILD-Results-Count** indicates the total number of entities which matched the request.
 
-In the example above, where two Animals were retrived, the returned headers indicate that 17 male animals are living on
-the farm and that the next entity to be returned would be `urn:ngsi-ld:Animal:pig001`
+In the example above, where two Animals were retrieved, the returned headers indicate that 17 male animals are living on
+the farm and that the next entity to be returned would be `urn:ngsi-ld:Animal:pig001`.
 
-Making the same request with an additional `pageAnchor` parameter will retrieve the next two entities
+Making the same request with an additional `pageAnchor` parameter will retrieve the next two entities:
 
 #### 7 Request:
 
@@ -788,13 +786,13 @@ curl -G -X GET 'http://localhost:8080/temporal/entities/' \
   -d 'attrs=sex,heartRate' \
   -d 'timerel=before' \
   -d 'timeAt=<current_time>' \
-  -d 'pageAnchor=urn:ngsi-ld:Animal:pig001' \
+  -d 'pageAnchor=urn:ngsi-ld:Animal:pig001'
 ```
 
 #### Response Headers:
 
 If the `pageAnchor` parameter is sent, an additional `Previous-Page` header is added to the response, indicating the
-first entity of the previous query
+first entity of the previous query:
 
 ```text
 Content-Range: date-time 2021-09-16T11:00-2021-09-16T10:22:39.650/3
@@ -812,7 +810,7 @@ connection: keep-alive
 #### Response:
 
 Within the response body, two male pigs are now returned, once again the API also responded with a **206 Partial
-Content** HTTP Code, indicating further male animals can be found on the farm.
+Content** HTTP Code, indicating further male animals can be found on the farm:
 
 ```json
 [
@@ -869,7 +867,7 @@ curl -L -X GET \
 
 The entity is following the standard **Device** data model and has attributes such as `location` and`controlledAsset`
 (i.e. the **Animal** entity that is wearing the device). Because the animal collars are monitoring `heartRate`, that
-attribute has also been added to the model.
+attribute has also been added to the model:
 
 ```json
 {
@@ -929,7 +927,7 @@ attribute has also been added to the model.
 ```
 
 As can be seen, every returned attribute has an `observedAt` _property of a property_, this means that any attributes
-can be used as part of the filter for a temporal request
+can be used as part of the filter for a temporal request.
 
 The following request returns the `heartRate` registered when the state of an animal is described as `FORAGING`, and
 also returns the associated animal entity that wears it.

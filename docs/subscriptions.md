@@ -59,7 +59,7 @@ running these pages can be accessed from the following URLs:
 
 <h4>Event Monitor</h4>
 
-The event monitor can be found at: `http://localhost:3000/app/monitor`
+The event monitor can be found at: `http://localhost:3000/app/monitor`.
 
 ![FIWARE Monitor](https://fiware.github.io/tutorials.Subscriptions/img/monitor.png)
 
@@ -68,7 +68,7 @@ The event monitor can be found at: `http://localhost:3000/app/monitor`
 For the purpose of this tutorial, a series of dummy agricultural IoT devices have been created, which will be attached
 to the context broker. Details of the architecture and protocol used can be found in the
 [IoT Sensors tutorial](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD) The state of each device can be
-seen on the UltraLight device monitor web page found at: `http://localhost:3000/device/monitor`
+seen on the UltraLight device monitor web page found at: `http://localhost:3000/device/monitor`.
 
 ![FIWARE Monitor](https://fiware.github.io/tutorials.Subscriptions/img/farm-devices.png)
 
@@ -82,21 +82,21 @@ Broker is sufficient for an application to qualify as _“Powered by FIWARE”_.
 Currently, the Orion-LD Context Broker relies on open source [MongoDB](https://www.mongodb.com/) technology to keep
 persistence of the context data it holds. To request context data from external sources, a simple **Context Provider
 NGSI proxy** has also been added. To visualize and interact with the Context we will add a simple Express **Frontend**
-application
+application.
 
 Therefore, the architecture will consist of four elements:
 
 -   The [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests using
-    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
+    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json).
 -   The FIWARE [IoT Agent for UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/) which will receive
     southbound requests using
     [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
     and convert them to
     [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
-    commands for the devices
+    commands for the devices.
 -   The underlying [MongoDB](https://www.mongodb.com/) database:
     -   Used by the Orion Context Broker to hold context data information such as data entities, subscriptions and
-        registrations
+        registrations.
 -   An HTTP **Web-Server** which offers static `@context` files defining the context entities within the system.
 -   The **Tutorial Application** does the following:
     -   Acts as set of dummy [agricultural IoT devices](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)
@@ -110,7 +110,7 @@ from exposed ports.
 ![](https://fiware.github.io/tutorials.Subscriptions/img/architecture-ld.png)
 
 The necessary configuration information can be seen in the services section of the associated `docker-compose.yml` file.
-It has been described in a previous tutorial
+It has been described in a previous tutorial.
 
 ## Start Up
 
@@ -191,10 +191,10 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 ```
 
 The body of the POST request consists of two parts, the first section of the request (consisting of `entities`, `type`,
-`watchedAttributes` and `q`)states that the subscription will be checked whenever the `filling` attribute of a
+`watchedAttributes` and `q`) states that the subscription will be checked whenever the `filling` attribute of a
 **FillingLevelSensor** entity is altered. This is further refined by the `q` parameter so that the actual subscription
 is only fired for any **FillingLevelSensor** entity linked to the **Building** `urn:ngsi-ld:Building:farm001` and only
-when the `filling` attribute drops below 0.8
+when the `filling` attribute drops below 0.8.
 
 The notification section of the body states that once the conditions of the subscription have been met, a POST request
 containing all affected **FillingLevelSensor** entities will be sent to the URL
@@ -255,7 +255,7 @@ function broadcastEvents(req, item, types) {
 ```
 
 This business logic emits socket I/O events to any registered parties (such as the contractor who will then refill the
-barn.)
+barn).
 
 #### 2 Request:
 
@@ -385,10 +385,10 @@ When a `low-stock-farm001-ngsiv2` event is fired, the response is a normalized N
 As can be seen, by default the attributes are returned using URN long names. It is also possible to request that the
 Orion-LD context broker pre-applies a compaction operation to the payload.
 
--   `x-nsgiv2-keyValues` - Key-value pairs with URN attribute names
--   `x-nsgiv2-keyValues-compacted` - Key-value pairs with short name attribute aliases
--   `x-ngsiv2-normalized` - NGSI-v2 normalized payload with URN attribute names
--   `x-ngsiv2-normalized-compacted`- NGSI-v2 normalized payload pairs with short name attribute aliases
+-   `x-nsgiv2-keyValues` - Key-value pairs with URN attribute names.
+-   `x-nsgiv2-keyValues-compacted` - Key-value pairs with short name attribute aliases.
+-   `x-ngsiv2-normalized` - NGSI-v2 normalized payload with URN attribute names.
+-   `x-ngsiv2-normalized-compacted`- NGSI-v2 normalized payload pairs with short name attribute aliases.
 
 The set of available custom formats will vary between Context Brokers.
 
@@ -397,10 +397,10 @@ The set of available custom formats will vary between Context Brokers.
 The **CRUD** operations for subscriptions map on to the expected HTTP verbs under the `/ngsi-ld/v1/subscriptions/`
 endpoint.
 
--   **Create** - HTTP POST
--   **Read** - HTTP GET
--   **Update** - HTTP PATCH
--   **Delete** - HTTP DELETE
+-   **Create** - HTTP POST.
+-   **Read** - HTTP GET.
+-   **Update** - HTTP PATCH.
+-   **Delete** - HTTP DELETE.
 
 The `<subscription-id>` is auto generated when the subscription is created and returned in Header of the POST response
 to be used by the other operation thereafter.
@@ -480,7 +480,7 @@ curl -iX PATCH \
 
 This example lists all subscriptions by making a GET request to the `/ngsi-ld/v1/subscriptions/` endpoint. The list of
 subscriptions is limited to the tenant defined by the `NGSILD-Tenant` header (or the default tenant if the
-`NGSILD-Tenant` header is not sent )
+`NGSILD-Tenant` header is not sent).
 
 The notification section of each subscription will also include the last time the conditions of the subscription were
 met, and whether associated the POST action was successful.

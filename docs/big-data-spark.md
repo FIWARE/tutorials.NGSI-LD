@@ -10,7 +10,7 @@ streams. Spark has been designed to run in all common cluster environments, perf
 at any scale.
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
-[Postman documentation](https://fiware.github.io/tutorials.Big-Data-Spark/ngsi-ld.html)
+[Postman documentation](https://fiware.github.io/tutorials.Big-Data-Spark/ngsi-ld.html).
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/e7c16fce79fa081ba529)
 
@@ -67,27 +67,27 @@ Therefore the overall architecture will consist of the following elements:
 
 -   Two **FIWARE Generic Enablers** as independent microservices:
     -   The [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests using
-        [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
+        [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json).
     -   The FIWARE [IoT Agent for UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/) which will
         receive southbound requests using
         [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
         and convert them to
         [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
-        commands for the devices
+        commands for the devices.
 -   An [Apache Spark cluster](https://spark.apache.org/docs/latest/cluster-overview.html) consisting of a single
-    **ClusterManager** and **Worker Nodes**
+    **ClusterManager** and **Worker Nodes**:
     -   The FIWARE [Cosmos Orion Spark Connector](https://fiware-cosmos-spark.readthedocs.io/en/latest/) will be
         deployed as part of the dataflow which will subscribe to context changes and make operations on them in
-        real-time
--   One [MongoDB](https://www.mongodb.com/) **database** :
+        real-time.
+-   One [MongoDB](https://www.mongodb.com/) **database**:
     -   Used by the **Orion Context Broker** to hold context data information such as data entities, subscriptions and
-        registrations
-    -   Used by the **IoT Agent** to hold device information such as device URLs and Keys
+        registrations.
+    -   Used by the **IoT Agent** to hold device information such as device URLs and Keys.
 -   An HTTP **Web-Server** which offers static `@context` files defining the context entities within the system.
 -   The **Tutorial Application** does the following:
     -   Acts as set of dummy [agricultural IoT devices](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)
         using the
-        [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
+        [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual).
 
 The overall architecture can be seen below:
 
@@ -131,14 +131,14 @@ The `spark-master` container is listening on three ports:
 
 The `spark-worker-1` container is listening on one port:
 
--   Port `9001` is exposed so that the installation can receive context data subscriptions.
--   Ports `8081` is exposed so we can see the web frontend of the Apache Spark-Worker-1 Dashboard.
+-   Port `9001` is exposed, therefore that the installation can receive context data subscriptions.
+-   Ports `8081` is exposed, therefore we can see the web frontend of the Apache Spark-Worker-1 Dashboard.
 
 ## Start Up
 
 Before you start, you should ensure that you have obtained or built the necessary Docker images locally. Please clone
 the repository and create the necessary images by running the commands shown below. Note that you might need to run some
-of the commands as a privileged user:
+commands as a privileged user:
 
 ```bash
 #!/bin/bash
@@ -180,9 +180,9 @@ which are then processed by the Spark engine to generate the final stream of res
 
 This means that to create a streaming data flow we must supply the following:
 
--   A mechanism for reading Context data as a **Source Operator**
--   Business logic to define the transform operations
--   A mechanism for pushing Context data back to the context broker as a **Sink Operator**
+-   A mechanism for reading Context data as a **Source Operator**.
+-   Business logic to define the transform operations.
+-   A mechanism for pushing Context data back to the context broker as a **Sink Operator**.
 
 The **Cosmos Spark** connector - `orion.spark.connector-1.2.2.jar` offers both **Source** and **Sink** operators. It
 therefore only remains to write the necessary Scala code to connect the streaming dataflow pipeline operations together.
@@ -196,7 +196,7 @@ Further Spark processing examples can be found on
 
 ### Compiling a JAR file for Spark
 
-An existing `pom.xml` file has been created which holds the necessary prerequisites to build the examples JAR file
+An existing `pom.xml` file has been created which holds the necessary prerequisites to build the examples JAR file.
 
 In order to use the Orion Spark Connector we first need to manually install the connector JAR as an artifact using
 Maven:
@@ -212,7 +212,7 @@ mvn install:install-file \
   -Dpackaging=jar
 ```
 
-Thereafter the source code can be compiled by running the `mvn package` command within the same directory
+Thereafter, the source code can be compiled by running the `mvn package` command within the same directory
 (`cosmos-examples`):
 
 ```bash
@@ -225,7 +225,7 @@ A new JAR file called `cosmos-examples-1.2.2.jar` will be created within the `co
 
 For the purpose of this tutorial, we must be monitoring a system in which the context is periodically being updated. The
 dummy IoT Sensors can be used to do this. Open the device monitor page at `http://localhost:3000/device/monitor` and
-start a tractor moving. This can be done by selecting an appropriate the command from the drop down list and pressing
+start a tractor moving. This can be done by selecting an appropriate the command from the drop-down list and pressing
 the `send` button. The stream of measurements coming from the devices can then be seen on the same page:
 
 ![](https://fiware.github.io/tutorials.Big-Data-Spark/img/farm-devices.gif)
@@ -235,7 +235,7 @@ the `send` button. The stream of measurements coming from the devices can then b
 The first example makes use of the `OrionReceiver` operator in order to receive notifications from the Orion Context
 Broker. Specifically, the example counts the number notifications that each type of device sends in one minute. You can
 find the source code of the example in
-[org/fiware/cosmos/tutorial/Logger.scala](https://github.com/ging/fiware-cosmos-orion-spark-connector-tutorial/blob/master/cosmos-examples/src/main/scala/org/fiware/cosmos/tutorial/Logger.scala)
+[org/fiware/cosmos/tutorial/Logger.scala](https://github.com/ging/fiware-cosmos-orion-spark-connector-tutorial/blob/master/cosmos-examples/src/main/scala/org/fiware/cosmos/tutorial/Logger.scala).
 
 ### Logger - Installing the JAR
 
@@ -260,10 +260,10 @@ And run the following command to run the generated JAR package in the Spark clus
 Once a dynamic context system is up and running (we have deployed the `Logger` job in the Spark cluster), we need to
 inform **Spark** of changes in context.
 
-This is done by making a POST request to the `/ngsi-ld/v1/subscriptions` endpoint of the Orion Context Broker.
+This is done by making a POST request to the `/ngsi-ld/v1/subscriptions` endpoint of the Orion Context Broker:
 
 -   The `NGSILD-Tenant` header is used to filter the subscription to only listen to measurements from the attached IoT
-    Sensors, since they had been provisioned using these settings
+    Sensors, since they had been provisioned using these settings.
 
 -   The notification `uri` must match the one our Spark program is listening to.
 
@@ -295,7 +295,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 }'
 ````
 
-The response will be **`201 - Created`**
+The response will be **`201 - Created`**.
 
 If a subscription has been created, we can check to see if it is firing by making a GET request to the
 `/ngsi-ld/v1/subscriptions/` endpoint.
@@ -334,14 +334,14 @@ curl -X GET \
 ```
 
 Within the `notification` section of the response, you can see several additional `attributes` which describe the health
-of the subscription
+of the subscription.
 
 If the criteria of the subscription have been met, `timesSent` should be greater than `0`. A zero value would indicate
 that the `subject` of the subscription is incorrect or the subscription has created with the wrong `fiware-service-path`
-or `fiware-service` header
+or `fiware-service` header.
 
 The `lastNotification` should be a recent timestamp - if this is not the case, then the devices are not regularly
-sending data. Remember to activate the smart farm by moving a **Tractor**
+sending data. Remember to activate the smart farm by moving a **Tractor**.
 
 The `lastSuccess` should match the `lastNotification` date - if this is not the case then **Cosmos** is not receiving
 the subscription properly. Check that the hostname and port are correct.
@@ -406,7 +406,7 @@ these objects can be found within the
 [Orion-Spark Connector documentation](https://github.com/ging/fiware-cosmos-orion-spark-connector/blob/master/README.md#orionreceiver).
 
 The stream processing consists of five separate steps. The first step (`flatMap()`) is performed in order to put
-together the entity objects of all the NGSI Events received in a period of time. Thereafter the code iterates over them
+together the entity objects of all the NGSI Events received in a period of time. Thereafter, the code iterates over them
 (with the `map()` operation) and extracts the desired attributes. In this case, we are interested in the sensor `type`
 (`Device` or `Tractor`).
 
@@ -417,7 +417,7 @@ define a case class as shown:
 case class Sensor(device: String)
 ```
 
-Thereafter can count the created objects by the type of device (`countByValue()`) and perform operations such as
+Thereafter, can count the created objects by the type of device (`countByValue()`) and perform operations such as
 `window()` on them.
 
 After the processing, the results are output to the console:
@@ -432,9 +432,9 @@ The second example turns on a water faucet when the soil humidity is too low and
 humidity it is back to normal levels. This way, the soil humidity is always kept at an adequate level.
 
 The dataflow stream uses the `NGSILDSource` operator in order to receive notifications and filters the input to only
-respond to motion senseors and then uses the `NGSILDSink` to push processed context back to the Context Broker. You can
+respond to motion sensors and then uses the `NGSILDSink` to push processed context back to the Context Broker. You can
 find the source code of the example in
-[org/fiware/cosmos/tutorial/FeedbackLD.scala](https://github.com/ging/fiware-cosmos-orion-spark-connector-tutorial/blob/master/cosmos-examples/src/main/scala/org/fiware/cosmos/tutorial/FeedbackLD.scala)
+[org/fiware/cosmos/tutorial/FeedbackLD.scala](https://github.com/ging/fiware-cosmos-orion-spark-connector-tutorial/blob/master/cosmos-examples/src/main/scala/org/fiware/cosmos/tutorial/FeedbackLD.scala).
 
 ### Feedback Loop - Installing the JAR
 
@@ -579,7 +579,7 @@ The arguments of the **`OrionSinkObject`** are:
 ## Next Steps
 
 If you would rather use Flink as your data processing engine, we have
-[this tutorial available for Flink](https://github.com/ging/tutorials.Big-Data-Analysis) as well
+[this tutorial available for Flink](https://github.com/ging/tutorials.Big-Data-Analysis) as well.
 
 The operations performed on data in this tutorial were very simple. If you would like to know how to set up a scenario
 for performing real-time predictions using Machine Learning check out the
@@ -587,4 +587,4 @@ for performing real-time predictions using Machine Learning check out the
 (2019).
 
 If you want to learn how to add more complexity to your application by adding advanced features, you can find out by
-reading the other [tutorials in this series](https://fiware-tutorials.rtfd.io)
+reading the other [tutorials in this series](https://fiware-tutorials.rtfd.io).

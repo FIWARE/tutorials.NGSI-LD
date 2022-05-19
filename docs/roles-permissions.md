@@ -27,7 +27,7 @@ Every application secured by the **Keyrock** generic enabler can define a set of
 can be done within the application. For example within the application, the ability to send a command to unlock a Smart
 Door could be secured behind a `Unlock Door` permission. Similarly, the ability to send a command to ring the alarm bell
 could be secured behind a `Ring Bell` permission, and the ability to alter prices could be secured behind a
-`Price Change` permission
+`Price Change` permission.
 
 These permissions are grouped together in a series of roles - for example `Unlock Door` and `Ring Bell` could both be
 assigned to the Security role, meaning that Users who are subsequently given that role would gain both permissions.
@@ -50,21 +50,21 @@ are groups of actions which can be done by a type of user of that application.
 The following common objects are found with the **Keyrock** Identity Management database:
 
 -   **User** - Any signed-up user able to identify themselves with an eMail and password. Users can be assigned rights
-    individually or as a group
--   **Application** - Any securable FIWARE application consisting of a series of microservices
+    individually or as a group.
+-   **Application** - Any securable FIWARE application consisting of a series of microservices.
 -   **Organization** - A group of users who can be assigned a series of rights. Altering the rights of the organization
-    effects the access of all users of that organization
+    effects the access of all users of that organization.
 -   **OrganizationRole** - Users can either be members or admins of an organization - Admins are able to add and remove
     users from their organization, members merely gain the roles and permissions of an organization. This allows each
-    organization to be responsible for their members and removes the need for a super-admin to administer all rights
+    organization to be responsible for their members and removes the need for a super-admin to administer all rights.
 -   **Role** - A role is a descriptive bucket for a set of permissions. A role can be assigned to either a single user
-    or an organization. A signed-in user gains all the permissions from all of their own roles plus all of the roles
-    associated to their organization
--   **Permission** - An ability to do something on a resource within the system
+    or an organization. A signed-in user gains all the permissions from all of their own roles plus all the roles
+    associated to their organization.
+-   **Permission** - An ability to do something on a resource within the system.
 
 Additionally, two further non-human application objects can be secured within a FIWARE application:
 
--   **IoTAgent** - a proxy between IoT Sensors and the Context Broker
+-   **IoTAgent** - a proxy between IoT Sensors and the Context Broker.
 -   **PEPProxy** - a middleware for use between generic enablers challenging the rights of a user.
 
 The relationship between the objects can be seen below - the entities marked in red are used directly within this
@@ -87,12 +87,12 @@ The overall architecture will consist of the following elements:
 
     -   FIWARE [Keyrock](https://fiware-idm.readthedocs.io/en/latest/) offer a complement Identity Management System
         including:
-        -   An authentication system for Applications and Users
-        -   A site graphical frontend for Identity Management Administration
-        -   An equivalent REST API for Identity Management via HTTP requests
+        -   An authentication system for Applications and Users.
+        -   A site graphical frontend for Identity Management Administration.
+        -   An equivalent REST API for Identity Management via HTTP requests.
 
--   One [MySQL](https://www.mysql.com/) database :
-    -   Used to persist user identities, applications, roles and permissions
+-   One [MySQL](https://www.mysql.com/) database:
+    -   Used to persist user identities, applications, roles and permissions.
 
 Since all interactions between the elements are initiated by HTTP requests, the entities can be containerized and run
 from exposed ports.
@@ -131,26 +131,26 @@ keyrock:
 
 The `keyrock` container is a web application server listening on two ports:
 
--   Port `3005` has been exposed for HTTP traffic so we can display the web page and interact with the REST API.
--   Port `3443` has been exposed for secure HTTPS traffic for the site and REST API
+-   Port `3005` has been exposed for HTTP traffic, so we can display the web page and interact with the REST API.
+-   Port `3443` has been exposed for secure HTTPS traffic for the site and REST API.
 
 > **Note** HTTPS should be used throughout for any secured application, but to do this properly, **Keyrock** requires a
 > trusted SSL certificate - the default certificate is self-certified and available for testing purposes. The
 > certificates can be overridden by attaching a volume to replace the files under `/opt/fiware-idm/certs`.
 >
 > In a production environment, all access should occur over HTTPS, to avoid sending any sensitive information using
-> plain-text. Alternatively HTTP can be used within a private network behind a configured HTTPS Reverse Proxy
+> plain-text. Alternatively HTTP can be used within a private network behind a configured HTTPS Reverse Proxy.
 >
 > The port `3005` offering the HTTP protocol is being exposed for demonstration purposes only and to simplify the
 > interactions within this tutorial - you may also use HTTPS on port `3443` with certain caveats.
 >
-> If you want to use HTTPS to access the REST API when you are using Postman, ensure that SSL certificate verfication is
-> OFF. If you want to use HTTPS to access the web front-end, please accept any security warnings issued.
+> If you want to use HTTPS to access the REST API when you are using Postman, ensure that SSL certificate verification
+> is OFF. If you want to use HTTPS to access the web front-end, please accept any security warnings issued.
 
 The `keyrock` container is driven by environment variables as shown:
 
 | Key               | Value                   | Description                                                                                                                  |
-| ----------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+|-------------------|-------------------------|------------------------------------------------------------------------------------------------------------------------------|
 | IDM_DB_PASS       | `idm`                   | Password of the attached MySQL Database - secured by **Docker Secrets** (see below)                                          |
 | IDM_DB_USER       | `root`                  | Username of the default MySQL user - left in plain-text                                                                      |
 | IDM_HOST          | `http://localhost:3005` | Hostname of the **Keyrock** App Server - used in activation eMails when signing up users                                     |
@@ -200,12 +200,12 @@ mysql-db:
 The `mysql-db` container is listening on a single port:
 
 -   Port `3306` is the default port for a MySQL server. It has been exposed so you can also run other database tools to
-    display data if you wish
+    display data if you wish.
 
 The `mysql-db` container is driven by environment variables as shown:
 
 | Key                 | Value. | Description                                                                                                                                                                                           |
-| ------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|---------------------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | MYSQL_ROOT_PASSWORD | `123`  | specifies a password that is set for the MySQL `root` account - secured by **Docker Secrets** (see below)                                                                                             |
 | MYSQL_ROOT_HOST     | `root` | By default, MySQL creates the `root'@'localhost` account. This account can only be connected to from inside the container. Setting this environment variable allows root connections from other hosts |
 
@@ -242,24 +242,24 @@ Where `<command>` will vary depending upon the exercise we wish to activate.
 
 <h3>Dramatis Personae</h3>
 
-The following people at `test.com` legitimately have accounts within the Application
+The following people at `test.com` legitimately have accounts within the Application:
 
--   Alice, she will be the Administrator of the **Keyrock** Application
+-   Alice, she will be the Administrator of the **Keyrock** Application.
 -   Bob, the Regional Manager of the supermarket chain - he has several store managers under him:
-    -   Manager1
-    -   Manager2
+    -   Manager1.
+    -   Manager2.
 -   Charlie, the Head of Security of the supermarket chain - he has several store detectives under him:
-    -   Detective1
-    -   Detective2
+    -   Detective1.
+    -   Detective2.
 
-The following people at `example.com` have signed up for accounts, but have no reason to be granted access
+The following people at `example.com` have signed up for accounts, but have no reason to be granted access:
 
--   Eve - Eve the Eavesdropper
--   Mallory - Mallory the malicious attacker
--   Rob - Rob the Robber
+-   Eve - Eve the Eavesdropper.
+-   Mallory - Mallory the malicious attacker.
+-   Rob - Rob the Robber.
 
 | Name       | eMail                       | Password | UUID                                   |
-| ---------- | --------------------------- | -------- | -------------------------------------- |
+|------------|-----------------------------|----------|----------------------------------------|
 | alice      | `alice-the-admin@test.com`  | `test`   | `aaaaaaaa-good-0000-0000-000000000000` |
 | bob        | `bob-the-manager@test.com`  | `test`   | `bbbbbbbb-good-0000-0000-000000000000` |
 | charlie    | `charlie-security@test.com` | `test`   | `cccccccc-good-0000-0000-000000000000` |
@@ -274,13 +274,13 @@ The following people at `example.com` have signed up for accounts, but have no r
 Two organizations have also been set up by Alice:
 
 | Name       | Description                         | UUID                                   |
-| ---------- | ----------------------------------- | -------------------------------------- |
+|------------|-------------------------------------|----------------------------------------|
 | Security   | Security Group for Store Detectives | `security-team-0000-0000-000000000000` |
 | Management | Management Group for Store Managers | `managers-team-0000-0000-000000000000` |
 
 To save time, the data creating users and organizations from the [previous tutorial](identity-management.md) has been
 downloaded and is automatically persisted to the MySQL database on start-up, so the assigned UUIDs do not change, and
-the data does not need to be entered again
+the data does not need to be entered again.
 
 To refresh your memory about how to create users and organizations, you can log in at `http://localhost:3005/idm` using
 the account `alice-the-admin@test.com` with a password of `test`.
@@ -313,7 +313,7 @@ select id, username, email, password from user;
 
 The **Keyrock** MySQL database deals with all aspects of application security including storing users, password etc;
 defining access rights and dealing with OAuth2 authorization protocols. The complete database relationship diagram can
-be found [here](https://fiware.github.io/tutorials.Roles-Permissions/img/keyrock-db.png)
+be found [here](https://fiware.github.io/tutorials.Roles-Permissions/img/keyrock-db.png).
 
 ### UUIDs within Keyrock
 
@@ -321,7 +321,7 @@ All IDs and tokens within **Keyrock** are subject to change. The following value
 for records. Record IDs use Universally Unique Identifiers - UUIDs.
 
 | Key                    | Description                                                                    | Sample Value                                              |
-| ---------------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------- |
+|------------------------|--------------------------------------------------------------------------------|-----------------------------------------------------------|
 | `keyrock`              | URL for the location of the **Keyrock** service                                | `localhost:3005` for HTTP, `localhost:3443` for HTTPS     |
 | `X-Auth-token`         | Token received in the Header when logging in as a user                         | `aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa` = I am Alice       |
 | `X-Subject-token`      | Token to pass when asking about a subject, alternatively repeat the user token | `bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb` = Asking about Bob |
@@ -431,7 +431,7 @@ The response will return the details of the associated user. As you can see Bob 
 Any FIWARE application can be broken down into a collection of microservices. These microservices connect together to
 read and alter the state of the real world. Security can be added to these services by restricting actions on these
 resources down to users how have appropriate permissions. It is therefore necessary to define an application to offer a
-set of permissible actions and to hold a list of permitted users (or groups of users i.e. an Organization)
+set of permissible actions and to hold a list of permitted users (or groups of users i.e. an Organization).
 
 Applications are therefore a conceptual bucket holding who can do what on which resource.
 
@@ -439,7 +439,7 @@ Applications are therefore a conceptual bucket holding who can do what on which 
 
 [![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=pjsl0eHpFww&t=470 "Creating Applications")
 
-Click on the image above to watch a video demonstrating how to create applications using the **Keyrock** GUI
+Click on the image above to watch a video demonstrating how to create applications using the **Keyrock** GUI.
 
 ## Application CRUD Actions
 
@@ -448,7 +448,7 @@ The standard CRUD actions are assigned to the appropriate HTTP verbs (POST, GET,
 
 ### Create an Application
 
-Once logged in, a user is presented with a home-screen
+Once logged in, a user is presented with a home-screen.
 
 ![](https://fiware.github.io/tutorials.Roles-Permissions/img/apps-and-orgs.png)
 
@@ -466,7 +466,7 @@ previously logged-in user will automatically be granted a provider role over the
 #### 3 Request:
 
 In the example below, Alice (who holds `X-Auth-token=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`) is creating a new
-application which accepts three different grant types
+application which accepts three different grant types.
 
 ```bash
 curl -iX POST \
@@ -673,7 +673,7 @@ URL (e.g. `/price-change`) and the action is any HTTP verb (e.g. GET):
 
 -   The combination will be used to ensure only permitted users are able to access the `/price-change` resource.
 
-Further advanced permission rules can be described using XACML - this is the subject of another tutorial.
+Further, advanced permission rules can be described using XACML - this is the subject of another tutorial.
 
 It should be emphasized that permissions are always found bound to an application - abstract permissions do not exist on
 their own. The standard permission CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DELETE)
@@ -874,15 +874,15 @@ access but not update a series of devices.
 
 There are two predefined roles with **Keyrock** :
 
--   a _Purchaser_ who can
-    -   Get and assign all public application roles
+-   a _Purchaser_ who can:
+    -   Get and assign all public application roles.
 -   a _Provider_ who can:
-    -   Get and assign only public owned roles
-    -   Get and assign all public application roles
-    -   Manage authorizations
-    -   Manage roles
-    -   Manage the application
-    -   Get and assign all internal application roles
+    -   Get and assign only public owned roles.
+    -   Get and assign all public application roles.
+    -   Manage authorizations.
+    -   Manage roles.
+    -   Manage the application.
+    -   Get and assign all internal application roles.
 
 Using our Supermarket Store Example, Alice the admin would be assigned the _Provider_ role, she could then create any
 additional application-specific roles needed (such as _Management_ or _Security_).
@@ -919,7 +919,7 @@ curl -X POST \
 
 #### Response:
 
-The details of the created role are returned
+The details of the created role are returned:
 
 ```json
 {
@@ -1081,7 +1081,7 @@ The response returns the permissions for the role.
 ### List Permissions of a Role
 
 A full list of all permissions assigned to an application role can be retrieved by making a GET request to the
-`/v1/applications/{{application-id}}/roles/{{role-id}}/permissions` endpoint
+`/v1/applications/{{application-id}}/roles/{{role-id}}/permissions` endpoint.
 
 #### 19 Request:
 
@@ -1162,7 +1162,7 @@ identifying themselves using an `X-Auth-Token` in the header.
 
 #### 21 Request:
 
-This example adds the role to all members of the organization
+This example adds the role to all members of the organization:
 
 ```bash
 curl -X PUT \

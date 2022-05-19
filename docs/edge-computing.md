@@ -28,8 +28,8 @@ this tutorial, which are relatable to the figure below.
 ## Architecture
 
 The FogFlow framework operates on a geo-distributed, hierarchical, and heterogeneous ICT infrastructure that includes
-cloud nodes, edge nodes, and IoT devices. Now, Fogflow has become more dynamic because it supports NGSI-LD format, that
-means Fogflow is now NGSI-LD compliant. The following figure illustrates the system architecture of FogFlow and its
+cloud nodes, edge nodes, and IoT devices. Now, FogFlow has become more dynamic because it supports NGSI-LD format, that
+means FogFlow is now NGSI-LD compliant. The following figure illustrates the system architecture of FogFlow and its
 major components across three logical layers.
 
 ![](https://fiware.github.io/tutorials.Edge-Computing/img/ngsi-ld-architecture.png)
@@ -47,16 +47,16 @@ Logically, FogFlow consists of the following three layers:
     interfaces provided by the context management layer. Edge workers (and of course the cloud worker) come under this
     layer.
 
-## NGSI-LD Support In Fogflow
+## NGSI-LD Support In FogFlow
 
 The FIWARE NGSI v2 information model has been evolved to better support linked data (entity relationships), property
 graphs and semantics (exploiting the capabilities offered by JSON-LD). The new era of data representation and data
-utilisation has opened up new horizion of possibilities with Fogflow. With the incorporation of NGSI-LD support, Fogflow
+utilisation has opened up new horizon of possibilities with FogFlow. With the incorporation of NGSI-LD support, FogFlow
 has gained the power of interacting with other NGSI-LD compliant broker to build a more robust architecture and
 potential use cases.
 
-To know more about NGSI-LD supported APIs in Fogflow, follow this
-[link](https://fogflow.readthedocs.io/en/latest/api.html#ngsi-ld-supported-api-s)
+To know more about NGSI-LD supported APIs in FogFlow, follow this
+[link](https://fogflow.readthedocs.io/en/latest/api.html#ngsi-ld-supported-api-s).
 
 ![](https://fiware.github.io/tutorials.Edge-Computing/img/ngsild_support.png)
 
@@ -79,9 +79,9 @@ To know more about NGSI-LD supported APIs in Fogflow, follow this
 
     -   **my_hostip**: Public IP address of the FogFlow cloud node.
     -   **site_id**: Unique string-based ID to identify the node in FogFlow system.
-    -   **physical_location**: The geo-location of the node.
+    -   **physical_location**: The geolocation of the node.
     -   **worker.capacity**: It means the maximal number of docker containers that the FogFlow node can invoke. By
-        default its value is "8"
+        default, its value is "8".
 
 ```json
 {
@@ -191,7 +191,7 @@ To know more about NGSI-LD supported APIs in Fogflow, follow this
 ## Connect IoT Devices to FogFlow
 
 When data flow from a sensor device towards broker, it is called Northbound Flow, whereas it is Southbound Flow, when
-data flow from broker towards the actuator devices. FogFlow relies on this bi-directional data flow to realize the
+data flow from broker towards the actuator devices. FogFlow relies on this bidirectional data flow to realize the
 actual idea behind it.
 
 To receive data from the sensor devices, refer
@@ -210,7 +210,7 @@ To get a basic idea of how Southbound actually works in the context of FIWARE, r
 
 Before moving further, users must have a look at the following:
 
--   [Core concepts](https://fogflow.readthedocs.io/en/latest/core_concept.html) of FogFlow and
+-   [Core concepts](https://fogflow.readthedocs.io/en/latest/core_concept.html) of FogFlow, and
 -   [Intent-based programming model](https://fogflow.readthedocs.io/en/latest/intent_based_program.html)
 
 ## Define and trigger a Fog Function
@@ -218,9 +218,9 @@ Before moving further, users must have a look at the following:
 FogFlow enables serverless edge computing, i.e., the developers can define and submit a fog function along with the
 processing logic (or operator) and then the rest will be done by FogFlow automatically, including:
 
--   triggering the submitted fog function when its input data are available
--   deciding how many instances are to be created according to the defined granularity
--   deciding where to deploy the created instances or processing flows
+-   triggering the submitted fog function when its input data are available;
+-   deciding how many instances are to be created according to the defined granularity;
+-   deciding where to deploy the created instances or processing flows.
 
 ### Register the Task Operators
 
@@ -234,11 +234,11 @@ Python, Java and JavaScript templates to write an operator can be found
 
 For the current tutorial, refer the below mentioned steps.
 
-The following steps are required to register an operator in Fogflow.
+The following steps are required to register an operator in FogFlow.
 
 1.  **Register an Operator** means to define what would be the name of Operator and what input parameters it would need.
 
-To register Operator, open fogflow dashboard. Select Operator Registry Tab from horizontal bar, select operator from
+To register Operator, open FogFlow dashboard. Select Operator Registry Tab from horizontal bar, select operator from
 menu on left and then click register button. Right click on workspace and select operator from drop down list and enter
 details as shown and at last click on submit.
 
@@ -261,11 +261,11 @@ registration.
 The form is explained as the following.
 
 -   **Image:** the name of your operator docker image, must be consistent with the one you publish to
-    [Docker Hub](https://hub.docker.com/)
--   **Tag:** the tag you used to publish your operator docker image; by default it is "latest"
--   **Hardware Type:** the hardware type that your docker image supports, including x86 or ARM (e.g. Raspberry Pi)
--   **OS Type:** the operating system type that your docker image supports; currently this is only limited to Linux
--   **Operator:** the operator name, which must be unique and will be used when defining a service topology
+    [Docker Hub](https://hub.docker.com/).
+-   **Tag:** the tag you used to publish your operator docker image; by default it is "latest".
+-   **Hardware Type:** the hardware type that your docker image supports, including x86 or ARM (e.g. Raspberry Pi).
+-   **OS Type:** the operating system type that your docker image supports; currently this is only limited to Linux.
+-   **Operator:** the operator name, which must be unique and will be used when defining a service topology.
 -   **Prefetched:** if this is checked, that means all edge nodes will start to fetch this docker image in advance;
     otherwise, the operator docker image is fetched on demand, only when edge nodes need to run a scheduled task
     associated with this operator.
@@ -274,7 +274,7 @@ The form is explained as the following.
 >
 > Use "fogflow/overspeedvd" while registering the docker image for tutorial of NGSI-LD.
 >
-> The above operator will notify Fogflow, When speed of a vehicle goes beyond 50.
+> The above operator will notify FogFlow, When speed of a vehicle goes beyond 50.
 >
 > To register the image, select DockerImage from left menu, under Operator Registry from dashboard and click register
 > button.
@@ -295,7 +295,7 @@ Choose "Task", a Task element will be placed on the design board, as shown below
 
 ![](https://fiware.github.io/tutorials.Edge-Computing/img/fog_ff_2.png)
 
-Click the configuration button on the top-right corner of the task element, as illustrated in the following figure.
+Click the configuration button in the top-right corner of the task element, as illustrated in the following figure.
 Specify the name of the Task and choose an operator out of a list of some pre-registered operators.
 
 ![](https://fiware.github.io/tutorials.Edge-Computing/img/fog_ff_3.png)
@@ -314,7 +314,7 @@ It contains the following fields:
     i.e., the number of instances for this fog function. In this example, the granularity is defined by "id", meaning
     that FogFlow will create a new task instance for each individual entity ID.
 -   **Scoped:** tells if the Entity data are location-specific or not. True indicates that location-specific data are
-    recorded in the Entity and False is used in case of broadcasted data, for example, some rule or threshold data that
+    recorded in the Entity and False is used in case of broadcast data, for example, some rule or threshold data that
     holds true for all locations, not for a specific location.
 
 Configure the EntityStream by clicking on its configuration button as shown below. "Vehicle" is shown as example here,
@@ -332,12 +332,12 @@ on submit button.
 The defined "OverSpeed_Vehicle" fog function is triggered only when its required input data are available.
 
 The way to trigger the fog function is to send an NGSI-LD entity update in the form of a POST request to the FogFlow
-broker to create the "Vehicle" sensor entity. With creation of this entity, Fogflow automatically launches fogfunction.
+broker to create the "Vehicle" sensor entity. With creation of this entity, FogFlow automatically launches fogfunction.
 
 #### 1 Request
 
 ```bash
-curl --location --request POST '<Fogflow_Broker_IP>:8070/ngsi-ld/v1/entities/' \
+curl --location --request POST '<FogFlow_Broker_IP>:8070/ngsi-ld/v1/entities/' \
 --header 'Content-Type: application/json' \
 --header 'Accept: application/ld+json' \
 --header 'Link: <{{link}}>; rel="https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"; type="application/ld+json"' \
@@ -377,11 +377,11 @@ curl --location --request POST '<Fogflow_Broker_IP>:8070/ngsi-ld/v1/entities/' \
 
 Verify whether the fog function is triggered or not in the following way.
 
--   check the task instance of this fog function, as shown in the following picture
+-   check the task instance of this fog function, as shown in the following picture.
 
 ![](https://fiware.github.io/tutorials.Edge-Computing/img/task_instance.png)
 
--   check the result generated by its running task instance, as shown in the following picture
+-   check the result generated by its running task instance, as shown in the following picture.
 
 ![](https://fiware.github.io/tutorials.Edge-Computing/img/task_stream.png)
 
@@ -406,9 +406,9 @@ the rule for anomaly detection.
 
 ### Implement the Operator Functions
 
-Users can implement there own set of computations in form of operator. For designing and implementing a service
+Users can implement their own set of computations in form of operator. For designing and implementing a service
 topology, it is necessary to implement an operational processing logic in corresponding data format (i.e. NGSI-v2,
-NGSI-LD etc). For example, if service topology comprises of NGSI-LD data format, then it is important that operators are
+NGSI-LD etc). For example, if service topology comprises NGSI-LD data format, then it is important that operators are
 designed keeping NGSI-LD format in mind.
 
 To refer templates for NGSI-LD operator creation, use these
@@ -417,17 +417,17 @@ To refer templates for NGSI-LD operator creation, use these
 ### Specify the Service Topology
 
 Assume that the tasks to be used in the service topology have been implemented and registered, just specify the service
-topology in the following way using FogFlow Topology Editor. For example,the image below shows the flow to impement a
+topology in the following way using FogFlow Topology Editor. For example,the image below shows the flow to implement a
 service topology.
 
 ![](https://fiware.github.io/tutorials.Edge-Computing/img/retail-topology-1.png)
 
 As seen in the picture, the following important information must be provided.
 
-1.  define topology profile, including
+1.  define topology profile, including:
 
-    -   topology name: the unique name of your topology
-    -   service description: some text to describe what this service is about
+    -   topology name: the unique name of your topology;
+    -   service description: some text to describe what this service is about.
 
 2.  draw the graph of data processing flows within the service topology with a right click at some place of the design
     board, choose either task or input streams or shuffle to define your data processing flows according to the design
@@ -444,7 +444,7 @@ As seen in the picture, the following important information must be provided.
 
 Service Topology can be triggered in two steps:
 
--   Sending a high level intent object which breaks the service topology into separate tasks
+-   Sending a high level intent object which breaks the service topology into separate tasks.
 -   Providing Input Streams to the tasks of that service topology.
 
 The intent object is sent using the FogFlow dashboard with the following properties:
@@ -470,15 +470,15 @@ For additional material to understand how FogFlow works, visit
 other FIWARE GEs.
 
 -   **Integrate FogFlow with NGSI-LD Broker**: FogFlow has evolved into a robust platform that supports cloud and edge
-    nodes. The main concept of having distributed edges for edge-computation has evolved with the interaction of Fogflow
+    nodes. The main concept of having distributed edges for edge-computation has evolved with the interaction of FogFlow
     and other NGSI-LD brokers. NGSI-LD technology is the new horizon of data communication and data representation.
-    Fogflow is now a NGSI_LD compliant broker. For detailed information, please refer this
+    FogFlow is now a NGSI_LD compliant broker. For detailed information, please refer this
     [tutorial](https://fogflow.readthedocs.io/en/latest/scorpioIntegration.html).
 
--   **Integrate FogFlow with Monitoring Tools**: FogFlow has a distributed architecture and therefore it generates a
-    need to monitor the distributed components of Fogflow from a platform. For this cause Fogflow has integrated grafana
-    and elastisearch, to monitor various components like memory utilisation, CPU utilisation and services current state
-    etc.. To have more details over this topic, follow this
+-   **Integrate FogFlow with Monitoring Tools**: FogFlow has a distributed architecture and, therefore it generates a
+    need to monitor the distributed components of FogFlow from a platform. For this cause FogFlow has integrated grafana
+    and elasticsearch, to monitor various components like memory utilisation, CPU utilisation and services current state
+    etc... To have more details over this topic, follow this
     [tutorial](https://fogflow.readthedocs.io/en/latest/system_monitoring.html).
 
 -   **Integrate FogFlow with Security Components**: FogFlow has enhanced itself, by supporting security features. The
@@ -495,4 +495,4 @@ other FIWARE GEs.
 -   **Integrate FogFlow with WireCloud**: FogFlow has pitched in with different and versatile edge platform technology.
     WireCloud builds on cutting-edge end user development, RIA and semantic technologies to offer a next-generation end
     user centred web application mashup platform aimed at leveraging the long tail of the Internet of Services. For more
-    on Fogflow and WireCloud, follow the [tutorial](https://fogflow.readthedocs.io/en/latest/wirecloudIntegration.html).
+    on FogFlow and WireCloud, follow the [tutorial](https://fogflow.readthedocs.io/en/latest/wirecloudIntegration.html).

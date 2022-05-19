@@ -4,7 +4,7 @@
 
 **Description:** This tutorial examines the interaction between **NGSI-LD** and **JSON-LD** `@context` files. The
 `@context` files generated in the [previous tutorial](understanding-@context.md) are used as the underlying data model
-for inputting context data and context information is queries and read back in different formats.
+for inputting context data and context information is queried and read back in different formats.
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
 [Postman documentation](https://fiware.github.io/tutorials.Getting-Started/ngsi-ld.html)
@@ -19,10 +19,10 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 >
 > ― John Wyndham, The Midwich Cuckoos
 
-From the [previous tutorial](understanding-@context.md) we have generated two `@context` files defining the context data
-entities which will be offered in our simple Smart Farm Management System. This means that we have defined an agreed set
-of unique IDs (URNs or URLs) for all the data entities and every single attribute within those entities so that other
-external applications will be able to programmatically understand the data held within our broker.
+From the [previous tutorial](understanding-@context.md), we have generated two `@context` files defining the context 
+data entities which will be offered in our simple Smart Farm Management System. This means that we have defined an 
+agreed set of unique IDs (URNs or URLs) for all the data entities and every single attribute within those entities 
+so that other external applications will be able to programmatically understand the data held within our broker.
 
 For example, the attribute `address` is within our smart application is defined as follows:
 
@@ -69,13 +69,13 @@ expansion and compaction algorithms.
 
 ## NGSI-LD Rules
 
-**NGSI-LD** is a formally structured _extended subset_ of **JSON-LD**. Therefore **NGSI-LD** offers all the
+**NGSI-LD** is a formally structured _extended subset_ of **JSON-LD**. Therefore, **NGSI-LD** offers all the
 interoperability and flexibility of **JSON-LD** itself. It also defines its own core `@context` which cannot be
 overridden for **NGSI-LD** operations. This means that **NGSI-LD** users agree to a common well-defined set of rules for
 structuring their data, and then supplement this with the rest of the **JSON-LD** specification.
 
 Whilst interacting directly with **NGSI-LD** interface of the context broker the additional **NGSI-LD** rules must be
-respected. However after the data has been extracted it is possible to loosen this requirement and pass the results to
+respected. However, after the data has been extracted it is possible to loosen this requirement and pass the results to
 third parties as **JSON-LD**.
 
 This tutorial is a simple introduction to the rules and restrictions behind **NGSI-LD** and will create some **NGSI-LD**
@@ -89,15 +89,15 @@ _key-value-pairs_ format is by definition not **NGSI-LD**.
 During content negotiation, **NGSI-LD** offers data in one of three formats, these effect the structure of the payload
 body.
 
--   `Accept: application/json` - the response is in **JSON** format
--   `Accept: application/ld+json` - the response is in **JSON-LD** format
--   `Accept: application/geo+json` - the response is in **GeoJSON** or **GeoJSON-LD** format
+-   `Accept: application/json` - the response is in **JSON** format.
+-   `Accept: application/ld+json` - the response is in **JSON-LD** format.
+-   `Accept: application/geo+json` - the response is in **GeoJSON** or **GeoJSON-LD** format.
 
 The major difference between **JSON** format and **JSON-LD** format, is that if **JSON-LD** format is chosen, then the
 `@context` is found as an additional attribute within the body of the response. If the **JSON** only format is used the
 `@context` is passed as an additional `Link` Header element and is not found in the response body.
 
-Similarly when sending **NGSI-LD** data to the context broker, an application may choose to send a payload including an
+Similarly, when sending **NGSI-LD** data to the context broker, an application may choose to send a payload including an
 additional `@context` attribute (in which case `Content-Type: application/ld+json`) or the application may send NGSI-LD
 data without an additional `@context` attribute (in which case `Content-Type: application/json` and the `Link` header
 must also be present).
@@ -118,20 +118,20 @@ persistence of the context data it holds.
 
 To promote interoperability of data exchange, NGSI-LD context brokers explicitly expose a
 [JSON-LD `@context` file](https://json-ld.org/spec/latest/json-ld/#the-context) to define the data held within the
-context entities. This defines a unique URI for every entity type and every attribute so that other services outside of
+context entities. This defines a unique URI for every entity type and every attribute so that other services outside
 the NGSI domain are able to pick and choose the names of their data structures. Every `@context` file must be available
-on the network. In our case the tutorial application will be used to host a series of static files.
+on the network. In our case, the tutorial application will be used to host a series of static files.
 
 Therefore, the architecture will consist of three elements:
 
 -   The [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests using
     [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
--   The underlying [MongoDB](https://www.mongodb.com/) database :
+-   The underlying [MongoDB](https://www.mongodb.com/) database:
     -   Used by the Orion Context Broker to hold context data information such as data entities, subscriptions and
         registrations
 -   An HTTP **Web-Server** which offers static `@context` files defining the context entities within the system.
 -   The **Tutorial Application** does the following:
-        -   Acts as set of dummy [agricultural IoT devices](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)
+    -   Acts as set of dummy [agricultural IoT devices](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)
         using the
         [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
         protocol running over HTTP.
@@ -141,7 +141,7 @@ run from exposed ports.
 
 ![](https://fiware.github.io/tutorials.Getting-Started/img/architecture-ld.png)
 
-The necessary configuration information can be seen in the services section of the associated `orion-ld.yml` file:
+The necessary configuration information can be seen in the services' section of the associated `orion-ld.yml` file:
 
 <h3>Orion-LD Configuration</h3>
 
@@ -187,7 +187,7 @@ ld-context:
 All containers are residing on the same network - the Orion Context Broker is listening on Port `1026` and MongoDB is
 listening on the default port `27017` and httpd is offering `@context` files on port `80`. All containers are also
 exposing the ports externally - this is purely for the tutorial access - so that cUrl or Postman can access them without
-being part of the same network. The command-line initialization should be self explanatory.
+being part of the same network. The command-line initialization should be self-explanatory.
 
 ## Start Up
 
@@ -201,7 +201,7 @@ git clone https://github.com/FIWARE/tutorials.Getting-Started.git
 cd tutorials.Getting-Started
 git checkout NGSI-LD
 
-./services orion|scorpio
+./services [orion|scorpio]
 ```
 
 > **Note:** If you want to clean up and start over again you can do so with the following command:
@@ -225,25 +225,25 @@ necessary prerequisites are in place.
 
 Three `@context` files have been generated and hosted on the tutorial application. They serve different roles.
 
--   [`ngsi-context.jsonld`](http://localhost:3004/ngsi-context.jsonld) -The **NGSI-LD** `@context` serves to define all
+-   [`ngsi-context.jsonld`](http://localhost:3004/ngsi-context.jsonld) - The **NGSI-LD** `@context` serves to define all
     attributes when sending data to the context broker or retrieving data in _normalized_ format. This `@context` must
-    be used for all **NGSI-LD** to **NGSI-LD** interactions
+    be used for all **NGSI-LD** to **NGSI-LD** interactions.
 
 -   The **JSON-LD** `@context` can be used when querying the data and returning _key-values_ data. Responses are
-    **JSON** or **JSON-LD** and the data can be easily ingested and processed further by the receiving application.
+    **JSON** or **JSON-LD** and the data can be easily ingested and processed further by the receiving application:
 
     -   [`json-context.jsonld`](http://localhost:3004/json-context.jsonld) is a richer **JSON-LD** definition of the
         attributes of the data models.
     -   [`alternate-context.jsonld`](http://localhost:3004/alternate-context.jsonld) is an alternative **JSON-LD**
-        definition of the attributes of the data models used by a third-party (the German sub-contractor of farm
-        labourers). Internally their billing application used different short names for attributes. Their `@context`
+        definition of the attributes of the data models used by a third-party (the German subcontractor of farm
+        labourers). Internally, their billing application used different short names for attributes. Their `@context`
         file reflects the agreed mapping between attribute names.
 
 The full data model description for a **Building** entity as used in this tutorial can be found
 [here](https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html#building) it is based on the standard Smart
 Data Models definition. A
 [Swagger Specification](https://petstore.swagger.io/?url=https://smart-data-models.github.io/dataModel.Building/Building/swagger.yaml)
-of the same model is also available, and would be use to generate code stubs in a full application.
+of the same model is also available, and would be used to generate code stubs in a full application.
 
 ### Checking the service health
 
@@ -280,7 +280,7 @@ work with the requests defined below.
 
 ### Creating Data entities
 
-New context data entities can be created by making a POST request to the `/ngsi-ld/v1/entities` endpoint and supply an
+New context data entities can be created by making a POST request to the `/ngsi-ld/v1/entities` endpoint and supply a
 `@context` along with structured **NGSI-LD** data.
 
 #### 2 Request:
@@ -323,7 +323,7 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
 }'
 ```
 
-The first request will take some time, as the context broker must navigate and load all of the files mentioned in the
+The first request will take some time, as the context broker must navigate and load all the files mentioned in the
 `@context`.
 
 Since the `Content-Type: application/ld+json` the `@context` is supplied in the body of the request. As with all
@@ -392,12 +392,12 @@ of the request and not in the payload body.
 
 ### Using core `@context` - defining NGSI-LD entities
 
-The core `@context` supplies the vocabulary for creating **NGSI-LD** data entities. Attributes such as `id` and `type` (
-which should be familiar to anyone who has used NGSI v2) are mapped to the standard **JSON-LD** `@id` and `@type`
+The core `@context` supplies the vocabulary for creating **NGSI-LD** data entities. Attributes such as `id` and `type` 
+(which should be familiar to anyone who has used NGSI v2) are mapped to the standard **JSON-LD** `@id` and `@type`
 [keywords](https://w3c.github.io/json-ld-syntax/#syntax-tokens-and-keywords). The `type` should refer to an included
 data model, in this case `Building` is being used as a short name for the included URN
-`https://uri.fiware.org/ns/data-models#Building`. Thereafter each _property_ is defined as a JSON element containing two
-attributes, a `type` and a `value`.
+`https://uri.fiware.org/ns/data-models#Building`. Thereafter, each _property_ is defined as a JSON element containing 
+two attributes, a `type` and a `value`.
 
 The `type` of a _property_ attribute must be one of the following:
 
@@ -413,18 +413,18 @@ The `type` of a _property_ attribute must be one of the following:
 
 ### Defining Properties-of-Properties within the NGSI-LD entity definition
 
-_Properties-of-Properties_ is the NGSI-LD equivalent of metadata (i.e. _"data about data"_), it is use to describe
+_Properties-of-Properties_ is the NGSI-LD equivalent of metadata (i.e. _"data about data"_), it is used to describe
 properties of the attribute value itself like accuracy, provider, or the units to be used. Some built-in metadata
 attributes already exist and these names are reserved:
 
 -   `createdAt` (type: DateTime): attribute creation date as an ISO 8601 string.
 -   `modifiedAt` (type: DateTime): attribute modification date as an ISO 8601 string.
 
-Additionally `observedAt`, `datasetId` and `instanceId` may optionally be added in some cases, and `location`,
+Additionally, `observedAt`, `datasetId` and `instanceId` may optionally be added in some cases, and `location`,
 `observationSpace` and `operationSpace` have special meaning for Geoproperties.
 
 In the examples given above, one element of metadata (i.e. a _property-of-a-property_) can be found within the `address`
-attribute. a `verified` flag indicates whether the address has been confirmed. The commonest _property-of-a-property_ is
+attribute. A `verified` flag indicates whether the address has been confirmed. The commonest _property-of-a-property_ is
 `unitCode` which should be used to hold the UN/CEFACT
 [Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes) for Units of Measurement.
 
@@ -436,7 +436,7 @@ short names.
 
 ### Obtain entity data by FQN Type
 
-This example returns the data of all `Building` entities within the context data The `type` parameter is mandatory for
+This example returns the data of all `Building` entities within the context data. The `type` parameter is mandatory for
 NGSI-LD and is used to filter the response. The Accept HTTP header is needed to retrieve JSON-LD content in the response
 body.
 
@@ -625,7 +625,7 @@ curl -G -X GET \
 
 Because of the use of the `options=keyValues`, the response consists of JSON only without the attribute definitions
 `type="Property"` or any _properties-of-properties_ elements. You can see that `Link` header from the request has been
-used as the `@context` returned in the response.
+used as the `@context` returned to the response.
 
 ```json
 [
@@ -668,10 +668,10 @@ used as the `@context` returned in the response.
 
 ### Filter context data by comparing the values of an attribute
 
-This example returns all `Building` entities with the `name` attribute _Big Red Barn_. Filtering can be done using the
-`q` parameter - if a string has spaces in it, it can be URL encoded and held within double quote characters `"` = `%22`.
-Since `options=keyValues` is sent, this will effect the structure of the payload and we will need to supply a different
-`@context` file - `json-context.jsonld`
+This example returns all `Building` entities with the `name` attribute `Big Red Barn`. Filtering can be done using the
+`q` parameter - if a string has spaces in it, it can be URL encoded (` `= `%20`) and held within double quote characters
+`"` = `%22`. Since `options=keyValues` is sent, this will affect the structure of the payload, and we will need to 
+supply a different `@context` file - `json-context.jsonld`
 
 #### 7 Request:
 
@@ -754,9 +754,9 @@ curl -G -X GET \
 
 #### Response:
 
-The response is returned in JSON-LD format with short form attribute names (`addresse`, `katagorie`) which correspond to
-the short names provided in the alternate context. Note that core context terms (`id`, `type` etc.) cannot be overridden
-directly but would require an additional **JSON-LD** expansion/compaction operation.
+The response is returned in JSON-LD format with short form attribute names (`adresse`, `kategorie`) which correspond to
+the short names provided in the alternate context. Note that core context terms (`id`, `type`, etc.) cannot be 
+overridden directly but would require an additional **JSON-LD** expansion/compaction operation.
 
 ```json
 [
@@ -780,7 +780,7 @@ directly but would require an additional **JSON-LD** expansion/compaction operat
 ]
 ```
 
-It should also be noted that the sub-attributes of the `addrese` have also not been amended, since `address` = `addrese`
+It should also be noted that the sub-attributes of the `adresse` have also not been amended, since `address` = `adresse`
 =`http://schema.org/address` and this definition defines the sub-attributes.
 
 ### Filter context data by comparing the values of an attribute in an Array
@@ -829,7 +829,7 @@ The response is returned in JSON-LD format with short form attribute names:
 
 ### Filter context data by comparing the values of a sub-attribute
 
-This example returns all stores found in the Tiergarten District.
+This example returns all stores found in the `Tiergarten District`.
 
 Filtering can be done using the `q` parameter - sub-attributes are annotated using the bracket syntax e.g.
 `q=address[addressLocality]=="Tiergarten"`.

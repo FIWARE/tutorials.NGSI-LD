@@ -26,7 +26,7 @@ Smart solutions based on FIWARE are architecturally designed around microservice
 scale-up from simple applications (such as the Supermarket tutorial) through to city-wide installations base on a large
 array of IoT sensors and other context data providers.
 
-The massive amount of data involved enventually becomes too much for a single machine to analyse, process and store, and
+The massive amount of data involved eventually becomes too much for a single machine to analyse, process and store, and
 therefore the work must be delegated to additional distributed services. These distributed systems form the basis of
 so-called **Big Data Analysis**. The distribution of tasks allows developers to be able to extract insights from huge
 data sets which would be too complex to be dealt with using traditional methods. and uncover hidden patterns and
@@ -39,10 +39,10 @@ grows, another technique will be required to avoid overwhelming the listener, po
 updates.
 
 **Apache Flink** is a Java/Scala based stream-processing framework which enables the delegation of data-flow processes.
-Therefore additional computational resources can be called upon to deal with data as events arrive. The **Cosmos Flink**
-connector allows developers write custom business logic to listen for context data subscription events and then process
-the flow of the context data. Flink is able to delegate these actions to other workers where they will be acted upon
-either in sequentiallly or in parallel as required. The data flow processing itself can be arbitrarily complex.
+Therefore, additional computational resources can be called upon to deal with data as events arrive. The **Cosmos 
+Flink** connector allows developers write custom business logic to listen for context data subscription events and then 
+process the flow of the context data. Flink is able to delegate these actions to other workers where they will be acted 
+upon either in sequentially or in parallel as required. The data flow processing itself can be arbitrarily complex.
 
 Obviously, in reality, our existing Supermarket scenario is far too small to require the use of a Big Data solution, but
 will serve as a basis for demonstrating the type of real-time processing which may be required in a larger solution
@@ -63,26 +63,26 @@ Both the Orion Context Broker and the IoT Agent rely on open source [MongoDB](ht
 keep persistence of the information they hold. We will also be using the dummy IoT devices created in the
 [previous tutorial](https://github.com/FIWARE/tutorials.IoT-Agent/).
 
-Therefore the overall architecture will consist of the following elements:
+Therefore, the overall architecture will consist of the following elements:
 
 -   Two **FIWARE Generic Enablers** as independent microservices:
     -   The [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests using
-        [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
+        [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json).
     -   The FIWARE [IoT Agent for UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/) which will
         receive southbound requests using
         [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
         and convert them to
         [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
-        commands for the devices
+        commands for the devices.
 -   An [Apache Flink cluster](https://ci.apache.org/projects/flink/flink-docs-stable/concepts/runtime.html) consisting
-    of a single **JobManager** and a single **TaskManager**
+    of a single **JobManager** and a single **TaskManager**:
     -   The FIWARE [Cosmos Orion Flink Connector](https://fiware-cosmos-flink.readthedocs.io/en/latest/) will be
         deployed as part of the dataflow which will subscribe to context changes and make operations on them in
-        real-time
--   One [MongoDB](https://www.mongodb.com/) **database** :
+        real-time.
+-   One [MongoDB](https://www.mongodb.com/) **database**:
     -   Used by the **Orion Context Broker** to hold context data information such as data entities, subscriptions and
-        registrations
-    -   Used by the **IoT Agent** to hold device information such as device URLs and Keys
+        registrations.
+    -   Used by the **IoT Agent** to hold device information such as device URLs and Keys.
 -   An HTTP **Web-Server** which offers static `@context` files defining the context entities within the system.
 -   The **Tutorial Application** does the following:
     -   Acts as set of dummy [agricultural IoT devices](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)
@@ -138,25 +138,25 @@ taskmanager:
 
 The `jobmanager` container is listening on three ports:
 
--   Port `8081` is exposed so we can see the web frontend of the Apache Flink Dashboard
--   Port `6123` is the standard **JobManager** RPC port, used for internal communications
+-   Port `8081` is exposed therefore we can see the web frontend of the Apache Flink Dashboard.
+-   Port `6123` is the standard **JobManager** RPC port, used for internal communications.
 
 The `taskmanager` container is listening on two ports:
 
--   Ports `6121` and `6122` are used and RPC ports by the **TaskManager**, used for internal communications
--   Port `9001` is exposed so that the installation can receive context data subscriptions
+-   Ports `6121` and `6122` are used and RPC ports by the **TaskManager**, used for internal communications.
+-   Port `9001` is exposed so that the installation can receive context data subscriptions.
 
 The containers within the flink cluster are driven by a single environment variable as shown:
 
 | Key                     | Value        | Description                                                           |
-| ----------------------- | ------------ | --------------------------------------------------------------------- |
+|-------------------------|--------------|-----------------------------------------------------------------------|
 | JOB_MANAGER_RPC_ADDRESS | `jobmanager` | URL of the _master_ Job Manager which coordinates the task processing |
 
 ## Start Up
 
 Before you start, you should ensure that you have obtained or built the necessary Docker images locally. Please clone
 the repository and create the necessary images by running the commands shown below. Note that you might need to run some
-of the commands as a privileged user:
+commands as a privileged user:
 
 ```bash
 #!/bin/bash
@@ -199,9 +199,9 @@ follows:
 
 This means that to create a streaming data flow we must supply the following:
 
--   A mechanism for reading Context data as a **Source Operator**
--   Business logic to define the transform operations
--   A mechanism for pushing Context data back to the context broker as a **Sink Operator**
+-   A mechanism for reading Context data as a **Source Operator**.
+-   Business logic to define the transform operations.
+-   A mechanism for pushing Context data back to the context broker as a **Sink Operator**.
 
 The `orion.flink.connector-1.2.4.jar` offers both **Source** and **Sink** operations. It therefore only remains to write
 the necessary Scala code to connect the streaming dataflow pipeline operations together. The processing code can be
@@ -215,7 +215,7 @@ Further Flink processing examples can be found on the
 
 ### Compiling a JAR file for Flink
 
-An existing `pom.xml` file has been created which holds the necessary prerequisites to build the examples JAR file
+An existing `pom.xml` file has been created which holds the necessary prerequisites to build the examples JAR file.
 
 In order to use the Orion Flink Connector we first need to manually install the connector JAR as an artifact using
 Maven:
@@ -231,7 +231,7 @@ mvn install:install-file \
   -Dpackaging=jar
 ```
 
-Thereafter the source code can be compiled by running the `mvn package` command within the same directory
+Thereafter, the source code can be compiled by running the `mvn package` command within the same directory
 (`cosmos-examples`):
 
 ```bash
@@ -244,7 +244,7 @@ A new JAR file called `cosmos-examples-1.2.jar` will be created within the `cosm
 
 For the purpose of this tutorial, we must be monitoring a system in which the context is periodically being updated. The
 dummy IoT Sensors can be used to do this. Open the device monitor page at `http://localhost:3000/device/monitor` and
-start a tractor moving. This can be done by selecting an appropriate the command from the drop down list and pressing
+start a tractor moving. This can be done by selecting an appropriate the command from the drop-down list and pressing
 the `send` button. The stream of measurements coming from the devices can then be seen on the same page:
 
 ![](https://fiware.github.io/tutorials.Big-Data-Flink/img/farm-devices.png)
@@ -254,18 +254,18 @@ the `send` button. The stream of measurements coming from the devices can then b
 The first example makes use of the `NGSILDSource` operator in order to receive notifications from the Orion-LD Context
 Broker. Specifically, the example counts the number notifications that each type of device sends in one minute. You can
 find the source code of the example in
-[org/fiware/cosmos/tutorial/LoggerLD.scala](https://github.com/FIWARE/tutorials.Big-Data-Flink/blob/NGSI-LD/cosmos-examples/src/main/scala/org/fiware/cosmos/tutorial/LoggerLD.scala)
+[org/fiware/cosmos/tutorial/LoggerLD.scala](https://github.com/FIWARE/tutorials.Big-Data-Flink/blob/NGSI-LD/cosmos-examples/src/main/scala/org/fiware/cosmos/tutorial/LoggerLD.scala).
 
 ### Logger - Installing the JAR
 
-Open the browser and access `http://localhost:8081/#/submit`
+Open the browser and access `http://localhost:8081/#/submit`:
 
 ![](https://fiware.github.io/tutorials.Big-Data-Flink/img/submit-logger.png)
 
-Submit new job
+Submit new job:
 
--   **Filename:** `cosmos-examples-1.2.jar`
--   **Entry Class:** `org.fiware.cosmos.tutorial.LoggerLD`
+-   **Filename:** `cosmos-examples-1.2.jar`.
+-   **Entry Class:** `org.fiware.cosmos.tutorial.LoggerLD`.
 
 An alternative would be to use curl on the command-line as shown:
 
@@ -278,10 +278,10 @@ curl -X POST -H "Expect:" -F "jarfile=@/cosmos-examples-1.2.jar" http://localhos
 Once a dynamic context system is up and running (we have deployed the `Logger` job in the Flink cluster), we need to
 inform **Flink** of changes in context.
 
-This is done by making a POST request to the `/ngsi-ld/v1/subscriptions` endpoint of the Orion Context Broker.
+This is done by making a POST request to the `/ngsi-ld/v1/subscriptions` endpoint of the Orion Context Broker:
 
 -   The `NGSILD-Tenant` header is used to filter the subscription to only listen to measurements from the attached IoT
-    Sensors, since they had been provisioned using these settings
+    Sensors, since they had been provisioned using these settings.
 
 -   The notification `uri` must match the one our Flink program is listening to.
 
@@ -310,7 +310,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 }'
 ```
 
-The response will be `**201 - Created**`
+The response will be `**201 - Created**`.
 
 If a subscription has been created, we can check to see if it is firing by making a GET request to the
 `/ngsi-ld/v1/subscriptions/` endpoint.
@@ -349,14 +349,14 @@ curl -X GET \
 ```
 
 Within the `notification` section of the response, you can see several additional `attributes` which describe the health
-of the subscription
+of the subscription.
 
 If the criteria of the subscription have been met, `timesSent` should be greater than `0`. A zero value would indicate
 that the `subject` of the subscription is incorrect or the subscription has created with the wrong `fiware-service-path`
-or `fiware-service` header
+or `fiware-service` header.
 
 The `lastNotification` should be a recent timestamp - if this is not the case, then the devices are not regularly
-sending data. Remember to activate the smart farm by moving a **Tractor**
+sending data. Remember to activate the smart farm by moving a **Tractor**.
 
 The `lastSuccess` should match the `lastNotification` date - if this is not the case then **Cosmos** is not receiving
 the subscription properly. Check that the hostname and port are correct.
@@ -409,6 +409,7 @@ object LoggerLD {
     env.execute("Socket Window NgsiLDEvent")
   }
 }
+
 case class Sensor(device: String, sum: Int)
 ```
 
@@ -422,7 +423,7 @@ definition of these objects can be found within the
 [Orion-Flink Connector documentation](https://github.com/ging/fiware-cosmos-orion-flink-connector/blob/master/README.md#NGSILDSource).
 
 The stream processing consists of five separate steps. The first step (`flatMap()`) is performed in order to put
-together the entity objects of all the NGSI-LD Events received in a period of time. Thereafter the code iterates over
+together the entity objects of all the NGSI-LD Events received in a period of time. Thereafter, the code iterates over
 them (with the `map()` operation) and extracts the desired attributes. In this case, we are interested in the entity
 `type` (`Device` or `Tractor`).
 
@@ -433,7 +434,7 @@ each notification. For this purpose, we can define a case class as shown:
 case class Sensor(device: String, sum: Int)
 ```
 
-Therefter can group the created objects by the type of device (`keyBy("device")`) and perform operations such as
+Therefter, can group the created objects by the type of device (`keyBy("device")`) and perform operations such as
 `timeWindow()` and `sum()` on them.
 
 After the processing, the results are output to the console:
@@ -448,26 +449,26 @@ The second example turns on a water faucet when the soil humidity is too low and
 humidity it is back to normal levels. This way, the soil humidity is always kept at an adequate level.
 
 The dataflow stream uses the `NGSILDSource` operator in order to receive notifications and filters the input to only
-respond to motion senseors and then uses the `NGSILDSink` to push processed context back to the Context Broker. You can
+respond to motion sensors and then uses the `NGSILDSink` to push processed context back to the Context Broker. You can
 find the source code of the example in
-[org/fiware/cosmos/tutorial/FeedbackLD.scala](https://github.com/FIWARE/tutorials.Big-Data-Flink/blob/master/cosmos-examples/src/main/scala/org/fiware/cosmos/tutorial/FeedbackLD.scala)
+[org/fiware/cosmos/tutorial/FeedbackLD.scala](https://github.com/FIWARE/tutorials.Big-Data-Flink/blob/master/cosmos-examples/src/main/scala/org/fiware/cosmos/tutorial/FeedbackLD.scala).
 
 ### Feedback Loop - Installing the JAR
 
-Goto `http://localhost:8081/#/job/running`
+Goto `http://localhost:8081/#/job/running`:
 
 ![](https://fiware.github.io/tutorials.Big-Data-Flink/img/running-jobs.png)
 
-Select the running job (if any) and click on **Cancel Job**
+Select the running job (if any) and click on **Cancel Job**.
 
-Thereafter goto `http://localhost:8081/#/submit`
+Thereafter, goto `http://localhost:8081/#/submit`:
 
 ![](https://fiware.github.io/tutorials.Big-Data-Flink/img/submit-feedback.png)
 
-Submit new job
+Submit new job:
 
--   **Filename:** `cosmos-examples-1.2.jar`
--   **Entry Class:** `org.fiware.cosmos.tutorial.FeedbackLD`
+-   **Filename:** `cosmos-examples-1.2.jar`.
+-   **Entry Class:** `org.fiware.cosmos.tutorial.FeedbackLD`.
 
 ### Feedback Loop - Subscribing to context changes
 

@@ -20,13 +20,13 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 >
 > — Gustave Flaubert (Bouvard and Pecuchet)
 
-As defined previously, an IoT Agent is a component that lets a group of devices send their data to and be managed from a
-Context Broker using their own native protocols. Every IoT Agent is defined for a single payload format, although they
+As defined previously, an IoT Agent is a component that lets a group of devices sends their data to and be managed from 
+a Context Broker using their own native protocols. Every IoT Agent is defined for a single payload format, although they
 may be able to use multiple disparate transports for that payload.
 
 We have already encountered the Ultralight IoT Agent, which communicates using a simple bar (`|`) separated list of
 key-value pairs. This payload is a simple, terse but relatively obscure communication mechanism - by far the commonest
-messaging payload used on the Internet is the so-called JavaScript Object Notation or JSON which will be familar to any
+messaging payload used on the Internet is the so-called JavaScript Object Notation or JSON which will be familiar to any
 software developer.
 
 JSON is slightly more verbose than Ultralight, but the cost of sending larger messages is offset by the familiarity of
@@ -43,9 +43,9 @@ Agent - the conversion of messages from JSON to NGSI and vice-versa will be uniq
 A direct comparison of the two IoT Agents can be seen below:
 
 | IoT Agent for Ultralight                                            | IoT Agent for JSON                                                  | Protocol's Area of Concern |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------- | -------------------------- |
-| Sample Measure `c\|1`                                               | Sample Measure `{"count": "1"}`                                     | Message Payload            |
-| Sample Command `Robot1@turn\|left`                                  | Sample Command `{"Robot1": {"turn": "left"}}`                       | Message Payload            |
+|---------------------------------------------------------------------|---------------------------------------------------------------------|----------------------------|
+| Sample Measure `c\1`                                                | Sample Measure `{"count": "1"}`                                     | Message Payload            |
+| Sample Command `Robot1@turn\left`                                   | Sample Command `{"Robot1": {"turn": "left"}}`                       | Message Payload            |
 | Content Type is `text/plain`                                        | Content Type is `application/json`                                  | Message Payload            |
 | Offers 3 transports - HTTP, MQTT and AMPQ                           | Offers 3 transports - HTTP, MQTT and AMPQ                           | Transport Mechanism        |
 | HTTP listens for measures on `iot/d` by default                     | HTTP listens for measures on `iot/json` by default                  | Transport Mechanism        |
@@ -68,27 +68,27 @@ For example to switch on a real-life JSON **Irrigation System** the following in
 
 1.  An NGSI-LD PATCH request is sent to the **Context broker** to update the current context of **Irrigation System**
 
--   this is effectively an indirect request invoke the `on` command of the **Irrigation System**
+-   this is effectively an indirect request invoke the `on` command of the **Irrigation System**.
 
 2.  The **Context Broker** finds the entity within the context and notes that the context provision for this attribute
-    has been delegated to the IoT Agent
+    has been delegated to the IoT Agent.
 3.  Using the standard forwarding mechanism, the **Context broker** duplicates the PATCH request and forwards it to the
-    North Port of the **IoT Agent** to invoke the command
+    North Port of the **IoT Agent** to invoke the command.
 4.  The **IoT Agent** receives this Southbound request and converts it to JSON syntax and passes it on to the
-    **Irrigation System**
+    **Irrigation System**.
 5.  The **Irrigation System** switches on the water sprinkler and returns the result of the command to the **IoT Agent**
-    in JSON syntax
+    in JSON syntax.
 6.  The **IoT Agent** receives this Northbound request, interprets it and passes the result of the interaction into the
     context by making an NGSI-LD request to the **Context Broker**.
 7.  The **Context Broker** receives this Northbound request and updates the context with the result of the command.
 
 ![](https://fiware.github.io/tutorials.IoT-Agent-JSON/img/command-swimlane.png)
 
--   Requests between **User** and **Context Broker** use NGSI-LD
--   Requests between **Context Broker** and **IoT Agent** use NGSI-LD
--   Requests between **IoT Agent** and **IoT Device** use native protocols
--   Requests between **IoT Device** and **IoT Agent** use native protocols
--   Requests between **IoT Agent** and **Context Broker** use NGSI-LD
+-   Requests between **User** and **Context Broker** use NGSI-LD.
+-   Requests between **Context Broker** and **IoT Agent** use NGSI-LD.
+-   Requests between **IoT Agent** and **IoT Device** use native protocols.
+-   Requests between **IoT Device** and **IoT Agent** use native protocols.
+-   Requests between **IoT Agent** and **Context Broker** use NGSI-LD.
 
 ## Northbound Traffic (Measurements)
 
@@ -98,15 +98,15 @@ real world into the context data of the system.
 
 For example for a real-life **Soil Sensor** to send a humidity reading, the following interactions would occur:
 
-1.  A **Soil Sensor** makes a measurement and passes the result to the **IoT Agent**
+1.  A **Soil Sensor** makes a measurement and passes the result to the **IoT Agent**.
 2.  The **IoT Agent** receives this Northbound request, converts the result from JSON syntax and passes the result of
     the interaction into the context by making an NGSI-LD request to the **Context Broker**.
 3.  The **Context Broker** receives this Northbound request and updates the context with the result of the measurement.
 
 ![](https://fiware.github.io/tutorials.IoT-Agent-JSON/img/measurement-swimlane.png)
 
--   Requests between **IoT-Device** and **IoT-Agent** use native protocols
--   Requests between **IoT-Agent** and **Context-Broker** use NGSI-LD
+-   Requests between **IoT-Device** and **IoT-Agent** use native protocols.
+-   Requests between **IoT-Agent** and **Context-Broker** use NGSI-LD.
 
 > **Note** Other more complex interactions are also possible, but this overview is sufficient to understand the basic
 > principles of an IoT Agent.
@@ -116,20 +116,20 @@ For example for a real-life **Soil Sensor** to send a humidity reading, the foll
 As can be seen from the previous sections, although each IoT Agent will be unique since they interpret different
 protocols, there will a large degree of similarity between IoT agents.
 
--   Offering a standard endpoint to listen to device updates
--   Offering a standard endpoint to listen to context data updates
--   Holding a list of devices and mapping context data attributes to device syntax
--   Security Authorization
+-   Offering a standard endpoint to listen to device updates.
+-   Offering a standard endpoint to listen to context data updates.
+-   Holding a list of devices and mapping context data attributes to device syntax.
+-   Security Authorization.
 
 This base functionality has been abstracted out into a common
-[IoT Agent framework library](https://iotagent-node-lib.readthedocs.io/)
+[IoT Agent framework library](https://iotagent-node-lib.readthedocs.io/).
 
 #### Device Monitor
 
 For the purpose of this tutorial, a series of dummy agricultural IoT devices have been created, which will be attached
 to the context broker. Details of the architecture and protocol used can be found in the
 [IoT Sensors tutorial](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD) The state of each device can be
-seen on the JSON device monitor web page found at: `http://localhost:3000/device/monitor`
+seen on the JSON device monitor web page found at: `http://localhost:3000/device/monitor`.
 
 ![FIWARE Monitor](https://fiware.github.io/tutorials.IoT-Agent-JSON/img/farm-devices.png)
 
@@ -141,22 +141,22 @@ NGSI-LD Context Broker such as [Orion](https://fiware-orion.readthedocs.io/en/la
 [IoT Agent for JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/). Usage of the Context Broker is sufficient
 for an application to qualify as _“Powered by FIWARE”_. Both the Orion Context Broker and the IoT Agent rely on open
 source [MongoDB](https://www.mongodb.com/) technology to keep persistence of the information they hold. We will also be
-using the dummy IoT devices created in the [previous tutorial](https://github.com/FIWARE/tutorials.IoT-Sensors/)
+using the dummy IoT devices created in the [previous tutorial](https://github.com/FIWARE/tutorials.IoT-Sensors/).
 
-Therefore the overall architecture will consist of the following elements:
+Therefore, the overall architecture will consist of the following elements:
 
 -   The [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests using
-    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
+    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json).
 -   The FIWARE [IoT Agent for JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/) which will receive
     southbound requests using
     [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
     and convert them to
     [JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual) commands
-    for the devices
--   The underlying [MongoDB](https://www.mongodb.com/) database :
+    for the devices.
+-   The underlying [MongoDB](https://www.mongodb.com/) database:
     -   Used by the **Orion Context Broker** to hold context data information such as data entities, subscriptions and
-        registrations
-    -   Used by the **IoT Agent** to hold device information such as device URLs and Keys
+        registrations.
+    -   Used by the **IoT Agent** to hold device information such as device URLs and Keys.
 -   An HTTP **Web-Server** which offers static `@context` files defining the context entities within the system.
 -   The **Tutorial Application** does the following:
     -   Acts as set of dummy [agricultural IoT devices](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)
@@ -201,14 +201,14 @@ tutorial:
 
 The `tutorial` container is listening on two ports:
 
--   Port `3000` is exposed so we can see the web page displaying the Dummy IoT devices.
+-   Port `3000` is exposed, so we can see the web page displaying the Dummy IoT devices.
 -   Port `3001` is exposed purely for tutorial access - so that cUrl or Postman can make JSON commands without being
     part of the same network.
 
 The `tutorial` container is driven by environment variables as shown:
 
 | Key                     | Value                                | Description                                                                                                                         |
-| ----------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+|-------------------------|--------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
 | DEBUG                   | `tutorial:*`                         | Debug flag used for logging                                                                                                         |
 | WEB_APP_PORT            | `3000`                               | Port used by web-app which displays the dummy device data                                                                           |
 | IOTA_HTTP_HOST          | `iot-agent`                          | The hostname of the IoT Agent for JSON - see below                                                                                  |
@@ -264,14 +264,14 @@ iot-agent:
 The `iot-agent` container relies on the presence of the Orion Context Broker and uses a MongoDB database to hold device
 information such as device URLs and Keys. The container is listening on two ports:
 
--   Port `7896` is exposed to receive JSON measurements over HTTP from the Dummy IoT devices
+-   Port `7896` is exposed to receive JSON measurements over HTTP from the Dummy IoT devices.
 -   Port `4041` is exposed purely for tutorial access - so that cUrl or Postman can make provisioning commands without
     being part of the same network.
 
 The `iot-agent` container is driven by environment variables as shown:
 
 | Key                  | Value                                | Description                                                                                                                                           |
-| -------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+|----------------------|--------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
 | IOTA_CB_HOST         | `orion`                              | Hostname of the context broker to update context                                                                                                      |
 | IOTA_CB_PORT         | `1026`                               | Port that context broker listens on to update context                                                                                                 |
 | IOTA_NORTH_PORT      | `4041`                               | Port used for Configuring the IoT Agent and receiving context updates from the context broker                                                         |
@@ -325,11 +325,11 @@ git checkout NGSI-LD
 
 To follow the tutorial correctly please ensure you have the device monitor page available in your browser and click on
 the page to enable audio before you enter any cUrl commands. The device monitor displays the current state of an array
-of dummy devices using JSON syntax
+of dummy devices using JSON syntax.
 
 <h4>Device Monitor</h4>
 
-The device monitor can be found at: `http://localhost:3000/device/monitor`
+The device monitor can be found at: `http://localhost:3000/device/monitor`.
 
 ## Checking the IoT Agent Service Health
 
@@ -430,7 +430,7 @@ It is also possible to set up default commands and attributes for all anonymous 
 within this tutorial as we will be provisioning each device separately.
 
 This example provisions an anonymous group of devices. It tells the IoT Agent that a series of devices will be sending
-messages to the `IOTA_HTTP_PORT` (where the IoT Agent is listening for **Northbound** communications)
+messages to the `IOTA_HTTP_PORT` (where the IoT Agent is listening for **Northbound** communications).
 
 #### 2 Request:
 
@@ -486,9 +486,9 @@ The service group provisioning can also be used to define `attributes` mappings 
 map the `location` GeoProperty.
 
 When a measurement from an IoT device is received on the resource URL it needs to be interpreted and passed to the
-context broker. The `entity_type` attribute provides a default `type` for each device which has made a request (in this
-case anonymous devices will be known as `Device` entities. Furthermore the location of the context broker (`cbroker`) is
-needed, so that the IoT Agent can pass on any measurements received to the correct location. `cbroker` is an optional
+context broker. The `entity_type` attribute provides a default `type` for each device which has made a request, in this
+case anonymous devices will be known as `Device` entities. Furthermore, the location of the context broker (`cbroker`) 
+is needed, so that the IoT Agent can pass on any measurements received to the correct location. `cbroker` is an optional
 attribute - if it is not provided, the IoT Agent uses the context broker URL as defined in the configuration file,
 however it has been included here for completeness.
 
@@ -496,14 +496,14 @@ however it has been included here for completeness.
 
 The NGSI-LD [specification](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.04.01_60/gs_cim009v010401p.pdf)
 mandates full URNs when creating context data entities, however the incoming messages from the devices will not be aware
-of this convention. Furthermore the attribute name on the context data entity should match the short names found within
+of this convention. Furthermore, the attribute name on the context data entity should match the short names found within
 the associated `@context` file. These mappings can be defined at the service group level as seen in the previous
 request, or they can be defined by provisioning each device individually.
 
 Three types of measurement attributes can be provisioned:
 
--   `attributes` are mappings of the active readings from the device
--   `lazy` attributes are only sent on request - The IoT Agent will inform the device to return the measurement
+-   `attributes` are mappings of the active readings from the device.
+-   `lazy` attributes are only sent on request - The IoT Agent will inform the device to return the measurement.
 -   `static_attributes` are as the name suggests static data about the device (such as relationships) passed on to the
     context broker.
 
@@ -576,7 +576,7 @@ within the **Building** `urn:ngsi-ld:Building:barn001`.
 > `/ngsi-ld/v1/entities?georel=near;maxDistance:1500&geometry=point&coords=52.5162,13.3777`
 
 You can simulate a dummy IoT device measurement coming from the **Temperature Sensor** device `temperature001`, by
-making the following request
+making the following request.
 
 #### 4 Request:
 
@@ -634,7 +634,7 @@ of the attribute - this represents the last time the entity and attribute have b
 to each new entity because the `IOTA_TIMESTAMP` environment variable was set when the IoT Agent was started up.
 
 By provisioning the service group, it is also possible to open the IoT Agent to receive readings from anonymous devices.
-For example it would be unnecessary to provision each individual device if all necessary data is available direct from
+For example, it would be unnecessary to provision each individual device if all necessary data is available direct from
 the device itself.
 
 For example, consider this request to the `/iot/json` endpoint:
@@ -649,7 +649,7 @@ curl -iX POST 'http://localhost:7896/iot/json?k=4jggokgpepnvsb2uv4s40d59ov&i=mot
 
 Because the resource endpoint has previously been defined within the service group and the API Key matches, this is
 recognised as a valid measure and therefore a new Entity is created in the context broker with attributes mapped to
-based on the knowledge of the service group
+based on the knowledge of the service group.
 
 #### 7 Request:
 
@@ -695,7 +695,7 @@ copied directly from the received measure.
 
 Provisioning an actuator is similar to provisioning a sensor. This time an `endpoint` attribute holds the location where
 the IoT Agent needs to send the UltraLight command and the `commands` array includes a list of each command that can be
-invoked. The example below provisions a water with the `deviceId=water001`. The endpoint is
+invoked. The example below provisions water with the `deviceId=water001`. The endpoint is
 `http://iot-sensors:3001/iot/water001` and it can accept the `on` command. The `transport=HTTP` attribute defines the
 communications protocol to be used.
 
@@ -734,7 +734,7 @@ curl -L -X POST 'http://localhost:4041/iot/devices' \
 '
 ```
 
-Before we wire-up the context broker, we can test that a command can be send to a device by making a PATCH request
+Before we wire-up the context broker, we can test that a command can be sent to a device by making a PATCH request
 directly to the IoT Agent's North Port using the `/ngsi-ld/v1/entities/` endpoint. It is this endpoint that will
 eventually be invoked by the context broker once we have connected it up. To test the configuration you can run the
 command directly as shown:
@@ -921,7 +921,7 @@ available. In other words the IoT Agent registered itself as a
 
 Once the commands have been registered it will be possible to turn on the **water**, open and close the **Smart Door**
 and switch the **Irrigation System** on and off by sending requests to the Orion Context Broker, rather than sending
-JSON requests directly the IoT devices as we did in the [previous tutorial](iot-sensors.md)
+JSON requests directly the IoT devices as we did in the [previous tutorial](iot-sensors.md).
 
 ### Activating the Irrigation System
 
@@ -967,7 +967,7 @@ curl -L -X PATCH 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:t
 
 ### Activating the Filling Station
 
-Change the state of the **Fillling System**, the `add` attribute must be updated in the context.
+Change the state of the **Filling System**, the `add` attribute must be updated in the context.
 
 #### 16 Request:
 
@@ -987,19 +987,19 @@ curl -L -X PATCH 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:f
 # Service Group CRUD Actions
 
 The **CRUD** operations for provisioning a service group map on to the expected HTTP verbs under the `/iot/services`
-endpoint
+endpoint:
 
--   **Create** - HTTP POST
--   **Read** - HTTP GET
--   **Update** - HTTP PUT
--   **Delete** - HTTP DELETE
+-   **Create** - HTTP POST.
+-   **Read** - HTTP GET.
+-   **Update** - HTTP PUT.
+-   **Delete** - HTTP DELETE.
 
 Use the `resource` and `apikey` parameters to uniquely identify a service group.
 
 ### Creating a Service Group
 
 This example provisions an anonymous group of devices. It tells the IoT Agent that a series of devices will be sending
-messages to the `IOTA_HTTP_PORT` (where the IoT Agent is listening for **Northbound** communications)
+messages to the `IOTA_HTTP_PORT` (where the IoT Agent is listening for **Northbound** communications).
 
 #### 17 Request:
 
@@ -1150,7 +1150,7 @@ commands or attribute mappings.
 
 ### Update a Service Group
 
-This example updates an existing service group with a given `resource` path and `apikey`
+This example updates an existing service group with a given `resource` path and `apikey`.
 
 Service group details can be updated by making a PUT request to the `/iot/services` endpoint and providing a `resource`
 and `apikey` parameters.
@@ -1188,12 +1188,12 @@ curl -iX DELETE \
 # Device CRUD Actions
 
 The **CRUD** operations for provisioning individual devices map on to the expected HTTP verbs under the `/iot/devices`
-endpoint
+endpoint:
 
--   **Create** - HTTP POST
--   **Read** - HTTP GET
--   **Update** - HTTP PUT
--   **Delete** - HTTP DELETE
+-   **Create** - HTTP POST.
+-   **Read** - HTTP GET.
+-   **Update** - HTTP PUT.
+-   **Delete** - HTTP DELETE.
 
 Use the `<device-id>` to uniquely identify a device.
 

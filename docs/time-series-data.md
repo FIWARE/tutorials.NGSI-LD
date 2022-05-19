@@ -10,7 +10,7 @@ directly to the **CrateDB** HTTP endpoint. Results are visualised on a graph or 
 analytics tool.
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
-[Postman documentation](https://fiware.github.io/tutorials.Time-Series-Data/ngsi-ld.html)
+[Postman documentation](https://fiware.github.io/tutorials.Time-Series-Data/ngsi-ld.html).
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/d24facc3c430bb5d5aaf)。
 
@@ -22,7 +22,7 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 >
 > — Emily Dickinson
 
-FIWARE [QuantumLeap](https://smartsdk.github.io/ngsi-timeseries-api/) is an time-based data-persistence generic enabler
+FIWARE [QuantumLeap](https://smartsdk.github.io/ngsi-timeseries-api/) is a time-based data-persistence generic enabler
 created specifically to persist and query time-series database (currently CrateDB and TimescaleDB). The component can
 respond to NGSI-v2 or NGSI-LD subscriptions.
 
@@ -58,14 +58,14 @@ available licensed under the Apache License 2.0. More information can be found a
 For the purpose of this tutorial, a series of dummy agricultural IoT devices have been created, which will be attached
 to the context broker. Details of the architecture and protocol used can be found in the
 [IoT Sensors tutorial](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD) The state of each device can be
-seen on the UltraLight device monitor web page found at: `http://localhost:3000/device/monitor`
+seen on the UltraLight device monitor web page found at: `http://localhost:3000/device/monitor`.
 
 ![FIWARE Monitor](https://fiware.github.io/tutorials.Time-Series-Data/img/farm-devices.png)
 
 <h4>Device History</h4>
 
 Once **QuantumLeap** has started aggregating data, the historical state of each device can be seen on the device history
-web page found at: `http://localhost:3000/device/history/urn:ngsi-ld:Farm:001`
+web page found at: `http://localhost:3000/device/history/urn:ngsi-ld:Farm:001`.
 
 ![](https://fiware.github.io/tutorials.Time-Series-Data/img/history-graphs.png)
 
@@ -75,33 +75,33 @@ This application builds on the components and dummy IoT devices created in
 [previous tutorials](https://github.com/FIWARE/tutorials.IoT-Agent/). It will use three FIWARE components: the
 [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/), the
 [IoT Agent for Ultralight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/), and
-[QuantumLeap](https://smartsdk.github.io/ngsi-timeseries-api/) .
+[QuantumLeap](https://smartsdk.github.io/ngsi-timeseries-api/).
 
-Therefore the overall architecture will consist of the following elements:
+Therefore, the overall architecture will consist of the following elements:
 
 -   The **FIWARE Generic Enablers**:
 
     -   The [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests using
-        [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
+        [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json).
     -   The FIWARE [IoT Agent for UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/) which will
         receive southbound requests using
         [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
         and convert them to
         [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
-        commands for the devices
+        commands for the devices.
     -   FIWARE [QuantumLeap](https://smartsdk.github.io/ngsi-timeseries-api/) subscribed to context changes and
-        persisting them into a **CrateDB** database
+        persisting them into a **CrateDB** database.
 
 -   A [MongoDB](https://www.mongodb.com/) database:
 
     -   Used by the **Orion Context Broker** to hold context data information such as data entities, subscriptions and
-        registrations
-    -   Used by the **IoT Agent** to hold device information such as device URLs and Keys
+        registrations.
+    -   Used by the **IoT Agent** to hold device information such as device URLs and Keys.
 
 -   A [CrateDB](https://crate.io/) database:
 
-    -   Used as a data sink to hold time-based historical context data
-    -   offers an HTTP endpoint to interpret time-based data queries
+    -   Used as a data sink to hold time-based historical context data.
+    -   offers an HTTP endpoint to interpret time-based data queries.
 
 -   An HTTP **Web-Server** which offers static `@context` files defining the context entities within the system.
 -   The **Tutorial Application** does the following:
@@ -121,7 +121,7 @@ The overall architecture can be seen below:
 
 In the configuration, **QuantumLeap** listens to NGSI LD notifications on port `8868` and persists historic context data
 to the **CrateDB**. **CrateDB** is accessible using port `4200` and can either be queried directly or attached to the
-Grafana analytics tool. The rest of the system providing the context data has been described in previous tutorials
+Grafana analytics tool. The rest of the system providing the context data has been described in previous tutorials.
 
 <h3>CrateDB Database Server Configuration</h3>
 
@@ -144,7 +144,7 @@ If CrateDB exits immediately with a
 by running the `sudo sysctl -w vm.max_map_filling=262144` command on the host machine. For further information look
 within the CrateDB
 [documentation](https://crate.io/docs/crate/howtos/en/latest/admin/bootstrap-checks.html#bootstrap-checks) and Docker
-[troubleshooting guide](https://crate.io/docs/crate/howtos/en/latest/deployment/containers/docker.html#troubleshooting)
+[troubleshooting guide](https://crate.io/docs/crate/howtos/en/latest/deployment/containers/docker.html#troubleshooting).
 
 <h3>QuantumLeap Configuration</h3>
 
@@ -182,12 +182,12 @@ The `CRATE_HOST` environment variable defines the location where the data will b
 
 The `cratedb` container is listening on two ports:
 
--   The Admin UI is available on port `4200`
--   The transport protocol is available on `port 4300`
+-   The Admin UI is available on port `4200`.
+-   The transport protocol is available on `port 4300`.
 
 The `grafana` container has connected up port `3000` internally with port `3003` externally. This is because the Grafana
-UI is usually available on port `3000`, but this port has already been taken by the dummy devices UI so it has been
-shifted to another port. The Grafana Environment variables are described within their own
+UI is usually available on port `3000`, but this port has already been taken by the dummy devices UI, therefore it has
+been shifted to another port. The Grafana Environment variables are described within their own
 [documentation](https://grafana.com/docs/installation/configuration/). The configuration ensures we will be able to
 connect to the **CrateDB** database later on in the tutorial. The configuration also imports a custom map plugin that
 helps you in displaying NGSI v2 entities over a map.
@@ -205,7 +205,7 @@ and thermostat.
 
 Remove some hay from the barn, update the thermostat and open the device monitor page at
 `http://localhost:3000/device/monitor` and start a **Tractor** and switch on a **Smart Lamp**. This can be done by
-selecting an appropriate command from the drop down list and pressing the `send` button. The stream of measurements
+selecting an appropriate command from the drop-down list and pressing the `send` button. The stream of measurements
 coming from the devices can then be seen on the same page.
 
 ## Setting up Subscriptions
@@ -225,7 +225,7 @@ able to aggregate the results.
 This is done by making a POST request to the `/ngsi-ld/v1/subscriptions/` endpoint of the **Orion-LD Context Broker**.
 
 -   The `NGSILD-Tenant` headers is used to filter the subscription to only listen to measurements from the attached IoT
-    Sensors
+    Sensors.
 -   The `entities` `type` in the request body ensures that **QuantumLeap** will be informed of all
     **FillingLevelSensor** data changes.
 -   The `notification` URL must match the exposed port.
@@ -267,7 +267,7 @@ This is done by making a POST request to the `/ngsi-ld/v1/subscriptions/` endpoi
 including the `throttling` attribute in the request body.
 
 -   The `NGSILD-Tenant` headers is used to filter the subscription to only listen to measurements from the attached IoT
-    Sensors
+    Sensors.
 -   The `entities` `type` in the request body ensures that **QuantumLeap** will be informed of all **Device** data
     changes.
 -   The `notification` URL must match the exposed port.
@@ -360,7 +360,7 @@ curl -X GET \
 
 ## Time Series Data Queries (QuantumLeap API)
 
-**QuantumLeap** offers an API wrapping CrateDB backend so you can also perform multiple types of queries. The
+**QuantumLeap** offers an API wrapping CrateDB backend, therefore you can also perform multiple types of queries. The
 documentation of the API is [here](https://app.swaggerhub.com/apis/smartsdk/ngsi-tsdb/). Mind the versions. If you have
 access to your `quantumleap` container (e.g. it is running in `localhost` or port-forwarding to it), you can navigate
 its API via `http://localhost:8668/v2/ui`.
@@ -660,7 +660,7 @@ attribute.
 > -   QuantumLeap can be easily extended to other backends and your app will get compatibility for free.
 > -   If your deployment is distributed, you won't need to expose the ports of your database to the outside.
 
-If your are sure your query is not supported by **QuantumLeap**, you may have to end up querying **CrateDB**, however,
+If you are sure your query is not supported by **QuantumLeap**, you may have to end up querying **CrateDB**, however,
 please open an issue in [QuantumLeap's GitHub repository](https://github.com/smartsdk/ngsi-timeseries-api/issues) so the
 team is aware.
 
@@ -728,7 +728,7 @@ database.
 ### CrateDB API - List the first N Sampled Values
 
 The SQL statement uses `ORDER BY` and `LIMIT` clauses to sort the data. More details can be found under within the
-**CrateDB** [documentation](https://crate.io/docs/crate/reference/en/latest/sql/statements/select.html)
+**CrateDB** [documentation](https://crate.io/docs/crate/reference/en/latest/sql/statements/select.html).
 
 #### 14 Request:
 
@@ -913,7 +913,7 @@ domain of **QuantumLeap** as it not a graphical tool, but can be delegated to a 
 [Wirecloud](https://github.com/FIWARE/catalogue/blob/master/processing/README.md#Wirecloud) or
 [Knowage](https://github.com/FIWARE/catalogue/blob/master/processing/README.md#Knowage).
 
-It can also be retrieved and displayed using a third-party graphing tool appropriate to your coding environment - for
+It can also be retrieved and displayed using a third party graphing tool appropriate to your coding environment - for
 example [chartjs](http://www.chartjs.org/). An example of this can be found within the `history` controller in the
 [Git Repository](https://github.com/FIWARE/tutorials.Step-by-Step/blob/master/context-provider/controllers/history.js).
 
@@ -967,7 +967,7 @@ function crateToTimeSeries(crateResponse, aggMethod, hexColor) {
 }
 ```
 
-The modified data is then passed to the frontend to be processed by the third-party graphing tool. The result is shown
+The modified data is then passed to the frontend to be processed by the third party graphing tool. The result is shown
 here: `http://localhost:3000/device/history/urn:ngsi-ld:Farm:001`.
 
 ## Displaying CrateDB data as a Grafana Dashboard
@@ -975,7 +975,7 @@ here: `http://localhost:3000/device/history/urn:ngsi-ld:Farm:001`.
 **CrateDB** has been chosen as the time-series data sink for QuantumLeap, because, among
 [many other benefits](https://quantumleap.readthedocs.io/en/latest/), it integrates seamlessly with the
 [Grafana](https://grafana.com/) time series analytics tool. Grafana can be used to display the aggregated sensor data -
-a full tutorial on building dashboards can be found [here](https://www.youtube.com/watch?v=sKNZMtoSHN4). The simpified
+a full tutorial on building dashboards can be found [here](https://www.youtube.com/watch?v=sKNZMtoSHN4). The simplified
 instructions below summarize how to connect and display a graph of the FillingLevelSensor `filling` data.
 
 ### Logging in
@@ -986,13 +986,13 @@ found at: `http://localhost:3003/login`. The default username is `admin` and the
 ### Configuring a Data Source
 
 After logging in, a PostgreSQL datasource must be set up at `http://localhost:3003/datasources` with the following
-values
+values:
 
--   **Name** `CrateDB`
--   **Host** `crate-db:5432`
--   **Database** `mtopeniot`
--   **User** `crate`
--   **SSL Mode** `disable`
+-   **Name** `CrateDB`.
+-   **Host** `crate-db:5432`.
+-   **Database** `mtopeniot`.
+-   **User** `crate`.
+-   **SSL Mode** `disable`.
 
 ![](https://fiware.github.io/tutorials.Time-Series-Data/img/grafana-crate-connect.png)
 
@@ -1001,15 +1001,15 @@ Click on the Save and test button and make sure it says _Database Connection OK_
 ### Configuring a Dashboard
 
 To display a new dashboard, you can either click the **+** button and select **Dashboard** or go directly to
-`http://localhost:3003/dashboard/new?orgId=1`. Thereafter click **Add Query**.
+`http://localhost:3003/dashboard/new?orgId=1`. Thereafter, click **Add Query**.
 
-The following values in **bold text** need to be placed in the graphing wizard
+The following values in **bold text** need to be placed in the graphing wizard:
 
--   Queries to **CrateDB** (the previously created Data Source)
--   FROM **etFillingLevelSensor**
--   Time column **time_index**
--   Metric column **entity_id**
--   Select value **column:filling**
+-   Queries to **CrateDB** (the previously created Data Source).
+-   FROM **etFillingLevelSensor**.
+-   Time column **time_index**.
+-   Metric column **entity_id**.
+-   Select value **column:filling**.
 
 ![](https://fiware.github.io/tutorials.Time-Series-Data/img/grafana-lamp-graph.png)
 
@@ -1019,23 +1019,23 @@ The click on the `Add Panel` button and select `Choose Visualisation` and pick `
 
 In the map layout options set the following values:
 
--   Center: **custom**
--   Latitude: **52.5031**
--   Longitude: **13.4447**
--   Initial Zoom: **12**
+-   Center: **custom**.
+-   Latitude: **52.5031**.
+-   Longitude: **13.4447**.
+-   Initial Zoom: **12**.
 
 ![](https://fiware.github.io/tutorials.Time-Series-Data/img/grafana-lamp-map-config-1.png)
 
 Click on `Queries` tab on the left and set as follows:
 
--   Format as: **Table**
--   FROM **etFillingLevelSensor**
--   Time column **time_index**
--   Metric column **entity_id**
--   Select value
-    -   **column:filling** **alias:value**
-    -   **column:location** **alias:geojson**
-    -   **column:entity_type** **alias:type**
+-   Format as: **Table**.
+-   FROM **etFillingLevelSensor**.
+-   Time column **time_index**.
+-   Metric column **entity_id**.
+-   Select value:
+    -   **column:filling** **alias:value**.
+    -   **column:location** **alias:geojson**.
+    -   **column:entity_type** **alias:type**.
 
 ![](https://fiware.github.io/tutorials.Time-Series-Data/img/grafana-lamp-map-config-2.png)
 
@@ -1043,11 +1043,11 @@ Click on `Visualisation` tab on the left and set as follows:
 
 -   Map Layers:
     -   FillingLevelSensor:
-        -   Icon: **lightbulb-o**
-        -   ClusterType: **average**
-        -   ColorType: **fix**
-        -   Column for value: **value**
-        -   Maker color: **red**
+        -   Icon: **lightbulb-o**.
+        -   ClusterType: **average**.
+        -   ColorType: **fix**.
+        -   Column for value: **value**.
+        -   Maker color: **red**.
 
 ![](https://fiware.github.io/tutorials.Time-Series-Data/img/grafana-lamp-map-config-3.png)
 

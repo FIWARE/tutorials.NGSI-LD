@@ -1,4 +1,4 @@
-# Smart Farm Tutorials[<img src="https://img.shields.io/badge/NGSI-LD-d6604d.svg" width="90"  align="left" />](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.04.01_60/gs_cim009v010401p.pdf)[<img src="docs/img/logo.png" align="left" width="162">](https://www.fiware.org/)<br/>
+# Smart Farm Tutorials[<img src="https://img.shields.io/badge/NGSI-LD-d6604d.svg" width="90"  align="left" />](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.04.01_60/gs_cim009v010401p.pdf) [<img src="docs/img/logo.png" align="left" width="162">](https://www.fiware.org/) <br/>
 
 [![Documentation](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/documentation.svg)](https://ngsi-ld-tutorials.rtfd.io)
 [![License: MIT](https://img.shields.io/github/license/fiware/tutorials.Step-by-Step.svg)](https://opensource.org/licenses/MIT)
@@ -12,18 +12,18 @@ of a series of exercises to demonstrate the correct use of individual FIWARE com
 data within a simple Smart Solution either by connecting to a series of dummy IoT devices or manipulating the context
 directly or programmatically.
 
-| :books: [NGSI-LD<br>Documentation](https://ngsi-ld-tutorials.rtfd.io/) | <img src="https://assets.getpostman.com/common-share/postman-logo-stacked.svg" align="center" height="25"> [Postman<br>Collections](https://explore.postman.com/team/3mM5EY6ChBYp9D) | [![Docker Hub](https://nexus.lab.fiware.org/repository/raw/public/badges/docker/fiware.svg)](https://hub.docker.com/u/fiware) <br> [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/fiware)](https://artifacthub.io/packages/search?repo=fiware) | <img src="https://fiware.github.io/catalogue/img/fiware-emoji.png" height="20px" width="20px"/><br/> [**developer.&ZeroWidthSpace;fiware.org**](https://www.fiware.org/developers/) |
-| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| :books: <br>[NGSI-LD<br>Documentation](https://ngsi-ld-tutorials.rtfd.io/) | <img src="https://assets.getpostman.com/common-share/postman-logo-stacked.svg" align="center" height="25"> <br/>[Postman<br>Collections](https://explore.postman.com/team/3mM5EY6ChBYp9D) | [![Docker Hub](https://nexus.lab.fiware.org/repository/raw/public/badges/docker/fiware.svg)](https://hub.docker.com/u/fiware) <br> [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/fiware)](https://artifacthub.io/packages/search?repo=fiware) | <img src="https://fiware.github.io/catalogue/img/fiware-emoji.png" height="30px" width="30px"/> <br/> [**developer.&ZeroWidthSpace;fiware.org**](https://www.fiware.org/developers/) |
+|----------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 
 <h3>Data models</h3>
 
-The tutorials defines a series of data-models to be used within the `@context`. More information about the classes and
+The tutorials define a series of data-models to be used within the `@context`. More information about the classes and
 attributes used can be found in the following:
 
--   <img src="https://json-ld.org/favicon.ico" align="center" height="25"/>
-    <a href="https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html">Tutorial-specific Data Models</a>
--   <img src="https://json-ld.org/favicon.ico" align="center" height="25"/>
-    <a href="https://smartdatamodels.org">Smart Data Models</a>
+-   <img src="https://json-ld.org/favicon.ico" align="center" height="25" alt="NGSI-LD"/>
+    <a href="https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html">Tutorial-specific Data Models</a>.
+-   <img src="https://json-ld.org/favicon.ico" align="center" height="25" alt="NGSI-LD"/>
+    <a href="https://smartdatamodels.org">Smart Data Models</a>.
 
 ## Install
 
@@ -37,28 +37,28 @@ git submodule update --init --recursive
 
 ### Swagger <img src="https://static1.smartbear.co/swagger/media/assets/swagger_fav.png" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
-The OpenAPI Specification (commonly known as Swagger) is an API description format for REST APIs. A Swaggger spec allows
+The OpenAPI Specification (commonly known as Swagger) is an API description format for REST APIs. A Swagger spec allows
 you to describe an entire API (such as NGSI-LD itself) however in this tutorial we shall be concentrating on using
 Swagger to define data models.
 
 API specifications can be written in YAML or JSON. The format is easy to learn and readable to both humans and machines.
 The complete OpenAPI Specification can be found on GitHub:
 [OpenAPI 3.0 Specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md). This is
-important since we will need a well defined structure to be able to generate `@context` files.
+important since we will need a well-defined structure to be able to generate `@context` files.
 
 ### Docker and Docker Compose <img src="https://www.docker.com/favicon.ico" align="left"  height="36" width="36">
 
 Each tutorial runs all components using [Docker](https://www.docker.com). **Docker** is a container technology which
 allows to different components isolated into their respective environments.
 
--   To install Docker on Windows follow the instructions [here](https://docs.docker.com/docker-for-windows/)
--   To install Docker on Mac follow the instructions [here](https://docs.docker.com/docker-for-mac/)
--   To install Docker on Linux follow the instructions [here](https://docs.docker.com/install/)
+-   To install Docker on Windows follow the instructions [here](https://docs.docker.com/docker-for-windows/).
+-   To install Docker on Mac follow the instructions [here](https://docs.docker.com/docker-for-mac/).
+-   To install Docker on Linux follow the instructions [here](https://docs.docker.com/install/).
 
 **Docker Compose** is a tool for defining and running multi-container Docker applications. A series of `*.yaml` files
 are used configure the required services for the application. This means all container services can be brought up in a
 single command. Docker Compose is installed by default as part of Docker for Windows and Docker for Mac, however Linux
-users will need to follow the instructions found [here](https://docs.docker.com/compose/install/)
+users will need to follow the instructions found [here](https://docs.docker.com/compose/install/).
 
 You can check your current **Docker** and **Docker Compose** versions using the following commands:
 
@@ -77,12 +77,12 @@ Although not officially supported, older versions of docker without an integrate
 ./services start legacy
 ```
 
-### Postman <img src="https://www.postman.com/favicon-32x32.png" align="left"  height="32" width="32">
+### Postman <img src="docs/img/postman.png" align="left"  height="32" width="32">
 
 The tutorials which use HTTP requests supply a collection for use with the Postman utility. Postman is a testing
-framework for REST APIs. The tool can be downloaded from [www.getpostman.com](www.getpostman.com). All the FIWARE
-Postman collections can downloaded directly from the
-[Postman API network](https://explore.postman.com/team/3mM5EY6ChBYp9D)
+framework for REST APIs. The tool can be downloaded from [www.postman.com](https://www.postman.com/downloads/). 
+All the FIWARE Postman collections can be downloaded directly from the
+[Postman API network](https://explore.postman.com/team/3mM5EY6ChBYp9D).
 
 ### Cygwin for Windows <img src="https://www.cygwin.com/favicon.ico" align="left"  height="30" width="30">
 
@@ -93,35 +93,33 @@ to provide a command-line functionality similar to a Linux distribution on Windo
 
 ### Core Context Management: NGSI-LD Fundamentals
 
-&nbsp; 101. [Understanding `@context`](https://github.com/FIWARE/tutorials.Understanding-At-Context)<br/> &nbsp; 102.
-[Working with `@context`](https://github.com/FIWARE/tutorials.Getting-Started/tree/NGSI-LD)<br/> &nbsp; 103.
-[CRUD Operations](https://github.com/FIWARE/tutorials.CRUD-Operations/tree/NGSI-LD)<br/> &nbsp; 104.
-[Entity Relationships](https://github.com/FIWARE/tutorials.Entity-Relationships/tree/NGSI-LD)<br/>&nbsp; 106.
-[Subscriptions](https://github.com/FIWARE/tutorials.Subscriptions/tree/NGSI-LD)<br/> &nbsp; 107.
-[Temporal Operations](https://github.com/FIWARE/tutorials.Short-Term-History/tree/NGSI-LD)<br/>
+&nbsp; 101. [Understanding `@context`](https://github.com/FIWARE/tutorials.Understanding-At-Context) <br/>
+&nbsp; 102. [Working with `@context`](https://github.com/FIWARE/tutorials.Getting-Started/tree/NGSI-LD) <br/>
+&nbsp; 103. [CRUD Operations](https://github.com/FIWARE/tutorials.CRUD-Operations/tree/NGSI-LD) <br/>
+&nbsp; 104. [Entity Relationships](https://github.com/FIWARE/tutorials.Entity-Relationships/tree/NGSI-LD) <br/>
+&nbsp; 106. [Subscriptions](https://github.com/FIWARE/tutorials.Subscriptions/tree/NGSI-LD) <br/>
+&nbsp; 107. [Temporal Operations](https://github.com/FIWARE/tutorials.Short-Term-History/tree/NGSI-LD) <br/>
 
 ### Internet of Things, Robots and third-party systems
 
-&nbsp; 201. [Introduction to IoT Sensors](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)<br/> &nbsp; 202.
-[Provisioning the Ultralight IoT Agent](https://github.com/FIWARE/tutorials.IoT-Agent/tree/NGSI-LD)<br/> &nbsp; 203.
-[Provisioning the JSON IoT Agent](https://github.com/FIWARE/tutorials.IoT-Agent-JSON/tree/NGSI-LD)<br/>
+&nbsp; 201. [Introduction to IoT Sensors](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD) <br/>
+&nbsp; 202. [Provisioning the Ultralight IoT Agent](https://github.com/FIWARE/tutorials.IoT-Agent/tree/NGSI-LD) <br/>
+&nbsp; 203. [Provisioning the JSON IoT Agent](https://github.com/FIWARE/tutorials.IoT-Agent-JSON/tree/NGSI-LD) <br/>
 
 ### Core Context Management: Manipulating Context Data and Persisting Historic Data
 
-&nbsp; 304.
-[Querying Time Series Data (QuantumLeap)](https://github.com/FIWARE/tutorials.Time-Series-Data/tree/NGSI-LD)<br/>
-&nbsp; 305. [Big Data Analysis (Flink)](https://github.com/FIWARE/tutorials.Big-Data-Flink/tree/NGSI-LD)<br/>
+&nbsp; 304. [Querying Time Series Data (QuantumLeap)](https://github.com/FIWARE/tutorials.Time-Series-Data/tree/NGSI-LD) <br/>
+&nbsp; 305. [Big Data Analysis (Flink)](https://github.com/FIWARE/tutorials.Big-Data-Flink/tree/NGSI-LD) <br/>
 &nbsp; 306. [Big Data Analysis (Spark)](https://github.com/FIWARE/tutorials.Big-Data-Spark/tree/NGSI-LD)
 
 ### Security: Identity Management
 
-&nbsp; 401.
-[Managing Users and Organizations](https://github.com/FIWARE/tutorials.Identity-Management/tree/NGSI-v2)<br/>
-&nbsp; 402. [Roles and Permissions](https://github.com/FIWARE/tutorials.Roles-Permissions/tree/NGSI-v2)<br/>
+&nbsp; 401. [Managing Users and Organizations](https://github.com/FIWARE/tutorials.Identity-Management/tree/NGSI-v2) <br/>
+&nbsp; 402. [Roles and Permissions](https://github.com/FIWARE/tutorials.Roles-Permissions/tree/NGSI-v2)
 
 ### Processing, Analysis and Visualization
 
-&nbsp; 507. [Cloud-Edge Computing](https://github.com/FIWARE/tutorials.Edge-Computing/tree/NGSI-LD)<br>
+&nbsp; 507. [Cloud-Edge Computing](https://github.com/FIWARE/tutorials.Edge-Computing/tree/NGSI-LD)
 
 ## Usage
 
