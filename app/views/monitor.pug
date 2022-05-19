@@ -3,17 +3,17 @@ extends layout
 block content
   h1= title
   
-  div(style="float: left; min-width=50%; padding: 5px; border: solid;")
+  div( class="card" style="margin:10px 0px; float: left; min-width=50%;")
     p Recent Requests:
     ul#messages
 
-  div(style="float: left; min-width=50%; padding: 5px; border: solid;")
+  div(class="card" style="margin:10px; float: left; min-width=50%;")
     p Recent Notifications:
     ul#notifications
 
   div(style="clear: both;")
 
-  div(style="padding: 5px; border: solid;")
+  div(class="card")
     p Last Payload:
     pre
       code#payload

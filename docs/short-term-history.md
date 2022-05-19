@@ -84,6 +84,7 @@ Therefore the overall architecture will consist of the following elements:
         using the
         [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
         protocol running over HTTP.
+-   An HTTP **Web-Server** which offers static `@context` files defining the context entities within the system.
 
 Since all interactions between the elements are initiated by HTTP requests, the entities can be containerized and run
 from exposed ports.
