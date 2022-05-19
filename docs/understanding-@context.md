@@ -6,7 +6,7 @@
 developers. The aim is to design and create a simple interoperable Smart Agricultural Solution from scratch and explain
 how to apply these concepts to your own smart solutions.
 
-Unlike the previous [tutorials' series](http://fiware-tutorials.rtfd.io/), this series will take an **NGSI-LD** first
+Unlike the previous [tutorials series](http://fiware-tutorials.rtfd.io/), this series will take an **NGSI-LD** first
 approach and therefore starts with reiterating the fundamentals of Linked Data and its application to the **NGSI-LD**
 interface.
 
