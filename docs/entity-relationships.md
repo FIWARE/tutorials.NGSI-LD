@@ -5,7 +5,7 @@
 **Description:** This tutorial teaches **NGSI-LD** users about batch commands and entity relationships. The tutorial
 builds on the data created in the previous
 [Smart Farm example](https://github.com/FIWARE/tutorials.Getting-Started/tree/NGSI-LD) and creates and associates a
-series of related data entities to create add sensors and farm workers to the farm.
+series of related data entities to create add sensors and farmworkers to the farm.
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
 [Postman documentation](https://fiware.github.io/tutorials.Entity-Relationships/ngsi-ld.html).
@@ -22,36 +22,36 @@ exists in the real world.
 <h3>Entities within a Farm Management Information System (FMIS)</h3>
 
 To illustrate entity relationships within an FMIS system based on NGSI-LD, we will need to create a series of entities.
-For this simplified FMIS, we will only need a small number entities. The relationship between our entities is defined as
-shown:
+For this simplified FMIS, we will only need a small number of entities. The relationship between our entities is 
+defined as shown:
 
 ![](https://fiware.github.io/tutorials.Entity-Relationships/img/ngsi-ld-entities.png)
 
 -   A building, such as a barn, is a real world bricks and mortar construct. **Building** entities would have properties
     such as:
-    -   A name of the building e.g. "The Big Red Barn"
-    -   The category of the building (e.g. "barn")
-    -   An address "Friedrichstraße 44, 10969 Kreuzberg, Berlin"
-    -   A physical location e.g. _52.5075 N, 13.3903 E_
+    -   A name of the building e.g. "The Big Red Barn".
+    -   The category of the building (e.g. "barn").
+    -   An address "Friedrichstraße 44, 10969 Kreuzberg, Berlin".
+    -   A physical location e.g. _52.5075 N, 13.3903 E_.
     -   A filling level - the degree to which the building is full.
-    -   A temperature - e.g. _21 °C_
-    -   An association to the owner of the building (a real person)
+    -   A temperature - e.g. _21 °C_.
+    -   An association to the owner of the building (a real person).
 -   Smart devices such as **TemperatureSensors** or **FillingLevelSensors** would extend a common **Device** data model.
     Each **Device** entity would have properties such as:
-    -   A description of the device
-    -   The category of device (e.g. _sensor_, _actuator_, _both_)
-    -   The name of the property they are measuring (e.g. _temperature_)
-    -   An association to the asset (e.g. building) they are measuring
+    -   A description of the device.
+    -   The category of device (e.g. _sensor_, _actuator_, _both_).
+    -   The name of the property they are measuring (e.g. _temperature_).
+    -   An association to the asset (e.g. building) they are measuring.
 -   A **person** is an entity representing a farmer or farm labourer. Each **Person** entity would have properties such
     as:
-    -   A name of the person e.g. "Mr. Jones"
-    -   A job title
+    -   A name of the person e.g. "Mr. Jones".
+    -   A job title.
     -   An association to the farm buildings they own.
 -   A task something we do down on the farm. It is a conceptual entity, used to associate workers, agricultural products
     and locations **Task** entities would have properties such as:
-    -   The name of the task (e.g. _Spray Herbicide XXX on field Y_)
-    -   The status of the task (e.g. _scheduled_, _in progress_, _completed_)
-    -   An association to the worker (i.e. a **Person** entity) who performs the task
+    -   The name of the task (e.g. _Spray Herbicide XXX on field Y_).
+    -   The status of the task (e.g. _scheduled_, _in progress_, _completed_).
+    -   An association to the worker (i.e. a **Person** entity) who performs the task.
     -   An association to the product (e.g. **Herbicide** entity) to be used.
     -   An association to the location (e.g. **PartField** entity) to be used.
 
@@ -61,11 +61,11 @@ be reduced and so on.
 
 > **Note** this tutorial uses the following typographic styling :
 >
-> -   Entity types have been made **bold text**
-> -   Data attributes are written in `monospace text`
-> -   Items in the real world use plain text
+> -   Entity types have been made **bold text**.
+> -   Data attributes are written in `monospace text`.
+> -   Items in the real world use plain text.
 >
-> Therefore a person in the real world is represented in the context data by a **Person** entity, and a real world barn
+> Therefore, a person in the real world is represented in the context data by a **Person** entity, and a real world barn
 > owned by a person is represented in the context data by a **Building** entity which has a `owner` attribute.
 
 ## Architecture
@@ -80,19 +80,23 @@ persistence of the context data it holds.
 
 To promote interoperability of data exchange, NGSI-LD context brokers explicitly expose a
 [JSON-LD `@context` file](https://json-ld.org/spec/latest/json-ld/#the-context) to define the data held within the
-context entities. This defines a unique URI for every entity type and every attribute so that other services outside of
+context entities. This defines a unique URI for every entity type and every attribute so that other services outside
 the NGSI domain are able to pick and choose the names of their data structures. Every `@context` file must be available
 on the network. In our case the tutorial application will be used to host a series of static files.
 
 Therefore, the architecture will consist of three elements:
 
 -   The [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests using
-    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
--   The underlying [MongoDB](https://www.mongodb.com/) database :
+    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json).
+-   The underlying [MongoDB](https://www.mongodb.com/) database:
     -   Used by the Orion Context Broker to hold context data information such as data entities, subscriptions and
-        registrations
+        registrations.
 -   An HTTP **Web-Server** which offers static `@context` files defining the context entities within the system.
 -   The **Tutorial Application** does the following:
+    -   Acts as set of dummy [agricultural IoT devices](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)
+        using the
+        [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
+        protocol running over HTTP.
 
 Since all interactions between the two elements are initiated by HTTP requests, the entities can be containerized and
 run from exposed ports.
@@ -100,7 +104,7 @@ run from exposed ports.
 ![](https://fiware.github.io/tutorials.Entity-Relationships/img/architecture-ld.png)
 
 The necessary configuration information can be seen in the services section of the associated `docker-compose.yml` file.
-It has been described in a [previous tutorial](working-with-@context.md)
+It has been described in a [previous tutorial](working-with-@context.md).
 
 ## Start Up
 
@@ -132,9 +136,9 @@ This command will also import seed data (**Building**, **Person**, **Temperature
 
 In the previous tutorial, we created each entity individually,
 
-Lets create several sensors at the same time. This request uses the convenience batch processing endpoint to create five
-entities. Batch processing uses the `/ngsi-ld/v1/entityOperations/`endpoints and the `upsert` endpoints means we will
-create new entities if they are not present and overwrite existing entities if they exist.
+Let's create several sensors at the same time. This request uses the convenience batch processing endpoint to create 
+five entities. Batch processing uses the `/ngsi-ld/v1/entityOperations/`endpoints and the `upsert` endpoints means we 
+will create new entities if they are not present and overwrite existing entities if they exist.
 
 To differentiate different **Device**, each temperature sensor has been assigned `type=TemperatureSensor`. Real-world
 properties such as `category` have been added as properties to each device.
@@ -217,7 +221,7 @@ is that each `id` is a URN follows a standard format: `urn:ngsi-ld:<entity-type>
 `id` in the system will be unique.
 
 Device information can be requested by making a GET request on the `/ngsi-ld/v1/entities` endpoint. For example to
-return the context data of the devices
+return the context data of the devices.
 
 #### 3 Request:
 
@@ -253,7 +257,7 @@ curl -X GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=TemperatureSensor,F
 ```
 
 As you can see there are currently three additional property attributes present `description`, `category` and
-`controlledProperty`
+`controlledProperty`.
 
 ## Creating one-to-one or one-to-many Relationships
 
@@ -267,7 +271,7 @@ definition `https://uri.fiware.org/ns/data-models#controlledAsset` is the URI lo
 relationship, and the value of the `controlledAsset` attribute corresponds to a URN associated to a **Building** entity
 itself.
 
-The URN follows a standard format: `urn:ngsi-ld:<entity-type>:<entity-id>`
+The URN follows a standard format: `urn:ngsi-ld:<entity-type>:<entity-id>`.
 
 #### 4 Request:
 
@@ -313,7 +317,7 @@ curl -G -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/upsert' \
 ]'
 ```
 
-Now when the devcie information is requested again, the response has changed and includes a new property
+Now when the device information is requested again, the response has changed and includes a new property
 `controlledAsset`, which has been added in the previous step.
 
 #### 5 Request:
@@ -346,7 +350,7 @@ The updated response including the `controlledAsset` attribute is shown below:
 ### Reading from Child Entity to Parent Entity
 
 We can also make a request to retrieve the `controlledAsset` attribute relationship information from a known **Device**
-entity by using the `options=keyValues` setting
+entity by using the `options=keyValues` setting.
 
 #### 6 Request:
 
@@ -369,7 +373,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Temperatu
 ```
 
 This can be interpreted as _"I am making sensor readings inside the **Building** entity with the
-`id=urn:ngsi-ld:Building:farm001`"_
+`id=urn:ngsi-ld:Building:farm001`"_.
 
 ### Reading from Parent Entity to Child Entity
 
@@ -431,8 +435,8 @@ NGSILD-Results-Count: 2
 ### Creating many-to-many Relationships
 
 Bridge Tables are often used to relate many-to-many relationships. For example, every spraying activity within the FMIS
-will need to associate a farm worker, a product to apply, and a location to apply the treatment (known as a
-**PartField**)
+will need to associate a farmworker, a product to apply, and a location to apply the treatment (known as a
+**PartField**).
 
 In order to hold the context information to "direct a worker to spray a herbicide onto a field" we will need to create a
 new data entity **Task** which exists to associate data from other entities. It has a foreign key relationship to the
@@ -440,7 +444,7 @@ new data entity **Task** which exists to associate data from other entities. It 
 `herbicide` and `worker`.
 
 Assigning a task is simply done by creating an entity holding the relationship information and any other additional
-properties (such as `description` and `status`)
+properties (such as `description` and `status`).
 
 #### 9 Request:
 
@@ -465,7 +469,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
 When reading from a bridge table entity, the `type` of the entity must be known.
 
 After creating at least one **Task** entity we can query _Which workers are assigned activities in field
-`urn:ngsi-ld:PartField:002`?_ by making the following request
+`urn:ngsi-ld:PartField:002`?_ by making the following request.
 
 #### 10 Request:
 
@@ -491,7 +495,8 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities' \
 ]
 ```
 
-Similarly we can request _Which fields are treated using `urn:ngsi-ld:Herbicide:001`?_ by altering the request as shown:
+Similarly, we can request _Which fields are treated using `urn:ngsi-ld:Herbicide:001`?_ by altering the request as 
+shown:
 
 #### 11 Request:
 

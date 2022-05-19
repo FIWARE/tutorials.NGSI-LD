@@ -6,7 +6,7 @@
 developers. The aim is to design and create a simple interoperable Smart Agricultural Solution from scratch and explain
 how to apply these concepts to your own smart solutions.
 
-Unlike the previous [tutorials series](http://fiware-tutorials.rtfd.io/), this series will take an **NGSI-LD** first
+Unlike the previous [tutorials' series](http://fiware-tutorials.rtfd.io/), this series will take an **NGSI-LD** first
 approach and therefore starts with reiterating the fundamentals of Linked Data and its application to the **NGSI-LD**
 interface.
 
@@ -20,11 +20,11 @@ The tutorial is mainly concerned with online and command-line tooling.
 >
 > ― Raheel Farooq, Kalam
 
-Creating an interoperable system of readable links for computers requires the use of a well defined data format
+Creating an interoperable system of readable links for computers requires the use of a well-defined data format
 ([JSON-LD](http://json-ld.org/)) and assignation of unique IDs
 ([URLs or URNs](https://stackoverflow.com/questions/4913343/what-is-the-difference-between-uri-url-and-urn)) for both
 data entities and the relationships between entities so that semantic meaning can be programmatically retrieved from the
-data itself. Furthermore the use and creation of these unique IDs should, as far as possible, be passed around so as not
+data itself. Furthermore, the use and creation of these unique IDs should, as far as possible, be passed around so as not
 get in the way of the processing the data objects themselves.
 
 An attempt to solve this interoperability problem has been made within the JSON domain, and this has been done by adding
@@ -82,13 +82,13 @@ In order to initialize the generator tool run:
 Within the FIWARE platform, every entity represents the state of a physical or conceptual object. Each entity provides
 the digital twin of an object which exists in the real world.
 
-Although the each data entity within your context will vary according to your use case, the common structure within each
+Although each data entity within your context will vary according to your use case, the common structure within each
 data entity should be standardized order to promote reuse. The Fundamentals for FIWARE Data Model design do not change.
-Typically each entity will consist of an `id`, a `type`, a series of **Property** attributes representing context data
+Typically, each entity will consist of an `id`, a `type`, a series of **Property** attributes representing context data
 which changes over time and a series of **Relationship** attributes which represent connections between existing
 entities.
 
-It is perhaps best to illustrate this using an example. The Underlying Data Models can be created using many different
+It is perhaps best to illustrate this using an example. The Underlying Data Models can be created using many 
 tools, however this example will use Swagger [schema](https://swagger.io/docs/specification/data-models/) objects
 defined using the [Open API 3](https://swagger.io/docs/specification/about/) Standard. The examples are valid Swagger
 specifications, but in reality, we are not interested in defining in paths and operations, as these are already defined
@@ -195,18 +195,18 @@ term URIs like `http://iotschema.org/temperature` which could also be used here,
 ### Adding metadata
 
 The key goal in designing NGSI-LD data models (as opposed to a generic hierarchy of ontologies), is that wherever
-posssible, every _Property_ attribute of a model represents the context data for a digital twin of something tangible in
+possible, every _Property_ attribute of a model represents the context data for a digital twin of something tangible in
 the real world.
 
 This formulation discourages deep nested hierarchies. A **Building** has a **temperature**, a **Building** has a
 **fillingLevel** - anything else is defined as a _Relationship_ - a **Building** has an **owner** which links the
 **Building** entity to a separate **Person** entity.
 
-However just holding the values of properties is insufficient. Saying that `temperature=6` is meaningless unless you
-also obtain certain meta data, such as _When was the reading taken?_ _Which device made the reading?_ _What units is it
+However, just holding the values of properties is insufficient. Saying that `temperature=6` is meaningless unless you
+also obtain certain metadata, such as _When was the reading taken?_ _Which device made the reading?_ _What units are it
 measured in?_ _How accurate is the device?_ and so on.
 
-Therefore supplementary metadata items will be necessary to ensure that the context data is understandable. This will
+Therefore, supplementary metadata items will be necessary to ensure that the context data is understandable. This will
 mean we will need things such as:
 
 -   The Units of measurement
@@ -215,7 +215,7 @@ mean we will need things such as:
 -   and so on.
 
 ```json
-({
+[{
     "temperature": {
         "type": "Property",
         "value": 30,
@@ -232,7 +232,7 @@ mean we will need things such as:
         "providedBy": "urn:ngsi-ld:FillingLevelSensor:001",
         "observedAt": "2016-03-15T11:00:00.000"
     }
-})
+}]
 ```
 
 Each one of these attributes has a name, and therefore requires a definition within the `@context`. Fortunately most of
@@ -245,7 +245,7 @@ these are predefined in the core NGSI-LD specification:
 
 ### Subclassing
 
-As well as extending models by adding new attributes, it is also posssible to extend models by subclassing. Looking at
+As well as extending models by adding new attributes, it is also possible to extend models by subclassing. Looking at
 the **Device** model, it can be seen that whereas common definitions useful to all IoT device such as `batteryLevel` are
 defined in the model, there are no additional attributes within the model explaining which readings are being made.
 
@@ -360,7 +360,7 @@ The updated Data Models for an Agricultural Smart System can be inspected
 The raw source file `agriculture.yaml` can be found
 [here](https://raw.githubusercontent.com/FIWARE/tutorials.Understanding-At-Context/master/agriculture.yaml)
 
-## Autogenerating `@Context` Files from Swagger
+## Auto generating `@Context` Files from Swagger
 
 Every working linked data system relies on `@context` files to supply the relevant information about the data. Creating
 such files by hand is a tedious and error-prone procedure, so it makes sense to automate the process. The required
@@ -468,11 +468,11 @@ If a computer encounters an entity of `type=Building` this really refers to a
 From the definition of a **Building** we know it has a mandatory `category` and `address`.
 
 If a computer encounters an `address` attribute, this really refers to a `https://schema.org/address` (which in turn has
-well defined subattributes)
+well-defined sub-attributes)
 
-If a computer encounters a `category=barn` then it should be possible to accertain that this `category` can be
-identified as a `https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn`. Note that `category` itself is also well
-defined.
+If a computer encounters a `category=barn` then it should be possible to ensure that this `category` can be
+identified as a `https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn`. Note that `category` itself is also 
+well-defined.
 
 NGSI-LD `@context`s are used for all NGSI-LD CRUD operations, and are required when sending or receiving NGSI-LD data in
 the default _normalized_ format. The _normalized_ format includes a structure of attributes each with its own `type` and
@@ -530,9 +530,9 @@ The JSON-LD requires the following:
 -   The names of all the attributes from within the defined Data Models
 -   The enumerated values of any constants used within the Data Models.
 
-Additionally a JSON-LD `@context` may also include supplementary information (such as _This attribute is an integer_)
+Additionally, a JSON-LD `@context` may also include supplementary information (such as _This attribute is an integer_)
 and, within the `@graph` definition, information about the relationships between nodes (_This attribute is a link to a
-**Person** entity_ ) as well as human readable information about the attributes themselves (_A barn is an agricultural
+**Person** entity_ ) as well as human-readable information about the attributes themselves (_A barn is an agricultural
 building used for storage_) may be returned.
 
 An JSON-LD `@context` file can be generated from a Swagger data model as follows:
@@ -609,12 +609,12 @@ as follows:
     size of the file. For further information read the section on
     [aliasing keywords](https://w3c.github.io/json-ld-syntax/#aliasing-keywords) from the JSON-LD specification.
 -   A series of defined entity types (e.g. `Building`). These usually start with a capital letter.
--   A list of attributes - these may be sub-divided as follows: - attributes representing context data **Properties** to
+-   A list of attributes - these may be subdivided as follows: - attributes representing context data **Properties** to
     be displayed as native JSON attributes (e.g. `additionalName`), these attributes are annotated to explain the
     [XML Schema](https://www.w3.org/TR/xmlschema-2/) datatype to be used when consuming the data. - attributes
     representing context data **Properties** which are complex of objects (e.g. `address`), these are remain as in the
     previous example, there is an indication that `address` really refers to a `https://schema.org/address` - which in
-    turn has well defined subattributes - and the native types of those sub-elements are also defined. - attributes
+    turn has well-defined sub-attributes - and the native types of those sub-elements are also defined. - attributes
     representing context data **Properties** which hold enumerations - e.g. `category` - these hold a link indicator in
     the form of `"@type": "@vocab"`. When these attributes are encountered it indicates that the value `category="barn"`
     can be expanded to the IRI `https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn` rather than just as a string
@@ -628,11 +628,11 @@ as follows:
 -   A list of enumerations (e.g. `barn`) - these can be readily expanded by the receiving application when held within
     defined `@vocab` elements.
 
-Furthermore an additional section in this context file called the `@graph`. This enables the JSON-LD @context to make
+Furthermore, an additional section in this context file called the `@graph`. This enables the JSON-LD @context to make
 additional statements about the graph of linked data itself For example, the generated `@graph` elements are show a
-human readable description of the attribute in English. This could be further expanded to indicate in which entities
-each attribute is used, whether a entity definition is a subclass of a base definition (e.g. `TemperatureSensor` extends
-`Device`) and so on.
+human-readable description of the attribute in English. This could be further expanded to indicate in which entities
+each attribute is used, whether an entity definition is a subclass of a base definition (e.g. `TemperatureSensor` 
+extends `Device`) and so on.
 
 Further information about `@graph` can be found in the section on
 [Named Graphs](https://w3c.github.io/json-ld-syntax/#named-graphs).
@@ -664,14 +664,14 @@ This format should be familiar to any user of JSON - the additional `@context` a
 annotate the base JSON payload as JSON-LD linked data.
 
 It should be noted that this JSON-LD payload does not include metadata about attributes - there are no _properties of
-properties_ or _relationships of properties_. Therefore to include a traversable link within JSON-LD it is necessary to
+properties_ or _relationships of properties_. Therefore, to include a traversable link within JSON-LD it is necessary to
 declare it as **Relationship** directly on the entity itself- an example can be found in the `controlledAsset` attribute
 of `Device`. Metadata attributes such as the `providedBy` **Relationship** found within the `temperature` **Property**
 are only traversable using the NGSI-LD syntax.
 
 ### Generating Documentation
 
-The `@context` syntax is designed to be readable by machines. Obviously developers need human readable documentation
+The `@context` syntax is designed to be readable by machines. Obviously developers need human-readable documentation
 too.
 
 Basic documentation about NGSI-LD entities can be generated from a Swagger data model as follows:
