@@ -445,7 +445,7 @@ curl -iX POST 'http://localhost:4041/iot/services' \
             "apikey": "4jggokgpepnvsb2uv4s40d59ov",
             "cbroker": "http://orion:1026",
             "entity_type": "Device",
-            "resource": "/iot/d",
+            "resource": "/iot/json",
             "attributes": [
                 {
                     "object_id": "bpm", "type": "Property", "name": "heartRate",
@@ -476,7 +476,7 @@ themselves by including the token `4jggokgpepnvsb2uv4s40d59ov`. For an UltraLigh
 sending GET or POST requests to:
 
 ```text
-http://iot-agent:7896/iot/d?i=<device_id>&k=4jggokgpepnvsb2uv4s40d59ov
+http://iot-agent:7896/iot/json?i=<device_id>&k=4jggokgpepnvsb2uv4s40d59ov
 ```
 
 Which should be familiar syntax from the [previous tutorial](iot-sensors.md).
@@ -1015,7 +1015,7 @@ curl -iX POST \
      "apikey":      "4jggokgpepnvsb2uv4s40d59ov",
      "cbroker":     "http://orion:1026",
      "entity_type": "Thing",
-     "resource":    "/iot/d"
+     "resource":    "/iot/json"
    }
  ]
 }'
@@ -1032,7 +1032,7 @@ parameter.
 
 ```bash
 curl -X GET \
-  'http://localhost:4041/iot/services?resource=/iot/d' \
+  'http://localhost:4041/iot/services?resource=/iot/json' \
   -H 'fiware-service: openiot' \
   -H 'fiware-servicepath: /'
 ```
@@ -1070,7 +1070,7 @@ curl -X GET \
                 }
             ],
             "_id": "5f5f8ad8eed02a000687dec5",
-            "resource": "/iot/d",
+            "resource": "/iot/json",
             "apikey": "4jggokgpepnvsb2uv4s40d59ov",
             "service": "openiot",
             "subservice": "/",
@@ -1132,7 +1132,7 @@ curl -X GET \
                 }
             ],
             "_id": "5f5f8ad8eed02a000687dec5",
-            "resource": "/iot/d",
+            "resource": "/iot/json",
             "apikey": "4jggokgpepnvsb2uv4s40d59ov",
             "service": "openiot",
             "subservice": "/",
@@ -1159,7 +1159,7 @@ and `apikey` parameters.
 
 ```bash
 curl -iX PUT \
-  'http://localhost:4041/iot/services?resource=/iot/d&apikey=4jggokgpepnvsb2uv4s40d59ov' \
+  'http://localhost:4041/iot/services?resource=/iot/json&apikey=4jggokgpepnvsb2uv4s40d59ov' \
   -H 'Content-Type: application/json' \
   -H 'fiware-service: openiot' \
   -H 'fiware-servicepath: /' \
@@ -1180,7 +1180,7 @@ Agent is listening for **Northbound** communications) should no longer be proces
 
 ```bash
 curl -iX DELETE \
-  'http://localhost:4041/iot/services/?resource=/iot/d&apikey=4jggokgpepnvsb2uv4s40d59ov' \
+  'http://localhost:4041/iot/services/?resource=/iot/json&apikey=4jggokgpepnvsb2uv4s40d59ov' \
   -H 'fiware-service: openiot' \
   -H 'fiware-servicepath: /'
 ```
