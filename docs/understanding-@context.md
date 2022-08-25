@@ -31,7 +31,7 @@ An attempt to solve this interoperability problem has been made within the JSON 
 an `@context` element to existing JSON data structures. This has led to the creation of the **JSON-LD** standard.
 
 The main takeaway from **JSON-LD**, is that a remote context file and the **JSON-LD**
-[`@context` definition](https://w3c.github.io/json-ld-syntax/#the-context) can be used to assign unique long URNs for
+[`@context` definition](https://w3c.github.io/json-ld-syntax/#the-context) can be used to assign unique long URIs for
 every defined attribute. Developers are then free to use their own regular short attribute names within their own
 applications, converting from URIs to preferred shortnames though the application of Expansion and Compaction
 operations.
@@ -47,7 +47,7 @@ that the data is structured in a format which is parsable by machines. It is a m
 attributes can be easily compared when coming from a multitude of separate data sources, which could have a different
 idea as to what each attribute means. For example, when two data entities have a `name` attribute how can the computer
 be certain that is refers to a _"Name of a thing"_ in the same sense (rather than a **Username** or a **Surname** or
-something). URLs and data models are used to remove ambiguity by allowing attributes to have a both short form (such as
+something). URIs and data models are used to remove ambiguity by allowing attributes to have a both short form (such as
 `name`) and a fully specified long form (such `http://schema.org/name`) which means it is easy to discover which
 attribute have a common meaning within a data structure.
 
