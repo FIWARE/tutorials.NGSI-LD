@@ -33,9 +33,9 @@ function readCrateMotionCount(id, aggMethod) {
         const sqlStatement =
             "SELECT DATE_FORMAT (DATE_TRUNC ('minute', time_index)) AS minute, " +
             aggMethod +
-            '(count) AS ' +
+            '(heartRate) AS ' +
             aggMethod +
-            " FROM mtopeniot.etmotion WHERE entity_id = 'Motion:" +
+            " FROM mtopeniot.etdevice WHERE entity_id = 'urn:ngsi-ld:Device:pig" +
             id +
             "' GROUP BY minute ORDER BY minute";
         const options = {
@@ -57,9 +57,9 @@ function readCrateLampLuminosity(id, aggMethod) {
         const sqlStatement =
             "SELECT DATE_FORMAT (DATE_TRUNC ('minute', time_index)) AS minute, " +
             aggMethod +
-            '(luminosity) AS ' +
+            '(filling) AS ' +
             aggMethod +
-            " FROM mtopeniot.etlamp WHERE entity_id = 'Lamp:" +
+            " FROM mtopeniot.etfillinglevelsensor WHERE entity_id = 'urn:ngsi-ld:Device:filling" +
             id +
             "' GROUP BY minute ORDER BY minute";
         const options = {

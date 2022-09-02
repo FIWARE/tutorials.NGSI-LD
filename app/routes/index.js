@@ -17,6 +17,8 @@ const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
 
 const NOTIFY_ATTRIBUTES = ['controlledAsset', 'type', 'filling', 'humidity', 'temperature'];
 
+const numberOfPigs = process.env.PIG_COUNT || 5;
+
 const NGSI_LD_FARMS = [
     {
         href: 'app/farm/urn:ngsi-ld:Building:farm001',
@@ -123,12 +125,13 @@ router.get('/device/history', function (req, res) {
     const stores = [];
 
     if (process.env.CRATE_DB_SERVICE_URL || process.env.STH_COMET_SERVICE_URL) {
-        data.forEach((element) => {
+        
+        for (let i = 1; i <= numberOfPigs; i++) {
             stores.push({
-                name: element.name,
-                href: element.href.replace('app/store/', 'history/')
+                name: ('Device' + i.toString().padStart(3, '0')),
+                href: ('history/' + i.toString().padStart(3, '0'))
             });
-        });
+        }
     }
     res.render('history-index', {
         title: 'Short-Term History',
