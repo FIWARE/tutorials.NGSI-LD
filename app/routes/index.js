@@ -121,9 +121,7 @@ router.get('/app/monitor', function (req, res) {
 
 // Display the app monitor page
 router.get('/device/history', function (req, res) {
-    const data = NGSI_LD_FARMS;
     const stores = [];
-
     if (process.env.CRATE_DB_SERVICE_URL || process.env.STH_COMET_SERVICE_URL) {
         
         for (let i = 1; i <= numberOfPigs; i++) {
