@@ -718,11 +718,11 @@ curl -L -X POST 'http://localhost:4041/iot/devices' \
       "commands": [
         {
           "name": "on",
-          "type": "command"
+          "type": "Property"
         },
         {
           "name": "off",
-          "type": "command"
+          "type": "Property"
         }
        ],
        "static_attributes": [
@@ -797,11 +797,11 @@ curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:wat
         "observedAt": "2020-09-14T15:27:11.066Z"
     },
     "on": {
-        "type": "command",
+        "type": "Property",
         "value": ""
     },
     "off": {
-        "type": "command",
+        "type": "Property",
         "value": ""
     }
 }
@@ -835,11 +835,11 @@ curl -L -X POST 'http://localhost:4041/iot/devices' \
       "commands": [
         {
           "name": "add",
-          "type": "command"
+          "type": "Property"
         },
         {
           "name": "remove",
-          "type": "command"
+          "type": "Property"
         }
       ],
       "attributes": [
@@ -888,8 +888,8 @@ curl -L -X POST 'http://localhost:4041/iot/devices' \
       "transport": "HTTP",
       "endpoint": "http://iot-sensors:3001/iot/tractor001",
       "commands": [
-        {"name": "start","type": "command"},
-        {"name": "stop","type": "command"}
+        {"name": "start","type": "Property"},
+        {"name": "stop","type": "Property"}
        ],
        "static_attributes": [
          {"name":"controlledAsset", "type": "Relationship","value": "urn:ngsi-ld:Building:barn001"}
@@ -1223,11 +1223,11 @@ curl -iX POST 'http://localhost:4041/iot/devices' \
       "commands": [
         {
           "name": "on",
-          "type": "command"
+          "type": "Property"
         },
         {
           "name": "off",
-          "type": "command"
+          "type": "Property"
         }
        ],
        "static_attributes": [
@@ -1273,12 +1273,12 @@ The response includes all the commands and attributes mappings associated with t
         {
             "object_id": "on",
             "name": "on",
-            "type": "command"
+            "type": "Property"
         },
         {
             "object_id": "off",
             "name": "off",
-            "type": "command"
+            "type": "Property"
         }
     ],
     "static_attributes": [
@@ -1328,7 +1328,7 @@ The response includes all the commands and attributes mappings associated with a
               {
                   "object_id": "ring",
                   "name": "ring",
-                  "type": "command"
+                  "type": "Property"
               }
           ],
           "static_attributes": [
