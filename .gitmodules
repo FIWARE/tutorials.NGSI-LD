@@ -61,3 +61,6 @@
 [submodule "tutorials.Concise-Format"]
 	path = tutorials.Concise-Format
 	url = https://github.com/FIWARE/tutorials.Concise-Format.git
+[submodule "tutorials.Merge-Patch-Put"]
+	path = tutorials.Merge-Patch-Put
+	url = https://github.com/FIWARE/tutorials.Merge-Patch-Put
