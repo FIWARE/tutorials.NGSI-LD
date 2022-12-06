@@ -18,7 +18,7 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 >
 > — Franz Kafka, Letters to Milena
 
-The Merge Patch is a well defined (IETF specification)[https://www.rfc-editor.org/rfc/rfc7396.html] used to describe a
+The Merge Patch is a well defined [IETF specification](https://www.rfc-editor.org/rfc/rfc7396.html) used to describe a
 set of modifications to be made on a resource. It uses a JSON payload as a forensic knife to create, modify or delete
 individually specified attributes within an entity. As defined across the Internet, Merge Patch typically uses JSON
 payloads, and is an action usually assigned to the HTTP **PATCH** method. NGSI-LD extends the concept for use with
