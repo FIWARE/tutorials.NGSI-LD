@@ -106,7 +106,7 @@ all of the sub-attributes within the first attribute layer for each update. If a
 omitted, then it is removed and the existing temporal record is not affected.
 
 **PATCH** is appropriate for both of these operation since the effect in both cases is an update of some (but not all)
-aspects of a selection of _Properties_ or _Properties of Properties_ the The entity itself, its `id` and `type` remain
+aspects of a selection of _Properties_ or _Properties of Properties_, the entity itself, its `id` and `type` remain
 unchanged.
 
 ### Merge **PATCH**
@@ -160,7 +160,7 @@ inadvertently update a `value` without updating the `observedAt`. is not affecte
 In summary, both styles of **PATCH** operation have their place, but Merge **PATCH** is more focussed and is capable of
 using smaller payloads. Partial Update **PATCH** forces data to be more consistent through requiring the payload to be
 complete and removing second-level attributes which are omitted from the payload. This is also the case for the
-`/entityOperations/upsert` endpoint meaning that second-level _Property-of-a-Property_ meta data attributes must always
+`/entityOperations/upsert` endpoint meaning that second-level _Property-of-a-Property_ metadata attributes must always
 be include in the payload if they do not want to be deleted. Therefore _Properties_ within `/entityOperations/upsert`
 payload will usually also include `unitCode` and `observedAt` as well as an updated `value`.
 
@@ -720,7 +720,7 @@ curl -G -X GET \
 
 Using concise format, it is necessary to distinguish between atttibutes of a JSON object and _Properties of Properties_.
 In this case the use of `value` shows it is the `addressLocality` and `postalCode` of the `address` Object which is to
-be updated and that `verified` the _Property of a Property_ is a meta data attribute.
+be updated and that `verified` the _Property of a Property_ is a metadata attribute.
 
 ```console
 curl -L -X PATCH \
@@ -775,10 +775,10 @@ curl -G -X GET \
 #### Updating using key-values format
 
 Merge Patch also offers some limited support to update `values` using key-values format. In this case any existing
-`value` is updated, but no meta data is changed. Once again Object values need only send the sub-attributes to be
+`value` is updated, but no metadata is changed. Once again Object values need only send the sub-attributes to be
 updated, and setting a sub-attribute to `urn:ngsi-ld:null` will cause it to be deleted.
 
-This means that is is possible to **GET** a key-values entity, amend the values and **PATCH** it back to the context
+This means that it is possible to **GET** a key-values entity, amend the values and **PATCH** it back to the context
 broker.
 
 #### 16 Request:
