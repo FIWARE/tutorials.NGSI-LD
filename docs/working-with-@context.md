@@ -294,6 +294,14 @@ New context data entities can be created by making a POST request to the `/ngsi-
 > microservices to be able to understand the difference between context data attributes and
 > links between data entities (which are defined using `"type": "Relationship"`) and are discussed
 > in a [later tutorial](entity-relationships.md)
+>
+> There are also several subtypes of _Property_ available:
+>
+> -   `"type": "GeoProperty"` for Geographic information
+> -   `"type": "LanguageProperty"` for Multi-language Strings
+> -   `"type": "VocabProperty"` for enumerated values
+>
+> More details can be found in later tutorials.
 
 ```bash
 curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
