@@ -371,7 +371,7 @@ Each subsequent entity must have a unique `id` for the given `type`
 curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Content-Type: application/json' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
---d '{
+-d '{
     "id": "urn:ngsi-ld:Building:barn002",
     "type": "Building",
     "category": {
