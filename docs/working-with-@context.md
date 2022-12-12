@@ -699,8 +699,7 @@ curl -G -X GET \
 -H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/ld+json' \
     -d 'type=Building' \
-    -d 'q=name==%22Big%20Red%20Barn%22& \
-    -d 'options=keyValues'
+    -d 'q=name==%22Big%20Red%20Barn%22&options=keyValues'
 ```
 
 #### Response:
