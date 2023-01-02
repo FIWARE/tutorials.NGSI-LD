@@ -150,4 +150,4 @@ Full instructions can be found within the [documentation](https://ngsi-ld-tutori
 
 ## License
 
-[MIT](LICENSE) © 2020-2021 FIWARE Foundation e.V.
+[MIT](LICENSE) © 2020-2023 FIWARE Foundation e.V.
