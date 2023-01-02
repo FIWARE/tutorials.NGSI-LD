@@ -19,8 +19,8 @@ _"powered by FIWARE"_.
 
 The tutorials are split according to the chapters defined within the
 [FIWARE catalog](https://www.fiware.org/developers/catalogue/) and are numbered in order of difficulty within each
-chapter hence an introduction to a given enabler will occur before the full capabilities of that element are
-explored in more depth.
+chapter hence an introduction to a given enabler will occur before the full capabilities of that element are explored in
+more depth.
 
 It is recommended to start with reading the full **Core Context Management: The NGSI-LD Interface** Chapter before
 moving on to other subjects, as this will give you a fuller understanding of the role of context data in general.
@@ -85,14 +85,20 @@ sudo chown $USER /var/run/docker.sock
 ### Postman <img src="./img/postman.png" align="left"  height="25" width="35" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
 The tutorials which use HTTP requests supply a collection for use with the Postman utility. Postman is a testing
-framework for REST APIs. The tool can be downloaded from [www.postman.com](https://www.postman.com/downloads/). 
-All the FIWARE Postman collections can be downloaded directly from the
+framework for REST APIs. The tool can be downloaded from [www.postman.com](https://www.postman.com/downloads/). All the
+FIWARE Postman collections can be downloaded directly from the
 [Postman API network](https://explore.postman.com/team/3mM5EY6ChBYp9D).
+
+### GitPod <img src="https://gitpod.io/favicon.ico" align="left"  height="30" width="30">
+
+[Gitpod](https://github.com/gitpod-io/gitpod) is an open-source Kubernetes application for ready-to-code cloud
+development environments that spins up an automated dev environment for each task, in the cloud. It enables you to run
+the tutorials in a cloud development environment directly from your browser or your Desktop IDE.
 
 ### Cygwin for Windows <img src="https://www.cygwin.com/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
-We will start up our services using a simple Bash script. Windows users should download [cygwin](http://www.cygwin.com/)
-to provide a command-line functionality similar to a Linux distribution on Windows.
+The tutorials start up their services using a simple Bash script. When working locally, Windows users should download
+[cygwin](http://www.cygwin.com/) to provide a command-line functionality similar to a Linux distribution on Windows.
 
 ### Apache Maven <img src="./img/maven.png" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
@@ -118,11 +124,9 @@ attributes used can be found in the following:
 These first tutorials are an introduction to the NGSI-LD Context Brokers, and are an essential first step when learning
 to use NGSI-LD.
 
-&nbsp; 101. [Understanding `@context`](understanding-@context.md)<br/>
-&nbsp; 102. [Working with `@context`](working-with-@context.md)<br/>
-&nbsp; 103. [CRUD Operations](ngsi-ld-operations.md)<br/>
-&nbsp; 104. [Entity Relationships](entity-relationships.md)<br/>
-&nbsp; 106. [Subscriptions](subscriptions.md)<br/>
+&nbsp; 101. [Understanding `@context`](understanding-@context.md)<br/> &nbsp; 102.
+[Working with `@context`](working-with-@context.md)<br/> &nbsp; 103. [CRUD Operations](ngsi-ld-operations.md)<br/>
+&nbsp; 104. [Entity Relationships](entity-relationships.md)<br/> &nbsp; 106. [Subscriptions](subscriptions.md)<br/>
 &nbsp; 107. [Temporal Operations](short-term-history.md)<br/>
 
 <h3 style="box-shadow: 0px 4px 0px 0px #5dc0cf;">Internet of Things, Robots and third-party systems</h3>
@@ -131,25 +135,24 @@ In order to make a context-based system aware of the state of the real world, it
 Robots, IoT Sensors or other suppliers of context data such as social media. It is also possible to generate commands
 from the context broker to alter the state of real-world objects themselves.
 
-&nbsp; 201. [Introduction to IoT Sensors](iot-sensors.md)<br/>
-&nbsp; 202. [Provisioning the Ultralight IoT Agent](iot-agent.md)<br/>
-&nbsp; 203. [Provisioning the JSON IoT Agent](iot-agent-json.md)<br/>
+&nbsp; 201. [Introduction to IoT Sensors](iot-sensors.md)<br/> &nbsp; 202.
+[Provisioning the Ultralight IoT Agent](iot-agent.md)<br/> &nbsp; 203.
+[Provisioning the JSON IoT Agent](iot-agent-json.md)<br/>
 
 <h3 style="box-shadow: 0px 4px 0px 0px #233c68;">Core Context Management: History Management</h3>
 
 These tutorials show how to manipulate and store context data, so it can be used for further processing.
 
-&nbsp; 304. [Querying Time Series Data (Crate-DB)](time-series-data.md)<br/>
-&nbsp; 305. [Big Data Analysis (Flink)](big-data-flink.md)<br/>
-&nbsp; 306. [Big Data Analysis (Spark)](big-data-spark.md)<br/>
+&nbsp; 304. [Querying Time Series Data (Crate-DB)](time-series-data.md)<br/> &nbsp; 305.
+[Big Data Analysis (Flink)](big-data-flink.md)<br/> &nbsp; 306. [Big Data Analysis (Spark)](big-data-spark.md)<br/>
 
 <h3 style="box-shadow: 0px 4px 0px 0px #ff7059;">Security: Identity Management</h3>
 
 These tutorials show how to create and administer users within an application, and how to restrict access to assets, by
 assigning roles and permissions.
 
-&nbsp; 401. [Administrating Users and Organizations](identity-management.md)<br/>
-&nbsp; 402. [Managing Roles and Permissions](roles-permissions.md)<br/>
+&nbsp; 401. [Administrating Users and Organizations](identity-management.md)<br/> &nbsp; 402.
+[Managing Roles and Permissions](roles-permissions.md)<br/>
 
 <h3 style="box-shadow: 0px 4px 0px 0px #88a1ce;">Processing, Analysis and Visualization</h3>
 

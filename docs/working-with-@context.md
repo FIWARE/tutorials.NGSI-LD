@@ -19,10 +19,10 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 >
 > ― John Wyndham, The Midwich Cuckoos
 
-From the [previous tutorial](understanding-@context.md), we have generated two `@context` files defining the context 
-data entities which will be offered in our simple Smart Farm Management System. This means that we have defined an 
-agreed set of unique IDs (URNs or URLs) for all the data entities and every single attribute within those entities 
-so that other external applications will be able to programmatically understand the data held within our broker.
+From the [previous tutorial](understanding-@context.md), we have generated two `@context` files defining the context
+data entities which will be offered in our simple Smart Farm Management System. This means that we have defined an
+agreed set of unique IDs (URNs or URLs) for all the data entities and every single attribute within those entities so
+that other external applications will be able to programmatically understand the data held within our broker.
 
 For example, the attribute `address` is within our smart application is defined as follows:
 
@@ -118,9 +118,9 @@ persistence of the context data it holds.
 
 To promote interoperability of data exchange, NGSI-LD context brokers explicitly expose a
 [JSON-LD `@context` file](https://json-ld.org/spec/latest/json-ld/#the-context) to define the data held within the
-context entities. This defines a unique URI for every entity type and every attribute so that other services outside
-the NGSI domain are able to pick and choose the names of their data structures. Every `@context` file must be available
-on the network. In our case, the tutorial application will be used to host a series of static files.
+context entities. This defines a unique URI for every entity type and every attribute so that other services outside the
+NGSI domain are able to pick and choose the names of their data structures. Every `@context` file must be available on
+the network. In our case, the tutorial application will be used to host a series of static files.
 
 Therefore, the architecture will consist of three elements:
 
@@ -285,15 +285,14 @@ New context data entities can be created by making a POST request to the `/ngsi-
 
 #### 2 Request:
 
-> **Note:** This entity is being created using the default **normalized** NGSI-LD format, which is the
-> Gold Standard for data exchange between context brokers. NGSI-LD supports two lossless data
-> formats [normalized](ngsi-ld-operations.md) and [concise](concise.md).
+> **Note:** This entity is being created using the default **normalized** NGSI-LD format, which is the Gold Standard for
+> data exchange between context brokers. NGSI-LD supports two lossless data formats [normalized](ngsi-ld-operations.md)
+> and [concise](concise.md).
 >
-> In concise format, the addition of `"type": "Property"` is implied for each attribute with a
-> `value`. However in normalized format, the redundancy of adding the `type` is useful for receiving
-> microservices to be able to understand the difference between context data attributes and
-> links between data entities (which are defined using `"type": "Relationship"`) and are discussed
-> in a [later tutorial](entity-relationships.md)
+> In concise format, the addition of `"type": "Property"` is implied for each attribute with a `value`. However in
+> normalized format, the redundancy of adding the `type` is useful for receiving microservices to be able to understand
+> the difference between context data attributes and links between data entities (which are defined using
+> `"type": "Relationship"`) and are discussed in a [later tutorial](entity-relationships.md)
 >
 > There are also several subtypes of _Property_ available:
 >
@@ -410,11 +409,11 @@ of the request and not in the payload body.
 
 ### Using core `@context` - defining NGSI-LD entities
 
-The core `@context` supplies the vocabulary for creating **NGSI-LD** data entities. Attributes such as `id` and `type` 
+The core `@context` supplies the vocabulary for creating **NGSI-LD** data entities. Attributes such as `id` and `type`
 (which should be familiar to anyone who has used NGSI v2) are mapped to the standard **JSON-LD** `@id` and `@type`
 [keywords](https://w3c.github.io/json-ld-syntax/#syntax-tokens-and-keywords). The `type` should refer to an included
 data model, in this case `Building` is being used as a short name for the included URN
-`https://uri.fiware.org/ns/data-models#Building`. Thereafter, each _property_ is defined as a JSON element containing 
+`https://uri.fiware.org/ns/data-models#Building`. Thereafter, each _property_ is defined as a JSON element containing
 two attributes, a `type` and a `value`.
 
 The `type` of a _property_ attribute must be one of the following:
@@ -688,7 +687,7 @@ used as the `@context` returned to the response.
 
 This example returns all `Building` entities with the `name` attribute `Big Red Barn`. Filtering can be done using the
 `q` parameter - if a string has spaces in it, it can be URL encoded (` `= `%20`) and held within double quote characters
-`"` = `%22`. Since `options=keyValues` is sent, this will affect the structure of the payload, and we will need to 
+`"` = `%22`. Since `options=keyValues` is sent, this will affect the structure of the payload, and we will need to
 supply a different `@context` file - `json-context.jsonld`
 
 #### 7 Request:
@@ -772,7 +771,7 @@ curl -G -X GET \
 #### Response:
 
 The response is returned in JSON-LD format with short form attribute names (`adresse`, `kategorie`) which correspond to
-the short names provided in the alternate context. Note that core context terms (`id`, `type`, etc.) cannot be 
+the short names provided in the alternate context. Note that core context terms (`id`, `type`, etc.) cannot be
 overridden directly but would require an additional **JSON-LD** expansion/compaction operation.
 
 ```json

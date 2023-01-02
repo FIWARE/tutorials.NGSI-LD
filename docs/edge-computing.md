@@ -191,8 +191,8 @@ To know more about NGSI-LD supported APIs in FogFlow, follow this
 ## Connect IoT Devices to FogFlow
 
 When data flow from a sensor device towards broker, it is called Northbound Flow, whereas it is Southbound Flow, when
-data flow from broker towards the actuator devices. FogFlow relies on this bidirectional data flow to realize the
-actual idea behind it.
+data flow from broker towards the actuator devices. FogFlow relies on this bidirectional data flow to realize the actual
+idea behind it.
 
 To receive data from the sensor devices, refer
 [connect to a sensor device](https://fogflow.readthedocs.io/en/latest/integration.html#northbound-integration). The

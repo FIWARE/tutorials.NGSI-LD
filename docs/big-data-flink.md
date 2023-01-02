@@ -39,9 +39,9 @@ grows, another technique will be required to avoid overwhelming the listener, po
 updates.
 
 **Apache Flink** is a Java/Scala based stream-processing framework which enables the delegation of data-flow processes.
-Therefore, additional computational resources can be called upon to deal with data as events arrive. The **Cosmos 
-Flink** connector allows developers write custom business logic to listen for context data subscription events and then 
-process the flow of the context data. Flink is able to delegate these actions to other workers where they will be acted 
+Therefore, additional computational resources can be called upon to deal with data as events arrive. The **Cosmos
+Flink** connector allows developers write custom business logic to listen for context data subscription events and then
+process the flow of the context data. Flink is able to delegate these actions to other workers where they will be acted
 upon either in sequentially or in parallel as required. The data flow processing itself can be arbitrarily complex.
 
 Obviously, in reality, our existing Supermarket scenario is far too small to require the use of a Big Data solution, but
@@ -149,7 +149,7 @@ The `taskmanager` container is listening on two ports:
 The containers within the flink cluster are driven by a single environment variable as shown:
 
 | Key                     | Value        | Description                                                           |
-|-------------------------|--------------|-----------------------------------------------------------------------|
+| ----------------------- | ------------ | --------------------------------------------------------------------- |
 | JOB_MANAGER_RPC_ADDRESS | `jobmanager` | URL of the _master_ Job Manager which coordinates the task processing |
 
 ## Start Up

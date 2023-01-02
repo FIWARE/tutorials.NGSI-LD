@@ -76,9 +76,9 @@ persistence of the context data it holds.
 
 To promote interoperability of data exchange, NGSI-LD context brokers explicitly expose a
 [JSON-LD `@context` file](https://json-ld.org/spec/latest/json-ld/#the-context) to define the data held within the
-context entities. This defines a unique URI for every entity type and every attribute so that other services outside
-the NGSI domain are able to pick and choose the names of their data structures. Every `@context` file must be available
-on the network. In our case the tutorial application will be used to host a series of static files.
+context entities. This defines a unique URI for every entity type and every attribute so that other services outside the
+NGSI domain are able to pick and choose the names of their data structures. Every `@context` file must be available on
+the network. In our case the tutorial application will be used to host a series of static files.
 
 Therefore, the architecture will consist of three elements:
 
@@ -142,8 +142,8 @@ ld-context:
         - "3004:80"
 ```
 
-The necessary configuration information can be seen in the services' section of the associated `docker-compose.yml` file.
-It has been described in a [previous tutorial (Working with `@context`)](working-with-@context.md).
+The necessary configuration information can be seen in the services' section of the associated `docker-compose.yml`
+file. It has been described in a [previous tutorial (Working with `@context`)](working-with-@context.md).
 
 ## Start Up
 

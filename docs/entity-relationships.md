@@ -22,8 +22,8 @@ exists in the real world.
 <h3>Entities within a Farm Management Information System (FMIS)</h3>
 
 To illustrate entity relationships within an FMIS system based on NGSI-LD, we will need to create a series of entities.
-For this simplified FMIS, we will only need a small number of entities. The relationship between our entities is 
-defined as shown:
+For this simplified FMIS, we will only need a small number of entities. The relationship between our entities is defined
+as shown:
 
 ![](https://fiware.github.io/tutorials.Entity-Relationships/img/ngsi-ld-entities.png)
 
@@ -80,9 +80,9 @@ persistence of the context data it holds.
 
 To promote interoperability of data exchange, NGSI-LD context brokers explicitly expose a
 [JSON-LD `@context` file](https://json-ld.org/spec/latest/json-ld/#the-context) to define the data held within the
-context entities. This defines a unique URI for every entity type and every attribute so that other services outside
-the NGSI domain are able to pick and choose the names of their data structures. Every `@context` file must be available
-on the network. In our case the tutorial application will be used to host a series of static files.
+context entities. This defines a unique URI for every entity type and every attribute so that other services outside the
+NGSI domain are able to pick and choose the names of their data structures. Every `@context` file must be available on
+the network. In our case the tutorial application will be used to host a series of static files.
 
 Therefore, the architecture will consist of three elements:
 
@@ -136,8 +136,8 @@ This command will also import seed data (**Building**, **Person**, **Temperature
 
 In the previous tutorial, we created each entity individually,
 
-Let's create several sensors at the same time. This request uses the convenience batch processing endpoint to create 
-five entities. Batch processing uses the `/ngsi-ld/v1/entityOperations/`endpoints and the `upsert` endpoints means we 
+Let's create several sensors at the same time. This request uses the convenience batch processing endpoint to create
+five entities. Batch processing uses the `/ngsi-ld/v1/entityOperations/`endpoints and the `upsert` endpoints means we
 will create new entities if they are not present and overwrite existing entities if they exist.
 
 To differentiate different **Device**, each temperature sensor has been assigned `type=TemperatureSensor`. Real-world
@@ -495,7 +495,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities' \
 ]
 ```
 
-Similarly, we can request _Which fields are treated using `urn:ngsi-ld:Herbicide:001`?_ by altering the request as 
+Similarly, we can request _Which fields are treated using `urn:ngsi-ld:Herbicide:001`?_ by altering the request as
 shown:
 
 #### 11 Request:

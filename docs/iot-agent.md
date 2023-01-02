@@ -131,7 +131,7 @@ NGSI-LD Context Broker such as [Orion](https://fiware-orion.readthedocs.io/en/la
 [IoT Agent for UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/). Usage of the Context Broker is
 sufficient for an application to qualify as _“Powered by FIWARE”_. Both the Orion Context Broker and the IoT Agent rely
 on open source [MongoDB](https://www.mongodb.com/) technology to keep persistence of the information they hold. We will
-also be using the dummy IoT devices created in the 
+also be using the dummy IoT devices created in the
 [previous tutorial](https://github.com/FIWARE/tutorials.IoT-Sensors/).
 
 Therefore, the overall architecture will consist of the following elements:
@@ -198,7 +198,7 @@ The `tutorial` container is listening on two ports:
 The `tutorial` container is driven by environment variables as shown:
 
 | Key                     | Value                                | Description                                                                                                                               |
-|-------------------------|--------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| ----------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | DEBUG                   | `tutorial:*`                         | Debug flag used for logging                                                                                                               |
 | WEB_APP_PORT            | `3000`                               | Port used by web-app which displays the dummy device data                                                                                 |
 | IOTA_HTTP_HOST          | `iot-agent`                          | The hostname of the IoT Agent for UltraLight 2.0 - see below                                                                              |
@@ -259,7 +259,7 @@ information such as device URLs and Keys. The container is listening on two port
 The `iot-agent` container is driven by environment variables as shown:
 
 | Key                  | Value                                | Description                                                                                                                                           |
-|----------------------|--------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| -------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | IOTA_CB_HOST         | `orion`                              | Hostname of the context broker to update context                                                                                                      |
 | IOTA_CB_PORT         | `1026`                               | Port that context broker listens on to update context                                                                                                 |
 | IOTA_NORTH_PORT      | `4041`                               | Port used for Configuring the IoT Agent and receiving context updates from the context broker                                                         |
@@ -476,7 +476,7 @@ map the `location` GeoProperty.
 
 When a measurement from an IoT device is received on the resource URL it needs to be interpreted and passed to the
 context broker. The `entity_type` attribute provides a default `type` for each device which has made a request (in this
-case anonymous devices will be known as `Device` entities. Furthermore, the location of the context broker (`cbroker`) 
+case anonymous devices will be known as `Device` entities. Furthermore, the location of the context broker (`cbroker`)
 is needed, so that the IoT Agent can pass on any measurements received to the correct location. `cbroker` is an optional
 attribute - if it is not provided, the IoT Agent uses the context broker URL as defined in the configuration file,
 however it has been included here for completeness.

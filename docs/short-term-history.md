@@ -156,7 +156,7 @@ The `mintaka` container is listening on one port:
 The `mintaka` container is driven by environment variables as shown:
 
 | Key                                   | Value          | Description                                                                                             |
-|---------------------------------------|----------------|---------------------------------------------------------------------------------------------------------|
+| ------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------- |
 | DATASOURCES_DEFAULT_HOST              | `timescale-db` | The address where the Timescale database is hosted                                                      |
 | DATASOURCES_DEFAULT_USERNAME          | `orion`        | User to log in as when accessing the Timescale database                                                 |
 | DATASOURCES_DEFAULT_PASSWORD          | `orion`        | The password to use if none is provided                                                                 |
@@ -189,7 +189,7 @@ The `orion` container is listening on its standard port `1026`, the `troePoolSiz
 of concurrent connections to use.
 
 | Key                      | Value          | Description                                             |
-|--------------------------|----------------|---------------------------------------------------------|
+| ------------------------ | -------------- | ------------------------------------------------------- |
 | ORIONLD_TROE             | `TRUE`         | Whether to offer temporal representation of entities    |
 | ORIONLD_TROE_USER        | `orion`        | User to log in as when accessing the Timescale database |
 | ORIONLD_TROE_PWD         | `orion`        | The password to use if none is provided                 |
@@ -273,8 +273,8 @@ file of course.
 
 ### List the last N sampled values for an entity
 
-This example shows the last 3 changes from the entity `urn:ngsi-ld:Animal:cow002`. To obtain temporal data of a context 
-entity attribute, send a GET request to `../temporal/entities/<entity-id>`, the `lastN` parameter restricts the result 
+This example shows the last 3 changes from the entity `urn:ngsi-ld:Animal:cow002`. To obtain temporal data of a context
+entity attribute, send a GET request to `../temporal/entities/<entity-id>`, the `lastN` parameter restricts the result
 to N values.
 
 #### :one: Request:

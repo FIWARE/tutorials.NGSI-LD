@@ -2,14 +2,14 @@
 [![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.04.01_60/gs_cim009v010401p.pdf)
 [![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/) <br/>
 
-**Description:**: This tutorial introduces the **NGSI-LD** Merge Patch endpoint. It explains the difference between Merge **PATCH**
-(`/entities/<id>`) and Partial Update **PATCH** (`/entities/<id>/attrs`) and demonstrates the use of this functionality.
+**Description:**: This tutorial introduces the **NGSI-LD** Merge Patch endpoint. It explains the difference between
+Merge **PATCH** (`/entities/<id>`) and Partial Update **PATCH** (`/entities/<id>/attrs`) and demonstrates the use of
+this functionality.
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
 [Postman documentation](https://fiware.github.io/tutorials.Merge-Patch-Put/ngsi-ld.html)
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/d24facc3c430bb5d5aaf)
-
 
 # Merge **PATCH** and Overwrite **PUT**
 
@@ -111,8 +111,8 @@ unchanged.
 
 ### Merge **PATCH**
 
-Merge **PATCH** is supported under `/entities/<id>` and just upserts the attributes found in a payload. Again starting from
-the following NGSI-LD _Property_:
+Merge **PATCH** is supported under `/entities/<id>` and just upserts the attributes found in a payload. Again starting
+from the following NGSI-LD _Property_:
 
 ```json
 {
@@ -203,8 +203,6 @@ run from exposed ports.
 
 The necessary configuration information can be seen in the services section of the associated `docker-compose.yml` file.
 It has been described in a previous tutorial.
-
-
 
 ## Start Up
 
@@ -1062,4 +1060,3 @@ curl -G -X PUT \
     }
 }'
 ```
-

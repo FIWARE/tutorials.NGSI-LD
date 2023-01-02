@@ -2,14 +2,13 @@
 [![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.04.01_60/gs_cim009v010401p.pdf)
 [![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/) <br/>
 
-**Description:** This tutorial introduces the concise NGSI-LD format and demonstrates its use and explains the differences between
-concise and normalized NGSI-LD payloads.
+**Description:** This tutorial introduces the concise NGSI-LD format and demonstrates its use and explains the
+differences between concise and normalized NGSI-LD payloads.
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
 [Postman documentation](https://fiware.github.io/tutorials.Concise-Format/ngsi-ld.html)
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/d24facc3c430bb5d5aaf)
-
 
 # Concise NGSI-LD Payloads
 
@@ -18,19 +17,19 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 > — Sophocles, Oedipus at Colonus
 
 The NGSI-LD API is a flexible mechanism for producing context data in multiple formats. This was demonstrated in the
-initial Getting Started [tutorial](working-with-@context.md) where both
-"normalized" and "key-values" pairs format were produced. The default, verbose data format is so-called "normalized"
-NGSI-LD where every **Property** is defined by `"type": "Property"` and every **Relationship** is defined by
-`"type": "Relationship"`. These keywords ( `type`, `Property` and `Relationship`) are in turn strictly defined JSON-LD
-terms which can be found in the core @context served with every request.
+initial Getting Started [tutorial](working-with-@context.md) where both "normalized" and "key-values" pairs format were
+produced. The default, verbose data format is so-called "normalized" NGSI-LD where every **Property** is defined by
+`"type": "Property"` and every **Relationship** is defined by `"type": "Relationship"`. These keywords ( `type`,
+`Property` and `Relationship`) are in turn strictly defined JSON-LD terms which can be found in the core @context served
+with every request.
 
 ## NGSI-LD Payloads
 
 ### Normalized NGSI-LD
 
-The full "normalized" form is an excellent choice for data exchange, since through the `@context` and the definition
-of JSON-LD keywords, machines are given all the tools to fully comprehend the payload format. Responses return the
-complete current state of each entity, with payloads all including sub-attributes such as Properties-of-Properties,
+The full "normalized" form is an excellent choice for data exchange, since through the `@context` and the definition of
+JSON-LD keywords, machines are given all the tools to fully comprehend the payload format. Responses return the complete
+current state of each entity, with payloads all including sub-attributes such as Properties-of-Properties,
 Properties-of-Relationships and other standard metadata terms like `observedAt` and `unitCode`. Furthermore normalized
 payloads are exceedingly regular and parseable, and can easily be reduced down to the relevant `value` elements if such
 an operation necessary. However with the normalized format, is necessary to repeatedly supply common defining attributes
@@ -200,8 +199,6 @@ The overall architecture can be seen below:
 
 The necessary configuration information can be seen in the services section of the associated `docker-compose.yml` file.
 It has been described in a previous tutorial.
-
-
 
 ## Start Up
 
@@ -645,7 +642,7 @@ context will now contain four sensors.
         "@context": "http://context/ngsi-context.jsonld",
         "id": "urn:ngsi-ld:TemperatureSensor:004",
         "type": "TemperatureSensor",
-        "category":  "sensor",
+        "category": "sensor",
         "temperature": {
             "value": 100,
             "unitCode": "CEL"

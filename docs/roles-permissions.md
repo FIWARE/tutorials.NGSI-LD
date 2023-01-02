@@ -150,7 +150,7 @@ The `keyrock` container is a web application server listening on two ports:
 The `keyrock` container is driven by environment variables as shown:
 
 | Key               | Value                   | Description                                                                                                                  |
-|-------------------|-------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| ----------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | IDM_DB_PASS       | `idm`                   | Password of the attached MySQL Database - secured by **Docker Secrets** (see below)                                          |
 | IDM_DB_USER       | `root`                  | Username of the default MySQL user - left in plain-text                                                                      |
 | IDM_HOST          | `http://localhost:3005` | Hostname of the **Keyrock** App Server - used in activation eMails when signing up users                                     |
@@ -205,7 +205,7 @@ The `mysql-db` container is listening on a single port:
 The `mysql-db` container is driven by environment variables as shown:
 
 | Key                 | Value. | Description                                                                                                                                                                                           |
-|---------------------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | MYSQL_ROOT_PASSWORD | `123`  | specifies a password that is set for the MySQL `root` account - secured by **Docker Secrets** (see below)                                                                                             |
 | MYSQL_ROOT_HOST     | `root` | By default, MySQL creates the `root'@'localhost` account. This account can only be connected to from inside the container. Setting this environment variable allows root connections from other hosts |
 
@@ -259,7 +259,7 @@ The following people at `example.com` have signed up for accounts, but have no r
 -   Rob - Rob the Robber.
 
 | Name       | eMail                       | Password | UUID                                   |
-|------------|-----------------------------|----------|----------------------------------------|
+| ---------- | --------------------------- | -------- | -------------------------------------- |
 | alice      | `alice-the-admin@test.com`  | `test`   | `aaaaaaaa-good-0000-0000-000000000000` |
 | bob        | `bob-the-manager@test.com`  | `test`   | `bbbbbbbb-good-0000-0000-000000000000` |
 | charlie    | `charlie-security@test.com` | `test`   | `cccccccc-good-0000-0000-000000000000` |
@@ -274,7 +274,7 @@ The following people at `example.com` have signed up for accounts, but have no r
 Two organizations have also been set up by Alice:
 
 | Name       | Description                         | UUID                                   |
-|------------|-------------------------------------|----------------------------------------|
+| ---------- | ----------------------------------- | -------------------------------------- |
 | Security   | Security Group for Store Detectives | `security-team-0000-0000-000000000000` |
 | Management | Management Group for Store Managers | `managers-team-0000-0000-000000000000` |
 
@@ -321,7 +321,7 @@ All IDs and tokens within **Keyrock** are subject to change. The following value
 for records. Record IDs use Universally Unique Identifiers - UUIDs.
 
 | Key                    | Description                                                                    | Sample Value                                              |
-|------------------------|--------------------------------------------------------------------------------|-----------------------------------------------------------|
+| ---------------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------- |
 | `keyrock`              | URL for the location of the **Keyrock** service                                | `localhost:3005` for HTTP, `localhost:3443` for HTTPS     |
 | `X-Auth-token`         | Token received in the Header when logging in as a user                         | `aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa` = I am Alice       |
 | `X-Subject-token`      | Token to pass when asking about a subject, alternatively repeat the user token | `bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb` = Asking about Bob |

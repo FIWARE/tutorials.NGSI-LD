@@ -20,7 +20,7 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 >
 > — Gustave Flaubert (Bouvard and Pecuchet)
 
-As defined previously, an IoT Agent is a component that lets a group of devices sends their data to and be managed from 
+As defined previously, an IoT Agent is a component that lets a group of devices sends their data to and be managed from
 a Context Broker using their own native protocols. Every IoT Agent is defined for a single payload format, although they
 may be able to use multiple disparate transports for that payload.
 
@@ -43,7 +43,7 @@ Agent - the conversion of messages from JSON to NGSI and vice-versa will be uniq
 A direct comparison of the two IoT Agents can be seen below:
 
 | IoT Agent for Ultralight                                            | IoT Agent for JSON                                                  | Protocol's Area of Concern |
-|---------------------------------------------------------------------|---------------------------------------------------------------------|----------------------------|
+| ------------------------------------------------------------------- | ------------------------------------------------------------------- | -------------------------- |
 | Sample Measure `c\1`                                                | Sample Measure `{"count": "1"}`                                     | Message Payload            |
 | Sample Command `Robot1@turn\left`                                   | Sample Command `{"Robot1": {"turn": "left"}}`                       | Message Payload            |
 | Content Type is `text/plain`                                        | Content Type is `application/json`                                  | Message Payload            |
@@ -208,7 +208,7 @@ The `tutorial` container is listening on two ports:
 The `tutorial` container is driven by environment variables as shown:
 
 | Key                     | Value                                | Description                                                                                                                         |
-|-------------------------|--------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| ----------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
 | DEBUG                   | `tutorial:*`                         | Debug flag used for logging                                                                                                         |
 | WEB_APP_PORT            | `3000`                               | Port used by web-app which displays the dummy device data                                                                           |
 | IOTA_HTTP_HOST          | `iot-agent`                          | The hostname of the IoT Agent for JSON - see below                                                                                  |
@@ -271,7 +271,7 @@ information such as device URLs and Keys. The container is listening on two port
 The `iot-agent` container is driven by environment variables as shown:
 
 | Key                  | Value                                | Description                                                                                                                                           |
-|----------------------|--------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| -------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | IOTA_CB_HOST         | `orion`                              | Hostname of the context broker to update context                                                                                                      |
 | IOTA_CB_PORT         | `1026`                               | Port that context broker listens on to update context                                                                                                 |
 | IOTA_NORTH_PORT      | `4041`                               | Port used for Configuring the IoT Agent and receiving context updates from the context broker                                                         |
@@ -487,7 +487,7 @@ map the `location` GeoProperty.
 
 When a measurement from an IoT device is received on the resource URL it needs to be interpreted and passed to the
 context broker. The `entity_type` attribute provides a default `type` for each device which has made a request, in this
-case anonymous devices will be known as `Device` entities. Furthermore, the location of the context broker (`cbroker`) 
+case anonymous devices will be known as `Device` entities. Furthermore, the location of the context broker (`cbroker`)
 is needed, so that the IoT Agent can pass on any measurements received to the correct location. `cbroker` is an optional
 attribute - if it is not provided, the IoT Agent uses the context broker URL as defined in the configuration file,
 however it has been included here for completeness.

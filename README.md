@@ -13,7 +13,7 @@ data within a simple Smart Solution either by connecting to a series of dummy Io
 directly or programmatically.
 
 | :books: <br>[NGSI-LD<br>Documentation](https://ngsi-ld-tutorials.rtfd.io/) | <img src="https://assets.getpostman.com/common-share/postman-logo-stacked.svg" align="center" height="25"> <br/>[Postman<br>Collections](https://explore.postman.com/team/3mM5EY6ChBYp9D) | [![Docker Hub](https://nexus.lab.fiware.org/repository/raw/public/badges/docker/fiware.svg)](https://hub.docker.com/u/fiware) <br> [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/fiware)](https://artifacthub.io/packages/search?repo=fiware) | <img src="https://fiware.github.io/catalogue/img/fiware-emoji.png" height="30px" width="30px"/> <br/> [**developer.&ZeroWidthSpace;fiware.org**](https://www.fiware.org/developers/) |
-|----------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 
 <h3>Data models</h3>
 
@@ -80,28 +80,33 @@ Although not officially supported, older versions of docker without an integrate
 ### Postman <img src="docs/img/postman.png" align="left"  height="32" width="32">
 
 The tutorials which use HTTP requests supply a collection for use with the Postman utility. Postman is a testing
-framework for REST APIs. The tool can be downloaded from [www.postman.com](https://www.postman.com/downloads/). 
-All the FIWARE Postman collections can be downloaded directly from the
+framework for REST APIs. The tool can be downloaded from [www.postman.com](https://www.postman.com/downloads/). All the
+FIWARE Postman collections can be downloaded directly from the
 [Postman API network](https://explore.postman.com/team/3mM5EY6ChBYp9D).
 
-### Cygwin for Windows <img src="https://www.cygwin.com/favicon.ico" align="left"  height="30" width="30">
+### GitPod <img src="https://gitpod.io/favicon.ico" align="left"  height="30" width="30">
 
-We will start up our services using a simple Bash script. Windows users should download [cygwin](http://www.cygwin.com/)
-to provide a command-line functionality similar to a Linux distribution on Windows.
+[Gitpod](https://github.com/gitpod-io/gitpod) is an open-source Kubernetes application for ready-to-code cloud
+development environments that spins up an automated dev environment for each task, in the cloud. It enables you to run
+the tutorials in a cloud development environment directly from your browser or your Desktop IDE.
+
+### Cygwin for Windows <img src="https://www.cygwin.com/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
+
+The tutorials start up their services using a simple Bash script. When working locally, Windows users should download
+[cygwin](http://www.cygwin.com/) to provide a command-line functionality similar to a Linux distribution on Windows.
 
 ## Tutorials List[<img src="https://img.shields.io/badge/NGSI-LD-d6604d.svg" width="90"  align="left" />](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.04.01_60/gs_cim009v010401p.pdf)
 
 ### Core Context Management: NGSI-LD Fundamentals
 
-&nbsp; 101. [Understanding `@context`](https://github.com/FIWARE/tutorials.Understanding-At-Context) <br/>
-&nbsp; 102. [Working with `@context`](https://github.com/FIWARE/tutorials.Getting-Started/tree/NGSI-LD) <br/>
-&nbsp; 103. [CRUD Operations](https://github.com/FIWARE/tutorials.CRUD-Operations/tree/NGSI-LD) <br/>
-&nbsp; 104. [Concise Payloads](https://github.com/FIWARE/tutorials.Concise/tree/NGSI-LD) <br/>
-&nbsp; 105. [Merge-Patch and Put](https://github.com/FIWARE/tutorials.Merge-Patch-Put/tree/NGSI-LD) <br/>
-&nbsp; 106. [Entity Relationships](https://github.com/FIWARE/tutorials.Entity-Relationships/tree/NGSI-LD) <br/>
-&nbsp; 107. [Subscriptions](https://github.com/FIWARE/tutorials.Subscriptions/tree/NGSI-LD) <br/>
-&nbsp; 108. [Temporal Operations](https://github.com/FIWARE/tutorials.Short-Term-History/tree/NGSI-LD) <br/>
-
+&nbsp; 101. [Understanding `@context`](https://github.com/FIWARE/tutorials.Understanding-At-Context) <br/> &nbsp; 102.
+[Working with `@context`](https://github.com/FIWARE/tutorials.Getting-Started/tree/NGSI-LD) <br/> &nbsp; 103.
+[CRUD Operations](https://github.com/FIWARE/tutorials.CRUD-Operations/tree/NGSI-LD) <br/> &nbsp; 104.
+[Concise Payloads](https://github.com/FIWARE/tutorials.Concise/tree/NGSI-LD) <br/> &nbsp; 105.
+[Merge-Patch and Put](https://github.com/FIWARE/tutorials.Merge-Patch-Put/tree/NGSI-LD) <br/> &nbsp; 106.
+[Entity Relationships](https://github.com/FIWARE/tutorials.Entity-Relationships/tree/NGSI-LD) <br/> &nbsp; 107.
+[Subscriptions](https://github.com/FIWARE/tutorials.Subscriptions/tree/NGSI-LD) <br/> &nbsp; 108.
+[Temporal Operations](https://github.com/FIWARE/tutorials.Short-Term-History/tree/NGSI-LD) <br/>
 
 ### Internet of Things, Robots and third-party systems
 
@@ -111,14 +116,14 @@ to provide a command-line functionality similar to a Linux distribution on Windo
 
 ### Core Context Management: Manipulating Context Data and Persisting Historic Data
 
-&nbsp; 304. [Querying Time Series Data (QuantumLeap)](https://github.com/FIWARE/tutorials.Time-Series-Data/tree/NGSI-LD) <br/>
-&nbsp; 305. [Big Data Analysis (Flink)](https://github.com/FIWARE/tutorials.Big-Data-Flink/tree/NGSI-LD) <br/>
+&nbsp; 304. [Querying Time Series Data (QuantumLeap)](https://github.com/FIWARE/tutorials.Time-Series-Data/tree/NGSI-LD)
+<br/> &nbsp; 305. [Big Data Analysis (Flink)](https://github.com/FIWARE/tutorials.Big-Data-Flink/tree/NGSI-LD) <br/>
 &nbsp; 306. [Big Data Analysis (Spark)](https://github.com/FIWARE/tutorials.Big-Data-Spark/tree/NGSI-LD)
 
 ### Security: Identity Management
 
-&nbsp; 401. [Managing Users and Organizations](https://github.com/FIWARE/tutorials.Identity-Management/tree/NGSI-v2) <br/>
-&nbsp; 402. [Roles and Permissions](https://github.com/FIWARE/tutorials.Roles-Permissions/tree/NGSI-v2)
+&nbsp; 401. [Managing Users and Organizations](https://github.com/FIWARE/tutorials.Identity-Management/tree/NGSI-v2)
+<br/> &nbsp; 402. [Roles and Permissions](https://github.com/FIWARE/tutorials.Roles-Permissions/tree/NGSI-v2)
 
 ### Processing, Analysis and Visualization
 

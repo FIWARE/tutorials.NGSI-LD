@@ -101,7 +101,7 @@ All Keys and Secrets must be passed in using Environment variables. The followin
 
 ## License
 
-MIT © 2020 FIWARE Foundation e.V.
+MIT © 2020-2023 FIWARE Foundation e.V.
 
 See the LICENSE file in the root of this project for license details.
 

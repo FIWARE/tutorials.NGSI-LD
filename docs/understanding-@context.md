@@ -24,8 +24,8 @@ Creating an interoperable system of readable links for computers requires the us
 ([JSON-LD](http://json-ld.org/)) and assignation of unique IDs
 ([URLs or URNs](https://stackoverflow.com/questions/4913343/what-is-the-difference-between-uri-url-and-urn)) for both
 data entities and the relationships between entities so that semantic meaning can be programmatically retrieved from the
-data itself. Furthermore, the use and creation of these unique IDs should, as far as possible, be passed around so as not
-get in the way of the processing the data objects themselves.
+data itself. Furthermore, the use and creation of these unique IDs should, as far as possible, be passed around so as
+not get in the way of the processing the data objects themselves.
 
 An attempt to solve this interoperability problem has been made within the JSON domain, and this has been done by adding
 an `@context` element to existing JSON data structures. This has led to the creation of the **JSON-LD** standard.
@@ -88,11 +88,10 @@ Typically, each entity will consist of an `id`, a `type`, a series of **Property
 which changes over time and a series of **Relationship** attributes which represent connections between existing
 entities.
 
-It is perhaps best to illustrate this using an example. The Underlying Data Models can be created using many 
-tools, however this example will use Swagger [schema](https://swagger.io/docs/specification/data-models/) objects
-defined using the [Open API 3](https://swagger.io/docs/specification/about/) Standard. The examples are valid Swagger
-specifications, but in reality, we are not interested in defining in paths and operations, as these are already defined
-using the
+It is perhaps best to illustrate this using an example. The Underlying Data Models can be created using many tools,
+however this example will use Swagger [schema](https://swagger.io/docs/specification/data-models/) objects defined using
+the [Open API 3](https://swagger.io/docs/specification/about/) Standard. The examples are valid Swagger specifications,
+but in reality, we are not interested in defining in paths and operations, as these are already defined using the
 [NGSI-LD API](https://swagger.lab.fiware.org/?url=https://fiware.github.io/tutorials.NGSI-LD/swagger/ngsi-ld.yaml)
 
 <h4>The Scenario</h4>
@@ -215,24 +214,26 @@ mean we will need things such as:
 -   and so on.
 
 ```json
-[{
-    "temperature": {
-        "type": "Property",
-        "value": 30,
-        "unitCode": "CEL",
-        "providedBy": "urn:ngsi-ld:TemperatureSensor:001",
-        "observedAt": "2016-03-15T11:00:00.000"
+[
+    {
+        "temperature": {
+            "type": "Property",
+            "value": 30,
+            "unitCode": "CEL",
+            "providedBy": "urn:ngsi-ld:TemperatureSensor:001",
+            "observedAt": "2016-03-15T11:00:00.000"
+        }
+    },
+    {
+        "fillingLevel": {
+            "type": "Property",
+            "value": 0.5,
+            "unitCode": "P1",
+            "providedBy": "urn:ngsi-ld:FillingLevelSensor:001",
+            "observedAt": "2016-03-15T11:00:00.000"
+        }
     }
-},
-{
-    "fillingLevel": {
-        "type": "Property",
-        "value": 0.5,
-        "unitCode": "P1",
-        "providedBy": "urn:ngsi-ld:FillingLevelSensor:001",
-        "observedAt": "2016-03-15T11:00:00.000"
-    }
-}]
+]
 ```
 
 Each one of these attributes has a name, and therefore requires a definition within the `@context`. Fortunately most of
@@ -470,9 +471,8 @@ From the definition of a **Building** we know it has a mandatory `category` and 
 If a computer encounters an `address` attribute, this really refers to a `https://schema.org/address` (which in turn has
 well-defined sub-attributes)
 
-If a computer encounters a `category=barn` then it should be possible to ensure that this `category` can be
-identified as a `https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn`. Note that `category` itself is also 
-well-defined.
+If a computer encounters a `category=barn` then it should be possible to ensure that this `category` can be identified
+as a `https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn`. Note that `category` itself is also well-defined.
 
 NGSI-LD `@context`s are used for all NGSI-LD CRUD operations, and are required when sending or receiving NGSI-LD data in
 the default _normalized_ format. The _normalized_ format includes a structure of attributes each with its own `type` and
@@ -631,7 +631,7 @@ as follows:
 Furthermore, an additional section in this context file called the `@graph`. This enables the JSON-LD @context to make
 additional statements about the graph of linked data itself For example, the generated `@graph` elements are show a
 human-readable description of the attribute in English. This could be further expanded to indicate in which entities
-each attribute is used, whether an entity definition is a subclass of a base definition (e.g. `TemperatureSensor` 
+each attribute is used, whether an entity definition is a subclass of a base definition (e.g. `TemperatureSensor`
 extends `Device`) and so on.
 
 Further information about `@graph` can be found in the section on
