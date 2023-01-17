@@ -177,7 +177,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
   "type": "Subscription",
   "entities": [{"type": "FillingLevelSensor"}],
   "watchedAttributes": ["filling"],
-  "q": "filling>0.6;filling<0.8;controlledAsset==urn:ngsi-ld:Building:farm001",
+  "q": "filling>0.6;filling<0.8;controlledAsset==%22urn:ngsi-ld:Building:farm001%22",
   "notification": {
     "attributes": ["filling", "controlledAsset"],
     "format": "keyValues",
@@ -271,7 +271,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
   "type": "Subscription",
   "entities": [{"type": "FillingLevelSensor"}],
   "watchedAttributes": ["filling"],
-  "q": "filling>0.4;filling<0.6;controlledAsset==urn:ngsi-ld:Building:farm001",
+  "q": "filling>0.4;filling<0.6;controlledAsset==%22urn:ngsi-ld:Building:farm001%22",
   "notification": {
     "attributes": ["filling", "controlledAsset"],
     "format": "normalized",
@@ -334,7 +334,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
   "type": "Subscription",
   "entities": [{"type": "FillingLevelSensor"}],
   "watchedAttributes": ["filling"],
-  "q": "filling<0.4;controlledAsset==urn:ngsi-ld:Building:farm001",
+  "q": "filling<0.4;controlledAsset==%22urn:ngsi-ld:Building:farm001%22",
   "notification": {
     "attributes": ["filling", "controlledAsset"],
     "format": "x-ngsiv2-normalized",
