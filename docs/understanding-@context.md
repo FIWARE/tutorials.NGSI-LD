@@ -609,17 +609,21 @@ as follows:
     size of the file. For further information read the section on
     [aliasing keywords](https://w3c.github.io/json-ld-syntax/#aliasing-keywords) from the JSON-LD specification.
 -   A series of defined entity types (e.g. `Building`). These usually start with a capital letter.
--   A list of attributes - these may be subdivided as follows: - attributes representing context data **Properties** to
+-   A list of attributes - these may be subdivided as follows: 
+    - attributes representing context data **Properties** to
     be displayed as native JSON attributes (e.g. `additionalName`), these attributes are annotated to explain the
-    [XML Schema](https://www.w3.org/TR/xmlschema-2/) datatype to be used when consuming the data. - attributes
+    [XML Schema](https://www.w3.org/TR/xmlschema-2/) datatype to be used when consuming the data. 
+    - attributes
     representing context data **Properties** which are complex of objects (e.g. `address`), these are remain as in the
     previous example, there is an indication that `address` really refers to a `https://schema.org/address` - which in
-    turn has well-defined sub-attributes - and the native types of those sub-elements are also defined. - attributes
+    turn has well-defined sub-attributes - and the native types of those sub-elements are also defined. 
+    - attributes
     representing context data **Properties** which hold enumerations - e.g. `category` - these hold a link indicator in
     the form of `"@type": "@vocab"`. When these attributes are encountered it indicates that the value `category="barn"`
     can be expanded to the IRI `https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn` rather than just as a string
     holding the short name `barn`. For further information on how this is achieved, look at the
-    [shortening IRIs](https://w3c.github.io/json-ld-syntax/#shortening-iris) in the JSON-LD specification. - attributes
+    [shortening IRIs](https://w3c.github.io/json-ld-syntax/#shortening-iris) in the JSON-LD specification. 
+    - attributes
     representing context data **Relationships** - e.g. `controlledAsset` - these hold an indicator of a link between
     entities in the form of `"@type": "@id"`. This is the syntax indicating a link, or more formally an
     Internationalized Resource Identifier (see [RFC3987](https://w3c.github.io/json-ld-syntax/#bib-rfc3987)). For
