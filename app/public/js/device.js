@@ -146,7 +146,7 @@ $(function () {
             // eslint-disable-next-line no-unused-vars
             error(xhr, ajaxOptions, thrownError) {
                 // eslint-disable-next-line no-alert
-                alert('ACCESS DENIED');
+                alert(thrownError);
             }
         });
     });

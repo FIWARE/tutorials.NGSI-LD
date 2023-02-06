@@ -89,14 +89,19 @@ function sendCommand(req, res) {
         options.headers['X-Auth-Token'] = req.session.access_token;
     }
 
-    request(options, (error) => {
+
+    debug(JSON.stringify(options));
+    request(options, (error, response, body) => {
         if (error) {
             debug(error);
         }
+        if (body) {
+            debug(body);
+        }
+        // Return a status code.
+        return res.status(response.statusCode).send();
     });
 
-    // Return a success code.
-    return res.status(204).send();
 }
 
 // Ringing the bell and unlocking the door are restricted actions, everything else
