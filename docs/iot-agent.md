@@ -766,26 +766,60 @@ curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:wat
 {
     "id": "urn:ngsi-ld:Device:water001",
     "type": "Device",
-    "on_status": {
+    "location": {
+        "type": "GeoProperty",
+        "value": {
+            "type": "Point",
+            "coordinates": [
+                0,
+                0
+            ]
+        }
+    },
+    "controllingAsset": {
+        "object": "urn:ngsi-ld:Building:barn001",
+        "type": "Relationship",
+        "observedAt": "2023-02-09T13:22:13.581Z"
+    },
+    "category": {
+        "value": "sensor",
         "type": "Property",
+        "observedAt": "2023-02-09T13:22:13.581Z"
+    },
+    "supportedProtocol": {
+        "value": "ul20",
+        "type": "Property",
+        "observedAt": "2023-02-09T13:22:13.581Z"
+    },
+    "on_status": {
         "value": {
             "@type": "commandStatus",
             "@value": "OK"
         },
-        "observedAt": "2020-09-14T15:27:11.066Z"
+        "type": "Property",
+        "observedAt": "2023-02-09T13:22:13.581Z"
     },
     "on_info": {
-        "type": "Property",
         "value": {
             "@type": "commandResult",
             "@value": " on OK"
         },
-        "observedAt": "2020-09-14T15:27:11.066Z"
+        "type": "Property",
+        "observedAt": "2023-02-09T13:22:13.581Z"
     },
-    "controlledAsset": {
-        "type": "Relationship",
-        "object": "urn:ngsi-ld:Building:barn001",
-        "observedAt": "2020-09-14T15:27:11.066Z"
+    "off_status": {
+        "type": "Property",
+        "value": {
+            "@type": "commandStatus",
+            "@value": "UNKNOWN"
+        }
+    },
+    "off_info": {
+        "type": "Property",
+        "value": {
+            "@type": "commandResult",
+            "@value": " "
+        }
     },
     "on": {
         "type": "Property",
