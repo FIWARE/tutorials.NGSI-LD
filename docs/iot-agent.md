@@ -593,8 +593,9 @@ add the `fiware-service` and `fiware-service-path` headers.
 
 ```bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:temperature001' \
-    -H 'fiware-service: openiot' \
-    -H 'fiware-servicepath: /' \
+    -H 'NGSILD-Tenant: openiot' \
+    -H 'NGSILD-Path: /' \
+    -H 'Accept: application/ld+json' \
     -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
     -d 'attrs=temperature'
 ```
@@ -646,6 +647,7 @@ based on the knowledge of the service group:
 curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=Device' \
 -H 'NGSILD-Tenant: openiot' \
 -H 'NGSILD-Path: /' \
+-H 'Accept: application/ld+json' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 ```
 
