@@ -204,7 +204,7 @@ and thermostat.
 ![](https://fiware.github.io/tutorials.Subscriptions/img/fmis.png)
 
 Remove some hay from the barn, update the thermostat and open the device monitor page at
-`http://localhost:3000/device/monitor` and start a **Tractor** and switch on a **Smart Lamp**. This can be done by
+`http://localhost:3000/device/monitor` and start a **Tractor**. This can be done by
 selecting an appropriate command from the drop-down list and pressing the `send` button. The stream of measurements
 coming from the devices can then be seen on the same page.
 
