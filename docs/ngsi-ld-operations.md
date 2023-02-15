@@ -1,10 +1,10 @@
 [![FIWARE Core Context Management](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/core.svg)](https://github.com/FIWARE/catalogue/blob/master/core/README.md)
-[![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.04.01_60/gs_cim009v010401p.pdf)
+[![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.06.01_60/gs_CIM009v010601p.pdf)
 [![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/) <br/>
 
 **Description:** This tutorial teaches **NGSI-LD** users about CRUD Operations. The tutorial outlines example usage of
 the various ways of amending context as detailed within the
-[NGSI-LD specification](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.04.01_60/gs_cim009v010401p.pdf). A
+[NGSI-LD specification](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.06.01_60/gs_CIM009v010601p.pdf). A
 series of entities representing temperature sensors are created, modified and deleted based on the temperature sensor
 model defined in an [earlier tutorial](https://github.com/FIWARE/tutorials.Understanding-At-Context).
 
@@ -24,7 +24,7 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 **CRUD** Operations (**Create**, **Read**, **Update** and **Delete**) are the four basic functions of persistent
 storage. For a smart system based on **NGSI-LD**, **CRUD** actions allow the developer to manipulate the context data
 within the system. Every **CRUD** operation is clearly defined within the
-[NGSI-LD specification](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.04.01_60/gs_cim009v010401p.pdf), so all
+[NGSI-LD specification](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.06.01_60/gs_CIM009v010601p.pdf), so all
 NGSI-LD compliant context brokers offer the same interface with the same NGSI-LD operations.
 
 This tutorial will describe the rationale behind each operation, when to use it and how to execute the various **CRUD**
