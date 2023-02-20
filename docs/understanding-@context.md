@@ -71,6 +71,14 @@ Click on the image above to watch a video describing the basic concepts behind J
 
 ## Start Up
 
+Please clone the repository and create the necessary images by running the commands as shown:
+
+```bash
+git clone https://github.com/FIWARE/tutorials.Understanding-At-Context.git
+cd tutorials.Understanding-At-Context
+git checkout NGSI-LD
+
+
 In order to initialize the generator tool run:
 
 ```bash
