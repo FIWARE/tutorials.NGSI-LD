@@ -53,6 +53,8 @@ function createNGSILDRequest(action, id) {
 
 // This function allows a Water Sprinkler, Tractor of FillingStation command to be sent to the Dummy IoT devices
 // via the Orion Context Broker and an IoT Agent.
+
+// eslint-disable-next-line consistent-return
 function sendCommand(req, res) {
     const action = req.body.action;
     const id = (COMMANDS[action] || '') + req.body.id;
