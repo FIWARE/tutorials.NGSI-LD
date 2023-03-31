@@ -37,6 +37,12 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to quay.io
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
       - name: Docker meta (Distroless)
         id: meta
         uses: docker/metadata-action@v3
@@ -54,5 +60,6 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}
             ghcr.io/${{ env.IMAGE_NAME }}
+            quay.io/${{ env.IMAGE_NAME }}
           file: docker/Dockerfile
           labels: ${{ steps.meta.outputs.labels }}
