@@ -3,7 +3,7 @@
 [![Documentation](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/documentation.svg)](https://ngsi-ld-tutorials.rtfd.io)
 [![License: MIT](https://img.shields.io/github/license/fiware/tutorials.Step-by-Step.svg)](https://opensource.org/licenses/MIT)
 [![Support badge](https://img.shields.io/badge/tag-fiware-orange.svg?logo=stackoverflow)](https://stackoverflow.com/questions/tagged/fiware)
-[![Docker](https://img.shields.io/docker/pulls/fiware/tutorials.ngsi-ld.svg)](https://hub.docker.com/r/fiware/tutorials.ngsi-ld/)
+[![Docker badge](https://img.shields.io/badge/quay.io-fiware%2Ftutorials.ngsi--ld-grey?logo=red%20hat&labelColor=EE0000)](https://quay.io/repository/fiware/tutorials.ngsi-ld)
 <br> [![Documentation](https://img.shields.io/readthedocs/ngsi-ld-tutorials.svg)](https://ngsi-ld-tutorials.rtfd.io)
 [![CI](https://github.com/FIWARE/tutorials.NGSI-LD/workflows/CI/badge.svg)](https://github.com/FIWARE/tutorials.NGSI-LD/actions?query=workflow%3ACI)
 
