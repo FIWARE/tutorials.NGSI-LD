@@ -105,7 +105,7 @@ The necessary configuration information can be seen in the services' section of 
 
 ```yaml
 orion:
-    image: fiware/orion-ld
+    image: quay.io/fiware/orion-ld
     hostname: orion
     container_name: fiware-orion
     depends_on:

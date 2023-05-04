@@ -132,7 +132,7 @@ be seen below:
 
 ```yaml
 mintaka:
-    image: fiware/mintaka:${MINTAKA_VERSION}
+    image: quay.io/fiware/mintaka:${MINTAKA_VERSION}
     hostname: mintaka
     container_name: fiware-mintaka
     depends_on:
@@ -167,7 +167,7 @@ The `mintaka` container is driven by environment variables as shown:
 
 ```yaml
 orion:
-    image: fiware/orion-ld:${ORION_LD_VERSION}
+    image: quay.io/fiware/orion-ld:${ORION_LD_VERSION}
     hostname: orion
     container_name: fiware-orion
     depends_on:

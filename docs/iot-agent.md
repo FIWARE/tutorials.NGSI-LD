@@ -167,7 +167,7 @@ section of the associated `docker-compose.yml` file:
 
 ```yaml
 tutorial:
-    image: fiware/tutorials.ngsi-ld
+    image: quay.io/fiware/tutorials.ngsi-ld
     hostname: iot-sensors
     container_name: fiware-tutorial
     networks:
@@ -218,7 +218,7 @@ tagged `fiware/iotagent-ul`. The necessary configuration can be seen below:
 
 ```yaml
 iot-agent:
-    image: fiware/iotagent-ul:latest
+    image: quay.io/fiware/iotagent-ul:latest
     hostname: iot-agent
     container_name: fiware-iot-agent
     depends_on:

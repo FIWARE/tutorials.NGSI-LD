@@ -191,7 +191,7 @@ The necessary configuration information can be seen in the services section of t
 
 ```yaml
 tutorial:
-    image: fiware/tutorials.ngsi-ld
+    image: quay.io/fiware/tutorials.ngsi-ld
     hostname: iot-sensors
     container_name: fiware-tutorial
     networks:
