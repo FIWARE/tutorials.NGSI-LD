@@ -9,8 +9,8 @@ This is a collection of **NGSI-LD** tutorials for the FIWARE system. Each tutori
 demonstrate the correct use of individual FIWARE components and shows the flow of context data within a simple Smart
 Solution either by connecting to a series of dummy IoT devices or manipulating the context directly or programmatically.
 
-| <a href="https://www.fiware.org/global-summit/"><img src="https://fiware.github.io//catalogue/img/Summit23.png" width="240" height="70" /></a> | <a href="https://www.eventbrite.com/e/fiware-on-site-training-tickets-591474775977"><img src="https://fiware.github.io//catalogue/img/Training23.png" width="240" height="70" /></a> |
-| --- | --- |
+<a href="https://www.fiware.org/global-summit/"><img src="https://fiware.github.io//catalogue/img/Summit23.png" width="240" height="70" /></a>  
+<a href="https://www.eventbrite.com/e/fiware-on-site-training-tickets-591474775977"><img src="https://fiware.github.io//catalogue/img/Training23.png" width="240" height="70" /></a> 
 
 <h3>How to Use</h3>
 
