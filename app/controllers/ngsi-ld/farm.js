@@ -9,7 +9,7 @@ const monitor = require('../../lib/monitoring');
 const ngsiLD = require('../../lib/ngsi-ld');
 const _ = require('lodash');
 const Port = process.env.WEB_APP_PORT || '3000';
-const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context:' + Port + '/data-models/ngsi-context.jsonld';
+const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://localhost:' + Port + '/data-models/ngsi-context.jsonld';
 const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json">';
 
 function mapTileUrl(zoom, location) {

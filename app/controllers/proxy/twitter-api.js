@@ -64,11 +64,11 @@ function getAsNgsiLD(req, res) {
 
             const response = Formatter.formatResponse(req, tweets.statuses, getValuesFromTweets);
 
-            if (req.headers.accept === 'application/json') {
+            if (req.headers.accept === 'application/ld+json') {
+                res.set('Content-Type', 'application/ld+json');
+            } else {
                 res.set('Content-Type', 'application/json');
                 delete response['@context'];
-            } else {
-                res.set('Content-Type', 'application/ld+json');
             }
             res.send(response);
         },
