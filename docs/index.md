@@ -5,6 +5,20 @@
 [![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/)
 [![Support badge](https://img.shields.io/badge/tag-fiware-orange.svg?logo=stackoverflow)](https://stackoverflow.com/questions/tagged/fiware)
 
+<div id="social-meta">
+<meta property="og:title" content="A collection of NGSI-LD tutorials for the FIWARE system">
+<meta property="og:description" content="Each tutorial consists of a series of exercises to demonstrate the correct use of individual FIWARE components.">
+<meta property="og:type" content="documentation">
+<meta property="og:url" content="https://ngsi-ld-tutorials.readthedocs.io/en/latest/">
+<meta property="og:image" content="https://www.fiware.org/wp-content/uploads/FF_Banner_General.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@FIWARE">
+<meta name="twitter:title" content="About
+The process for commercial software to apply as powered by FIWARE or FIWARE-Ready">
+<meta name="twitter:description" content="This documentation describes the process to apply and validate an IoT Device as FIWARE Ready.">
+<meta name="twitter:image" content="https://www.fiware.org/wp-content/uploads/FF_Marketplace_GenericBanner.png">
+</div>
+
 This is a collection of **NGSI-LD** tutorials for the FIWARE system. Each tutorial consists of a series of exercises to
 demonstrate the correct use of individual FIWARE components and shows the flow of context data within a simple Smart
 Solution either by connecting to a series of dummy IoT devices or manipulating the context directly or programmatically.
