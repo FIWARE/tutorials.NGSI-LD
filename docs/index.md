@@ -15,8 +15,8 @@
 <meta name="twitter:site" content="@FIWARE">
 <meta name="twitter:title" content="About
 The process for commercial software to apply as powered by FIWARE or FIWARE-Ready">
-<meta name="twitter:description" content="This documentation describes the process to apply and validate an IoT Device as FIWARE Ready.">
-<meta name="twitter:image" content="https://www.fiware.org/wp-content/uploads/FF_Marketplace_GenericBanner.png">
+<meta name="twitter:description" content="A series of exercises to demonstrate the correct use of individual FIWARE component.">
+<meta name="twitter:image" content="https://www.fiware.org/wp-content/uploads/FF_Banner_General.png">
 </div>
 
 This is a collection of **NGSI-LD** tutorials for the FIWARE system. Each tutorial consists of a series of exercises to
