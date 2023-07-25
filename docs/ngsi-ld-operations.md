@@ -413,6 +413,8 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Temperatu
 
 #### Response:
 
+> **Tip:** Use[jq](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq) to format the JSON responses in this tutorial
+
 TemperatureSensor `urn:ngsi-ld:TemperatureSensor:001` is returned as _normalized_ NGSI-LD. Additional metadata is
 returned because `options=sysAttrs`. By default, the `@context` is returned in the payload body (although this could be
 moved due to content negotiation if the `Accept:application/json` had been set). The full response is shown below:

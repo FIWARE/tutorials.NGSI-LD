@@ -361,6 +361,8 @@ curl -iX POST \
 
 #### Response:
 
+> **Tip:** Use[jq](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq) to format the JSON responses in this tutorial
+
 ```text
 HTTP/1.1 201 Created
 X-Subject-Token: d848eb12-889f-433b-9811-6a4fbf0b86ca

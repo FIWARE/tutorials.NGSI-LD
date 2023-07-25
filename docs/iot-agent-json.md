@@ -613,6 +613,8 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:te
 
 #### Response:
 
+> **Tip:** Use[jq](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq) to format the JSON responses in this tutorial
+
 ```json
 {
     "@context": "http://context/ngsi-context.jsonld",

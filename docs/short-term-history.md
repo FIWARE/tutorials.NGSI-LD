@@ -218,6 +218,8 @@ curl -L -X GET \
 
 #### Response:
 
+> **Tip:** Use[jq](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq) to format the JSON responses in this tutorial
+
 The response will look similar to the following:
 
 ```json
