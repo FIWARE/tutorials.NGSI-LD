@@ -16,7 +16,7 @@ Download Ubuntu LTS from [here](https://ubuntu.com/download/desktop)
 
 To set up the working environment, follow these steps:
 -   Open Virtualbox and create a new virtual machine.
--   Select the ISO image downloaded earlier (.iso file).
+-   Select the ISO image downloaded earlier (`.iso` file).
 -   Choose a username and a password. Check the "Guest Additions" option (to enable features such as shared clipboard and shared folders).
 -   Set the memory size to 2GB and allocate 2 CPUs.
 -   Create a virtual hard disk with a size of 25GB.
@@ -29,7 +29,7 @@ If you encounter the error _"Username is not in the sudoers file. This incident 
 -   Select the kernel with the "recovery mode" option and press Enter to open the Recovery menu.
 -   In the "Recovery menu", move over to the line "root Drop to root shell prompt", then press Enter.
 -   Use the root password and press Enter to start the "maintenance mode".
--   At this point, you should be at the root shell prompt. Change the system to be mounted as read/write by running the command: "mount -o rw,remount /"
+-   At this point, you should be at the root shell prompt. Change the system to be mounted as read/write by running the command: `mount -o rw,remount /`
 -   Execute the following command to add the user to the sudo group: "adduser username sudo" (use the actual username on the system).
 -   Type the exit command to go back to the "Recovery menu": "Exit"
 -   Use the Right Arrow to select `<Ok>` and press Enter.
