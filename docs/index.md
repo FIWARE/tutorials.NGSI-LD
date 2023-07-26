@@ -43,63 +43,27 @@ can choose which enablers are of interest to you.
 
 ## Prerequisites
 
-### Swagger <img src="https://static1.smartbear.co/swagger/media/assets/swagger_fav.png" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
+The NGSI-LD tutorials are designed to run under any Unix environment, the tested
+configuration and [GitPod](https://github.com/gitpod-io/gitpod) environment is currently based on Ubuntu 22.04.2 LTS.
+However, there may be some minor issues when running the tutorials directly on Windows
+machines or Apple M1 Silicon `amd64` systems, and the following
+[Virtual Box set-up](virtual-box.md) can be used when facing issues.
 
-The OpenAPI Specification (commonly known as Swagger) is an API description format for REST APIs. A Swagger spec allows
-you to describe an entire API (such as NGSI-LD itself) however in this tutorial we shall be concentrating on using
-Swagger to define data models.
 
-API specifications can be written in YAML or JSON. The format is easy to learn and readable to both humans and machines.
-The complete OpenAPI Specification can be found on GitHub:
-[OpenAPI 3.0 Specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md). This is
-important since we will need a well-defined structure to be able to generate `@context` files.
+### Docker and Docker Compose <img src="https://www.docker.com/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
-### Docker and Docker Compose <img src="./img/docker.ico" align="left"  height="36" width="36" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
-
-To keep things simple, all components will be run using [Docker](https://www.docker.com). **Docker** is a container
+To keep things simple all components will be run using [Docker](https://www.docker.com). **Docker** is a container
 technology which allows to different components isolated into their respective environments.
 
 -   To install Docker on Windows follow the instructions [here](https://docs.docker.com/docker-for-windows/).
--   To install Docker on Mac follow the instructions [here](https://docs.docker.com/docker-for-mac/).
--   To install Docker on Linux follow the instructions [here](https://docs.docker.com/install/).
+-   To install Docker on Mac/OS follow the instructions [here](https://docs.docker.com/docker-for-mac/).
+-   To install Docker on Unix follow the instructions [here](./docker-ubuntu.md).
 
-**Docker Compose** is a tool for defining and running multi-container Docker applications. A series of `*.yaml` files
-are used to configure the required services for the application. This means all container services can be brought up in
-a single command. Docker Compose is installed by default as part of Docker for Windows and Docker for Mac, however Linux
-users will need to follow the instructions found [here](https://docs.docker.com/compose/install/).
-
-You can check your current **Docker** and **Docker Compose** versions using the following commands:
-
-```bash
-docker-compose -v
-docker version
-```
-
-> **Important** In recent versions, `docker-compose` is already included as part of the main `docker` client, Please
-> ensure that you are using Docker version 20.10 or higher and Docker Compose 1.29 or higher and upgrade if necessary.
-> If you are unable to upgrade and stuck using an older version you can still run the tutorials by adding a `legacy`
-> parameter at the end the `./services` script commands e.g. `services start legacy`
-
-If using a linux distro with an outdated docker-compose, the files can be installed directly as shown:
-
-```bash
-sudo curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-```
-
-If you are using docker-compose in Ubuntu with VMware and faced the following error: _ERROR: Couldn't connect to Docker
-daemon at `http+docker://localunixsocket` - is it running?_
-
-It can be solved by owning the `/var/run/docker.sock` Unix socket as shown:
-
-```bash
-sudo chown $USER /var/run/docker.sock
-```
 
 ### Postman <img src="./img/postman.png" align="left"  height="25" width="35" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
 The tutorials which use HTTP requests supply a collection for use with the Postman utility. Postman is a testing
-framework for REST APIs. The tool can be downloaded from [www.postman.com](https://www.postman.com/downloads/). All the
+framework for REST APIs. The tool can be downloaded from [www.getpostman.com](https://www.getpostman.com). All the
 FIWARE Postman collections can be downloaded directly from the
 [Postman API network](https://explore.postman.com/team/3mM5EY6ChBYp9D).
 
@@ -109,12 +73,7 @@ FIWARE Postman collections can be downloaded directly from the
 development environments that spins up an automated dev environment for each task, in the cloud. It enables you to run
 the tutorials in a cloud development environment directly from your browser or your Desktop IDE.
 
-### Cygwin for Windows <img src="https://www.cygwin.com/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
-
-The tutorials start up their services using a simple Bash script. When working locally, Windows users should download
-[cygwin](http://www.cygwin.com/) to provide a command-line functionality similar to a Linux distribution on Windows.
-
-### Apache Maven <img src="./img/maven.png" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
+### Apache Maven <img src="https://maven.apache.org/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
 [Apache Maven](https://maven.apache.org/download.cgi) is a software project management and comprehension tool. Based on
 the concept of a project object model (POM), Maven can manage a project's build, reporting and documentation from a

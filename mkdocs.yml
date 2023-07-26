@@ -38,3 +38,5 @@ nav:
       - Cloud Edge Computing: edge-computing.md
   - Appendix:
       - Data Models: datamodels.md
+      - Installing Docker: docker-ubuntu.md
+      - Using Virtual Box: virtual-box.md
