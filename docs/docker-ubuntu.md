@@ -52,9 +52,6 @@ docker version
 docker compose version
 ```
 
-Please ensure that you are using Docker version 20.10 or higher and Docker Compose 1.29 or higher and upgrade if
-necessary.
-
 
 > **Important** In recent versions, `docker-compose` is already included as part of of the main `docker` client, Please
 > ensure that you are using Docker version 24.0.4 or higher and Docker Compose 2.29.1 or higher and upgrade if necessary.
