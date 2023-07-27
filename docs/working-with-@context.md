@@ -564,7 +564,7 @@ This example returns the data of `urn:ngsi-ld:Building:farm001`. The NGSI-LD `@c
 The full link header syntax can be seen below:
 
 ```text
-Link: <https://fiware.github.io/data-models/context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json
+Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json
 ```
 
 The standard HTTP `Link` header allows metadata (in this case the `@context`) to be passed in without actually touching
@@ -992,7 +992,7 @@ If another attribute is to be used, an additional `geoproperty` parameter is req
 ```bash
 curl -G -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities' \
-  -H 'Link: <https://fiware.github.io/data-models/context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  -H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -H 'Accept: application/json' \
   -d 'type=Building' \
   -d 'geometry=Point' \
