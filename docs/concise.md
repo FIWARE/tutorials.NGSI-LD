@@ -470,8 +470,8 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Temperatu
 
 #### Response:
 
-> **Tip:** Use [jq](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq) to format
-> the JSON responses in this tutorial. Pipe the result by appending
+> **Tip:** Use [jq](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq) to format the
+> JSON responses in this tutorial. Pipe the result by appending
 >
 > ```
 > | jq '.'

@@ -258,8 +258,8 @@ curl -X GET \
 
 #### Response:
 
-> **Tip:** Use [jq](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq) to format
-> the JSON responses in this tutorial. Pipe the result by appending
+> **Tip:** Use [jq](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq) to format the
+> JSON responses in this tutorial. Pipe the result by appending
 >
 > ```
 > | jq '.'
@@ -269,15 +269,15 @@ The response will look similar to the following:
 
 ```json
 {
-  "orionld version": "1.2.1",
-  "orion version": "1.15.0-next",
-  "uptime": "0 d, 0 h, 0 m, 31 s",
-  "git_hash": "8a0c02ee6d6554d485b232cd43f3f036674854d8",
-  "compile_time": "Wed May 17 11:08:59 UTC 2023",
-  "compiled_by": "root",
-  "compiled_in": "",
-  "release_date": "Wed May 17 11:08:59 UTC 2023",
-  "doc": "https://fiware-orion.readthedocs.org/en/master/"
+    "orionld version": "1.2.1",
+    "orion version": "1.15.0-next",
+    "uptime": "0 d, 0 h, 0 m, 31 s",
+    "git_hash": "8a0c02ee6d6554d485b232cd43f3f036674854d8",
+    "compile_time": "Wed May 17 11:08:59 UTC 2023",
+    "compiled_by": "root",
+    "compiled_in": "",
+    "release_date": "Wed May 17 11:08:59 UTC 2023",
+    "doc": "https://fiware-orion.readthedocs.org/en/master/"
 }
 ```
 
@@ -358,10 +358,7 @@ This means that the actual `@context` is:
 
 ```json
 {
-    "@context": [
-        "http://context/ngsi-context.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
-    ]
+    "@context": ["http://context/ngsi-context.jsonld", "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"]
 }
 ```
 
@@ -419,8 +416,8 @@ The core `@context` supplies the vocabulary for creating **NGSI-LD** data entiti
 (which should be familiar to anyone who has used NGSI v2) are mapped to the standard **JSON-LD** `@id` and `@type`
 [keywords](https://w3c.github.io/json-ld-syntax/#syntax-tokens-and-keywords). The `type` should refer to an included
 data model, in this case `Building` is being used as a short name for the included URN
-`https://uri.fiware.org/ns/dataModels#Building`. Thereafter, each _property_ is defined as a JSON element containing
-two attributes, a `type` and a `value`.
+`https://uri.fiware.org/ns/dataModels#Building`. Thereafter, each _property_ is defined as a JSON element containing two
+attributes, a `type` and a `value`.
 
 The `type` of a _property_ attribute must be one of the following:
 
@@ -613,10 +610,7 @@ files explicitly as element in the array of `@context` sent. The response is nor
         "type": "GeoProperty",
         "value": {
             "type": "Point",
-            "coordinates": [
-                13.3505,
-                52.5144
-            ]
+            "coordinates": [13.3505, 52.5144]
         }
     },
     "name": {
@@ -753,9 +747,8 @@ additional **JSON-LD** information within it such as the following:
 
 This indicates the `category` in this **JSON-LD** response holds an enumerated value (`@vocab`) and that the value
 `barn` is defined by a full URL. This differs compared to the `ngsi-context.jsonld` `@context` file where all we can say
-is that there is an attribute with the full URL `https://uri.fiware.org/ns/dataModels#category`, because in a
-normalized **NGSI-LD** response the `category` attribute would hold a JSON object (with a `type` and `value`) not a
-string.
+is that there is an attribute with the full URL `https://uri.fiware.org/ns/dataModels#category`, because in a normalized
+**NGSI-LD** response the `category` attribute would hold a JSON object (with a `type` and `value`) not a string.
 
 ### Using an alternative `@context`
 

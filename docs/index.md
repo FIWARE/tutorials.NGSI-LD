@@ -43,12 +43,10 @@ can choose which enablers are of interest to you.
 
 ## Prerequisites
 
-The NGSI-LD tutorials are designed to run under any Unix environment, the tested
-configuration and [GitPod](https://github.com/gitpod-io/gitpod) environment is currently based on Ubuntu 22.04.2 LTS.
-However, there may be some minor issues when running the tutorials directly on Windows
-machines or Apple M1 Silicon `amd64` systems, and the following
-[Virtual Box set-up](virtual-box.md) can be used when facing issues.
-
+The NGSI-LD tutorials are designed to run under any Unix environment, the tested configuration and
+[GitPod](https://github.com/gitpod-io/gitpod) environment is currently based on Ubuntu 22.04.2 LTS. However, there may
+be some minor issues when running the tutorials directly on Windows machines or Apple M1 Silicon `amd64` systems, and
+the following [Virtual Box set-up](virtual-box.md) can be used when facing issues.
 
 ### Docker and Docker Compose <img src="https://www.docker.com/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
@@ -58,7 +56,6 @@ technology which allows to different components isolated into their respective e
 -   To install Docker on Windows follow the instructions [here](https://docs.docker.com/docker-for-windows/).
 -   To install Docker on Mac/OS follow the instructions [here](https://docs.docker.com/docker-for-mac/).
 -   To install Docker on Unix follow the instructions [here](./docker-ubuntu.md).
-
 
 ### Postman <img src="./img/postman.png" align="left"  height="25" width="35" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
@@ -82,8 +79,9 @@ Scala code into a JAR file.
 
 ### JQ <img src="https://jqlang.github.io/jq/jq.png" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
-[jq](https://jqlang.github.io/jq/) is a lightweight and flexible command-line JSON processor which can be used
-to format the JSON responses received from the context broker and other FIWARE components. More information about how to use jq can be found [here](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq)
+[jq](https://jqlang.github.io/jq/) is a lightweight and flexible command-line JSON processor which can be used to format
+the JSON responses received from the context broker and other FIWARE components. More information about how to use jq
+can be found [here](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq)
 
 ## Data models
 

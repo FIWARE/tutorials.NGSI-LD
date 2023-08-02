@@ -204,9 +204,9 @@ and thermostat.
 ![](https://fiware.github.io/tutorials.Subscriptions/img/fmis.png)
 
 Remove some hay from the barn, update the thermostat and open the device monitor page at
-`http://localhost:3000/device/monitor` and start a **Tractor**. This can be done by
-selecting an appropriate command from the drop-down list and pressing the `send` button. The stream of measurements
-coming from the devices can then be seen on the same page.
+`http://localhost:3000/device/monitor` and start a **Tractor**. This can be done by selecting an appropriate command
+from the drop-down list and pressing the `send` button. The stream of measurements coming from the devices can then be
+seen on the same page.
 
 ## Setting up Subscriptions
 
@@ -312,8 +312,8 @@ curl -X GET \
 
 #### Response:
 
-> **Tip:** Use [jq](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq) to format
-> the JSON responses in this tutorial. Pipe the result by appending
+> **Tip:** Use [jq](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq) to format the
+> JSON responses in this tutorial. Pipe the result by appending
 >
 > ```
 > | jq '.'
