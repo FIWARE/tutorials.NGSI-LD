@@ -284,7 +284,7 @@ This example shows the last 3 changes from the entity `urn:ngsi-ld:Animal:cow002
 entity attribute, send a GET request to `../temporal/entities/<entity-id>`, the `lastN` parameter restricts the result
 to N values.
 
-#### :one: Request:
+#### 1 Request:
 
 ```bash
 curl -G -X GET 'http://localhost:8080/temporal/entities/urn:ngsi-ld:Animal:cow002' \
@@ -303,6 +303,10 @@ The response is a single entity - if an attribute is changing (like `heartRate`)
 request is returning full normalized JSON-LD for every value, which includes _properties of properties_, so you can see
 which Devices have the provided various readings and which units are being used. Every value has an associated
 `instanceId` which can be used for further manipulation of the individual entries where supported.
+
+> **TIP:** if the response is empty, you probably haven't started generating
+> any context data yet. Remember to start up the tractor first as described
+> [here](#generating-context-data)
 
 In the example below, `heartRate` and `location` have been provided by a single Device.
 
