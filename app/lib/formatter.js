@@ -5,7 +5,6 @@ const port = process.env.WEB_APP_PORT || '3000';
 const dataModelContext =
     process.env.IOTA_JSON_LD_CONTEXT || 'http://localhost:' + port + '/data-models/ngsi-context.jsonld';
 
-
 //
 // Entity types are typically title cased following Schema.org
 //
@@ -54,7 +53,7 @@ function formatResponse(req, inputData, attributeValueCallback) {
     const mappedAttributes = parseMapping(req.params.mapping);
     const regex = /:.*/gi;
     const type = req.params.id.replace('urn:ngsi-ld:', '').replace(regex, '');
-    const links = req.headers.link ? parseLinks(req.headers.link) : {context: dataModelContext};
+    const links = req.headers.link ? parseLinks(req.headers.link) : { context: dataModelContext };
     const attrs = (req.query.attrs || '').split(',');
 
     const response = {

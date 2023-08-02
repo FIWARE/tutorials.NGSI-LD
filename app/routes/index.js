@@ -123,11 +123,10 @@ router.get('/app/monitor', function (req, res) {
 router.get('/device/history', function (req, res) {
     const stores = [];
     if (process.env.CRATE_DB_SERVICE_URL || process.env.STH_COMET_SERVICE_URL) {
-        
         for (let i = 1; i <= numberOfPigs; i++) {
             stores.push({
-                name: ('Device' + i.toString().padStart(3, '0')),
-                href: ('history/' + i.toString().padStart(3, '0'))
+                name: 'Device' + i.toString().padStart(3, '0'),
+                href: 'history/' + i.toString().padStart(3, '0')
             });
         }
     }
