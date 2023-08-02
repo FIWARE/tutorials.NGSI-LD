@@ -3,6 +3,8 @@
 
 <h4> Handling Docker Errors </h4>
 
+<h5> Deleting old volumes</h5>
+
 When encountering issues with creating or running containers due to old volumes that could not be deleted properly, try running the following commands:
 
 1- List the existing Docker volumes using the following command: 
@@ -20,6 +22,23 @@ Options may be added to this last command:
 --force , -f    : Do not prompt for confirmation
 
 If the response indicated "Total reclaimed space: 0B" and the old volumes are not removed as expected, try restarting docker.
+
+<h5> Deleting Networks </h5>
+
+When running the tutorial using the command ./services start, you might encounter an issue with deleting an old network. In such cases, you can attempt
+to delete the network using the following command:
+
+docker network prune
+
+However,it may not work if a running container is still attached to a network. To check the existing networks use the following command:
+
+docker network ls
+
+To resolve this, you can stop the running containers using the following command: 
+
+docker stop $(docker ps -a -q)
+
+This will allow you to proceed with network pruning and ensure a smooth execution of the tutorial.
 
 <h4> Handling "Request Timed Out" Error </h4>
 
