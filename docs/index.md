@@ -43,11 +43,13 @@ can choose which enablers are of interest to you.
 
 ## Prerequisites
 
-The NGSI-LD tutorials are designed to run under any Unix environment, the tested
-configuration and [GitPod](https://github.com/gitpod-io/gitpod) environment is currently based on Ubuntu 22.04.2 LTS.
-However, there may be some minor issues when running the tutorials directly on Windows
-machines or Apple M1 Silicon `amd64` systems, and the following
-[Virtual Box set-up](virtual-box.md) can be used when facing issues.
+The NGSI-LD tutorials are designed to run under any Unix environment. However, it is possible to run the tutorials on Windows using WSL.
+
+### WSL
+
+The Windows Subsystem for Linux (WSL) enables developers to  install a Linux distribution within a Windows environment. This enables users to access and utilize Linux applications,  and the powerful Bash command-line tools directly on their Windows operating system.
+
+To install WSL on windows follow the instructions [here](https://learn.microsoft.com/en-us/windows/wsl/install).
 
 
 ### Docker and Docker Compose <img src="https://www.docker.com/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
@@ -58,6 +60,12 @@ technology which allows to different components isolated into their respective e
 -   To install Docker on Windows follow the instructions [here](https://docs.docker.com/docker-for-windows/).
 -   To install Docker on Mac/OS follow the instructions [here](https://docs.docker.com/docker-for-mac/).
 -   To install Docker on Unix follow the instructions [here](./docker-ubuntu.md).
+
+#### Note for Ubuntu users
+
+##### Important: Avoid Using "apt get install docker".
+
+If Docker installation was done using the command "apt get install docker", many issues could be encountered when running the tutorials later on.
 
 
 ### Postman <img src="./img/postman.png" align="left"  height="25" width="35" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
@@ -73,12 +81,6 @@ FIWARE Postman collections can be downloaded directly from the
 development environments that spins up an automated dev environment for each task, in the cloud. It enables you to run
 the tutorials in a cloud development environment directly from your browser or your Desktop IDE.
 
-### Apache Maven <img src="https://maven.apache.org/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
-
-[Apache Maven](https://maven.apache.org/download.cgi) is a software project management and comprehension tool. Based on
-the concept of a project object model (POM), Maven can manage a project's build, reporting and documentation from a
-central piece of information. Maven can be used to define and download our dependencies and to build and package Java or
-Scala code into a JAR file.
 
 ### JQ <img src="https://jqlang.github.io/jq/jq.png" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
@@ -94,6 +96,15 @@ attributes used can be found in the following:
     <a href="https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html">Tutorial-specific Data Models</a>.
 -   <img src="./img/json-ld.ico" align="center" height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent" alt="NGSI-LD" />
     <a href="https://smartdatamodels.org">Smart Data Models</a>.
+
+### Tested configuration
+
+- Windows 11
+- WSL
+  * Version: 1.2.5.0
+  * Distribution: Ubuntu
+- Docker 20.10.24
+- Docker compose v2.17.2
 
 ## List of Tutorials
 
