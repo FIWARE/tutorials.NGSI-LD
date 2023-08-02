@@ -1,0 +1,41 @@
+# <span style='color:#d6604d'>NGSI-LD</span> Step-by-Step
+
+[![Documentation](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/documentation.svg)](https://fiware-tutorials.rtfd.io)
+[![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.07.01_60/gs_cim009v010701p.pdf)
+[![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/)
+[![Support badge](https://img.shields.io/badge/tag-fiware-orange.svg?logo=stackoverflow)](https://stackoverflow.com/questions/tagged/fiware)
+
+<div id="social-meta">
+<meta property="og:title" content="Troubleshooting section">
+</div>
+  This Section adresses issues that Windows 11 users may encounter during the tutorials. It provides also a step-by-step solutions to help overcome
+  any roadblocks and to ensure a smooth experience when running the tutorials.
+    
+
+<h3>Troubleshooting</h3>
+
+## Handling Docker Errors
+
+When encountering issues with creating or running containers due to old volumes that could not be deleted properly, try running the following commands:
+
+1- List the existing Docker volumes using the following command: 
+docker volume ls
+
+2- Before deleting the old volumes, stop the container(s) using the following command:
+docker-compose down
+
+3- Remove the all the old volumes using the following command:
+docker volume prune 
+
+Options may be added to this last command:
+--filter filter : Provide filter values (e.g. 'label=<label>')
+--force , -f    : Do not prompt for confirmation
+
+If the response indicated "Total reclaimed space: 0B" and the old volumes are not removed as expected, try restarting docker.
+
+## Handling "Request Timed Out" Error
+
+During the tutorials, the error message "request timed out" could be sometimes encountered when making HTTP requests. This error typically occurs when the HTTP client is unable to receive a response from the server within a specified time limit. One common cause of this issue is a slow network connection. In this case, try the following solutions:
+
+- Retry the request because the timeout may be temporary due to network fluctuations.
+- Check the network connection.
