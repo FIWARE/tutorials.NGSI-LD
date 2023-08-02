@@ -1030,7 +1030,8 @@ The concise format can also be used when generating a notification from a subscr
 #### 19 Request:
 
 ```bash
-curl -X POST 'http://{{orion}}/ngsi-ld/v1/subscriptions/' \
+curl -iX POST
+ 'http://{{orion}}/ngsi-ld/v1/subscriptions/' \
 -H 'Content-Type: application/ld+json' \
 -H 'NGSILD-Tenant: openiot' \
 --data-raw '{
@@ -1103,7 +1104,8 @@ It is also possible to send GeoJSON notifications if the `"accept": "application
 this with `"format": "concise"` results in a `FeatureCollection` with properties in concise format.
 
 ```bash
-curl -X POST 'http://{{orion}}/ngsi-ld/v1/subscriptions/' \
+curl -iX POST
+ 'http://{{orion}}/ngsi-ld/v1/subscriptions/' \
 -H 'Content-Type: application/ld+json' \
 -H 'NGSILD-Tenant: openiot' \
 --data-raw '{
