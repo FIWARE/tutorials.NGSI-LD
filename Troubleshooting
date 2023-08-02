@@ -15,6 +15,7 @@ docker-compose down
 docker volume prune 
 
 Options may be added to this last command:
+
 --filter filter : Provide filter values (e.g. 'label=<label>')
 --force , -f    : Do not prompt for confirmation
 
