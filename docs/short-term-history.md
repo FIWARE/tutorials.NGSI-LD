@@ -428,7 +428,7 @@ curl -G -X GET 'http://localhost:8080/temporal/entities/urn:ngsi-ld:Animal:cow00
 
 #### Response:
 
-The response is a single entity with a single attribute array holding values of`heartRate`:
+The response is a single entity with a single attribute array holding values of `heartRate`:
 
 ```json
 {
@@ -495,7 +495,7 @@ curl -G -X GET 'http://localhost:8080/temporal/entities/urn:ngsi-ld:Animal:cow00
 #### Response:
 
 The response is a single entity with an array of tuples for each attribute which has an
-`observedAt`_property-of-a-property_. In this case `heartRate` and `location` are returned. As can be seen, the first
+`observedAt` _property-of-a-property_. In this case `heartRate` and `location` are returned. As can be seen, the first
 element of each tuple corresponds to the historic `value` of the attribute. The `type` of each attribute is also
 returned.
 
@@ -530,8 +530,20 @@ against `modifiedAt`.
 
 #### 4 Request:
 
-The following query is requesting data about the bulls within the herd. Because the `sex`attribute is unchanging,
+The following query is requesting data about the bulls within the herd. Because the `sex` attribute is unchanging,
 `timeproperty=modifiedAt` must be used.
+
+<blockquote>
+<p><strong>TIP:</strong> Throughout this tutorial
+
+<code style="color: #777;">&lt;current_time&gt;</code> needs to be replace with
+<code style="color: #777;" id="current_time">XXXX</code> in ISO8601 format.
+</p>
+</blockquote>
+<script>
+    const date = new Date();
+    document.getElementById("current_time").innerHTML = date.toISOString();
+</script>
 
 ```bash
 curl -G -X GET 'http://localhost:8080/temporal/entities/' \
@@ -545,12 +557,13 @@ curl -G -X GET 'http://localhost:8080/temporal/entities/' \
   -d 'options=count' \
   -d 'attrs=sex,heartRate' \
   -d 'timerel=before' \
-  -d 'timeAt=<current_time>' \
+  -d 'timeAt=<current_time>'
 
 ```
 
 `timerel=before` and `timeAt=<current_time>` are required parameters. `<current_time>` is a date-time expressed in UTC
 format like `2021-09-16T11:00Z` - seconds and milliseconds are optional.
+
 
 #### Response:
 
