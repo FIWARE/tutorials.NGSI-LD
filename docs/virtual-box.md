@@ -27,14 +27,14 @@ If you encounter the error _"Username is not in the sudoers file. This incident 
 execute a `sudo` command, follow these steps to resolve the issue:
 
 -   Restart your virtual machine. While restaring, press the Shift key for a few seconds to get the Grub boot menu.
--   Using the Down Arrow, select "Advanced options for Ubuntu" and press Enter.
+-   Using the Down Arrow, select _"Advanced options for Ubuntu"_ and press Enter.
 -   Select the kernel with the "recovery mode" option and press Enter to open the Recovery menu.
--   In the "Recovery menu", move over to the line "root Drop to root shell prompt", then press Enter.
--   Use the root password and press Enter to start the "maintenance mode".
+-   In the _"Recovery menu"_, move over to the line _"root Drop to root shell prompt"_, then press Enter.
+-   Use the root password and press Enter to start the _"maintenance mode"_.
 -   At this point, you should be at the root shell prompt. Change the system to be mounted as read/write by running the
     command: `mount -o rw,remount /`
--   Execute the following command to add the user to the sudo group: "adduser username sudo" (use the actual username on
-    the system).
--   Type the exit command to go back to the "Recovery menu": "Exit"
+-   Execute the following command to add the user to the sudo group: `adduser <username> sudo` (use the actual username
+    on the system).
+-   Type the exit command to go back to the _"Recovery menu": "Exit"_
 -   Use the Right Arrow to select `<Ok>` and press Enter.
 -   Press `<Ok>` to continue with normal boot sequence.
