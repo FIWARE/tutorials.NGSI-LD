@@ -534,16 +534,12 @@ The following query is requesting data about the bulls within the herd. Because 
 `timeproperty=modifiedAt` must be used.
 
 <blockquote>
-<p><strong>TIP:</strong> Throughout this tutorial
-
+<p>
 <code style="color: #777;">&lt;current_time&gt;</code> needs to be replaced with
-<code style="color: #777;" id="current_time">XXXX</code> in ISO8601 format.
+<code style="color: #777;" class="current_time">2023-08-03T12:00:00.000Z</code> in ISO8601 format.
 </p>
 </blockquote>
-<script>
-    const date = new Date();
-    document.getElementById("current_time").innerHTML = date.toISOString();
-</script>
+
 
 ```bash
 curl -G -X GET 'http://localhost:8080/temporal/entities/' \
@@ -685,6 +681,13 @@ The equivalent simplified format can be retrived by setting `options=temporalVal
 The following query is requesting data about the bulls within the herd. Because the `sex`attribute is unchanging,
 `timeproperty=modifiedAt` must be used.
 
+<blockquote>
+<p>
+<code style="color: #777;">&lt;current_time&gt;</code> needs to be replaced with
+<code style="color: #777;" class="current_time">2023-08-03T12:00:00.000Z</code> in ISO8601 format.
+</p>
+</blockquote>
+
 ```bash
 curl -G -X GET 'http://localhost:8080/temporal/entities/' \
   -H 'NGSILD-Tenant: openiot' \
@@ -751,6 +754,13 @@ the `pageSize=2` parameter means that only two entities are returned:
 
 #### 6 Request:
 
+<blockquote>
+<p>
+<code style="color: #777;">&lt;current_time&gt;</code> needs to be replaced with
+<code style="color: #777;" class="current_time">2023-08-03T12:00:00.000Z</code> in ISO8601 format.
+</p>
+</blockquote>
+
 ```bash
 curl -G -I -X GET 'http://localhost:8080/temporal/entities/' \
   -H 'NGSILD-Tenant: openiot' \
@@ -795,6 +805,13 @@ the farm and that the next entity to be returned would be `urn:ngsi-ld:Animal:pi
 Making the same request with an additional `pageAnchor` parameter will retrieve the next two entities:
 
 #### 7 Request:
+
+<blockquote>
+<p>
+<code style="color: #777;">&lt;current_time&gt;</code> needs to be replaced with
+<code style="color: #777;" class="current_time">2023-08-03T12:00:00.000Z</code> in ISO8601 format.
+</p>
+</blockquote>
 
 ```bash
 curl -G -X GET 'http://localhost:8080/temporal/entities/' \
@@ -957,6 +974,13 @@ also returns the associated animal entity that wears it.
 
 #### 9 Request:
 
+<blockquote>
+<p>
+<code style="color: #777;">&lt;current_time&gt;</code> needs to be replaced with
+<code style="color: #777;" class="current_time">2023-08-03T12:00:00.000Z</code> in ISO8601 format.
+</p>
+</blockquote>
+
 ```bash
 curl -G -X GET 'http://localhost:8080/temporal/entities/' \
   -H 'NGSILD-Tenant: openiot' \
@@ -1028,6 +1052,13 @@ from a fixed point, and also returns the associated animal entity that wears it.
 
 #### 10 Request:
 
+<blockquote>
+<p>
+<code style="color: #777;">&lt;current_time&gt;</code> needs to be replaced with
+<code style="color: #777;" class="current_time">2023-08-03T12:00:00.000Z</code> in ISO8601 format.
+</p>
+</blockquote>
+
 ```bash
 curl -G -X GET 'http://localhost:8080/temporal/entities/' \
   -H 'NGSILD-Tenant: openiot' \
@@ -1092,3 +1123,18 @@ The response returns the requested attributes in simplified temporal format.
     }
 ]
 ```
+
+
+<script>
+    function isoDate(){
+        const date = new Date();
+        const timeElts = document.getElementsByClassName("current_time");
+        console.log(timeElts)
+
+        for (let i = 0; i < timeElts.length; i++) {
+            timeElts[i].innerHTML = date.toISOString();
+        }
+    }
+    isoDate();
+    setInterval(isoDate, 5000)
+</script>
