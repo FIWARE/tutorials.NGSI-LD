@@ -110,9 +110,9 @@ repository:
 ./services orion|scorpio
 ```
 
-> :information_source: **Note:** If you want to clean up and start over again you can do so with the following command:
+> **Note:** If you want to clean up and start over again you can do so with the following command:
 >
-> ```bash
+> ```
 > ./services stop
 > ```
 
@@ -536,7 +536,7 @@ The following query is requesting data about the bulls within the herd. Because 
 <blockquote>
 <p><strong>TIP:</strong> Throughout this tutorial
 
-<code style="color: #777;">&lt;current_time&gt;</code> needs to be replace with
+<code style="color: #777;">&lt;current_time&gt;</code> needs to be replaced with
 <code style="color: #777;" id="current_time">XXXX</code> in ISO8601 format.
 </p>
 </blockquote>

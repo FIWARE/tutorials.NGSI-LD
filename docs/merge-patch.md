@@ -209,7 +209,7 @@ It has been described in a previous tutorial.
 Before you start, you should ensure that you have obtained or built the necessary Docker images locally. Please clone
 the repository and create the necessary images by running the commands as shown:
 
-```console
+```bash
 git clone https://github.com/FIWARE/tutorials.Merge-Patch-Put.git
 cd tutorials.Merge-Patch-Put
 git checkout NGSI-LD
@@ -221,15 +221,15 @@ Thereafter, all services can be initialized from the command-line by running the
 [services](https://github.com/FIWARE/tutorials.Merge-Patch-Put/blob/NGSI-LD/services) Bash script provided within the
 repository:
 
-```console
+```bash
 ./services start
 ```
 
 This start-up script also preloads two City entities into the context broker.
 
-> :information_source: **Note:** If you want to clean up and start over again you can do so with the following command:
+> **Note:** If you want to clean up and start over again you can do so with the following command:
 >
-> ```console
+> ```
 > ./services stop
 > ```
 
@@ -242,7 +242,7 @@ types of **PATCH** operation can be distinguished by reading the `Accept-Patch` 
 
 #### 1 Request:
 
-```console
+```bash
 curl -iX OPTIONS \
     'http://localhost:1026/ngsi-ld/v1/entities/'
 ```
@@ -260,7 +260,7 @@ Content-Length: 0
 
 #### 2 Request:
 
-```console
+```bash
 curl -iX OPTIONS \
     'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001'
 ```
@@ -281,7 +281,7 @@ Content-Length: 0
 
 #### 3 Request:
 
-```console
+```bash
 curl -iX OPTIONS \
     'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001/attrs'
 ```
@@ -302,7 +302,7 @@ Content-Length: 0
 
 #### 4 Request:
 
-```console
+```bash
 curl -iX OPTIONS \
     'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001/attrs/temperature'
 ```
@@ -329,7 +329,7 @@ the entities have changed after each operation.
 
 #### 5 Request:
 
-```console
+```bash
 curl -L -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -393,7 +393,7 @@ curl -L -X GET \
 
 #### 6 Request:
 
-```console
+```bash
 curl -L -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:002' \
 -H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -448,7 +448,7 @@ normalized format, but concise format is also supported:
 
 #### 7A Request:
 
-```console
+```bash
 curl -L -X PATCH \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -473,7 +473,7 @@ curl -L -X PATCH \
 
 #### 7B Request:
 
-```console
+```bash
 curl -L -X PATCH \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -495,7 +495,7 @@ curl -L -X PATCH \
 Re-retrieving the `urn:ngsi-ld:City:001`, you can see that the `location` and `temperature` have changed, but all other
 _Properties_ and _Properties of Properties_ such as `unitCode` ands `observedAt` remain unchanged:
 
-```console
+```bash
 curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json'
@@ -560,7 +560,7 @@ a concise _Relationship_ or a _LanguageProperty_ include `object` or `languageMa
 
 #### 9A Normalized Request:
 
-```console
+```bash
 curl -L -X PATCH \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -581,7 +581,7 @@ curl -L -X PATCH \
 
 #### 9B Concise Request:
 
-```console
+```bash
 curl -L -X PATCH \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -603,7 +603,7 @@ curl -L -X PATCH \
 Re-retrieving the `urn:ngsi-ld:City:001`, you can see that the `temperature` have changed, and the new `precision`
 _Property of a Property_ has been inserted.
 
-```console
+```bash
 curl -G -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -641,7 +641,7 @@ simultaneously.
 
 #### 11 Request:
 
-```console
+```bash
 curl -L -X PATCH \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:002' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -665,7 +665,7 @@ curl -L -X PATCH \
 Re-retrieving the `urn:ngsi-ld:City:002`, you can see that the `temperature` has been removed and the new `humidity`
 _Property_ has been inserted and the `name` updated.
 
-```console
+```bash
 curl -G -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:002' \
 -H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -727,7 +727,7 @@ Using concise format, it is necessary to distinguish between atttibutes of a JSO
 In this case the use of `value` shows it is the `addressLocality` and `postalCode` of the `address` Object which is to
 be updated and that `verified` the _Property of a Property_ is a metadata attribute.
 
-```console
+```bash
 curl -L -X PATCH \
     'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -747,7 +747,7 @@ curl -L -X PATCH \
 
 Once again retrieving the `urn:ngsi-ld:City:001`, you can see that the `address` and its properties have been updated.
 
-```console
+```bash
 curl -G -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -788,7 +788,7 @@ broker.
 
 #### 16 Request:
 
-```console
+```bash
 curl -G -X PATCH \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -817,7 +817,7 @@ Once again retrieving the `urn:ngsi-ld:City:001` entity, you can see that the at
 noted that the _Relationship_ `runBy` is still defined as a _Relationship_, it is only the `object` value that has been
 changed.
 
-```console
+```bash
 curl -G -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -870,7 +870,7 @@ The following example updates both the location and temperature attributes
 
 #### 18 Request:
 
-```console
+```bash
 curl -G -X PATCH \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -894,7 +894,7 @@ time the timestamp has also changed.
 
 #### 19 Request:
 
-```console
+```bash
 curl -G -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -935,7 +935,7 @@ support entities with LanguageProperties, it is necessary to be able to merge a 
 
 #### 20 Request:
 
-```console
+```bash
 curl -G -X PATCH \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -951,7 +951,7 @@ curl -G -X PATCH \
 
 #### 21 Request:
 
-```console
+```bash
 curl -G -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -1001,7 +1001,7 @@ As usual, both normalized and concise formats are supported.
 
 #### 22A Normalized Request:
 
-```console
+```bash
 curl -G -X PUT \
  'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:002' \
 -H 'Content-Type: application/json' \
@@ -1038,7 +1038,7 @@ curl -G -X PUT \
 
 #### 22B Concise Request:
 
-```console
+```bash
 curl -G -X PUT \
  'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:002' \
 -H 'Content-Type: application/json' \
