@@ -304,9 +304,8 @@ request is returning full normalized JSON-LD for every value, which includes _pr
 which Devices have the provided various readings and which units are being used. Every value has an associated
 `instanceId` which can be used for further manipulation of the individual entries where supported.
 
-> **TIP:** if the response is empty, you probably haven't started generating
-> any context data yet. Remember to start up the tractor first as described
-> [here](#generating-context-data)
+> **TIP:** if the response is empty, you probably haven't started generating any context data yet. Remember to start up
+> the tractor first as described [here](#generating-context-data)
 
 In the example below, `heartRate` and `location` have been provided by a single Device.
 
