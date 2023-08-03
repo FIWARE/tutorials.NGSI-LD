@@ -40,4 +40,5 @@ nav:
       - Data Models: datamodels.md
       - Installing Docker: docker-ubuntu.md
       - Using Virtual Box: virtual-box.md
+      - Using WSL: wsl.md
       - Troubleshooting: troubleshooting.md
