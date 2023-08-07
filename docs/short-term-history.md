@@ -18,7 +18,7 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 
 > "I could dance with you till the cows come home. Better still, I'll dance with the cows and you come home."
 >
-> — Groucho Marx (Duck Soup)\ `
+> — Groucho Marx (Duck Soup)
 
 NGSI-LD introduces a standardized mechanism for persisting and retrieving historical context data. Conventionally,
 context brokers only deal with current context - they have no memory, however NGSI-LD context brokers can be extended to
