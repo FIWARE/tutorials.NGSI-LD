@@ -23,6 +23,27 @@ This is a collection of **NGSI-LD** tutorials for the FIWARE system. Each tutori
 demonstrate the correct use of individual FIWARE components and shows the flow of context data within a simple Smart
 Solution either by connecting to a series of dummy IoT devices or manipulating the context directly or programmatically.
 
+<blockquote>
+<h3>Should I use NGSI-LD or NGSI-v2?</h3>
+<p>
+    FIWARE offers two flavours of the NGSI interfaces:
+</p>
+<ul>
+    <li><b style="color:#777;">NGSI-v2</b> offers JSON based interoperability used in individual Smart Systems</li>
+    <li><b style="color:#777;">NGSI-LD</b> offers JSON-LD based interoperability used for Federations and Data Spaces</li>
+</ul>
+<p>
+    Of the two, NGSI-LD is more complex and relies on the introduction of a JSON-LD <code style="color:#777;">@context</code>. A full understanding of JSON-LD (Linked Data) is required to obtain the benefits of NGSI-LD , which allows for interoperability across apps and
+    organisations.
+</p>
+<p>
+    In general, you should use NGSI-LD when creating a data space or introducing a system of systems aproach.
+</p>
+<p>
+    Use NGSI-v2 for simpler isolated systems. More information about NGSI-v2 can be found <a href="https://fiware-tutorials.readthedocs.io/">here</a>
+</p>
+</blockquote>
+
 <h3>How to Use</h3>
 
 Each tutorial is a self-contained learning exercise designed to teach the developer about a single aspect of FIWARE. A
