@@ -53,3 +53,15 @@ limit. One common cause of this issue is a slow network connection. In this case
 
 -   Retry the request because the timeout may be temporary due to network fluctuations.
 -   Check the network connection.
+
+## Managing Insufficient Space in Ubuntu VM
+
+Users operating Ubuntu on a virtual machine may encounter the warning _"Low Disk Space on 'Filesystem root'. The volume
+'Filesystem root' has only 0GB disk space remaining"_, particularly when running resource-intensive tutorials (such as
+301 and 302). If you face this issue, you can consider the following options:
+
+-   Increase your disk size in VirtualBox.
+-   Create a new virtual machine in VirtualBox (Note: With this option, the new VM will not have access to the data
+    saved on your previous VM).
+-   Run the tutorials on [Gitpod](https://github.com/gitpod-io/gitpod). This cloud-based environment does not consume
+    your local resources.

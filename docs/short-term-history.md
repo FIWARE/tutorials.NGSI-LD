@@ -494,10 +494,9 @@ curl -G -X GET 'http://localhost:8080/temporal/entities/urn:ngsi-ld:Animal:cow00
 
 #### Response:
 
-The response is a single entity with an array of tuples for each attribute which has an
-`observedAt` _property-of-a-property_. In this case `heartRate` and `location` are returned. As can be seen, the first
-element of each tuple corresponds to the historic `value` of the attribute. The `type` of each attribute is also
-returned.
+The response is a single entity with an array of tuples for each attribute which has an `observedAt`
+_property-of-a-property_. In this case `heartRate` and `location` are returned. As can be seen, the first element of
+each tuple corresponds to the historic `value` of the attribute. The `type` of each attribute is also returned.
 
 ```json
 {
@@ -540,7 +539,6 @@ The following query is requesting data about the bulls within the herd. Because 
 </p>
 </blockquote>
 
-
 ```bash
 curl -G -X GET 'http://localhost:8080/temporal/entities/' \
   -H 'NGSILD-Tenant: openiot' \
@@ -559,7 +557,6 @@ curl -G -X GET 'http://localhost:8080/temporal/entities/' \
 
 `timerel=before` and `timeAt=<current_time>` are required parameters. `<current_time>` is a date-time expressed in UTC
 format like `2021-09-16T11:00Z` - seconds and milliseconds are optional.
-
 
 #### Response:
 
@@ -700,7 +697,7 @@ curl -G -X GET 'http://localhost:8080/temporal/entities/' \
   -d 'options=temporalValues' \
   -d 'attrs=sex,heartRate' \
   -d 'timerel=before' \
-  -d 'timeAt=<current_time>' 
+  -d 'timeAt=<current_time>'
 
 ```
 
@@ -1123,7 +1120,6 @@ The response returns the requested attributes in simplified temporal format.
     }
 ]
 ```
-
 
 <script>
     function isoDate(){
