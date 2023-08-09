@@ -156,9 +156,14 @@ repository. Please clone the repository and create the necessary images by runni
 git clone https://github.com/FIWARE/tutorials.CRUD-Operations.git
 cd tutorials.CRUD-Operations
 git checkout NGSI-LD
-
-./services [orion|scorpio]
+./services create
 ```
+
+To start the system with your preferred context broker, run the following command:
+
+````bash
+./services [orion|scorpio|stellio]
+``
 
 > **Note:** If you want to clean up and start over again you can do so with the following command:
 >
@@ -204,7 +209,7 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
             "unitCode": "CEL"
       }
 }'
-```
+````
 
 New entities can be added by making a POST request to the `/ngsi-ld/v1/entities` endpoint.
 

@@ -107,7 +107,7 @@ Thereafter, all services can be initialized from the command-line by running the
 repository:
 
 ```bash
-./services orion|scorpio
+./services [orion|scorpio|stellio]
 ```
 
 > **Note:** If you want to clean up and start over again you can do so with the following command:
@@ -197,10 +197,10 @@ of concurrent connections to use.
 | ORIONLD_MULTI_SERVICE    | `TRUE`         | Whether to enable multitenancy                          |
 | ORIONLD_DISABLE_FILE_LOG | `TRUE`         | The file log is disabled to improve speed               |
 
-To start the system, run the following command:
+To start the system with your preferred context broker, run the following command:
 
 ```bash
-./services start
+./services [orion|scorpio|stellio]
 ```
 
 ### Mintaka - Checking Service Health

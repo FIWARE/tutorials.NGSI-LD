@@ -299,9 +299,14 @@ repository:
 git clone https://github.com/FIWARE/tutorials.IoT-Agent.git
 cd tutorials.IoT-Agent
 git checkout NGSI-LD
-
-./services [orion|scorpio]
+./services create
 ```
+
+To start the system with your preferred context broker, run the following command:
+
+````bash
+./services [orion|scorpio|stellio]
+``
 
 > **Note:** If you want to clean up and start over again you can do so with the following command:
 >
@@ -328,7 +333,7 @@ You can check if the IoT Agent is running by making an HTTP request to the expos
 ```bash
 curl -X GET \
   'http://localhost:4041/iot/about'
-```
+````
 
 The response will look similar to the following:
 

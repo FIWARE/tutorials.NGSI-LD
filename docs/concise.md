@@ -215,10 +215,10 @@ git checkout NGSI-LD
 
 Thereafter, all services can be initialized from the command-line by running the
 [services](https://github.com/FIWARE/tutorials.Concise-Format/blob/NGSI-LD/services) Bash script provided within the
-repository:
+repository. To start the system with your preferred context broker, run the following command:
 
 ```bash
-./services start
+./services [orion|scorpio|stellio]
 ```
 
 > **Note:** If you want to clean up and start over again you can do so with the following command:

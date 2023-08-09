@@ -311,8 +311,13 @@ repository:
 git clone https://github.com/FIWARE/tutorials.IoT-Agent-JSON.git
 cd tutorials.IoT-Agent-JSON
 git checkout NGSI-LD
+./services create
+```
 
-./services orion|scorpio
+To start the system with your preferred context broker, run the following command:
+
+```bash
+./services [orion|scorpio|stellio]
 ```
 
 > **Note:** If you want to clean up and start over again you can do so with the following command:

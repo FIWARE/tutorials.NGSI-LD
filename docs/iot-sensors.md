@@ -259,7 +259,7 @@ git clone https://github.com/FIWARE/tutorials.IoT-Sensors.git
 cd tutorials.IoT-Sensors
 git checkout NGSI-LD
 
-./services start;
+./services [orion|scorpio|stellio]
 ```
 
 This command will also import seed data from the previous

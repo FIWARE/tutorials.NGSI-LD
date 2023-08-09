@@ -168,10 +168,10 @@ git checkout NGSI-LD
 
 This command will also import seed data from the previous tutorials and provision the dummy IoT sensors on startup.
 
-To start the system, run the following command:
+To start the system with your preferred context broker, run the following command:
 
 ```bash
-./services start
+./services [orion|scorpio|stellio]
 ```
 
 > **Note:** If you want to clean up and start over again you can do so with the following command:

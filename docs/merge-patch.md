@@ -222,7 +222,7 @@ Thereafter, all services can be initialized from the command-line by running the
 repository:
 
 ```bash
-./services start
+./services [orion|scorpio|stellio]
 ```
 
 This start-up script also preloads two City entities into the context broker.

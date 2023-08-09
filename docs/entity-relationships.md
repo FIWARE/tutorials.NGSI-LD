@@ -117,8 +117,13 @@ the repository. Please clone the repository and create the necessary images by r
 git clone https://github.com/FIWARE/tutorials.Entity-Relationships.git
 cd tutorials.Entity-Relationships
 git checkout NGSI-LD
+./services create
+```
 
-./services start
+To start the system with your preferred context broker, run the following command:
+
+```bash
+./services [orion|scorpio|stellio]
 ```
 
 This command will also import seed data (**Building**, **Person**, **TemperatureSensor**, **FillingLevelSensor**,
