@@ -304,9 +304,9 @@ git checkout NGSI-LD
 
 To start the system with your preferred context broker, run the following command:
 
-````bash
+```bash
 ./services [orion|scorpio|stellio]
-``
+```
 
 > **Note:** If you want to clean up and start over again you can do so with the following command:
 >

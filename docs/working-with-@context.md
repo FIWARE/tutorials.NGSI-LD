@@ -200,7 +200,11 @@ repository. Please clone the repository and create the necessary images by runni
 git clone https://github.com/FIWARE/tutorials.Getting-Started.git
 cd tutorials.Getting-Started
 git checkout NGSI-LD
+```
 
+To start the system with your preferred context broker, run the following command:
+
+```bash
 ./services [orion|scorpio|stellio]
 ```
 
