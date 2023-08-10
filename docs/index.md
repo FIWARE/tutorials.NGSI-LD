@@ -106,11 +106,6 @@ can be found [here](https://www.digitalocean.com/community/tutorials/how-to-tran
 
 ## Context Brokers
 
-NGSI-LD (Next Generation Service Interface with Linked Data), is the API exported by FIWARE Context Brokers, and used
-for the integration of platform components within a _“Powered by FIWARE”_ platform and by applications to update or
-consume context information. The concept of Linked Data based upon JSON-LD payloads is fundamental to effectively
-passing data between participating organisations.
-
 The NGSI-LD tutorials can be run using any context broker offering the NGSI-LD API, currently the
 [FIWARE Catalogue](https://www.fiware.org/catalogue) offers three compliant context brokers:
 
@@ -118,14 +113,6 @@ The NGSI-LD tutorials can be run using any context broker offering the NGSI-LD A
     Broker requiring fewer resources
 -   [Scorpio](https://scorpio.rtfd.io/) - An NGSI-LD Context Broker, which can also be used in federated environments
 -   [Stellio](https://stellio.rtfd.io/) - An NGSI-LD Context Broker with Keycloak integration
-
-The NGSI-LD Specification is regularly updated published by ETSI. The latest specification is
-[version 1.7.1](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.07.01_60/gs_cim009v010701p.pdf) which was
-published in June 2023.
-
-An Excel file detailing the current compatibility of the bleeding edge development version of each context broker
-(Orion-LD, Scorpio, Stellio) against the features of the 1.6.1 specification can be found
-[here](https://docs.google.com/spreadsheets/d/e/2PACX-1vRxOjsDf3lqhwuypJ---pZN2OlqFRl0jyoTV0ewQ1WFnpe7xQary3uxRjunbgJkwQ/pub)
 
 > ### Which NGSI-LD Context Broker should I use?
 >
@@ -136,6 +123,19 @@ An Excel file detailing the current compatibility of the bleeding edge developme
 > As such, the **FIWARE Foundation** would recommend any compliant context broker that is following the ESTI NSGI-LD
 > specifications. The precise context broker you pick will depend upon your chosen use case. Different scenarios may
 > call for a faster context broker, one with a smaller footprint, one which is more secure, etc. etc.
+
+NGSI-LD (Next Generation Service Interface with Linked Data), is the API exported by FIWARE Context Brokers, and used
+for the integration of platform components within a _“Powered by FIWARE”_ platform and by applications to update or
+consume context information. The concept of Linked Data based upon JSON-LD payloads is fundamental to effectively
+passing data between participating organisations.
+
+The NGSI-LD Specification is regularly updated published by ETSI. The latest specification is
+[version 1.7.1](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.07.01_60/gs_cim009v010701p.pdf) which was
+published in June 2023.
+
+An Excel file detailing the current compatibility of the bleeding edge development version of each context broker
+(Orion-LD, Scorpio, Stellio) against the features of the 1.6.1 specification can be found
+[here](https://docs.google.com/spreadsheets/d/e/2PACX-1vRxOjsDf3lqhwuypJ---pZN2OlqFRl0jyoTV0ewQ1WFnpe7xQary3uxRjunbgJkwQ/pub)
 
 ## Data models
 
