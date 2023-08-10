@@ -221,10 +221,8 @@ Thereafter, all services can be initialized from the command-line by running the
 repository:
 
 ```bash
-./services <command>
+./services start
 ```
-
-Where `<command>` will vary depending upon the exercise we wish to activate.
 
 > **Note:** If you want to clean up and start over again you can do so with the following command:
 >
