@@ -127,6 +127,16 @@ An Excel file detailing the current compatibility of the bleeding edge developme
 (Orion-LD, Scorpio, Stellio) against the features of the 1.6.1 specification can be found
 [here](https://docs.google.com/spreadsheets/d/e/2PACX-1vRxOjsDf3lqhwuypJ---pZN2OlqFRl0jyoTV0ewQ1WFnpe7xQary3uxRjunbgJkwQ/pub)
 
+> ### Which NGSI-LD Context Broker should I use?
+>
+> The mission of the **FIWARE Foundation** is to develop an open sustainable ecosystem around public, royalty-free and
+> implementation-driven software platform standards that will ease the creation of Smart Applications in multiple
+> sectors.
+>
+> As such, the **FIWARE Foundation** would recommend any compliant context broker that is following the ESTI NSGI-LD
+> specifications. The precise context broker you pick will depend upon your chosen use case. Different scenarios may
+> call for a faster context broker, one with a smaller footprint, one which is more secure, etc. etc.
+
 ## Data models
 
 The tutorials define a series of data-models to be used within the `@context`. More information about the classes and
