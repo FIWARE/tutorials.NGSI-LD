@@ -302,7 +302,8 @@ git checkout NGSI-LD
 ./services create
 ```
 
-To start the system with your preferred context broker, run the following command:
+To start the system with your preferred [context broker](https://www.fiware.org/catalogue/#components), run the
+following command:
 
 ```bash
 ./services [orion|scorpio|stellio]
@@ -333,7 +334,7 @@ You can check if the IoT Agent is running by making an HTTP request to the expos
 ```bash
 curl -X GET \
   'http://localhost:4041/iot/about'
-````
+```
 
 The response will look similar to the following:
 

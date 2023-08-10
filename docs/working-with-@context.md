@@ -202,7 +202,8 @@ cd tutorials.Getting-Started
 git checkout NGSI-LD
 ```
 
-To start the system with your preferred context broker, run the following command:
+To start the system with your preferred [context broker](https://www.fiware.org/catalogue/#components), run the
+following command:
 
 ```bash
 ./services [orion|scorpio|stellio]

@@ -159,7 +159,8 @@ git checkout NGSI-LD
 ./services create
 ```
 
-To start the system with your preferred context broker, run the following command:
+To start the system with your preferred [context broker](https://www.fiware.org/catalogue/#components), run the
+following command:
 
 ```bash
 ./services [orion|scorpio|stellio]
@@ -209,7 +210,7 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
             "unitCode": "CEL"
       }
 }'
-````
+```
 
 New entities can be added by making a POST request to the `/ngsi-ld/v1/entities` endpoint.
 

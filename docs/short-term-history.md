@@ -197,7 +197,8 @@ of concurrent connections to use.
 | ORIONLD_MULTI_SERVICE    | `TRUE`         | Whether to enable multitenancy                          |
 | ORIONLD_DISABLE_FILE_LOG | `TRUE`         | The file log is disabled to improve speed               |
 
-To start the system with your preferred context broker, run the following command:
+To start the system with your preferred [context broker](https://www.fiware.org/catalogue/#components), run the
+following command:
 
 ```bash
 ./services [orion|scorpio|stellio]
