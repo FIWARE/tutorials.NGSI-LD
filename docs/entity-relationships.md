@@ -106,6 +106,12 @@ run from exposed ports.
 The necessary configuration information can be seen in the services section of the associated `docker-compose.yml` file.
 It has been described in a [previous tutorial](working-with-@context.md).
 
+### Video: NGSI-LD Entity Relationships
+
+[![](https://fiware.github.io/tutorials.NGSI-LD/img/video-logo.png)](https://www.youtube.com/watch?v=rZ13IyLpAtA&t=2245s "NGSI-LD Entity Relationships")
+
+Click on the image above to watch a demo of this tutorial describing how to use an NGSI-LD Relationship
+
 ## Start Up
 
 All services can be initialised from the command-line by running the

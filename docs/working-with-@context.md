@@ -189,6 +189,13 @@ listening on the default port `27017` and httpd is offering `@context` files on 
 exposing the ports externally - this is purely for the tutorial access - so that cUrl or Postman can access them without
 being part of the same network. The command-line initialization should be self-explanatory.
 
+### Video: Introduction to NGSI-LD
+
+[![](https://fiware.github.io/tutorials.NGSI-LD/img/video-logo.png)](https://www.youtube.com/watch?v=rZ13IyLpAtA "NGSI-LD")
+
+Click on the image above to watch a demo of this tutorial describing how to create Entities, Properties and
+Relationships
+
 ## Start Up
 
 All services can be initialised from the command-line by running the

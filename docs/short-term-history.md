@@ -89,6 +89,12 @@ Therefore the overall architecture will consist of the following elements:
 Since all interactions between the elements are initiated by HTTP requests, the entities can be containerized and run
 from exposed ports.
 
+### Video: Temporal Interfaces
+
+[![](https://fiware.github.io/tutorials.NGSI-LD/img/video-logo.png)](https://www.youtube.com/watch?v=w6ymNPO-Baw "NGSI-LD Temporal Interfaces")
+
+Click on the image above to watch a demo of this tutorial describing how to use the NGSI-LD Temporal Interfaces
+
 ## Start Up
 
 Before you start you should ensure that you have obtained or built the necessary Docker images locally. Please clone the

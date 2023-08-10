@@ -112,6 +112,12 @@ from exposed ports.
 The necessary configuration information can be seen in the services section of the associated `docker-compose.yml` file.
 It has been described in a previous tutorial.
 
+### Video: Subscriptions
+
+[![](https://fiware.github.io/tutorials.NGSI-LD/img/video-logo.png)](https://www.youtube.com/watch?v=sWa0k5GyGyw&t=798s "NGSI-LD Subscriptions")
+
+Click on the image above to watch a demo of this tutorial describing how to use the NGSI-LD Subscriptions
+
 ## Start Up
 
 All services can be initialized from the command-line by running the bash script provided within the repository. Please

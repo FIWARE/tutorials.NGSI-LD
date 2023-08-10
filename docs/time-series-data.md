@@ -192,6 +192,39 @@ been shifted to another port. The Grafana Environment variables are described wi
 connect to the **CrateDB** database later on in the tutorial. The configuration also imports a custom map plugin that
 helps you in displaying NGSI v2 entities over a map.
 
+### Video: NGSI-LD with Grafana
+
+[![](https://fiware.github.io/tutorials.NGSI-LD/img/video-logo.png)](https://www.youtube.com/watch?v=Gaa23hC0teo&t=475s "NGSI-LD Grafana")
+
+Click on the image above to watch a demo of this tutorial describing how to use the NGSI-LD with Grafana.
+
+## Start Up
+
+Before you start you should ensure that you have obtained or built the necessary Docker images locally. Please clone the
+repository and create the necessary images by running the commands as shown:
+
+```bash
+git clone https://github.com/FIWARE/tutorials.Time-Series-Data.git
+cd tutorials.Time-Series-Data
+git checkout NGSI-LD
+
+./services create
+```
+
+Thereafter, all services can be initialized from the command-line by running the
+[services](https://github.com/FIWARE/tutorials.Short-Term-History/blob/NGSI-LD/services) Bash script provided within the
+repository:
+
+```bash
+./services [orion|scorpio|stellio]
+```
+
+> **Note:** If you want to clean up and start over again you can do so with the following command:
+>
+> ```
+> ./services stop
+> ```
+
 ### Generating Context Data
 
 For the purpose of this tutorial, we must be monitoring a system where the context is periodically being updated. The

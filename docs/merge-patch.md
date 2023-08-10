@@ -204,6 +204,12 @@ run from exposed ports.
 The necessary configuration information can be seen in the services section of the associated `docker-compose.yml` file.
 It has been described in a previous tutorial.
 
+### Video: Merge Patch
+
+[![](https://fiware.github.io/tutorials.NGSI-LD/img/video-logo.png)](https://www.youtube.com/watch?v=-XPGyM7K_kU&t=1893s "NGSI-LD Merge Patch")
+
+Click on the image above to watch a demo of this tutorial describing how to use the NGSI-LD Merge Patch
+
 ## Start Up
 
 Before you start, you should ensure that you have obtained or built the necessary Docker images locally. Please clone

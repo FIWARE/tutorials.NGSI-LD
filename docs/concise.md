@@ -200,6 +200,12 @@ The overall architecture can be seen below:
 The necessary configuration information can be seen in the services section of the associated `docker-compose.yml` file.
 It has been described in a previous tutorial.
 
+### Video: Concise Payloads
+
+[![](https://fiware.github.io/tutorials.NGSI-LD/img/video-logo.png)](https://www.youtube.com/watch?v=-XPGyM7K_kU&t=605s "NGSI-LD Concise")
+
+Click on the image above to watch a demo of this tutorial describing how to use the NGSI-LD Concise format
+
 ## Start Up
 
 Before you start, you should ensure that you have obtained or built the necessary Docker images locally. Please clone
