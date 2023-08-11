@@ -9,6 +9,7 @@ commands used to access the **Keyrock** REST API -
 [Postman documentation](https://fiware.github.io/tutorials.Roles-Permissions/) is also available.
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/2febc0452a8977734480)
+[![Run in GitPod](https://fiware.github.io/tutorials.NGSI-LD/img/gitpod.png)](https://gitpod.io/#https://github.com/FIWARE/tutorials.Roles-Permissions/tree/NGSI-LD)
 
 <hr class="security"/>
 

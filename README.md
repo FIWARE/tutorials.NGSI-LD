@@ -122,8 +122,8 @@ The tutorials start up their services using a simple Bash script. When working l
 
 ### Security: Identity Management
 
-&nbsp; 401. [Managing Users and Organizations](https://github.com/FIWARE/tutorials.Identity-Management/tree/NGSI-v2)
-<br/> &nbsp; 402. [Roles and Permissions](https://github.com/FIWARE/tutorials.Roles-Permissions/tree/NGSI-v2)
+&nbsp; 401. [Managing Users and Organizations](https://github.com/FIWARE/tutorials.Identity-Management/tree/NGSI-LD)
+<br/> &nbsp; 402. [Roles and Permissions](https://github.com/FIWARE/tutorials.Roles-Permissions/tree/NGSI-LD)
 
 ### Processing, Analysis and Visualization
 
