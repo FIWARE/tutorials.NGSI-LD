@@ -1055,7 +1055,7 @@ curl -iX POST \
   -d '{
  "services": [
    {
-     "apikey":      "4jggokgpepnvsb2uv4s40d59ov",
+     "apikey":      "12345",
      "cbroker":     "http://orion:1026",
      "entity_type": "Thing",
      "resource":    "/iot/d"
