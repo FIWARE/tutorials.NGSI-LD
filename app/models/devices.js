@@ -51,6 +51,7 @@ const lactatingAnimalIds = process.env.LACTATING_ANIMAL
 const numberOfPigs = process.env.PIG_COUNT || 5;
 const numberOfCows = process.env.COW_COUNT || 5;
 const numberOfSoilSensors = process.env.SOIL_SENSOR_COUNT || 5;
+const autoMoveTractors = process.env.MOVE_TRACTOR || 10000;
 
 let weather = 'cloudy';
 
@@ -147,7 +148,9 @@ function initDevices() {
     debug('initDevices');
     // Every few seconds, update the state of the dummy devices in a
     // semi-random fashion.
-    setInterval(changeTractorState, 10000);
+    if (autoMoveTractors > 0){
+        setInterval(changeTractorState, autoMoveTractors);
+    }
     setInterval(activateAnimalCollars, 5000);
     setInterval(activateDevices, 3000);
 }
