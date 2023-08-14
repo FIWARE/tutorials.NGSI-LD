@@ -156,7 +156,7 @@ Extension of _Device_ from **Smart-Data-Models**
 *   `provider`: The provider of the device.
     -   Attribute type: **Property**. [provider](https://schema.org/provider)
 *   `refDeviceModel`: The device's model.
-    -   Attribute type: **Relationship**. [DeviceModel](https://uri.fiware.org/ns/data-models#DeviceModel)
+    -   Attribute type: **Relationship**. [DeviceModel](https://uri.fiware.org/ns/dataModels#DeviceModel)
 *   `rssi`: Received signal strength indicator for a wireless enabled device. It must be equal to `1.0` when the signal
     strength is maximum. `0.0` when signal is missing. `-1.0` when it cannot be determined.
 *   Allowed values: Interval \[0,1\] and -1
@@ -274,7 +274,7 @@ Extension of _Device_ from **Smart-Data-Models**
 *   `provider`: The provider of the device.
     -   Attribute type: **Property**. [provider](https://schema.org/provider)
 *   `refDeviceModel`: The device's model.
-    -   Attribute type: **Relationship**. [DeviceModel](https://uri.fiware.org/ns/data-models#DeviceModel)
+    -   Attribute type: **Relationship**. [DeviceModel](https://uri.fiware.org/ns/dataModels#DeviceModel)
 *   `rssi`: Received signal strength indicator for a wireless enabled device. It must be equal to `1.0` when the signal
     strength is maximum. `0.0` when signal is missing. `-1.0` when it cannot be determined.
 *   Allowed values: Interval \[0,1\] and -1
