@@ -51,7 +51,7 @@ const lactatingAnimalIds = process.env.LACTATING_ANIMAL
 const numberOfPigs = process.env.PIG_COUNT || 5;
 const numberOfCows = process.env.COW_COUNT || 5;
 const numberOfSoilSensors = process.env.SOIL_SENSOR_COUNT || 5;
-const autoMoveTractors = process.env.MOVE_TRACTOR || 10000;
+let autoMoveTractors = process.env.MOVE_TRACTOR || 10000;
 
 let weather = 'cloudy';
 
@@ -148,7 +148,7 @@ function initDevices() {
     debug('initDevices');
     // Every few seconds, update the state of the dummy devices in a
     // semi-random fashion.
-    if (autoMoveTractors > 0){
+    if (autoMoveTractors > 0) {
         setInterval(changeTractorState, autoMoveTractors);
     }
     setInterval(activateAnimalCollars, 5000);
@@ -213,7 +213,7 @@ function emitWeatherConditions() {
 }
 // Update the state of a tractor
 function changeTractorState() {
-    if (isTractorActive) {
+    if (isTractorActive || autoMoveTractors < 0) {
         return;
     }
 
@@ -379,6 +379,7 @@ function activateDevices() {
                 if (state.h < 0) {
                     state.h = 0;
                 }
+                setDeviceState(deviceId, toUltraLight(state), isSensor);
                 break;
             case 'tractor':
                 target = getDeviceState('targetTractor' + deviceId.replace(/[a-zA-Z]/g, ''));
@@ -413,6 +414,13 @@ function activateDevices() {
                 state.gps = state.y + ',' + state.x;
                 delete state.y;
                 delete state.x;
+
+                if (autoMoveTractors < 0 && state.d === 'MOVING') {
+                    autoMoveTractors = 10000;
+                }
+                if (autoMoveTractors > 0) {
+                    setDeviceState(deviceId, toUltraLight(state), isSensor);
+                }
                 break;
 
             case 'temperature':
@@ -425,10 +433,9 @@ function activateDevices() {
                         state.t--;
                     }
                 }
+                setDeviceState(deviceId, toUltraLight(state), isSensor);
                 break;
         }
-
-        setDeviceState(deviceId, toUltraLight(state), isSensor);
     });
     isDevicesActive = false;
 }
