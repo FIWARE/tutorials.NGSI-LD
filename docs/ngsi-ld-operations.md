@@ -798,11 +798,10 @@ This example uses the convenience batch processing endpoint to update existing p
 #### 16 Request:
 
 ```bash
-curl -G -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/upsert' \
+curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/upsert?options=update' \
 -H 'Content-Type: application/json' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
--d 'options=update'
---data-raw '[
+-d '[
   {
     "id": "urn:ngsi-ld:TemperatureSensor:003",
     "type": "TemperatureSensor",
@@ -842,10 +841,9 @@ This example uses the convenience batch processing endpoint to replace entity da
 #### 17 Request:
 
 ```bash
-curl -G -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/update' \
+curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/update?options=replace' \
 -H 'Content-Type: application/json' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
--d 'options=replace'
 --data-raw '[
   {
     "id": "urn:ngsi-ld:TemperatureSensor:003",
