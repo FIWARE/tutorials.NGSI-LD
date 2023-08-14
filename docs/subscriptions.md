@@ -434,7 +434,7 @@ The notification section of the body states that a POST request containing all a
 #### 4 Request:
 
 ```bash
-curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
+curl -L -iX POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'Content-Type: application/ld+json' \
 --data-raw '{
   "description": "Notify me of all product price changes",
@@ -455,6 +455,9 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 ### Delete a Subscription
 
 This example deletes the Subscription with `id=urn:ngsi-ld:Subscription:5fd228838b9b83697b855a72` from the context.
+
+> **Note:** The subscription `id` should refer to an existing subscription. For example, the
+> `id` can be replaced with the `Location` header returned from the previous request.
 
 Subscriptions can be deleted by making a DELETE request to the `/ngsi-ld/v1/subscriptions/<subscription-id>` endpoint.
 
@@ -514,9 +517,12 @@ subscription were met, and whether associated the POST action was successful.
 
 Subscription details can be read by making a GET request to the `/ngsi-ld/v1/subscriptions/<subscription-id>` endpoint.
 
+> **Note:** The subscription `id` should refer to an existing subscription. For example, the
+> `id` can be replaced with the `Location` header returned from a previous request.
+
 #### 8 Request:
 
 ```bash
 curl -X GET \
-  --url 'http://localhost:1026/ngsi-ld/v1/subscriptions/5aead3361587e1918de90aba'
+  --url 'http://localhost:1026/ngsi-ld/v1/subscriptions/urn:ngsi-ld:Subscription:5fd228838b9b83697b855a72'
 ```
