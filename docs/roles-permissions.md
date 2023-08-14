@@ -777,7 +777,7 @@ The response returns the details of the requested permission.
 Listing the permissions with an application can be done by making a GET request to the
 `/v1/applications/{{application-id}}/permissions` endpoint.
 
-#### 1:zero: Request:
+#### 10 Request:
 
 ```bash
 curl -X GET \
@@ -866,7 +866,7 @@ Deleting a permission from an application automatically removes that permission 
 
 ```bash
 curl -X DELETE \
-  'http://keyrock/v1/applications/{{application_id}}/permissions/{{permission_id}}' \
+  'http://localhost:3005/v1/applications/{{application_id}}/permissions/{{permission_id}}' \
   -H 'Content-Type: application/json' \
   -H 'X-Auth-token: {{X-Auth-token}}'
 ```
@@ -1121,11 +1121,11 @@ curl -X GET \
 To remove a permission using the REST API makes a DELETE request as shown, including the `<application-id>`, `<role-id>`
 and `<permission-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
 
-#### 2:zero: Request:
+#### 20 Request:
 
 ```bash
 curl -X DELETE \
-  'http://keyrock/v1/applications/{{application_id}}/roles/{{role_id}}/permissions/{{permission_id}}' \
+  'http://localhost:3005/v1/applications/{{application_id}}/roles/{{role_id}}/permissions/{{permission_id}}' \
   -H 'Content-Type: application/json' \
   -H 'X-Auth-token: {{X-Auth-token}}'
 ```
