@@ -475,6 +475,9 @@ the notification URL.
 
 Subscriptions can be updated making a PATCH request to the `/ngsi-ld/v1/subscriptions/<subscription-id>` endpoint.
 
+> **Note:** The subscription `id` should refer to an existing subscription. For example, the
+> `id` can be replaced with the `Location` header returned from a previous request.
+
 #### 6 Request:
 
 ```bash
