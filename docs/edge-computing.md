@@ -342,7 +342,7 @@ broker to create the "Vehicle" sensor entity. With creation of this entity, FogF
 curl --location --request POST '<FogFlow_Broker_IP>:8070/ngsi-ld/v1/entities/' \
 --header 'Content-Type: application/json' \
 --header 'Accept: application/ld+json' \
---header 'Link: <{{link}}>; rel="https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"; type="application/ld+json"' \
+--header 'Link: <{{link}}>; rel="https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"; type="application/ld+json"' \
 --data-raw '{
     "id": "urn:ngsi-ld:Vehicle:A100",
     "type": "Vehicle",

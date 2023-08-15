@@ -1133,8 +1133,6 @@ The response returns the requested attributes in simplified temporal format.
     function isoDate(){
         const date = new Date();
         const timeElts = document.getElementsByClassName("current_time");
-        console.log(timeElts)
-
         for (let i = 0; i < timeElts.length; i++) {
             timeElts[i].innerHTML = date.toISOString();
         }
