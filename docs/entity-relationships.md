@@ -287,9 +287,8 @@ relationship similar to a foreign key. Batch processing can again be used to ame
 **TemperatureSensor** and **FillingLevelSensor** entities to add a `controlledAsset` attribute holding the relationship
 to each building controlled by the device. According to the Smart Data Model
 [Device](https://swagger.lab.fiware.org/?url=https://smart-data-models.github.io/dataModel.Device/Device/swagger.yaml)
-definition `https://uri.fiware.org/ns/dataModels#controlledAsset` is the URI long name to be used for this
-relationship, and the value of the `controlledAsset` attribute corresponds to a URN associated to a **Building** entity
-itself.
+definition `https://uri.fiware.org/ns/dataModels#controlledAsset` is the URI long name to be used for this relationship,
+and the value of the `controlledAsset` attribute corresponds to a URN associated to a **Building** entity itself.
 
 The URN follows a standard format: `urn:ngsi-ld:<entity-type>:<entity-id>`.
 

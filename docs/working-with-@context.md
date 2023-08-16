@@ -371,7 +371,10 @@ This means that the actual `@context` is:
 
 ```json
 {
-    "@context": ["http://context/ngsi-context.jsonld", "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"]
+    "@context": [
+        "http://context/ngsi-context.jsonld",
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+    ]
 }
 ```
 

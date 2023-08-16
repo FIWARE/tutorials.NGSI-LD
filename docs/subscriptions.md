@@ -456,8 +456,8 @@ curl -L -iX POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 
 This example deletes the Subscription with `id=urn:ngsi-ld:Subscription:5fd228838b9b83697b855a72` from the context.
 
-> **Note:** The subscription `id` should refer to an existing subscription. For example, the
-> `id` can be replaced with the `Location` header returned from the previous request.
+> **Note:** The subscription `id` should refer to an existing subscription. For example, the `id` can be replaced with
+> the `Location` header returned from the previous request.
 
 Subscriptions can be deleted by making a DELETE request to the `/ngsi-ld/v1/subscriptions/<subscription-id>` endpoint.
 
@@ -475,8 +475,8 @@ the notification URL.
 
 Subscriptions can be updated making a PATCH request to the `/ngsi-ld/v1/subscriptions/<subscription-id>` endpoint.
 
-> **Note:** The subscription `id` should refer to an existing subscription. For example, the
-> `id` can be replaced with the `Location` header returned from a previous request.
+> **Note:** The subscription `id` should refer to an existing subscription. For example, the `id` can be replaced with
+> the `Location` header returned from a previous request.
 
 #### 6 Request:
 
@@ -520,8 +520,8 @@ subscription were met, and whether associated the POST action was successful.
 
 Subscription details can be read by making a GET request to the `/ngsi-ld/v1/subscriptions/<subscription-id>` endpoint.
 
-> **Note:** The subscription `id` should refer to an existing subscription. For example, the
-> `id` can be replaced with the `Location` header returned from a previous request.
+> **Note:** The subscription `id` should refer to an existing subscription. For example, the `id` can be replaced with
+> the `Location` header returned from a previous request.
 
 #### 8 Request:
 
