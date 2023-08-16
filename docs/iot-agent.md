@@ -299,17 +299,7 @@ git checkout NGSI-LD
 
 Thereafter, all services can be initialized from the command-line by running the
 [services](https://github.com/FIWARE/tutorials.IoT-Agent/blob/NGSI-LD/services) Bash script provided within the
-repository:
-
-```bash
-#!/bin/bash
-git clone https://github.com/FIWARE/tutorials.IoT-Agent.git
-cd tutorials.IoT-Agent
-git checkout NGSI-LD
-./services create
-```
-
-To start the system with your preferred [context broker](https://www.fiware.org/catalogue/#components), run the
+repository:. To start the system with your preferred [context broker](https://www.fiware.org/catalogue/#components), run the
 following command:
 
 ```bash
