@@ -1,6 +1,14 @@
 [![FIWARE IoT Agents](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/iot-agents.svg)](https://github.com/FIWARE/catalogue/blob/master/iot-agents/README.md)
 [![UltraLight 2.0](https://img.shields.io/badge/Payload-Ultralight-27ae60.svg)](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
 
+<blockquote style="border-left-color:#002e67;background-color:#ededee;color:#002e67">
+    <p><b>Background:</b>
+        This tutorial does not use the <b>NGSI-LD</b> interface directly.
+        it covers background information about IoT devices and protocols, which
+        is then used in subsequent chapters.
+    </p>
+</blockquote>
+
 **Description:** This tutorial is an introduction to IoT devices and the usage of the
 [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
 Protocol for constrained devices. The tutorial introduces a series of dummy agricultural IoT devices which are displayed

@@ -1,5 +1,13 @@
 [![FIWARE Security](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/security.svg)](https://github.com/FIWARE/catalogue/blob/master/security/README.md)
 
+<blockquote style="border-left-color:#002e67;background-color:#ededee;color:#002e67">
+    <p><b>Background:</b>
+        This tutorial does not use the <b>NGSI-LD</b> interface directly.
+        it covers background information about Identity Management, which
+        is then used in subsequent chapters.
+    </p>
+</blockquote>
+
 **Description:** The tutorial explains how to create applications, and how to assign roles and permissions to them. It
 takes the users and organizations created in the [previous tutorial](identity-management.md) and ensures that only
 legitimate users will have access to resources.
