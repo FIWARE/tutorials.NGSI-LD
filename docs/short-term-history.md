@@ -255,7 +255,7 @@ The response will look similar to the following:
 >
 > -   To check that a docker container is running try:
 >
-> ```bash
+> ```
 > docker ps
 > ```
 >
