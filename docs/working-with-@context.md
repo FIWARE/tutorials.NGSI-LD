@@ -114,8 +114,8 @@ interface is available across multiple context brokers, so we only need to pick 
 [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/). The application will therefore only make use of
 one FIWARE component.
 
-Currently, the Orion Context Broker relies on open source [MongoDB](https://www.mongodb.com/) technology to keep
-persistence of the context data it holds.
+Currently, the Orion Context Broker relies on open source [MongoDB](https://www.mongodb.com/) technology to hold the current 
+state of the context data it contains and peristant information relevant to subscriptions and registrations.
 
 To promote interoperability of data exchange, NGSI-LD context brokers explicitly expose a
 [JSON-LD `@context` file](https://json-ld.org/spec/latest/json-ld/#the-context) to define the data held within the
@@ -128,8 +128,8 @@ Therefore, the architecture will consist of three elements:
 -   The [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests using
     [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
 -   The underlying [MongoDB](https://www.mongodb.com/) database:
-    -   Used by the Orion Context Broker to hold context data information such as data entities, subscriptions and
-        registrations
+    -   Used by the Orion Context Broker to hold context data information such as subscriptions, registrations and 
+        the current state of data entities.
 -   An HTTP **Web-Server** which offers static `@context` files defining the context entities within the system.
 -   The **Tutorial Application** does the following:
     -   Acts as set of dummy [agricultural IoT devices](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)
