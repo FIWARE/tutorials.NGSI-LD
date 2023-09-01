@@ -89,8 +89,8 @@ FIWARE Postman collections can be downloaded directly from the
 
 [Gitpod](https://github.com/gitpod-io/gitpod) is an open-source Kubernetes application for ready-to-code cloud
 development environments that spins up an automated dev environment for each task, in the cloud. It enables you to run
-the tutorials in a cloud development environment directly from your browser or your Desktop IDE.
-The default environment is based on Ubuntu and includes Java `11.0.16`  and Maven `3.8.6`.
+the tutorials in a cloud development environment directly from your browser or your Desktop IDE. The default environment
+is based on Ubuntu and includes Java `11.0.16` and Maven `3.8.6`.
 
 ### Apache Maven <img src="https://maven.apache.org/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
@@ -103,7 +103,8 @@ Scala code into a JAR file. Apache Maven `3.8.6` or higher is recommended.
 
 [jq](https://jqlang.github.io/jq/) is a lightweight and flexible command-line JSON processor which can be used to format
 the JSON responses received from the context broker and other FIWARE components. More information about how to use jq
-can be found [here](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq). `jq-1.6` is recommended.
+can be found [here](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq). `jq-1.6` is
+recommended.
 
 ## Context Brokers
 
