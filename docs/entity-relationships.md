@@ -159,7 +159,7 @@ properties such as `category` have been added as properties to each device.
 #### 1 Request:
 
 ```bash
-curl -iX POST
+curl -iX POST \
  'http://localhost:1026/ngsi-ld/v1/entityOperations/upsert' \
 -H 'Content-Type: application/json' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -197,7 +197,8 @@ Similarly, we can create a series of **FillingLevelSensors** entities by using t
 #### 2 Request:
 
 ```bash
-curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/upsert' \
+curl -iX POST \
+    'http://localhost:1026/ngsi-ld/v1/entityOperations/upsert' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Content-Type: application/json' \
 --data-raw '[
@@ -485,7 +486,8 @@ properties (such as `description` and `status`).
 #### 9 Request:
 
 ```bash
-curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
+curl -L -X POST \
+    'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Content-Type: application/json' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 --data-raw '{
