@@ -15,6 +15,27 @@ directly or programmatically.
 | :books: <br>[NGSI-LD<br>Documentation](https://ngsi-ld-tutorials.rtfd.io/) | <img src="https://assets.getpostman.com/common-share/postman-logo-stacked.svg" align="center" height="25"> <br/>[Postman<br>Collections](https://explore.postman.com/team/3mM5EY6ChBYp9D) | [![Docker Hub](https://nexus.lab.fiware.org/repository/raw/public/badges/docker/fiware.svg)](https://hub.docker.com/u/fiware) <br> [![Quay.io](https://img.shields.io/badge/quay.io-fiware-grey?logo=red%20hat&labelColor=EE0000)](https://quay.io/organization/fiware) <br> [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/fiware)](https://artifacthub.io/packages/search?repo=fiware) | <img src="https://fiware.github.io/catalogue/img/fiware-emoji.png" height="30px" width="30px"/> <br/> [**developer.&ZeroWidthSpace;fiware.org**](https://www.fiware.org/developers/) |
 | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 
+<br/>
+
+> [!NOTE]
+> **Should I use NGSI-LD or NGSI-v2?**
+>
+> FIWARE offers two flavours of the NGSI interfaces:
+>
+>
+> - **NGSI-v2** offers JSON based interoperability used in individual Smart Systems
+> - **NGSI-LD** offers JSON-LD based interoperability used for Federations and Data Spaces
+>
+> Of the two, NGSI-LD is more complex and relies on the introduction of a JSON-LD `@context`.
+> A full understanding of JSON-LD (Linked Data) is required to obtain the benefits of NGSI-LD ,
+> which allows for interoperability across apps and organisations.
+>
+> In general, you should use NGSI-LD when creating a data space or introducing a system of systems aproach.
+>
+> Use NGSI-v2 for simpler isolated systems. More information about NGSI-v2 can be found [here](https://fiware-tutorials.readthedocs.io)
+
+
+
 <h3>Data models</h3>
 
 The tutorials define a series of data-models to be used within the `@context`. More information about the classes and
