@@ -345,7 +345,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 
 ### Checking Subscriptions for QuantumLeap
 
-Before anything, check the subscriptions you created in steps :one: and :two: are working (i.e., at least one
+Before anything, check the subscriptions you created in steps 1️⃣ and 2️⃣ are working (i.e., at least one
 notification for each was sent).
 
 #### 3 Request:
