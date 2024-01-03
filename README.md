@@ -76,6 +76,13 @@ allows to different components isolated into their respective environments.
 -   To install Docker on Mac follow the instructions [here](https://docs.docker.com/docker-for-mac/).
 -   To install Docker on Linux follow the instructions [here](https://docs.docker.com/install/).
 
+> [!NOTE]
+> The NGSI-LD tutorials are designed to run under any Unix environment, the tested configuration and GitPod environment is
+> currently based on Ubuntu 22.04.2 LTS. However, there may be some minor issues when running the tutorials directly on Windows
+> machines or Apple M1 Silicon amd64 systems, and the following
+> [Virtual Box set-up](https://ngsi-ld-tutorials.readthedocs.io/en/latest/virtual-box.html) or
+> [WSL set-up](https://ngsi-ld-tutorials.readthedocs.io/en/latest/wsl.html) can be used when facing issues.
+
 **Docker Compose** is a tool for defining and running multi-container Docker applications. A series of `*.yaml` files
 are used configure the required services for the application. This means all container services can be brought up in a
 single command. Docker Compose is installed by default as part of Docker for Windows and Docker for Mac, however Linux
@@ -110,11 +117,6 @@ FIWARE Postman collections can be downloaded directly from the
 [Gitpod](https://github.com/gitpod-io/gitpod) is an open-source Kubernetes application for ready-to-code cloud
 development environments that spins up an automated dev environment for each task, in the cloud. It enables you to run
 the tutorials in a cloud development environment directly from your browser or your Desktop IDE.
-
-### Cygwin for Windows <img src="https://www.cygwin.com/favicon.ico" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
-
-The tutorials start up their services using a simple Bash script. When working locally, Windows users should download
-[cygwin](http://www.cygwin.com/) to provide a command-line functionality similar to a Linux distribution on Windows.
 
 ## Tutorials List[<img src="https://img.shields.io/badge/NGSI-LD-d6604d.svg" width="90"  align="left" />](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.07.01_60/gs_cim009v010701p.pdf)
 
