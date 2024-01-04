@@ -69,19 +69,18 @@ important since we will need a well-defined structure to be able to generate `@c
 
 ### Docker and Docker Compose <img src="https://www.docker.com/favicon.ico" align="left"  height="36" width="36">
 
+The NGSI-LD tutorials are designed to run under any Unix environment, the tested configuration and GitPod environment is
+currently based on Ubuntu 22.04.2 LTS. However, there may be some minor issues when running the tutorials directly on Windows
+machines or Apple M1 Silicon amd64 systems, and the following
+[Virtual Box set-up](docs/virtual-box.md) or
+[WSL set-up](docs/wsl.md) can be used when facing issues.
+
 Each tutorial runs all components using [Docker](https://www.docker.com). **Docker** is a container technology which
 allows to different components isolated into their respective environments.
 
 -   To install Docker on Windows follow the instructions [here](https://docs.docker.com/docker-for-windows/).
 -   To install Docker on Mac follow the instructions [here](https://docs.docker.com/docker-for-mac/).
 -   To install Docker on Linux follow the instructions [here](https://docs.docker.com/install/).
-
-> [!NOTE]
-> The NGSI-LD tutorials are designed to run under any Unix environment, the tested configuration and GitPod environment is
-> currently based on Ubuntu 22.04.2 LTS. However, there may be some minor issues when running the tutorials directly on Windows
-> machines or Apple M1 Silicon amd64 systems, and the following
-> [Virtual Box set-up](https://ngsi-ld-tutorials.readthedocs.io/en/latest/virtual-box.html) or
-> [WSL set-up](https://ngsi-ld-tutorials.readthedocs.io/en/latest/wsl.html) can be used when facing issues.
 
 **Docker Compose** is a tool for defining and running multi-container Docker applications. A series of `*.yaml` files
 are used configure the required services for the application. This means all container services can be brought up in a
