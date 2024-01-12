@@ -624,7 +624,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:te
     "type": "Device",
     "temperature": {
         "type": "Property",
-        "value": "3",
+        "value": 3,
         "unitCode": "CEL",
         "observedAt": "2020-09-14T15:23:12.263Z"
     }
@@ -676,7 +676,7 @@ curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=Device' \
         "type": "Device",
         "c": {
             "type": "Property",
-            "value": "1",
+            "value": 1,
             "observedAt": "2020-09-17T09:41:56.755Z"
         },
         "category": {
