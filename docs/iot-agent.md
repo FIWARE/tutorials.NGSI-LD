@@ -1074,7 +1074,7 @@ curl -X GET \
 
 ```json
 {
-    "count": 1,
+    "count": 2,
     "services": [
         {
             "commands": [],
@@ -1111,7 +1111,8 @@ curl -X GET \
             "static_attributes": [],
             "internal_attributes": [],
             "entity_type": "Device"
-        }
+        },
+        ...
     ]
 }
 ```
