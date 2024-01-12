@@ -1017,7 +1017,7 @@ curl -iX POST \
   -d '{
  "services": [
    {
-     "apikey":      "4jggokgpepnvsb2uv4s40d59ov",
+     "apikey":      "12345",
      "cbroker":     "http://orion:1026",
      "entity_type": "Thing",
      "resource":    "/iot/json"
@@ -1046,7 +1046,7 @@ curl -X GET \
 
 ```json
 {
-    "count": 1,
+    "count": 2,
     "services": [
         {
             "commands": [],
@@ -1083,7 +1083,8 @@ curl -X GET \
             "static_attributes": [],
             "internal_attributes": [],
             "entity_type": "Device"
-        }
+        },
+        ...
     ]
 }
 ```
@@ -1108,7 +1109,7 @@ curl -X GET \
 
 ```json
 {
-    "count": 1,
+    "count": 2,
     "services": [
         {
             "commands": [],
@@ -1145,7 +1146,8 @@ curl -X GET \
             "static_attributes": [],
             "internal_attributes": [],
             "entity_type": "Device"
-        }
+        },
+        ...
     ]
 }
 ```
