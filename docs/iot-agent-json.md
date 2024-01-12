@@ -828,7 +828,6 @@ curl -L -X POST 'http://localhost:4041/iot/devices' \
 -H 'fiware-service: openiot' \
 -H 'fiware-servicepath: /' \
 -H 'Content-Type: application/json' \
--H 'Cookie: _csrf=MAPTGFPcoPnewsGCWklHi4Mq' \
 --data-raw '{
   "devices": [
     {
