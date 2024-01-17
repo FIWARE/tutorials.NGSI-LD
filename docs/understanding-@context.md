@@ -162,7 +162,8 @@ resulting `@context` file will be understandable to the widest number of systems
 > **Caution:**
 > The simple NGSI-LD `@context` generator in the tutorial defaults to using `uri.fiware.org` namespaces and updates with
 > corrected URIs based on the `x-ngsi.uri` and `x-ngsi.uri-prefix` attributes. The code and defaults found within this
-> tutorial can be altered if necessary.
+> tutorial should be altered to a more widely recognised standard ontology provider within your domain as necessary for
+> your use case.
 >
 > For more complex scenarios, additional `@context` generation tools can be found on
 > the [Smart Data Models](https://smartdatamodels.org/) website.
