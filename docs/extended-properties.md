@@ -11,6 +11,11 @@
 
 # Understanding JSON-LD `@keywords`
 
+> "Я понять тебя хочу, Темный твой язык учу."
+> "I want to understand you, I am studying your incomprehensible language."
+>
+> — Alexander Pushkin (Verses, composed during a sleepless night)
+
 The [JSON-LD syntax](https://www.w3.org/TR/json-ld/#syntax-tokens-and-keywords) defines a series of keywords to describe the structure of the JSON displayed. Since **NGSI-LD** is just a formally structured _extended subset_ of **JSON-LD**, **NGSI-LD** should be
 directly or indirectly capable of offering an equivalent for all the functions defined by JSON-LD.
 
