@@ -64,3 +64,6 @@
 [submodule "tutorials.Merge-Patch-Put"]
 	path = tutorials.Merge-Patch-Put
 	url = https://github.com/FIWARE/tutorials.Merge-Patch-Put
+[submodule "tutorials.Extended-Properties"]
+	path = tutorials.Extended-Properties
+	url = https://github.com/FIWARE/tutorials.Extended-Properties
