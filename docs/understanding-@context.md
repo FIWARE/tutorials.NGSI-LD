@@ -158,10 +158,14 @@ resulting `@context` file will be understandable to the widest number of systems
 > Swagger, and indeed you could generate a simple `@context` file without it, but the data held within in has been used
 > to help generate a rich [`@graph`](https://w3c.github.io/json-ld-syntax/#dfn-graph-object) and more comprehensive
 > documentation.
->
+
+> **Caution:**
 > The simple NGSI-LD `@context` generator in the tutorial defaults to using `uri.fiware.org` namespaces and updates with
 > corrected URIs based on the `x-ngsi.uri` and `x-ngsi.uri-prefix` attributes. The code and defaults found within this
 > tutorial can be altered if necessary.
+>
+> For more complex scenarios, additional `@context` generation tools can be found on
+> the [Smart Data Models](https://smartdatamodels.org/) website.
 
 ## Amending Models
 
