@@ -15,7 +15,7 @@ The [JSON-LD syntax](https://www.w3.org/TR/json-ld/#syntax-tokens-and-keywords) 
 directly or indirectly capable of offering an equivalent for all the functions defined by JSON-LD.
 
 As an example, JSON-LD defines `@id` to indicate the unique identifier of an Entity, and `@type` to define the type of an Entity.
-The NGSI-LD core `@context` further refines this further, so that `id`/`@id` and `type`/`@type` are considered as interchangable.
+The NGSI-LD core `@context` further refines this further, so that `id`/`@id` and `type`/`@type` are considered as interchangeable.
 
 Both of the following syntaxes (with and without `@`) are acceptable in NGSI-LD:
 
@@ -60,7 +60,7 @@ This ensure that the ordering of the values in its array (longitude, latitude) i
 
 All ordinary NGSI-LD **Properties** (and **GeoProperties**) have a `value`, which is the equivalent of a JSON-LD `@value` - this mean that the `value` of a Property is just the data that is associated with a particular property.
 
-However, there are recent updates to the NGSI-LD specification which have introduced various extensions or sub-classes to this principle, allowing the creation of NGSI-LD properties which directly conform to
+However, there are recent updates to the NGSI-LD specification which have introduced various extensions or subclasses to this principle, allowing the creation of NGSI-LD properties which directly conform to
 JSON-LD keywords other than `@value`.
 
 - An NGSI-LD **LanguageProperty** holds a set of internationalized strings and is defined using the JSON-LD `@language` keyword.
@@ -91,7 +91,7 @@ Taking the first attribute, the Property `name` could be localized into multiple
 
 Similarly, even if all participants in a data space can agree for a common URI for the definition of the enumerations of all the different building types within `category`, internally within their own systems, they may be requied to display these enumerations with their own localised values.
 
-For example if the FMIS follows the URIs defined by openstreetmap.org. A building designated as A _"barn"_ would actually be be defined by the URI: `https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn`. A JSON-LD `@context` could be used to shorten this as required.
+For example if the FMIS follows the URIs defined by openstreetmap.org. A building designated as A _"barn"_ would actually be defined by the URI: `https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn`. A JSON-LD `@context` could be used to shorten this as required.
 
 If a user wanted the `category` defined as `"barn"` internally within their system, the following JSON-LD `@context` could be used:
 
@@ -242,7 +242,7 @@ Two `@context` files have been generated and hosted on the tutorial application.
   `@context` must be used for all **NGSI-LD** to **NGSI-LD** interactions.
 
 - [`alternate-context.jsonld`](http://localhost:3000/data-models/alternate-context.jsonld) is an alternative
-  **JSON-LD** definition of the attributes of the data models used by a third-party. In this case we have a German speaking customer who wishes to have all attribute names and enumerations to be defined using terminology common in the German language. Effectively, internally within their their billing application a different set of short names for attributes is used. Their `@context` file reflects
+  **JSON-LD** definition of the attributes of the data models used by a third-party. In this case we have a German speaking customer who wishes to have all attribute names and enumerations to be defined using terminology common in the German language. Effectively, internally within their billing application a different set of short names for attributes is used. Their `@context` file reflects
   the agreed mapping between attribute names.
 
 The full data model description for a **Building** entity as used in this tutorial is based on the standard
