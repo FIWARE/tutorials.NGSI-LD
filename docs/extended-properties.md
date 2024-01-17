@@ -11,8 +11,8 @@
 
 # Understanding JSON-LD `@keywords`
 
-> "Я понять тебя хочу, Темный твой язык учу."
-> "I want to understand you, I am studying your incomprehensible language."
+> "Я понять тебя хочу, Темный твой язык учу."<br/>
+> _"I want to understand you, I am studying your incomprehensible language."_
 >
 > — Alexander Pushkin (Verses, composed during a sleepless night)
 
