@@ -274,7 +274,7 @@ send a **POST** request to the Broker with the following information:
 
 #### 1️⃣ Request:
 
-```console
+```bash
 curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Content-Type: application/ld+json' \
 --data-raw '{
@@ -320,7 +320,7 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
 
 The response that we obtain will be something similar (except the `Date` value) to the following content:
 
-```console
+```bash
 HTTP/1.1 201 Created
 Date: Sat, 16 Dec 2023 08:39:32 GMT
 Location: /ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001
@@ -332,7 +332,7 @@ Content-Length: 0
 This example creates a second entity with a **LanguageProperty** and a **VocabularyProperty**.
 Each subsequent entity must have a unique `id` for the given `type`. Note that within a `languageMap`, the `@none` simplified pair indicates the default fallback value to be displayed for unknown languages.
 
-```console
+```bash
 curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
   -H 'Content-Type: application/json' \
   -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -383,7 +383,7 @@ command:
 
 #### 3️⃣ Request:
 
-```console
+```bash
 curl -G -X  GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
   -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -d 'attrs=name'
@@ -413,7 +413,7 @@ language, we should specify the corresponding query parameter `lang` equal to `d
 
 #### 4️⃣ Request:
 
-```console
+```bash
 curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
   -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'  \
   -d 'attrs=name' \
@@ -447,7 +447,7 @@ equal to `simplified`:
 
 #### 5️⃣ Request:
 
-```console
+```bash
 curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
   -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -d 'attrs=name' \
@@ -479,7 +479,7 @@ the `lang=en` parameter must be present in the request.
 
 #### 6️⃣ Request:
 
-```console
+```bash
 curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
   -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -d 'attrs=name' \
@@ -509,7 +509,7 @@ some data in an alternate language instead. The preferred default is the `@none`
 
 For `urn:ngsi-ld:Building:barn002` return the name of the enity in _French_ by adding the `lang=fr` parameter
 
-```console
+```bash
 curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:barn002' \
   -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -H 'Accept: application/ld+json'  \
@@ -545,7 +545,7 @@ the value of the default string is returned.
 
 For `urn:ngsi-ld:Building:farm001` return the name of the entity in _French_ by adding the `lang=fr` parameter
 
-```console
+```bash
 curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
   -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -H 'Accept: application/ld+json'  \
@@ -585,7 +585,7 @@ obtain the Building whose name is equal to `Big Red Barn` in _English_.
 
 #### 9️⃣ Request:
 
-```console
+```bash
 curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
   -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -H 'Accept: application/ld+json'  \
@@ -623,7 +623,7 @@ Using the Asterisk Syntax `*` to check for data in all available languages.
 
 #### 1️⃣0️⃣ Request:
 
-```console
+```bash
 curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
   -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -H 'Accept: application/ld+json'  \
@@ -684,7 +684,7 @@ This means that internally the long URIs for the `category` are being used, as c
 
 #### 1️⃣1️⃣ Request:
 
-```console
+```bash
 curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
   -H 'Accept: application/ld+json'  \
   -d 'type=https://uri.fiware.org/ns/dataModels%23Building' \
@@ -728,7 +728,7 @@ expanded, as the core context is implied as a default.
 
 If the `ngsi-context.jsonld` `@context` is included as a `Link` header in the request, the response will convert all the attribute names to short names, and in the case of a **VocabularyProperty**, use the short names for the value as well.
 
-```console
+```bash
 curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
   -H 'Accept: application/ld+json'  \
   -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -790,7 +790,7 @@ The `alternate-context.jsonld` `@context` file maps all the terms and enumeratio
 
 When `alternate-context.jsonld` included as a `Link` header in the request, the response will convert all the attribute names to short names used in `alternate-context.jsonld`, and in the case of a **VocabularyProperty**, return the short names for the value as well.
 
-```console
+```bash
 curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
   -H 'Accept: application/ld+json'  \
   -H 'Link: <http://context/alternate-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -835,7 +835,7 @@ In the response the category attribute is renamed `kategorie` and the values `ba
 
 To make a key-values or simplified request, include the `format=simplified'` parameter
 
-```console
+```bash
 curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:barn002' \
   -H 'Accept: application/ld+json'  \
   -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
@@ -865,7 +865,7 @@ The simplified response retains the `vocab` attribute (which implies that the ri
 
 When querying using the `q` parameter, also include the `expandValues` parameter to indicate which attributes in the query are **VocabularyProperties**
 
-```console
+```bash
 curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
   -H 'Accept: application/ld+json'  \
   -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/json"' \
