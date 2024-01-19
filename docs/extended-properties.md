@@ -340,7 +340,7 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
     "id": "urn:ngsi-ld:Building:barn002",
     "type": "Building",
     "category": {
-        "type": "VocabProperty",
+        "type": "VocabularyProperty",
         "vocab": ["barn"]
     },
     "address": {

@@ -128,7 +128,8 @@ the tutorials in a cloud development environment directly from your browser or y
 [Merge-Patch and Put](https://github.com/FIWARE/tutorials.Merge-Patch-Put/tree/NGSI-LD) <br/> &nbsp; 106.
 [Entity Relationships](https://github.com/FIWARE/tutorials.Entity-Relationships/tree/NGSI-LD) <br/> &nbsp; 107.
 [Subscriptions](https://github.com/FIWARE/tutorials.Subscriptions/tree/NGSI-LD) <br/> &nbsp; 108.
-[Temporal Operations](https://github.com/FIWARE/tutorials.Short-Term-History/tree/NGSI-LD) <br/>
+[Temporal Operations](https://github.com/FIWARE/tutorials.Short-Term-History/tree/NGSI-LD) <br/> 109.
+[Extended Properties](https://github.com/FIWARE/tutorials.Extended-Properties/tree/NGSI-LD) <br/>
 
 ### Internet of Things, Robots and third-party systems
 
