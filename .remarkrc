@@ -1,7 +1,7 @@
 {
     "plugins": {
         "remark-lint-no-undefined-references": {
-            "allow": [ "!TIP", "!NOTE"]
+            "allow": [ "!TIP", "!NOTE", "!CAUTION"]
         }
     }
 }
