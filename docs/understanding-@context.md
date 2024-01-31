@@ -361,8 +361,7 @@ FillingLevelSensor:
             $ref: https://fiware.github.io/tutorials.NGSI-LD/models/saref-terms.yaml#/fillingLevel
 ```
 
-4.  The list of controlled attributes can be reduced to those measured by Agricultural devices (e.g `airPollution`,
-    `atmosphericPressure`, `depth`, `eatingActivity`, `fillingLevel`, `humidity`, `location`, `milking`, `motion`,
+4.  The list of controlled attributes can be reduced to those measured by Agricultural devices (e.g `depth`, `eatingActivity`, `humidity`, `location`, `milking`, `motion`,
     `movementActivity`, `occupancy`, `precipitation`, `pressure`, `soilMoisture`, `solarRadiation`, `temperature`,
     `waterConsumption`, `weatherConditions`, `weight`, `windDirection`, `windSpeed`)
 
@@ -450,8 +449,6 @@ Opening the generated file, the following structure can be found:
         "actuator": "https://w3id.org/saref#actuator",
         "additionalName": "schema:additionalName",
         "address": "schema:address",
-        "airPollution": "https://w3id.org/saref#airPollution",
-        "atmosphericPressure": "https://w3id.org/saref#atmosphericPressure",
         "barn": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn",
         "batteryLevel": "fiware:batteryLevel",
         "category": "fiware:category",
@@ -461,6 +458,7 @@ Opening the generated file, the following structure can be found:
         "controlledAsset": "fiware:controlledAsset",
         "controlledProperty": "fiware:controlledProperty",
         "cowshed": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dcowshed",
+        "depth": "https://w3id.org/saref#depth",
 ...etc
     }
 }
@@ -585,13 +583,12 @@ Opening the generated file, the following structure can be found:
             "@type": "xsd:string"
         },
         "address": "schema:address",
-        "airPollution": "https://w3id.org/saref#airPollution",
-        "atmosphericPressure": "https://w3id.org/saref#atmosphericPressure",
         "barn": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn",
         "controlledAsset": {
             "@id": "fiware:controlledAsset",
             "@type": "@id"
         },
+        "depth": "https://w3id.org/saref#depth",
 ... etc
     },
     "@graph": [
