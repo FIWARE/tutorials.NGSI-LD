@@ -60,7 +60,7 @@ seen on the UltraLight device monitor web page found at: `http://localhost:3000/
 ## Architecture
 
 This application builds on the components and dummy IoT devices created in
-[previous tutorials](https://github.com/FIWARE/tutorials.IoT-Agent/tree/NGSI-LD). It will use two FIWARE components: the
+[the IoT tutorials](https://github.com/FIWARE/tutorials.IoT-Agent/tree/NGSI-LD). It will use two FIWARE components: the
 [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) and the
 [IoT Agent for Ultralight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/). In addition, the optional temporal
 interface is serviced using an add-on called **Mintaka**.
