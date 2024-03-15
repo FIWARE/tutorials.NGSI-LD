@@ -42,7 +42,7 @@ async function displayLands(req, res) {
                           stack: errorDetail.title
                       }
                   }
-                : { title: 'Error', error}
+                : { title: 'Error', error }
         );
     }
 }

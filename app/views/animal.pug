@@ -5,9 +5,9 @@ block content
     | #{animal.name} - 
     - if (animal.id)
       small
-        code
+        code(style="text-transform:initial")
           strong
-          | #{animal.id}
+            | #{animal.id}
  
   - if (animal.species == 'dairy cattle')
     div

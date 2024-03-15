@@ -24,7 +24,7 @@ async function displayAnimal(req, res) {
             { options: 'concise' },
             ngsiLD.setHeaders(req.session.access_token, LinkHeader)
         );
-        return res.render('animal', { title: animal.name, animal});
+        return res.render('animal', { title: animal.name, animal });
     } catch (error) {
         const errorDetail = error.error;
         debug(errorDetail);

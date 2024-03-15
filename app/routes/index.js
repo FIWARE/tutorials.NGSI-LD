@@ -11,7 +11,7 @@ const History = require('../controllers/history');
 const DeviceListener = require('../controllers/iot/command-listener');
 const Security = require('../controllers/security');
 const _ = require('lodash');
-const debug = require('debug')('tutorial:ngsi-ld');
+//const debug = require('debug')('tutorial:ngsi-ld');
 
 const TRANSPORT = process.env.DUMMY_DEVICES_TRANSPORT || 'HTTP';
 const DEVICE_PAYLOAD = process.env.DUMMY_DEVICES_PAYLOAD || 'ultralight';
