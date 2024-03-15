@@ -1,13 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const monitor = require('../lib/monitoring');
+const Constants = require('../lib/constants');
 const Device = require('../controllers/ngsi-ld/device');
 const Farm = require('../controllers/ngsi-ld/farm');
+const Animal = require('../controllers/ngsi-ld/animal');
+const Land = require('../controllers/ngsi-ld/land');
 const Person = require('../controllers/ngsi-ld/person');
 const History = require('../controllers/history');
 const DeviceListener = require('../controllers/iot/command-listener');
 const Security = require('../controllers/security');
 const _ = require('lodash');
+const debug = require('debug')('tutorial:ngsi-ld');
 
 const TRANSPORT = process.env.DUMMY_DEVICES_TRANSPORT || 'HTTP';
 const DEVICE_PAYLOAD = process.env.DUMMY_DEVICES_PAYLOAD || 'ultralight';
@@ -18,25 +22,6 @@ const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
 const NOTIFY_ATTRIBUTES = ['controlledAsset', 'type', 'filling', 'humidity', 'temperature'];
 
 const numberOfPigs = process.env.PIG_COUNT || 5;
-
-const NGSI_LD_FARMS = [
-    {
-        href: 'app/farm/urn:ngsi-ld:Building:farm001',
-        name: 'Farm 1'
-    },
-    {
-        href: 'app/farm/urn:ngsi-ld:Building:farm002',
-        name: 'Farm 2'
-    },
-    {
-        href: 'app/farm/urn:ngsi-ld:Building:farm003',
-        name: 'Farm 3'
-    },
-    {
-        href: 'app/farm/urn:ngsi-ld:Building:farm004',
-        name: 'Farm 4'
-    }
-];
 
 // Error handler for async functions
 function catchErrors(fn) {
@@ -60,13 +45,17 @@ function broadcastEvents(req, item, types) {
 // Handles requests to the main page
 router.get('/', function (req, res) {
     const securityEnabled = SECURE_ENDPOINTS;
-    const buildings = NGSI_LD_FARMS;
+    const buildings = Constants.BUILDINGS;
+    const animals = Constants.ANIMALS;
+    const parcels = Constants.LAND;
     res.render('index', {
         success: req.flash('success'),
         errors: req.flash('error'),
         info: req.flash('info'),
         securityEnabled,
         buildings,
+        animals,
+        parcels,
         ngsi: 'ngsi-ld'
     });
 });
@@ -138,6 +127,9 @@ router.get('/device/history', function (req, res) {
 
 // Viewing Store information is secured by Keyrock PDP.
 // LEVEL 1: AUTHENTICATION ONLY - Users must be logged in to view the store page.
+router.get('/app/animal/:id', Security.authenticate, Animal.display);
+router.get('/app/land', Security.authenticate, Land.display);
+
 router.get('/app/farm/:id', Security.authenticate, Farm.display);
 router.get('/app/person/:id', Security.authenticate, Person.display);
 router.get('/app/device-details/:id', Security.authenticate, Device.display);
@@ -180,6 +172,7 @@ router.get(
 // Whenever a subscription is received, display it on the monitor
 // and notify any interested parties using Socket.io
 router.post('/subscription/:type', (req, res) => {
+    //debug(req.headers)
     monitor('notify', req.params.type + ' received', req.body);
     _.forEach(req.body.data, (item) => {
         broadcastEvents(req, item, NOTIFY_ATTRIBUTES);

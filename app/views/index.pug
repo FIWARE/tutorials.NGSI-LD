@@ -59,6 +59,16 @@ block content
         a(href=`${building.href}`)  #{building.name}
         | &nbsp;
 
+    h3 Animal Details
+    each animal in animals
+      a(href=`${animal.href}`)  #{animal.name}
+      | &nbsp;
+
+    h3 Land Details
+    each parcel in parcels
+      a(href=`${parcel.href}`)  #{parcel.name}
+      | &nbsp;
+
   - if (securityEnabled)
     div
       h3 Restricted Areas

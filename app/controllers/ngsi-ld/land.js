@@ -10,35 +10,43 @@ const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context
 //   curl -X GET \
 //     'http://{{orion}}/ngsi-ld/v1/entities/?type=person&options=keyValues'
 //
-async function displayPerson(req, res) {
-    debug('displayPerson');
+async function displayLands(req, res) {
+    debug('displayLands');
     // If the user is not authorized, display the main page.
     if (!res.locals.authorized) {
         req.flash('error', 'Access Denied');
         return res.redirect('/');
     }
     try {
-        monitor('NGSI', 'readEntity ' + req.params.id);
-        const person = await ngsiLD.readEntity(
-            req.params.id,
-            { options: 'keyValues' },
+        monitor('NGSI', 'listEntities ' + req.params.id);
+        const lands = await ngsiLD.listEntities(
+            {
+                type: 'Agriparcel',
+                options: 'concise'
+            },
             ngsiLD.setHeaders(req.session.access_token, LinkHeader)
         );
-        return res.render('person', { title: person.name, person });
+        debug(lands);
+        return res.render('lands', { title: 'Fields', lands });
     } catch (error) {
         const errorDetail = error.error;
-        debug(errorDetail);
+        debug(error);
         // If no animal has been found, display an error screen
-        return res.render('error', {
-            title: `Error: ${errorDetail.title}`,
-            message: errorDetail.detail,
-            error: {
-                stack: errorDetail.title
-            }
-        });
+        return res.render(
+            'error',
+            errorDetail
+                ? {
+                      title: `Error: ${errorDetail.title}`,
+                      message: errorDetail.detail,
+                      error: {
+                          stack: errorDetail.title
+                      }
+                  }
+                : { title: 'Error', error}
+        );
     }
 }
 
 module.exports = {
-    display: displayPerson
+    display: displayLands
 };

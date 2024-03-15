@@ -10,8 +10,8 @@ const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context
 //   curl -X GET \
 //     'http://{{orion}}/ngsi-ld/v1/entities/?type=person&options=keyValues'
 //
-async function displayPerson(req, res) {
-    debug('displayPerson');
+async function displayAnimal(req, res) {
+    debug('displayAnimal');
     // If the user is not authorized, display the main page.
     if (!res.locals.authorized) {
         req.flash('error', 'Access Denied');
@@ -19,26 +19,31 @@ async function displayPerson(req, res) {
     }
     try {
         monitor('NGSI', 'readEntity ' + req.params.id);
-        const person = await ngsiLD.readEntity(
+        const animal = await ngsiLD.readEntity(
             req.params.id,
-            { options: 'keyValues' },
+            { options: 'concise' },
             ngsiLD.setHeaders(req.session.access_token, LinkHeader)
         );
-        return res.render('person', { title: person.name, person });
+        return res.render('animal', { title: animal.name, animal});
     } catch (error) {
         const errorDetail = error.error;
         debug(errorDetail);
         // If no animal has been found, display an error screen
-        return res.render('error', {
-            title: `Error: ${errorDetail.title}`,
-            message: errorDetail.detail,
-            error: {
-                stack: errorDetail.title
-            }
-        });
+        return res.render(
+            'error',
+            errorDetail
+                ? {
+                      title: `Error: ${errorDetail.title}`,
+                      message: errorDetail.detail,
+                      error: {
+                          stack: errorDetail.title
+                      }
+                  }
+                : {}
+        );
     }
 }
 
 module.exports = {
-    display: displayPerson
+    display: displayAnimal
 };

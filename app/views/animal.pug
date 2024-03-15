@@ -1,0 +1,54 @@
+extends layout
+
+block content
+  h1
+    | #{animal.name} - 
+    - if (animal.id)
+      small
+        code
+          strong
+          | #{animal.id}
+ 
+  - if (animal.species == 'dairy cattle')
+    div
+      div(class="card" style="float:left; background: #efefef;")
+        img(src=`/img/cow/${animal.name}.jpg` width="256px" height="256px") 
+  div(style="clear:both")
+  div
+    ul
+      - if (animal.species)
+        li 
+          b Species: 
+          | #{animal.species}
+      - if (animal.sex)
+        li 
+          b Sex: 
+          | #{animal.sex.vocab}
+      - if (animal.legalId)
+        li 
+          b Legal ID: 
+            code
+              strong
+              | #{animal.legalId}
+      - if (animal.phenologicalCondition)
+        li 
+          b Phenological Condition: 
+          | #{animal.phenologicalCondition.vocab}
+      - if (animal.healthCondition)
+        li
+          b Health: 
+          | #{animal.healthCondition.vocab}
+      - if (animal.reproductiveCondition)
+        li 
+          b Reproductive Condition: 
+          | #{animal.reproductiveCondition.vocab}
+
+    - if (animal.comment)
+      div(class="card")
+        h3 Comment
+        pre 
+          | #{animal.comment.value}
+      br
+  summary
+    details
+      pre #{JSON.stringify(animal, null, 4)}

@@ -8,8 +8,7 @@ const debug = require('debug')('tutorial:ngsi-ld');
 const monitor = require('../../lib/monitoring');
 const ngsiLD = require('../../lib/ngsi-ld');
 const _ = require('lodash');
-const Port = process.env.WEB_APP_PORT || '3000';
-const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://localhost:' + Port + '/data-models/ngsi-context.jsonld';
+const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context.jsonld';
 const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json">';
 
 function mapTileUrl(zoom, location) {
@@ -56,11 +55,15 @@ async function displayFarm(req, res) {
         building.mapUrl = mapTileUrl(15, building.location);
         return res.render('building', { title: building.name, building });
     } catch (error) {
-        debug(error);
-        // If no building has been found, display an error screen
+        const errorDetail = error.error;
+        debug(errorDetail);
+        // If no animal has been found, display an error screen
         return res.render('error', {
-            title: 'Error',
-            error
+            title: `Error: ${errorDetail.title}`,
+            message: errorDetail.detail,
+            error: {
+                stack: errorDetail.title
+            }
         });
     }
 }
