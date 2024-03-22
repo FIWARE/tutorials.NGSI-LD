@@ -1,5 +1,5 @@
 [![FIWARE Core Context Management](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/core.svg)](https://github.com/FIWARE/catalogue/blob/master/core/README.md)
-[![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.07.01_60/gs_cim009v010701p.pdf)
+[![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.08.01_60/gs_cim009v010801p.pdf)
 
 **Description:** This tutorial examines the keyword syntax tokens of JSON-LD and introduces custom property types which extend NGSI-LD properties to cover multilingual capabilities and preferred enumeration names whilst reusing the data from the [Smart Farm example](https://github.com/FIWARE/tutorials.Getting-Started/tree/NGSI-LD). The tutorial uses
 [cUrl](https://ec.haxx.se/) commands throughout.

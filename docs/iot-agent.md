@@ -5,7 +5,7 @@
 [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual) IoT
 devices created in the [previous tutorial](https://github.com/FIWARE/tutorials.IoT-Sensors) so that measurements can be
 read and commands can be sent using
-[NGSI LD](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.07.01_60/gs_cim009v010701p.pdf) requests sent to an
+[NGSI LD](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.08.01_60/gs_cim009v010801p.pdf) requests sent to an
 NGSI-LD compliant context broker such as the [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/).
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
@@ -486,7 +486,7 @@ however it has been included here for completeness.
 
 ### Provisioning a Sensor
 
-The NGSI-LD [specification](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.07.01_60/gs_cim009v010701p.pdf)
+The NGSI-LD [specification](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.08.01_60/gs_cim009v010801p.pdf)
 mandates full URNs when creating context data entities, however the incoming messages from the devices will not be aware
 of this convention. Furthermore, the attribute name on the context data entity should match the short names found within
 the associated `@context` file. These mappings can be defined at the service group level as seen in the previous
