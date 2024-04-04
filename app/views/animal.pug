@@ -39,6 +39,9 @@ block content
                   - if (animal.reproductiveCondition)
                     dt.col-lg-3 Reproductive Condition: 
                     dd.col-lg-9 #{animal.reproductiveCondition.vocab||animal.reproductiveCondition}
+                  - if (animal.fedWith)
+                    dt.col-lg-3 Fed With: 
+                    dd.col-lg-9 #{animal.fedWith}
                   - if (animal.calvedBy)
                     dt.col-lg-3 Calved by:
                     dd.col-lg-9
@@ -47,6 +50,10 @@ block content
                     dt.col-lg-3 Sired by:
                     dd.col-lg-9
                       a(class="link-underline link-underline-opacity-0" href=`/app/animal/${animal.siredBy.object}`) #{animal.siredBy.object}
+                  - if (animal.weight)
+                    dt.col-lg-3 Weight
+                    dd.col-lg-9
+                      | #{animal.weight.value} #{animal.weight.unitCode}
 
   - if (animal.comment)
     div.row
@@ -62,4 +69,5 @@ block content
         div.card-body
           summary.list-unstyled
             details
-              pre #{JSON.stringify(animal, null, 4)}
+              pre 
+                code #{JSON.stringify(animal, null, 4)}
