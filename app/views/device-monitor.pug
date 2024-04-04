@@ -16,22 +16,21 @@ block content
     | &nbsp;doors and only security and managers can &nbsp;
     strong ring
     | &nbsp;the alarm bell. 
-  div.container(style="padding:10px")
-    div(class="card" style="margin:20px")
+  div.row
+    div.col
       +devicesForFarm('001')
-    div(class="card" style="margin:20px")
+    div.col
       +devicesForFarm('002')
-  div.container(style="padding:10px")
-    div(class="card" style="margin:20px")
+  div.row
+    div.col
       +devicesForFarm('003')
-    div(class="card" style="margin:20px")
+    div.col
       +devicesForFarm('004')
 
-  div
-    hr
-
-    h2= traffic
-    ul(id="northbound")
+  div.row
+    div.col
+      h2= traffic
+      ul.list-unstyled(id="northbound")
 
   hr
   small
@@ -46,9 +45,9 @@ block content
     | ,
     a(href='https://www.flaticon.com/authors/those-icons' title='Those Icons') Those Icons
     |   and 
-    a(href='http://www.freepik.com', title='Freepik') Freepik
+    a(href='https://www.flaticon.com/authors/freepik', title='Freepik') Freepik
     |  from 
-    a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
+    a(href='https://www.flaticon.com', title='Flaticon') www.flaticon.com
     |  licensed by 
     a(href='http://creativecommons.org/licenses/by/3.0/', title='Creative Commons BY 3.0', target='_blank') CC 3.0 BY
 

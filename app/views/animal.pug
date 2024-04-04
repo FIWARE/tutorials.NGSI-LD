@@ -9,46 +9,57 @@ block content
           strong
             | #{animal.id}
  
-  - if (animal.species == 'dairy cattle')
-    div
-      div(class="card" style="float:left; background: #efefef;")
-        img(src=`/img/cow/${animal.name}.jpg` width="256px" height="256px") 
-  div(style="clear:both")
-  div
-    ul
-      - if (animal.species)
-        li 
-          b Species: 
-          | #{animal.species}
-      - if (animal.sex)
-        li 
-          b Sex: 
-          | #{animal.sex.vocab}
-      - if (animal.legalId)
-        li 
-          b Legal ID: 
-            code
-              strong
-              | #{animal.legalId}
-      - if (animal.phenologicalCondition)
-        li 
-          b Phenological Condition: 
-          | #{animal.phenologicalCondition.vocab}
-      - if (animal.healthCondition)
-        li
-          b Health: 
-          | #{animal.healthCondition.vocab}
-      - if (animal.reproductiveCondition)
-        li 
-          b Reproductive Condition: 
-          | #{animal.reproductiveCondition.vocab}
+  div.row
+    div.col
+      div(class="card m-2")
+        div.card-body
+          div.container
+            div.row
+              - if (animal.species == 'dairy cattle')
+                div.col-lg-3
+                  img.img-thumbnail(src=`/img/cow/${animal.name}.jpg` width="256px" height="256px") 
+              div.col-lg-9
+                dl.row
+                  - if (animal.species)
+                    dt.col-lg-3 Species: 
+                    dd.col-lg-9 #{animal.species}
+                  - if (animal.sex)
+                    dt.col-lg-3 Sex: 
+                    dd.col-lg-9 #{animal.sex.vocab}
+                  - if (animal.legalId)
+                    dt.col-lg-3 Legal ID: 
+                    dd.col-lg-9
+                      strong #{animal.legalId}
+                  - if (animal.phenologicalCondition)
+                    dt.col-lg-3 Phenological Condition: 
+                    dd.col-lg-9 #{animal.phenologicalCondition.vocab}
+                  - if (animal.healthCondition)
+                    dt.col-lg-3 Health: 
+                    dd.col-lg-9 #{animal.healthCondition.vocab}
+                  - if (animal.reproductiveCondition)
+                    dt.col-lg-3 Reproductive Condition: 
+                    dd.col-lg-9 #{animal.reproductiveCondition.vocab}
+                  - if (animal.calvedBy)
+                    dt.col-lg-3 Calved by:
+                    dd.col-lg-9
+                      a(class="link-underline link-underline-opacity-0" href=`/app/animal/${animal.calvedBy.object}`) #{animal.calvedBy.object}
+                  - if (animal.siredBy)
+                    dt.col-lg-3 Sired by:
+                    dd.col-lg-9
+                      a(class="link-underline link-underline-opacity-0" href=`/app/animal/${animal.siredBy.object}`) #{animal.siredBy.object}
 
-    - if (animal.comment)
-      div(class="card")
-        h3 Comment
-        pre 
-          | #{animal.comment.value}
-      br
-  summary
-    details
-      pre #{JSON.stringify(animal, null, 4)}
+  - if (animal.comment)
+    div.row
+      div.col
+        div(class="card m-2")
+          div.card-body
+            h3 Comment
+            pre 
+              | #{animal.comment.value}
+  div.row
+    div.col
+      div(class="card m-2")
+        div.card-body
+          summary.list-unstyled
+            details
+              pre #{JSON.stringify(animal, null, 4)}

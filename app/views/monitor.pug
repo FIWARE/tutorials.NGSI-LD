@@ -2,21 +2,22 @@ extends layout
 
 block content
   h1= title
-  
-  div( class="card" style="margin:10px 0px; float: left; min-width=50%;")
-    p Recent Requests:
-    ul#messages
+  div(class="row p-2")
+    div.col
+      div( class="card p-2" )
+        p Recent Requests:
+        ul#messages
+    div.col
+      div(class="card p-2")
+        p Recent Notifications:
+        ul#notifications
 
-  div(class="card" style="margin:10px; float: left; min-width=50%;")
-    p Recent Notifications:
-    ul#notifications
-
-  div(style="clear: both;")
-
-  div(class="card")
-    p Last Payload:
-    pre
-      code#payload
+  div(class="row p-2")
+    div.col
+      div(class="card p-2")
+        p Last Payload:
+        pre
+          code#payload
 
 
 

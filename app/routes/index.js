@@ -10,6 +10,11 @@ const Person = require('../controllers/ngsi-ld/person');
 const History = require('../controllers/history');
 const DeviceListener = require('../controllers/iot/command-listener');
 const Security = require('../controllers/security');
+
+const ngsiLD = require('../lib/ngsi-ld');
+const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context.jsonld';
+const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json">';
+
 const _ = require('lodash');
 //const debug = require('debug')('tutorial:ngsi-ld');
 
@@ -43,19 +48,45 @@ function broadcastEvents(req, item, types) {
 }
 
 // Handles requests to the main page
-router.get('/', function (req, res) {
+router.get('/', async function (req, res) {
     const securityEnabled = SECURE_ENDPOINTS;
-    const buildings = Constants.BUILDINGS;
-    const animals = Constants.ANIMALS;
-    const parcels = Constants.LAND;
+
+    const headers = ngsiLD.setHeaders(req.session.access_token, LinkHeader);
+    let entities = await ngsiLD.listEntities(
+            {
+                type: 'Building,Animal,AgriParcel',
+                options: 'keyValues',
+                limit: 200
+            },
+            headers
+        );
+
+    entities = Array.isArray(entities) ? entities : [entities];
+    entities = _.groupBy(entities, (e) => {
+        return e.type;
+    });
+
+    if(entities.Animal){
+        entities.Animal = _.groupBy(entities.Animal, (e) => {
+            return e.species;
+        });
+    } else {
+        entities.Animal = {
+            'dairy cattle': [],
+            'pig': []
+        }
+    }
+
     res.render('index', {
         success: req.flash('success'),
         errors: req.flash('error'),
         info: req.flash('info'),
         securityEnabled,
-        buildings,
-        animals,
-        parcels,
+        buildings: entities.Building || [],
+        pigs : entities.Animal.pig || [],
+        cows : entities.Animal['dairy cattle'] || [],
+        parcels: entities.AgriParcel || [],
+        devices: entities.Device || [],
         ngsi: 'ngsi-ld'
     });
 });
@@ -128,46 +159,12 @@ router.get('/device/history', function (req, res) {
 // Viewing Store information is secured by Keyrock PDP.
 // LEVEL 1: AUTHENTICATION ONLY - Users must be logged in to view the store page.
 router.get('/app/animal/:id', Security.authenticate, Animal.display);
-router.get('/app/land', Security.authenticate, Land.display);
+router.get('/app/agriparcel/:id', Security.authenticate, Land.display);
 
-router.get('/app/farm/:id', Security.authenticate, Farm.display);
+router.get('/app/building/:id', Security.authenticate, Farm.display);
 router.get('/app/person/:id', Security.authenticate, Person.display);
 router.get('/app/device-details/:id', Security.authenticate, Device.display);
-// Display products for sale
-router.get('/app/farm/:id/till', Farm.displayTillInfo);
-// Render warehouse notifications
-router.get('/app/farm/:id/warehouse', Farm.displayWarehouseInfo);
-// Buy something.
-router.post('/app/inventory/:inventoryId', catchErrors(Farm.buyItem));
 
-// Changing Prices is secured by a Policy Decision Point (PDP).
-// LEVEL 2: BASIC AUTHORIZATION - Only managers may change prices - use Keyrock as a PDP
-// LEVEL 3: XACML AUTHORIZATION - Only managers may change prices are restricted via XACML
-//                                - use Authzforce as a PDP
-router.get(
-    '/app/price-change',
-    function (req, res, next) {
-        // Use Advanced Autorization if Authzforce is present.
-        return AUTHZFORCE_ENABLED
-            ? Security.authorizeAdvancedXACML(req, res, next)
-            : Security.authorizeBasicPDP(req, res, next);
-    },
-    Farm.priceChange
-);
-// Ordering Stock is secured by a Policy Decision Point (PDP).
-// LEVEL 2: BASIC AUTHORIZATION - Only managers may order stock - use Keyrock as a PDP
-// LEVEL 3: XACML AUTHORIZATION - Only managers may order stock are restricted via XACML
-//                                - use Authzforce as a PDP
-router.get(
-    '/app/order-stock',
-    function (req, res, next) {
-        // Use Advanced Authorization if Authzforce is present.
-        return AUTHZFORCE_ENABLED
-            ? Security.authorizeAdvancedXACML(req, res, next)
-            : Security.authorizeBasicPDP(req, res, next);
-    },
-    Farm.orderStock
-);
 
 // Whenever a subscription is received, display it on the monitor
 // and notify any interested parties using Socket.io

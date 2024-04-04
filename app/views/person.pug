@@ -2,7 +2,19 @@ extends layout
 
 block content
   h1= title
-  div
-    ul
-      li  name: #{person.name}
-      li  job: #{person.jobTitle}
+  div.row
+    div.col
+      ul.list-unstyled
+        - if (person.jobTitle)
+          li  job: #{person.jobTitle.name}
+        - if (person.owns)
+          li
+            | owns: 
+            a(class="link-underline link-underline-opacity-0" href=`/app/building/${person.owns}`) #{person.owns}
+  div.row
+    div.col
+      div(class="card m-2")
+        div.card-body
+          summary.list-unstyled
+            details
+              pre #{JSON.stringify(person, null, 4)}

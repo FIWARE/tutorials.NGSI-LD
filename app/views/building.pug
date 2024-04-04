@@ -8,58 +8,83 @@ block content
   script(src='https://code.jquery.com/jquery-1.11.1.js')
 
   h1= title
-  div
-    div(class="card" style="float:left; background: #efefef;")
-      img(src=`${building.mapUrl}`)
-      small(style="display: inherit")
-        a(href="https://www.openstreetmap.org/copyright")
-          | © OpenStreetMap contributors
-    div(style="float:left; padding:20px; border:none;")
-      address
-        | #{building.address.streetAddress} #[br]
-        | #{building.address.addressLocality} #[br]
-        | #{building.address.postalCode} #[br]
-        | #{building.address.addressRegion} #[br]
+  div.row
+    div.col-lg
+      div(class="card m-2")
+        div.card-body
+          div.container
+            div.row
+              div.col-sm-8
+                img.img-thumbnail(src=`${building.mapUrl}`)
+                small(style="display: inherit")
+                  a(href="https://www.openstreetmap.org/copyright")
+                    | © OpenStreetMap contributors
+              div.col-sm-4
+                dl.row
+                  dt address: 
+                  dd
+                    address
+                      | #{building.address.streetAddress} #[br]
+                      | #{building.address.addressLocality} #[br]
+                      | #{building.address.postalCode} #[br]
+                      | #{building.address.addressRegion} #[br]
 
-  div(style="clear:both")
-  div
-    ul
-      li location: #{building.location.coordinates}
-      li category: #{building.category}
-      li owner: #{building.owner}
+    div.col-lg
+      div(class="card m-2")
+        div.card-body
+          dl.row
+            dt.col-lg-3 location: 
+            dd.col-lg-9 #{building.location.coordinates}
+            dt.col-lg-3 category: 
+            dd.col-lg-9 #{building.category}
+            dt.col-lg-3 owner:
+            dd.col-lg-9 
+              a(class="link-underline link-underline-opacity-0" href=`/app/person/${building.owner}`) #{building.owner}
+  
+  div.row
+    div.col
+      div(class="card m-2")
+        div.card-body
+          summary.list-unstyled
+            details
+              pre #{JSON.stringify(building, null, 4)}
+  div.row
+    div.col
+      div(class="card m-2")
+        div.card-body
+          form.p-2(action="/device/command" method="POST")
+            h3 Feedstock levels
+            p Add, remove or refill the hay in the barn.
+            div(style="background-repeat: no-repeat;background-image: url('/img/warehouse-full.svg')") &nbsp;&nbsp;
+              code(style="margin-left: 1em;")
+                span.device(id=`filling${building.id.replace(/\D/g,'')}`) &nbsp;
+            
+              input.d-none(type="text" name="id" value=`${building.id.replace(/\D/g,'')}`)
+              input(type="submit" value="refill" name="action" class="ms-2 btn btn-primary btn-sm")
+              input(type="submit" value="add" name="action" class="ms-2 btn btn-primary btn-sm")
+              input(type="submit" value="remove" name="action" class="ms-2 btn btn-primary btn-sm")
 
-    form(action="/device/command" method="POST" class="card" style="width: 30rem;margin:20px")
-      h3 Feedstock levels
-      p Add, remove or refill the hay in the barn.
-      div(style="background-repeat: no-repeat;background-image: url('/img/warehouse-full.svg')") &nbsp;&nbsp;
-        code(style="margin-left: 1em;")
-          span.device(id=`filling${building.id.replace(/\D/g,'')}`) &nbsp;
-      p
-      input(type="text" style="display:none"  name="id" value=`${building.id.replace(/\D/g,'')}`)
-      input(type="submit" style="margin:0px 2px;" value="refill" name="action" class="button") 
-      input(type="submit" style="margin:0px 2px;" value="add" name="action" class="button") 
-      input(type="submit" style="margin:0px 2px;" value="remove" name="action" class="button") 
+          form.p-2(action="/device/command" method="POST")
+            h3 Thermostat
+            p Raise or lower the desired temperature of the barn.
+            div(style="background-repeat: no-repeat;background-image: url('/img/temperature.svg')") &nbsp;&nbsp;
+              code(style="margin-left: 1em;")
+                span( class="device p-2" id=`temperature${building.id.replace(/\D/g,'')}`) 25
+            
+              input.d-none(type="text" name="id" value=`${building.id.replace(/\D/g,'')}`)
+              input(type="submit"  value="raise" name="action" class="ms-2 btn btn-primary btn-sm") 
+              input(type="submit" value="lower" name="action" class="ms-2 btn btn-primary btn-sm") 
 
-    form(action="/device/command" method="POST" class="card" style="width: 30rem;margin:20px")
-      h3 Thermostat
-      p Raise or lower the desired temperature of the barn.
-      div(style="background-repeat: no-repeat;background-image: url('/img/temperature.svg')") &nbsp;&nbsp;
-        code(style="margin-left: 1em;")
-          span.device(id=`temperature${building.id.replace(/\D/g,'')}`) 25
-      p
-      input(type="text" style="display:none"  name="id" value=`${building.id.replace(/\D/g,'')}`)
-      input(type="submit" style="margin:0px 2px;" value="raise" name="action" class="button") 
-      input(type="submit" style="margin:0px 2px;" value="lower" name="action" class="button") 
+          form.p-2(action="/device/command" method="POST")
+            h3 Current Weather Conditions: 
 
-    form(action="/device/command" method="POST" class="card" style="width: 30rem;margin:20px")
-      h3 Current Weather Conditions: 
-        span(id="weather") cloudy
-      p Alter the current weather
-      p
-      input(type="text" style="display:none"  name="id" value="weather")
-      input(type="submit" style="margin:0px 2px;" value="sunny" name="action" class="button") 
-      input(type="submit" style="margin:0px 2px;" value="raining" name="action" class="button")
-      input(type="submit" style="margin:0px 2px;" value="cloudy" name="action" class="button") 
+            p Alter the current weather
+            span.mx-2(id="weather") cloudy
+            img(id="weathericon2" class="ps-2" src='/img/none.svg' width="32" height="32")
+            input.d-none(type="text" name="id" value="weather")
+            input(type="submit" value="sunny" name="action" class="ms-2 btn btn-primary btn-sm") 
+            input(type="submit" value="raining" name="action" class="ms-2 btn btn-primary btn-sm")
+            input(type="submit" value="cloudy" name="action" class="ms-2 btn btn-primary btn-sm") 
 
   script.
     $(function () {
@@ -67,6 +92,7 @@ block content
       socket.on('weather', function (msg) {
          $('#weather').text(msg);
          $('#weathericon').css('background-image', "url('/img/" + msg + ".svg')");
+         $('#weathericon2').css('background-image', "url('/img/" + msg + ".svg')");
       });
       $('span.device').each(function (index, value) {
         const device = $(this).attr('id');

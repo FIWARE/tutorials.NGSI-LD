@@ -39,50 +39,75 @@ block content
             ul(style='list-style-type: none;')
               li
                 input.button(type='submit',value='User Credentials')
-  div
-    h3 Monitors
-    a(href="app/monitor") App Monitor
-    | &nbsp;
-    a(href="device/monitor") Device Monitor
-    | &nbsp;
-    a(href="device/history") Short-Term History
+  div.row
+    div.col
+      h3 Monitors
+      ul.list-inline
+        li.list-inline-item 
+          a(href="app/monitor") App Monitor
+        li.list-inline-item
+          a(href="device/monitor") Device Monitor
+        li.list-inline-item
+          a(href="device/history") Short-Term History
 
-  div
-    h3 Farm Building Details
-    - if (securityEnabled)
-      p Any logged-in user can access these:
-      each building in buildings
-        a.red(href=`${building.href}`)  #{building.name}
-        | &nbsp;
-    - else
-      each building in buildings
-        a(href=`${building.href}`)  #{building.name}
-        | &nbsp;
+  div.row
+    div.col
+      h3 Farm Buildings
+  div.row
+    div.col
+      div.card
+        div.card-body
+          - if (securityEnabled)
+            p Any logged-in user can access these:
 
-    h3 Animal Details
-    each animal in animals
-      a(href=`${animal.href}`)  #{animal.name}
-      | &nbsp;
-
-    h3 Land Details
-    each parcel in parcels
-      a(href=`${parcel.href}`)  #{parcel.name}
-      | &nbsp;
-
-  - if (securityEnabled)
-    div
-      h3 Restricted Areas
-      p Only Managers have access:
-      a.red(href="app/price-change") Change Prices
-      | &nbsp;
-      a.red(href="app/order-stock") Order Stock
-      | &nbsp;
-
+          ul.list-inline  
+            each building in buildings
+              li.list-inline-item
+                - if (securityEnabled)
+                  a(class="link-danger link-underline link-underline-opacity-0" href=`app/${building.type.toLowerCase()}/${building.id}`) 
+                    img(class="p-2" src='/img/barn.png' width="32" height="32")
+                    | #{building.name}
+                - else
+                  a(class="link-underline link-underline-opacity-0" href=`app/${building.type.toLowerCase()}/${building.id}`)
+                    img(class="p-2" src='/img/barn.png' width="32" height="32")
+                    | #{building.name}
+  div.row
+    div.col
+      h3 Animal Details
+  div.row
+    div.col
+      div.card
+        div.card-body
+          ul.list-unstyled
+            each animal in cows
+              li
+                img(class="pe-2" src='/img/cow.svg' width="32" height="32")
+                a(class="link-underline link-underline-opacity-0" href=`app/${animal.type.toLowerCase()}/${animal.id}`)  #{animal.name}
+    div.col
+      div.card
+        div.card-body
+          ul.list-unstyled
+            each animal in pigs
+              li
+                img(class="pe-2" src='/img/pig.svg' width="32" height="32")
+                a(class="link-underline link-underline-opacity-0" href=`app/${animal.type.toLowerCase()}/${animal.id}`)  #{animal.name}
+  div.row
+    div.col
+      h3 Agri Parcel Details
+  div.row
+    div.col
+      div.card
+        div.card-body
+          ul.list-inline
+            each parcel in parcels
+              li.list-inline-item
+                img(class="p-2" src='/img/corn.png' width="32" height="32")
+                a(class="link-underline link-underline-opacity-0" href=`app/${parcel.type.toLowerCase()}/${parcel.id}`)  #{parcel.name}
 
   div
     h3
     - if (session.username)
-      ul
+      ul.list-unstyled
         li
           a.button(href="logout") Log out
         li
@@ -96,3 +121,13 @@ block content
         | Security ON. &nbsp;
       - else
         | Security OFF. &nbsp;
+    | . &nbsp;Icons made by 
+    a(href='https://www.flaticon.com/authors/smashicons', title='Smashicons') Smashicons
+    | ,
+    a(href='https://www.flaticon.com/authors/those-icons' title='Those Icons') Those Icons
+    |   and 
+    a(href='https://www.flaticon.com/authors/freepik', title='Freepik') Freepik
+    |  from 
+    a(href='https://www.flaticon.com', title='Flaticon') www.flaticon.com
+    |  licensed by 
+    a(href='http://creativecommons.org/licenses/by/3.0/', title='Creative Commons BY 3.0', target='_blank') CC 3.0 BY

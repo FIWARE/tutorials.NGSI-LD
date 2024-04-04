@@ -1,55 +1,57 @@
 mixin devicesForFarm(id)
-  p(style="color:#000000;")
-    strong Devices on Farm 
-      code(style="font-size:large") urn:ngsi-ld:Building:#{id}
-  ul.devices
-    li.device(style="background-image: url('/img/warehouse-full.svg')")
-      code 
-        strong filling#{id}
-        | &nbsp;
-        span(id=`filling${id}`)
-    li.device(style="background-image: url('/img/temperature.svg')")
-      code 
-        strong temperature#{id}
-        | &nbsp;
-        span(id=`temperature${id}`)
+  div(class="card m-2")
+    div.card-body
+      div.card-title
+        strong Devices on Farm 
+          code(style="font-size:large") urn:ngsi-ld:Building:#{id}
+      ul.devices
+        li.device(style="background-image: url('/img/warehouse-full.svg')")
+          code 
+            strong filling#{id}
+            | &nbsp;
+            span(id=`filling${id}`)
+        li.device(style="background-image: url('/img/temperature.svg')")
+          code 
+            strong temperature#{id}
+            | &nbsp;
+            span(id=`temperature${id}`)
 
-    li.device(style="background-image: url('/img/tractor-idle.svg')")
-      code
-        strong tractor#{id}
+        li.device(style="background-image: url('/img/tractor-idle.svg')")
+          code
+            strong tractor#{id}
+            | &nbsp;
+            span(id=`tractor${id}`)
+        li.device(style="background-image: url('/img/water-off.svg')")
+          code 
+            strong water#{id}
+            | &nbsp;
+            span(id=`water${id}`)
+        li.device(style="background-image: url('/img/soil-humidity-high.svg')")
+          code 
+            strong humidity#{id}
+            | &nbsp;
+            span(id=`humidity${id}`)
+        li.device(style="background-image: url('/img/pig.svg')")
+          code 
+            strong pig#{id}
+            | &nbsp;
+            span(id=`pig${id}`)
+        li.device(style="background-image: url('/img/cow.svg')")
+          code 
+            strong cow#{id}
+            | &nbsp;
+            span(id=`cow${id}`)
+      form.device(action="/device/command" method="POST")
+        input(type="text" style="display:none"  name="id" value=`${id}`)
+        select(name="action")
+          option(value="start") Start Tractor
+          option(value="stop") Stop Tractor
+          option(value="refill") Refill Hay
+          option(value="add") Add Hay
+          option(value="remove") Remove Hay
+          option(value="raise") Raise Temperature
+          option(value="lower") Lower Temperature
+          option(value="on") Water On
+          option(value="off") Water Off
         | &nbsp;
-        span(id=`tractor${id}`)
-    li.device(style="background-image: url('/img/water-off.svg')")
-      code 
-        strong water#{id}
-        | &nbsp;
-        span(id=`water${id}`)
-    li.device(style="background-image: url('/img/soil-humidity-high.svg')")
-      code 
-        strong humidity#{id}
-        | &nbsp;
-        span(id=`humidity${id}`)
-    li.device(style="background-image: url('/img/pig.svg')")
-      code 
-        strong pig#{id}
-        | &nbsp;
-        span(id=`pig${id}`)
-    li.device(style="background-image: url('/img/cow.svg')")
-      code 
-        strong cow#{id}
-        | &nbsp;
-        span(id=`cow${id}`)
-  form.device(action="/device/command")
-    input(type="text" style="display:none"  name="id" value=`${id}`)
-    select(name="action")
-      option(value="start") Start Tractor
-      option(value="stop") Stop Tractor
-      option(value="refill") Refill Hay
-      option(value="add") Add Hay
-      option(value="remove") Remove Hay
-      option(value="raise") Raise Temperature
-      option(value="lower") Lower Temperature
-      option(value="on") Water On
-      option(value="off") Water Off
-    | &nbsp;
-    input(type="submit" value=`Send` class="button")
+        input(type="submit" value=`Send` class="btn btn-primary  btn-sm")
