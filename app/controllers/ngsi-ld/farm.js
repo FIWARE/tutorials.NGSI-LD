@@ -7,7 +7,6 @@
 const debug = require('debug')('tutorial:ngsi-ld');
 const monitor = require('../../lib/monitoring');
 const ngsiLD = require('../../lib/ngsi-ld');
-const _ = require('lodash');
 const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context.jsonld';
 const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json">';
 
@@ -68,7 +67,6 @@ async function displayFarm(req, res) {
     }
 }
 
-
 module.exports = {
-    display: displayFarm,
+    display: displayFarm
 };

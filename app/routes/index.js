@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const monitor = require('../lib/monitoring');
-const Constants = require('../lib/constants');
 const Device = require('../controllers/ngsi-ld/device');
 const Farm = require('../controllers/ngsi-ld/farm');
 const Animal = require('../controllers/ngsi-ld/animal');
@@ -22,7 +21,7 @@ const TRANSPORT = process.env.DUMMY_DEVICES_TRANSPORT || 'HTTP';
 const DEVICE_PAYLOAD = process.env.DUMMY_DEVICES_PAYLOAD || 'ultralight';
 const GIT_COMMIT = process.env.GIT_COMMIT || 'unknown';
 const SECURE_ENDPOINTS = process.env.SECURE_ENDPOINTS || false;
-const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
+//const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
 
 const NOTIFY_ATTRIBUTES = ['controlledAsset', 'type', 'filling', 'humidity', 'temperature'];
 
@@ -53,28 +52,28 @@ router.get('/', async function (req, res) {
 
     const headers = ngsiLD.setHeaders(req.session.access_token, LinkHeader);
     let entities = await ngsiLD.listEntities(
-            {
-                type: 'Building,Animal,AgriParcel',
-                options: 'keyValues',
-                limit: 200
-            },
-            headers
-        );
+        {
+            type: 'Building,Animal,AgriParcel',
+            options: 'keyValues',
+            limit: 200
+        },
+        headers
+    );
 
     entities = Array.isArray(entities) ? entities : [entities];
     entities = _.groupBy(entities, (e) => {
         return e.type;
     });
 
-    if(entities.Animal){
+    if (entities.Animal) {
         entities.Animal = _.groupBy(entities.Animal, (e) => {
             return e.species;
         });
     } else {
         entities.Animal = {
             'dairy cattle': [],
-            'pig': []
-        }
+            pig: []
+        };
     }
 
     res.render('index', {
@@ -83,8 +82,8 @@ router.get('/', async function (req, res) {
         info: req.flash('info'),
         securityEnabled,
         buildings: entities.Building || [],
-        pigs : entities.Animal.pig || [],
-        cows : entities.Animal['dairy cattle'] || [],
+        pigs: entities.Animal.pig || [],
+        cows: entities.Animal['dairy cattle'] || [],
         parcels: entities.AgriParcel || [],
         devices: entities.Device || [],
         ngsi: 'ngsi-ld'
@@ -164,7 +163,6 @@ router.get('/app/agriparcel/:id', Security.authenticate, Land.display);
 router.get('/app/building/:id', Security.authenticate, Farm.display);
 router.get('/app/person/:id', Security.authenticate, Person.display);
 router.get('/app/device-details/:id', Security.authenticate, Device.display);
-
 
 // Whenever a subscription is received, display it on the monitor
 // and notify any interested parties using Socket.io

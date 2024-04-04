@@ -24,7 +24,17 @@ async function displayAnimal(req, res) {
             { options: 'concise' },
             ngsiLD.setHeaders(req.session.access_token, LinkHeader)
         );
-        return res.render('animal', { title: animal.name, animal });
+
+        let imgId = animal.id.substring(animal.id.length - 3);
+
+        if (imgId < 100) {
+            imgId = `00${imgId % 10}`;
+        }
+
+        console.log(imgId);
+        //animal.img=)
+
+        return res.render('animal', { title: animal.name, animal, imgId });
     } catch (error) {
         const errorDetail = error.error;
         debug(errorDetail);

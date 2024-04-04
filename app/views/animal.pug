@@ -17,7 +17,7 @@ block content
             div.row
               - if (animal.species == 'dairy cattle')
                 div.col-lg-3
-                  img.img-thumbnail(src=`/img/cow-${animal.name.toLowerCase()}.jpg` width="256px" height="256px") 
+                  img.img-thumbnail(src=`/img/cow-${imgId}.jpg` width="256px" height="256px") 
               div.col-lg-9
                 dl.row
                   - if (animal.species)
@@ -25,20 +25,20 @@ block content
                     dd.col-lg-9 #{animal.species}
                   - if (animal.sex)
                     dt.col-lg-3 Sex: 
-                    dd.col-lg-9 #{animal.sex.vocab}
-                  - if (animal.legalId)
+                    dd.col-lg-9 #{animal.sex.vocab||animal.sex}
+                  - if (animal.legalId||animal.legalID)
                     dt.col-lg-3 Legal ID: 
                     dd.col-lg-9
-                      strong #{animal.legalId}
+                      code #{animal.legalId||animal.legalID}
                   - if (animal.phenologicalCondition)
                     dt.col-lg-3 Phenological Condition: 
-                    dd.col-lg-9 #{animal.phenologicalCondition.vocab}
+                    dd.col-lg-9 #{animal.phenologicalCondition.vocab||animal.phenologicalCondition}
                   - if (animal.healthCondition)
                     dt.col-lg-3 Health: 
-                    dd.col-lg-9 #{animal.healthCondition.vocab}
+                    dd.col-lg-9 #{animal.healthCondition.vocab||animal.healthCondition}
                   - if (animal.reproductiveCondition)
                     dt.col-lg-3 Reproductive Condition: 
-                    dd.col-lg-9 #{animal.reproductiveCondition.vocab}
+                    dd.col-lg-9 #{animal.reproductiveCondition.vocab||animal.reproductiveCondition}
                   - if (animal.calvedBy)
                     dt.col-lg-3 Calved by:
                     dd.col-lg-9
