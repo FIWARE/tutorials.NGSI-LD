@@ -57,20 +57,23 @@ block content
     div.col
       div.card
         div.card-body
-          - if (securityEnabled)
-            p Any logged-in user can access these:
 
-          ul.list-inline  
-            each building in buildings
-              li.list-inline-item
-                - if (securityEnabled)
-                  a(class="link-danger link-underline link-underline-opacity-0" href=`app/${building.type.toLowerCase()}/${building.id}`) 
-                    img(class="p-2" src='/img/barn.png' width="32" height="32")
-                    | #{building.name}
-                - else
-                  a(class="link-underline link-underline-opacity-0" href=`app/${building.type.toLowerCase()}/${building.id}`)
-                    img(class="p-2" src='/img/barn.png' width="32" height="32")
-                    | #{building.name}
+          - if (buildings.length === 0)
+            p None Found
+          - else 
+            - if (securityEnabled)
+              p Any logged-in user can access these:
+            ul.list-inline  
+              each building in buildings
+                li.list-inline-item
+                  - if (securityEnabled)
+                    a(class="link-danger link-underline link-underline-opacity-0" href=`app/${building.type.toLowerCase()}/${building.id}`) 
+                      img(class="p-2" src='/img/barn.png' width="32" height="32")
+                      | #{building.name}
+                  - else
+                    a(class="link-underline link-underline-opacity-0" href=`app/${building.type.toLowerCase()}/${building.id}`)
+                      img(class="p-2" src='/img/barn.png' width="32" height="32")
+                      | #{building.name}
   div.row
     div.col
       h3 Animal Details
@@ -78,19 +81,25 @@ block content
     div.col
       div.card
         div.card-body
-          ul.list-unstyled
-            each animal in cows
-              li
-                img(class="pe-2" src='/img/cow.svg' width="32" height="32")
-                a(class="link-underline link-underline-opacity-0" href=`app/${animal.type.toLowerCase()}/${animal.id}`)  #{animal.name}
+          - if (cows.length === 0)
+            p None Found
+          - else
+            ul.list-unstyled
+              each animal in cows
+                li
+                  img(class="pe-2" src='/img/cow.svg' width="32" height="32")
+                  a(class="link-underline link-underline-opacity-0" href=`app/${animal.type.toLowerCase()}/${animal.id}`)  #{animal.name}
     div.col
       div.card
         div.card-body
-          ul.list-unstyled
-            each animal in pigs
-              li
-                img(class="pe-2" src='/img/pig.svg' width="32" height="32")
-                a(class="link-underline link-underline-opacity-0" href=`app/${animal.type.toLowerCase()}/${animal.id}`)  #{animal.name}
+          - if (pigs.length === 0)
+            p None Found
+          - else
+            ul.list-unstyled
+              each animal in pigs
+                li
+                  img(class="pe-2" src='/img/pig.svg' width="32" height="32")
+                  a(class="link-underline link-underline-opacity-0" href=`app/${animal.type.toLowerCase()}/${animal.id}`)  #{animal.name}
   div.row
     div.col
       h3 Agri Parcel Details
@@ -98,11 +107,14 @@ block content
     div.col
       div.card
         div.card-body
-          ul.list-inline
-            each parcel in parcels
-              li.list-inline-item
-                img(class="p-2" src='/img/corn.png' width="32" height="32")
-                a(class="link-underline link-underline-opacity-0" href=`app/${parcel.type.toLowerCase()}/${parcel.id}`)  #{parcel.name}
+          - if (parcels.length === 0)
+            p None Found
+          - else
+            ul.list-inline
+              each parcel in parcels
+                li.list-inline-item
+                  img(class="p-2" src='/img/corn.png' width="32" height="32")
+                  a(class="link-underline link-underline-opacity-0" href=`app/${parcel.type.toLowerCase()}/${parcel.id}`)  #{parcel.name}
 
   div
     h3
@@ -123,11 +135,11 @@ block content
         | Security OFF. &nbsp;
     | . &nbsp;Icons made by 
     a(href='https://www.flaticon.com/authors/smashicons', title='Smashicons') Smashicons
-    | ,
+    | ,&nbsp;
     a(href='https://www.flaticon.com/authors/those-icons' title='Those Icons') Those Icons
-    |   and 
+    |   and&nbsp; 
     a(href='https://www.flaticon.com/authors/freepik', title='Freepik') Freepik
-    |  from 
+    |  from&nbsp; 
     a(href='https://www.flaticon.com', title='Flaticon') www.flaticon.com
-    |  licensed by 
+    |  licensed by&nbsp;
     a(href='http://creativecommons.org/licenses/by/3.0/', title='Creative Commons BY 3.0', target='_blank') CC 3.0 BY

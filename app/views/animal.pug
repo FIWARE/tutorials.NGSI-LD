@@ -53,7 +53,14 @@ block content
                   - if (animal.weight)
                     dt.col-lg-3 Weight
                     dd.col-lg-9
-                      | #{animal.weight.value} #{animal.weight.unitCode}
+                      | #{animal.weight.value} kgs
+                  - if (animal.heartRate)
+                    dt.col-lg-3 Heart Rate
+                    dd.col-lg-9
+                      | #{animal.heartRate.value} bpm
+                  - if (animal.location.value.coordinates)
+                    dt.col-lg-3 Current Location: 
+                    dd.col-lg-9 #{animal.location.value.coordinates[1]}&deg;N, #{animal.location.value.coordinates[0]}&deg;E
 
   - if (animal.comment)
     div.row

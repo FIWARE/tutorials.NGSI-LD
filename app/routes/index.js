@@ -51,41 +51,71 @@ router.get('/', async function (req, res) {
     const securityEnabled = SECURE_ENDPOINTS;
 
     const headers = ngsiLD.setHeaders(req.session.access_token, LinkHeader);
-    let entities = await ngsiLD.listEntities(
+
+    const buildings = 
+        await ngsiLD.listEntities(
         {
-            type: 'Building,Animal,AgriParcel',
+            type: 'Building',
             options: 'keyValues',
+            attrs: 'name',
+            limit: 200
+        },
+        headers
+    );
+    const pigs = 
+        await ngsiLD.listEntities(
+        {
+            type: 'Animal',
+            options: 'keyValues',
+            q: 'species=="pig"',
+            attrs: 'name,species',
+            limit: 200
+        },
+        headers
+    );
+    const cows = 
+        await ngsiLD.listEntities(
+        {
+            type: 'Animal',
+            q: 'species=="dairy cattle"',
+            options: 'keyValues',
+            attrs: 'name,species',
+            limit: 200
+        },
+        headers
+    );
+    const parcels = 
+        await ngsiLD.listEntities(
+        {
+            type: 'AgriParcel',
+            options: 'keyValues',
+            attrs: 'name',
             limit: 200
         },
         headers
     );
 
-    entities = Array.isArray(entities) ? entities : [entities];
-    entities = _.groupBy(entities, (e) => {
-        return e.type;
-    });
-
-    if (entities.Animal) {
-        entities.Animal = _.groupBy(entities.Animal, (e) => {
-            return e.species;
-        });
-    } else {
-        entities.Animal = {
-            'dairy cattle': [],
-            pig: []
-        };
-    }
+    const devices = 
+        await ngsiLD.listEntities(
+        {
+            type: 'Devices',
+            options: 'keyValues',
+            attrs: 'name',
+            limit: 200
+        },
+        headers
+    );
 
     res.render('index', {
         success: req.flash('success'),
         errors: req.flash('error'),
         info: req.flash('info'),
         securityEnabled,
-        buildings: entities.Building || [],
-        pigs: entities.Animal.pig || [],
-        cows: entities.Animal['dairy cattle'] || [],
-        parcels: entities.AgriParcel || [],
-        devices: entities.Device || [],
+        buildings,
+        pigs,
+        cows,
+        parcels,
+        devices,
         ngsi: 'ngsi-ld'
     });
 });

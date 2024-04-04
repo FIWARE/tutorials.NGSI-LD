@@ -33,11 +33,12 @@ block content
       div(class="card m-2")
         div.card-body
           dl.row
-            dt.col-lg-3 location: 
-            dd.col-lg-9 #{building.location.coordinates}
-            dt.col-lg-3 category: 
+            - if (building.location)
+              dt.col-lg-3 Location: 
+              dd.col-lg-9 #{building.location.coordinates[1]}&deg;N, #{building.location.coordinates[0]}&deg;E
+            dt.col-lg-3 Category: 
             dd.col-lg-9 #{building.category}
-            dt.col-lg-3 owner:
+            dt.col-lg-3 Owner:
             dd.col-lg-9 
               a(class="link-underline link-underline-opacity-0" href=`/app/person/${building.owner}`) #{building.owner}
   
