@@ -52,59 +52,50 @@ router.get('/', async function (req, res) {
 
     const headers = ngsiLD.setHeaders(req.session.access_token, LinkHeader);
 
-    const buildings = 
-        await ngsiLD.listEntities(
+    const buildings = await ngsiLD.listEntities(
         {
             type: 'Building',
-            options: 'keyValues',
+            options: 'concise',
             attrs: 'name',
             limit: 200
         },
         headers
     );
-    const pigs = 
-        await ngsiLD.listEntities(
+    const animals = await ngsiLD.listEntities(
         {
             type: 'Animal',
-            options: 'keyValues',
-            q: 'species=="pig"',
+            options: 'concise',
             attrs: 'name,species',
             limit: 200
         },
         headers
     );
-    const cows = 
-        await ngsiLD.listEntities(
-        {
-            type: 'Animal',
-            q: 'species=="dairy cattle"',
-            options: 'keyValues',
-            attrs: 'name,species',
-            limit: 200
-        },
-        headers
-    );
-    const parcels = 
-        await ngsiLD.listEntities(
+    const parcels = await ngsiLD.listEntities(
         {
             type: 'AgriParcel',
-            options: 'keyValues',
+            options: 'concise',
             attrs: 'name',
             limit: 200
         },
         headers
     );
 
-    const devices = 
-        await ngsiLD.listEntities(
+    const devices = await ngsiLD.listEntities(
         {
             type: 'Devices',
-            options: 'keyValues',
+            options: 'concise',
             attrs: 'name',
             limit: 200
         },
         headers
     );
+
+    const cows = _.filter(animals, (o) => {
+        return o.species === 'dairy cattle';
+    });
+    const pigs = _.filter(animals, (o) => {
+        return o.species === 'pig';
+    });
 
     res.render('index', {
         success: req.flash('success'),

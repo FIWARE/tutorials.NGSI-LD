@@ -67,11 +67,11 @@ block content
               each building in buildings
                 li.list-inline-item
                   - if (securityEnabled)
-                    a(class="link-danger link-underline link-underline-opacity-0" href=`app/${building.type.toLowerCase()}/${building.id}`) 
+                    a(class="link-danger link-underline link-underline-opacity-0" href=`app/building/${building.id}`) 
                       img(class="p-2" src='/img/barn.png' width="32" height="32")
                       | #{building.name}
                   - else
-                    a(class="link-underline link-underline-opacity-0" href=`app/${building.type.toLowerCase()}/${building.id}`)
+                    a(class="link-underline link-underline-opacity-0" href=`app/building/${building.id}`)
                       img(class="p-2" src='/img/barn.png' width="32" height="32")
                       | #{building.name}
   div.row
@@ -88,7 +88,7 @@ block content
               each animal in cows
                 li
                   img(class="pe-2" src='/img/cow.svg' width="32" height="32")
-                  a(class="link-underline link-underline-opacity-0" href=`app/${animal.type.toLowerCase()}/${animal.id}`)  #{animal.name}
+                  a(class="link-underline link-underline-opacity-0" href=`app/animal/${animal.id}`)  #{animal.name}
     div.col
       div.card
         div.card-body
@@ -99,7 +99,7 @@ block content
               each animal in pigs
                 li
                   img(class="pe-2" src='/img/pig.svg' width="32" height="32")
-                  a(class="link-underline link-underline-opacity-0" href=`app/${animal.type.toLowerCase()}/${animal.id}`)  #{animal.name}
+                  a(class="link-underline link-underline-opacity-0" href=`app/animal/${animal.id}`)  #{animal.name}
   div.row
     div.col
       h3 Agri Parcel Details
@@ -114,8 +114,7 @@ block content
               each parcel in parcels
                 li.list-inline-item
                   img(class="p-2" src='/img/corn.png' width="32" height="32")
-                  a(class="link-underline link-underline-opacity-0" href=`app/${parcel.type.toLowerCase()}/${parcel.id}`)  #{parcel.name}
-
+                  a(class="link-underline link-underline-opacity-0" href=`app/agriparcel/${parcel.id}`)  #{parcel.name}
   div
     h3
     - if (session.username)
