@@ -17,7 +17,7 @@ block content
             div.row
               - if (animal.species == 'dairy cattle')
                 div.col-lg-3
-                  img.img-thumbnail(src=`/img/cow/${animal.name}.jpg` width="256px" height="256px") 
+                  img.img-thumbnail(src=`/img/cow-${animal.name.toLowerCase()}.jpg` width="256px" height="256px") 
               div.col-lg-9
                 dl.row
                   - if (animal.species)
