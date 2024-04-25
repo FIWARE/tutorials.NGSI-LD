@@ -540,17 +540,17 @@ be displayed.
         "https://schema.org/address": {
             "type": "Property",
             "value": {
-                "https://schema.orgstreetAddress": "Straße des 17. Juni",
-                "https://schema.orgaddressRegion": "Berlin",
-                "https://schema.orgaddressLocality": "Tiergarten",
-                "https://schema.orgpostalCode": "10557"
+                "https://schema.org/streetAddress": "Straße des 17. Juni",
+                "https://schema.org/addressRegion": "Berlin",
+                "https://schema.org/addressLocality": "Tiergarten",
+                "https://schema.org/postalCode": "10557"
             },
             "https://uri.fiware.org/ns/dataModels#verified": {
                 "type": "Property",
                 "value": true
             }
         },
-        "https://schema.orgname": {
+        "https://schema.org/name": {
             "type": "Property",
             "value": "Big Red Barn"
         },
