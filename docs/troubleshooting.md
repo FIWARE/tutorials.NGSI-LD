@@ -65,3 +65,28 @@ Users operating Ubuntu on a virtual machine may encounter the warning _"Low Disk
     saved on your previous VM).
 -   Run the tutorials on [Gitpod](https://github.com/gitpod-io/gitpod). This cloud-based environment does not consume
     your local resources.
+
+  ## WSL Setup with WSL Ubuntu-22.04 (Windows 11) for NGSI-LD SMART FARM Tutorials
+
+  Using WSL Ubuntu-22.04 to run the NGSI-LD SMART FARM Tutorials.
+  
+  - To install WSL on Windows follow the instructions [here](https://learn.microsoft.com/en-us/windows/wsl/install)
+  - Install the terminal Ubuntu-22.04.3 LTS from Microsoft Store
+  - Open command prompt and set the default WSL to the newly installed Ubuntu-22.04.3 LTS
+        - list all wls to ensure Ubuntu-22.04 is part of the list
+        ```
+        wsl.exe -l
+        ```
+        - Set Ubuntu-22.04 to default
+        ```
+        wsl.exe --set-default Ubuntu-22.04
+        ```
+  - Ensure docker desktop is running, open Settings > General, enable WSL 2 based engine
+  - Open start menu, search for Ubuntu-22.04.3 LTS, and run it.
+  - Install Docker on the terminal following the instructions [here](https://ngsi-ld-tutorials.readthedocs.io/en/latest/docker-ubuntu.html)
+  - On the terminal, follow the instructions here https://github.com/FIWARE/tutorials.NGSI-LD
+  - `cd` to any tutorials folder (ex. tutorials.Getting-Started)
+  - If error on `./services` command , prefix with `sudo` command.
+
+  - Setup Postman and import postman a tutorial file (ex. tutorials.NGSI-LD\tutorials.Getting-Started\FIWARE Working with @context.postman_collection.json)
+  
