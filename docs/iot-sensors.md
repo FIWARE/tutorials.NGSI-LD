@@ -158,10 +158,10 @@ The `i` and `k` parameters are mandatory.
 For example the request:
 
 ```
-<iot-agent>/iot/d?i=humidity001&d=h|12
+<iot-agent>/iot/d?i=humidity001&k=<api-key>&d=h|12
 ```
 
-Would indicate that the device `id=motion001` wishes to inform the IoT Agent that is has made a real-world measurement
+Would indicate that the device `id=humidity001` wishes to inform the IoT Agent that is has made a real-world measurement
 `h` with the value `12`. This would eventually be passed up into the Context Broker.
 
 ### Measurement using HTTP POST
