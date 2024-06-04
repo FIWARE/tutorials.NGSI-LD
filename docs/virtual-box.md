@@ -5,7 +5,7 @@ minimal set-up is recommended:
 
 -   VirtualBox
 -   Ubuntu 22.04.2 2G RAM 25G Disk
--   Docker Engine on Ubuntu: Docker 24.0.4 and Docker compose 2.19.1
+-   Docker Engine on Ubuntu: Docker 24.0.x and Docker compose 2.19.1
 
 Download Virtualbox from [here](https://www.virtualbox.org/)
 

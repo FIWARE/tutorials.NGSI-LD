@@ -9,4 +9,4 @@ the following minimal set-up is recommended:
 
 -   Windows 11
 -   WSL 1.2.5.0 with an Ubuntu Distribution
--   Docker Engine on Ubuntu: Docker 24.0.4 and Docker compose 2.19.1
+-   Docker Engine on Ubuntu: Docker 24.0.x and Docker compose 2.19.1

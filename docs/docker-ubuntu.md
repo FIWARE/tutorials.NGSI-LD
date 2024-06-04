@@ -6,7 +6,7 @@
 > This is because the default Docker package associated with Ubuntu can be
 > [outdated](https://askubuntu.com/questions/151283/why-dont-the-ubuntu-repositories-have-the-latest-versions-of-software)
 > and will install an obsolete Docker version leading to issues with `docker` and `docker-compose` versions. Check you
-> are using Docker version 24.0.x or higher and Docker Compose 2.29.x or higher and upgrade if necessary.
+> are using Docker version 24.0.x or higher and Docker Compose 2.24.x or higher and upgrade if necessary.
 
 Further details can be found under: `https://docs.docker.com/engine/install/ubuntu/#set-up-the-repository`
 
@@ -62,7 +62,7 @@ docker compose version
 ```
 
 > **Important** In recent versions, `docker-compose` is already included as part of of the main `docker` client, Please
-> ensure that you are using Docker version 24.0.4 or higher and Docker Compose 2.29.1 or higher and upgrade if
+> ensure that you are using Docker version 24.0.x or higher and Docker Compose 2.24.x or higher and upgrade if
 > necessary. If you are unable to upgrade and stuck using an older version you can still run the tutorials by adding a
 > `legacy` parameter at the end the `./services` script commands e.g. `services start legacy`
 
