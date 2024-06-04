@@ -109,6 +109,12 @@ the JSON responses received from the context broker and other FIWARE components.
 can be found [here](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq). `jq-1.6` is
 recommended.
 
+### Windows Subsystem for Linux
+
+We will start up our services using a simple bash script. Windows users should download the
+[Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/install) to provide a command-line
+functionality similar to a Linux distribution on Windows.
+
 ## Context Brokers
 
 The NGSI-LD tutorials can be run using any context broker offering the NGSI-LD API, currently the

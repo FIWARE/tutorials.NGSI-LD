@@ -603,7 +603,7 @@ files explicitly as element in the array of `@context` sent. The response is nor
 
 ```json
 {
-    "@context":  [
+    "@context": [
         "http://context/ngsi-context.jsonld",
         "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
     ],

@@ -18,23 +18,22 @@ directly or programmatically.
 <br/>
 
 > [!NOTE]
+>
 > **Should I use NGSI-LD or NGSI-v2?**
 >
 > FIWARE offers two flavours of the NGSI interfaces:
 >
+> -   **NGSI-v2** offers JSON based interoperability used in individual Smart Systems
+> -   **NGSI-LD** offers JSON-LD based interoperability used for Federations and Data Spaces
 >
-> - **NGSI-v2** offers JSON based interoperability used in individual Smart Systems
-> - **NGSI-LD** offers JSON-LD based interoperability used for Federations and Data Spaces
->
-> Of the two, NGSI-LD is more complex and relies on the introduction of a JSON-LD `@context`.
-> A full understanding of JSON-LD (Linked Data) is required to obtain the benefits of NGSI-LD ,
-> which allows for interoperability across apps and organisations.
+> Of the two, NGSI-LD is more complex and relies on the introduction of a JSON-LD `@context`. A full understanding of
+> JSON-LD (Linked Data) is required to obtain the benefits of NGSI-LD , which allows for interoperability across apps
+> and organisations.
 >
 > In general, you should use NGSI-LD when creating a data space or introducing a system of systems aproach.
 >
-> Use NGSI-v2 for simpler isolated systems. More information about NGSI-v2 can be found [here](https://fiware-tutorials.readthedocs.io)
-
-
+> Use NGSI-v2 for simpler isolated systems. More information about NGSI-v2 can be found
+> [here](https://fiware-tutorials.readthedocs.io)
 
 <h3>Data models</h3>
 
@@ -70,9 +69,8 @@ important since we will need a well-defined structure to be able to generate `@c
 ### Docker and Docker Compose <img src="https://www.docker.com/favicon.ico" align="left"  height="36" width="36">
 
 The NGSI-LD tutorials are designed to run under any Unix environment, the tested configuration and GitPod environment is
-currently based on Ubuntu 22.04.2 LTS. However, there may be some minor issues when running the tutorials directly on Windows
-machines or Apple M1 Silicon amd64 systems, and the following
-[Virtual Box set-up](docs/virtual-box.md) or
+currently based on Ubuntu 22.04.2 LTS. However, there may be some minor issues when running the tutorials directly on
+Windows machines or Apple M1 Silicon amd64 systems, and the following [Virtual Box set-up](docs/virtual-box.md) or
 [WSL set-up](docs/wsl.md) can be used when facing issues.
 
 Each tutorial runs all components using [Docker](https://www.docker.com). **Docker** is a container technology which
@@ -116,6 +114,12 @@ FIWARE Postman collections can be downloaded directly from the
 [Gitpod](https://github.com/gitpod-io/gitpod) is an open-source Kubernetes application for ready-to-code cloud
 development environments that spins up an automated dev environment for each task, in the cloud. It enables you to run
 the tutorials in a cloud development environment directly from your browser or your Desktop IDE.
+
+### Windows Subsystem for Linux
+
+We will start up our services using a simple bash script. Windows users should download the
+[Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/install) to provide a command-line
+functionality similar to a Linux distribution on Windows.
 
 ## Tutorials List[<img src="https://img.shields.io/badge/NGSI-LD-d6604d.svg" width="90"  align="left" />](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.08.01_60/gs_cim009v010801p.pdf)
 
