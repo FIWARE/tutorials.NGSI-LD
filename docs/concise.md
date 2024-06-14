@@ -565,7 +565,7 @@ known `id`.
 
 ```bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
--H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
 -d 'options=concise'
 ```
@@ -608,7 +608,7 @@ This example reads the value of two attributes (`category` and `temperature`) fr
 
 ```bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
--H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
 -d 'options=concise' \
 -d 'attrs=category,temperature'
@@ -711,7 +711,7 @@ This example lists the `temperature` attribute of all **TemperatureSensor** enti
 
 ```bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
--H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
 -d 'type=TemperatureSensor' \
 -d 'options=concise' \
@@ -772,7 +772,7 @@ unique, so `type` is not required for this request. To filter by `id` add the en
 
 ```bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/'' \
--H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: 'application/json' \
 -d 'id=urn:ngsi-ld:TemperatureSensor:001,urn:ngsi-ld:TemperatureSensor:002' \
 -d 'attrs=temperature' \
@@ -813,7 +813,7 @@ The concise format is also available for the GeoJSON format which can be request
 
 ```bash
 curl -G -iX GET 'http://localhost:1026//ngsi-ld/v1/entities/' \
--H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/geo+json' \
 -H 'NGSILD-Tenant: openiot' \
 -d 'id=urn:ngsi-ld:Animal:pig010,urn:ngsi-ld:Animal:pig006' \
@@ -859,7 +859,7 @@ The response details the selected attributes from the selected entities is retur
                     "observedAt": "2022-03-01T15:49:57.039Z"
                 }
             },
-            "@context": "http://context/json-context.jsonld",
+            "@context": "http://context/ngsi-context.jsonld",
             "geometry": {
                 "type": "Point",
                 "coordinates": [13.346, 52.52]
@@ -895,7 +895,7 @@ The response details the selected attributes from the selected entities is retur
                     "observedAt": "2022-03-01T15:49:57.287Z"
                 }
             },
-            "@context": "http://context/json-context.jsonld",
+            "@context": "http://context/ngsi-context.jsonld",
             "geometry": {
                 "type": "Point",
                 "coordinates": [13.347, 52.522]

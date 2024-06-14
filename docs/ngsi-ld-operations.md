@@ -512,7 +512,7 @@ This example reads the key-value pairs from the context of an existing **Tempera
 
 ```bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
--H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/nsgi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
 -d 'options=keyValues'
 ```
@@ -547,7 +547,7 @@ This example reads the value of two attributes (`category` and `temperature`) fr
 
 ```bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
--H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/nsgi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
 -d 'options=keyValues' \
 -d 'attrs=category,temperature'
@@ -663,7 +663,7 @@ This example lists the `temperature` attribute of all **TemperatureSensor** enti
 
 ```bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
--H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/nsgi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
 -d 'type=TemperatureSensor' \
 -d 'options=keyValues' \
@@ -712,7 +712,7 @@ unique, so `type` is not required for this request. To filter by `id` add the en
 
 ```bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
--H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/nsgi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
 -d 'id=urn:ngsi-ld:TemperatureSensor:001,urn:ngsi-ld:TemperatureSensor:002' \
 -d 'options=keyValues' \
