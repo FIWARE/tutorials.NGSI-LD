@@ -1,10 +1,11 @@
 // include dependencies
 const express = require('express');
 const debug = require('debug')('broker:proxy');
+const os = require("os")
+const cluster = require("cluster")
 const { createProxyMiddleware } = require('http-proxy-middleware');
-
-const app = express();
-
+const PORT = process.env.PORT || 80
+const clusterWorkerSize = os.cpus().length
 const target = process.env.CONTEXT_BROKER || 'http://orion:1026';
 const tenant = process.env.TENANT || 'farmer';
 
@@ -21,6 +22,30 @@ const exampleProxy = createProxyMiddleware({
   }
 });
 
-// mount `exampleProxy` in web server
-app.use('/', exampleProxy);
-app.listen(80);
+
+if (clusterWorkerSize > 1) {
+  if (cluster.isMaster) {
+    for (let i=0; i < clusterWorkerSize; i++) {
+      cluster.fork()
+    }
+    cluster.on("exit", function(worker) {
+      debug("Worker", worker.id, " has exited.")
+    })
+  } else {
+    // mount `exampleProxy` in web server
+    const app = express()
+    app.use('/', exampleProxy);
+    app.listen(PORT, function () {
+      debug(`Server listening on port ${PORT} and worker ${process.pid}`)
+    })
+  }
+} else {
+  // mount `exampleProxy` in web server
+  const app = express()
+  app.use('/', exampleProxy);
+  app.listen(PORT, function () {
+    debug(`Server listening on port ${PORT} with the single worker ${process.pid}`)
+  })
+}
+
+
