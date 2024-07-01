@@ -521,6 +521,7 @@ curl -L -X POST 'http://localhost:4041/iot/devices' \
       "device_id": "temperature001",
       "entity_name": "urn:ngsi-ld:Device:temperature001",
       "entity_type": "Device",
+      "apikey": "4jggokgpepnvsb2uv4s40d59ov",
       "timezone": "Europe/Berlin",
       "attributes": [
         {
@@ -605,7 +606,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:te
     -H 'NGSILD-Tenant: openiot' \
     -H 'NGSILD-Path: /' \
     -H 'Accept: application/ld+json' \
-    -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+    -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
     -d 'attrs=temperature'
 ```
 
@@ -620,7 +621,10 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:te
 
 ```json
 {
-    "@context": "http://context/ngsi-context.jsonld",
+    "@context": [
+        "http://context/ngsi-context.jsonld",
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+    ],
     "id": "urn:ngsi-ld:Device:temperature001",
     "type": "Device",
     "temperature": {
@@ -664,7 +668,7 @@ curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=Device' \
 -H 'NGSILD-Tenant: openiot' \
 -H 'NGSILD-Path: /' \
 -H 'Accept: application/ld+json' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
+-H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 ```
 
 #### Response:
@@ -672,7 +676,10 @@ curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=Device' \
 ```json
 [
     {
-        "@context": "http://context/ngsi-context.jsonld",
+        "@context": [
+            "http://context/ngsi-context.jsonld",
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+        ],
         "id": "urn:ngsi-ld:Device:motion003",
         "type": "Device",
         "c": {
@@ -719,6 +726,7 @@ curl -L -X POST 'http://localhost:4041/iot/devices' \
       "device_id": "water001",
       "entity_name": "urn:ngsi-ld:Device:water001",
       "entity_type": "Device",
+      "apikey": "4jggokgpepnvsb2uv4s40d59ov",
       "protocol": "PDI-IoTA-UltraLight",
       "transport": "HTTP",
       "endpoint": "http://iot-sensors:3001/iot/water001",
@@ -772,7 +780,7 @@ The result of the command to turn on the irrigation system can be read by queryi
 ```bash
 curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:water001' \
     -H 'NGSILD-Tenant: openiot' \
-    -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+    -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
     -H 'Accept: application/json'
 ```
 
@@ -802,14 +810,6 @@ curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:wat
         "type": "Relationship",
         "object": "urn:ngsi-ld:Building:barn001",
         "observedAt": "2020-09-14T15:27:11.066Z"
-    },
-    "on": {
-        "type": "Property",
-        "value": ""
-    },
-    "off": {
-        "type": "Property",
-        "value": ""
     }
 }
 ```
@@ -835,6 +835,7 @@ curl -L -X POST 'http://localhost:4041/iot/devices' \
       "device_id": "filling001",
       "entity_name": "urn:ngsi-ld:Device:filling001",
       "entity_type": "FillingLevelSensor",
+      "apikey": "4jggokgpepnvsb2uv4s40d59ov",
       "protocol": "PDI-IoTA-UltraLight",
       "transport": "HTTP",
       "endpoint": "http://iot-sensors:3001/iot/filling001",
@@ -890,6 +891,7 @@ curl -L -X POST 'http://localhost:4041/iot/devices' \
       "device_id": "tractor001",
       "entity_name": "urn:ngsi-ld:Device:tractor001",
       "entity_type": "Tractor",
+      "apikey": "4jggokgpepnvsb2uv4s40d59ov",
       "protocol": "PDI-IoTA-UltraLight",
       "transport": "HTTP",
       "endpoint": "http://iot-sensors:3001/iot/tractor001",
@@ -939,7 +941,7 @@ To invoke the `on` command, the `on` attribute must be updated in the context.
 curl -L -X PATCH 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:water001/attrs/on' \
 -H 'NGSILD-Tenant: openiot' \
 -H 'Content-Type: application/json' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 --data-raw '{
 
         "type": "Property",
@@ -962,7 +964,7 @@ To invoke the `start` command, the `start` attribute must be updated in the cont
 curl -L -X PATCH 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:tractor001/attrs/start' \
     -H 'NGSILD-Tenant: openiot' \
     -H 'Content-Type: application/json' \
-    -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+    -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 --data-raw '{
 
         "type": "Property",
@@ -981,7 +983,7 @@ Change the state of the **Filling System**, the `add` attribute must be updated 
 curl -L -X PATCH 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:filling001/attrs/add' \
     -H 'NGSILD-Tenant: openiot' \
     -H 'Content-Type: application/json' \
-    -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+    -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 --data-raw '{
 
         "type": "Property",
@@ -1225,6 +1227,7 @@ curl -iX POST 'http://localhost:4041/iot/devices' \
       "device_id": "water002",
       "entity_name": "urn:ngsi-ld:Device:water002",
       "entity_type": "Device",
+      "apikey": "4jggokgpepnvsb2uv4s40d59ov",
       "protocol": "PDI-IoTA-UltraLight",
       "transport": "HTTP",
       "endpoint": "http://iot-sensors:3001/iot/water002",
@@ -1273,6 +1276,7 @@ The response includes all the commands and attributes mappings associated with t
     "service_path": "/",
     "entity_name": "urn:ngsi-ld:Device:water002",
     "entity_type": "Device",
+    "apikey": "4jggokgpepnvsb2uv4s40d59ov",
     "endpoint": "http://iot-sensors:3001/iot/water002",
     "transport": "HTTP",
     "attributes": [],
@@ -1328,6 +1332,7 @@ The response includes all the commands and attributes mappings associated with a
           "service_path": "/",
           "entity_name": "urn:ngsi",
           "entity_type": "Device",
+          "apikey": "4jggokgpepnvsb2uv4s40d59ov",
           "endpoint": "http://iot-sensors:3001/iot/water002",
           "transport": "HTTP",
           "attributes": [],
