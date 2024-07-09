@@ -297,7 +297,7 @@ to N values.
 ```bash
 curl -G -X GET 'http://localhost:8080/temporal/entities/urn:ngsi-ld:Animal:cow002' \
   -H 'NGSILD-Tenant: openiot' \
-  -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -d 'lastN=3'
 ```
 
@@ -429,7 +429,7 @@ This example shows just the last 3 changes of `heartRate` from the entity `urn:n
 ```bash
 curl -G -X GET 'http://localhost:8080/temporal/entities/urn:ngsi-ld:Animal:cow001' \
   -H 'NGSILD-Tenant: openiot' \
-  -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -d 'lastN=3' \
   -d 'attrs=heartRate'
 ```
@@ -495,7 +495,7 @@ The simplified temporal representation can be requested by adding the `options` 
 ```bash
 curl -G -X GET 'http://localhost:8080/temporal/entities/urn:ngsi-ld:Animal:cow001' \
   -H 'NGSILD-Tenant: openiot' \
-  -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -d 'lastN=3' \
   -d 'options=temporalValues'
 ```
@@ -550,7 +550,7 @@ The following query is requesting data about the bulls within the herd. Because 
 ```bash
 curl -G -X GET 'http://localhost:8080/temporal/entities/' \
   -H 'NGSILD-Tenant: openiot' \
-  -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -d 'type=Animal' \
   -d 'pageSize=2' \
   -d 'lastN=3' \
@@ -696,7 +696,7 @@ The following query is requesting data about the bulls within the herd. Because 
 ```bash
 curl -G -X GET 'http://localhost:8080/temporal/entities/' \
   -H 'NGSILD-Tenant: openiot' \
-  -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -d 'type=Animal' \
   -d 'pageSize=2' \
   -d 'lastN=3' \
@@ -769,7 +769,7 @@ the `pageSize=2` parameter means that only two entities are returned:
 ```bash
 curl -G -I -X GET 'http://localhost:8080/temporal/entities/' \
   -H 'NGSILD-Tenant: openiot' \
-  -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -d 'type=Animal' \
   -d 'pageSize=2' \
   -d 'lastN=3' \
@@ -821,7 +821,7 @@ Making the same request with an additional `pageAnchor` parameter will retrieve 
 ```bash
 curl -G -X GET 'http://localhost:8080/temporal/entities/' \
   -H 'NGSILD-Tenant: openiot' \
-  -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -d 'type=Animal' \
   -d 'pageSize=2' \
   -d 'lastN=3' \
@@ -904,7 +904,7 @@ stored in the context broker.
 ```bash
 curl -L -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:pig003' \
-  -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -H 'NGSILD-Tenant: openiot'
 ```
 
@@ -989,7 +989,7 @@ also returns the associated animal entity that wears it.
 ```bash
 curl -G -X GET 'http://localhost:8080/temporal/entities/' \
   -H 'NGSILD-Tenant: openiot' \
-  -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -d 'type=Device' \
   -d 'q=d==%22FORAGING%22' \
   -d 'attrs=heartRate,controlledAsset' \
@@ -1067,7 +1067,7 @@ from a fixed point, and also returns the associated animal entity that wears it.
 ```bash
 curl -G -X GET 'http://localhost:8080/temporal/entities/' \
   -H 'NGSILD-Tenant: openiot' \
-  -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -d 'type=Device' \
   -d 'georel=near%3BmaxDistance==800' \
   -d 'geometry=Point' \
