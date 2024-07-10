@@ -856,7 +856,6 @@ The response details the selected attributes from the selected entities is retur
                     "observedAt": "2022-03-01T15:49:57.039Z"
                 }
             },
-            "@context": "http://context/ngsi-context.jsonld",
             "geometry": {
                 "type": "Point",
                 "coordinates": [13.346, 52.52]
@@ -892,7 +891,6 @@ The response details the selected attributes from the selected entities is retur
                     "observedAt": "2022-03-01T15:49:57.287Z"
                 }
             },
-            "@context": "http://context/ngsi-context.jsonld",
             "geometry": {
                 "type": "Point",
                 "coordinates": [13.347, 52.522]
@@ -1046,10 +1044,10 @@ curl -iX POST
     "format": "concise",
     "endpoint": {
       "uri": "http://tutorial:3000/subscription/low-stock-farm001-ngsild",
-      "accept": "application/geo+json"
+      "accept": "application/json"
     }
   },
-   "@context": "http://context/ngsi-context.jsonld"
+   "@context": "http://context/user-context.jsonld"
 }'
 ```
 
@@ -1065,7 +1063,6 @@ barn. Eventually a request is sent to `subscription/low-stock-farm001` as shown:
     "id": "urn:ngsi-ld:Notification:6220b4e464f3729a8527f8a0",
     "type": "Notification",
     "subscriptionId": "urn:ngsi-ld:Subscription:6220b4a964f3729a8527f88c",
-    "@context": "http://context/ngsi-context.jsonld",
     "notifiedAt": "2022-03-03T12:30:28.237Z",
     "data": [
         {
@@ -1123,7 +1120,7 @@ curl -iX POST
       "accept": "application/geo+json"
     }
   },
-   "@context": "http://context/ngsi-context.jsonld"
+   "@context": "http://context/user-context.jsonld"
 }'
 ```
 
