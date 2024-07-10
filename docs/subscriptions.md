@@ -448,7 +448,7 @@ curl -L -iX POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
       "accept": "application/json"
     }
   },
-   "@context": "http://context/ngsi-context.jsonld"
+   "@context": "http://context/user-context.jsonld"
 }'
 ```
 

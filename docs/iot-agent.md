@@ -187,7 +187,7 @@ tutorial:
         - "DUMMY_DEVICES_PORT=3001"
         - "DUMMY_DEVICES_API_KEY=4jggokgpepnvsb2uv4s40d59ov"
         - "DUMMY_DEVICES_TRANSPORT=HTTP"
-        - "IOTA_JSON_LD_CONTEXT=http://context/ngsi-context.jsonld"
+        - "IOTA_JSON_LD_CONTEXT=http://context/user-context.jsonld"
 ```
 
 The `tutorial` container is listening on two ports:
@@ -207,7 +207,7 @@ The `tutorial` container is driven by environment variables as shown:
 | DUMMY_DEVICES_PORT      | `3001`                               | Port used by the dummy IoT devices to receive commands                                                                                    |
 | DUMMY_DEVICES_API_KEY   | `4jggokgpepnvsb2uv4s40d59ov`         | Random security key used for UltraLight interactions - used to ensure the integrity of interactions between the devices and the IoT Agent |
 | DUMMY_DEVICES_TRANSPORT | `HTTP`                               | The transport protocol used by the dummy IoT devices                                                                                      |
-| IOTA_JSON_LD_CONTEXT    | `http://context/ngsi-context.jsonld` | The location of the `@context` file used to define the device data models                                                                 |
+| IOTA_JSON_LD_CONTEXT    | `http://context/user-context.jsonld` | The location of the `@context` file used to define the device data models                                                                 |
 
 The other `tutorial` container configuration values described in the YAML file are not used in this tutorial.
 
@@ -246,7 +246,7 @@ iot-agent:
         - IOTA_MONGO_DB=iotagentul
         - IOTA_HTTP_PORT=7896
         - IOTA_PROVIDER_URL=http://iot-agent:4041
-        - IOTA_JSON_LD_CONTEXT=http://context/ngsi-context.jsonld
+        - IOTA_JSON_LD_CONTEXT=http://context/user-context.jsonld
         - IOTA_FALLBACK_TENANT=openiot
         - IOTA_MULTI_CORE=true
 ```
@@ -275,7 +275,7 @@ The `iot-agent` container is driven by environment variables as shown:
 | IOTA_MONGO_DB        | `iotagentul`                         | The name of the database used in mongoDB                                                                                                              |
 | IOTA_HTTP_PORT       | `7896`                               | The port where the IoT Agent listens for IoT device traffic over HTTP                                                                                 |
 | IOTA_PROVIDER_URL    | `http://iot-agent:4041`              | URL passed to the Context Broker when commands are registered, used as a forwarding URL location when the Context Broker issues a command to a device |
-| IOTA_JSON_LD_CONTEXT | `http://context/ngsi-context.jsonld` | The location of the `@context` file used to define the device data models                                                                             |
+| IOTA_JSON_LD_CONTEXT | `http://context/user-context.jsonld` | The location of the `@context` file used to define the device data models                                                                             |
 | IOTA_FALLBACK_TENANT | `openiot`                            | The tenant to use if no explicit tenant has been received from communications                                                                         |
 
 ### Video: NGSI-LD IoT Agents
@@ -617,7 +617,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:te
 ```json
 {
     "@context": [
-        "http://context/ngsi-context.jsonld",
+        "http://context/user-context.jsonld",
         "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
     ],
     "id": "urn:ngsi-ld:Device:temperature001",
@@ -672,7 +672,7 @@ curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=Device' \
 [
     {
         "@context": [
-            "http://context/ngsi-context.jsonld",
+            "http://context/user-context.jsonld",
             "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
         ],
         "id": "urn:ngsi-ld:Device:motion003",

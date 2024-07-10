@@ -389,7 +389,7 @@ Each subsequent entity must have a unique `id` for the given `type`
 ```bash
 curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Content-Type: application/json' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -d '{
     "id": "urn:ngsi-ld:Building:barn002",
     "type": "Building",
@@ -589,7 +589,7 @@ the resource in question. In the case of NGSI-LD, the metadata is a file in `app
 ```bash
 curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
 -H 'Accept: application/ld+json' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
+-H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 ```
 
 #### Response:
@@ -655,7 +655,7 @@ parameter reduces the response down to standard JSON-LD.
 ```bash
 curl -G -X GET \
     'http://localhost:1026/ngsi-ld/v1/entities' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/ld+json' \
     -d 'type=Building' \
     -d 'options=keyValues'

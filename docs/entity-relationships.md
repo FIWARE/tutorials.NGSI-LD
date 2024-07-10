@@ -162,7 +162,7 @@ properties such as `category` have been added as properties to each device.
 curl -iX POST \
  'http://localhost:1026/ngsi-ld/v1/entityOperations/upsert' \
 -H 'Content-Type: application/json' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/ld+json' \
 --data-raw '[
     {
@@ -199,7 +199,7 @@ Similarly, we can create a series of **FillingLevelSensors** entities by using t
 ```bash
 curl -iX POST \
     'http://localhost:1026/ngsi-ld/v1/entityOperations/upsert' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Content-Type: application/json' \
 --data-raw '[
     {
@@ -241,7 +241,7 @@ return the context data of the devices.
 
 ```bash
 curl -X GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=TemperatureSensor,FillingLevelSensor&options=keyValues' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
+-H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 ```
 
 #### Response:
@@ -256,7 +256,10 @@ curl -X GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=TemperatureSensor,F
 ```json
 [
     {
-        "@context": "http://context/ngsi-context.jsonld",
+        "@context": [
+            "http://context/user-context.jsonld",
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+        ],
         "id": "urn:ngsi-ld:TemperatureSensor:001",
         "type": "TemperatureSensor",
         "description": "Temperature Gauge 1",
@@ -265,7 +268,10 @@ curl -X GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=TemperatureSensor,F
         "temperature": 20
     },
     {
-        "@context": "http://context/ngsi-context.jsonld",
+        "@context": [
+            "http://context/user-context.jsonld",
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+        ],
         "id": "urn:ngsi-ld:TemperatureSensor:002",
         "type": "TemperatureSensor",
         "description": "Temperature Gauge 2",
@@ -301,7 +307,7 @@ The following request associates six devices to `urn:ngsi-ld:Building:farm001`, 
 ```bash
 curl -L 'http://localhost:1026/ngsi-ld/v1/entityOperations/update?options=update' \
 -H 'Content-Type: application/json' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -d '[
     {
         "id": "urn:ngsi-ld:TemperatureSensor:001",
@@ -362,7 +368,7 @@ Now when the device information is requested again, the response has changed and
 ```bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
 -d 'options=keyValues' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
+-H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 ```
 
 #### Response:
@@ -371,7 +377,10 @@ The updated response including the `controlledAsset` attribute is shown below:
 
 ```json
 {
-    "@context": "http://context/ngsi-context.jsonld",
+    "@context": [
+        "http://context/user-context.jsonld",
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+    ],
     "id": "urn:ngsi-ld:TemperatureSensor:001",
     "type": "TemperatureSensor",
     "description": "Temperature Gauge 1",
@@ -395,7 +404,7 @@ entity by using the `options=keyValues` setting.
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
 -d 'options=keyValues' \
 -d 'attrs=controlledAsset' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json'
 ```
 
@@ -423,7 +432,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities' \
 -d 'q=controlledAsset==%22urn:ngsi-ld:Building:farm001%22' \
 -d 'attrs=controlledAsset' \
 -d 'options=keyValues' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
+-H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 ```
 
 This request is asking for the `id` of all **Device** entities associated to the URN `urn:ngsi-ld:Building:farm001`, the
@@ -434,12 +443,18 @@ response is a JSON array as shown.
 ```json
 [
     {
-        "@context": "http://context/ngsi-context.jsonld",
+        "@context": [
+            "http://context/user-context.jsonld",
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+        ],
         "id": "urn:ngsi-ld:TemperatureSensor:001",
         "type": "TemperatureSensor"
     },
     {
-        "@context": "http://context/ngsi-context.jsonld",
+        "@context": [
+            "http://context/user-context.jsonld",
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+        ],
         "id": "urn:ngsi-ld:FillingLevelSensor:001",
         "type": "FillingLevelSensor"
     }
@@ -458,7 +473,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities' \
 -d 'options=keyValues' \
 -d 'count=true' \
 -d 'limit=0' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
+-H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 ```
 
 Returns an HTTP Header as part of the response which indicates the number of affected entities:
@@ -489,7 +504,7 @@ properties (such as `description` and `status`).
 curl -L -X POST \
     'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Content-Type: application/json' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 --data-raw '{
     "id": "urn:ngsi-ld:Task:001",
     "type": "Task",
@@ -517,7 +532,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities' \
 -d 'options=keyValues' \
 -d 'attrs=worker' \
 -d 'type=Task' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json'
 ```
 
@@ -544,7 +559,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities' \
 -d 'options=keyValues' \
 -d 'attrs=field' \
 -d 'type=Task' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json'
 ```
 
@@ -578,7 +593,7 @@ can be retrieved with a GET request:
 ```bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
 -d 'attrs=temperature' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json'
 ```
 

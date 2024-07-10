@@ -792,7 +792,7 @@ Content-Range: date-time 2021-09-16T11:00-2021-09-16T10:22:39.650/3
 Page-Size: 2
 Next-Page: urn:ngsi-ld:Animal:pig001
 NGSILD-Results-Count: 17
-Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"
+Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"
 Date: Thu, 16 Sep 2021 14:12:32 GMT
 Content-Type: application/ld+json
 content-length: 540
@@ -845,7 +845,7 @@ Page-Size: 2
 Next-Page: urn:ngsi-ld:Animal:pig005
 Previous-Page: urn:ngsi-ld:Animal:cow001
 NGSILD-Results-Count: 17
-Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"
+Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"
 Date: Thu, 16 Sep 2021 14:27:14 GMT
 Content-Type: application/ld+json
 content-length: 540
@@ -916,7 +916,6 @@ attribute has also been added to the model:
 
 ```json
 {
-    "@context": "http://context/ngsi-context.jsonld",
     "id": "urn:ngsi-ld:Device:pig003",
     "type": "Device",
     "heartRate": {
