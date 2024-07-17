@@ -275,7 +275,6 @@ Open another terminal and run the following command:
 
 #### 1 Request:
 
-````bash
 ```bash
 curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'Content-Type: application/ld+json' \
@@ -295,7 +294,7 @@ curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
   },
    "@context": "http://context/user-context.jsonld"
 }'
-````
+```
 
 The response will be **`201 - Created`**.
 

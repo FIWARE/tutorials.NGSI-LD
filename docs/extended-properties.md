@@ -243,6 +243,7 @@ the repository. Please clone the repository and create the necessary images by r
 ```bash
 git clone http://github.com/fiware/tutorials.Extended-Properties.git
 cd tutorials.Extended-Properties
+git checkout NGSI-LD
 
 ./services [start]
 ```
