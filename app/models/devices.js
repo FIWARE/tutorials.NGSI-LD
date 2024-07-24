@@ -54,6 +54,10 @@ const numberOfSoilSensors = process.env.SOIL_SENSOR_COUNT || 5;
 let autoMoveTractors = process.env.MOVE_TRACTOR || 10000;
 
 let weather = 'cloudy';
+let doorStatus = 'door-locked';
+let animalsEmitting = null;
+let devicesEmitting = null;
+let tractorsEmitting = null;
 
 function getStatusCode(status) {
     let code = 0;
@@ -149,11 +153,28 @@ function initDevices() {
     // Every few seconds, update the state of the dummy devices in a
     // semi-random fashion.
     if (autoMoveTractors > 0) {
-        setInterval(changeTractorState, autoMoveTractors);
+        tractorsEmitting = setInterval(changeTractorState, autoMoveTractors);
     }
-    setInterval(activateAnimalCollars, 5000);
-    setInterval(activateDevices, 3000);
+    animalsEmitting = setInterval(activateAnimalCollars, 5000);
+    devicesEmitting = setInterval(activateDevices, 3000);
+    doorStatus = 'door-open';
+    SOCKET_IO.emit('barn', doorStatus);
 }
+
+function stopDevices(){
+    debug('stopDevices');
+    clearInterval(animalsEmitting)
+    animalsEmitting = null
+    clearInterval(devicesEmitting)
+    devicesEmitting = null;
+    if (autoMoveTractors > 0) {
+        clearInterval(tractorsEmitting);
+        tractorsEmitting = null;
+    }
+    doorStatus = 'door-locked';
+    SOCKET_IO.emit('barn', doorStatus);
+}
+
 // Broadcast weather conditions
 setInterval(emitWeatherConditions, 10000);
 
@@ -209,8 +230,10 @@ myCache.set('filling004', FILLING_STATION_EMPTY);
 function emitWeatherConditions() {
     if (SOCKET_IO) {
         SOCKET_IO.emit('weather', weather);
+        SOCKET_IO.emit('barn', doorStatus);
     }
 }
+
 // Update the state of a tractor
 function changeTractorState() {
     if (isTractorActive || autoMoveTractors < 0) {
@@ -309,7 +332,9 @@ function activateAnimalCollars() {
                     }
                 }
                 state.s = getStatusCode(state.d);
-                setDeviceState(deviceId, toUltraLight(state), isSensor);
+                if(animalsEmitting){
+                    setDeviceState(deviceId, toUltraLight(state), isSensor);
+                }
                 break;
             case 'cow':
                 targetRate = COW_HEART_RATE + 2 * OFFSET_RATE[state.d] + (getRandom() % 4);
@@ -329,7 +354,9 @@ function activateAnimalCollars() {
                     }
                 }
                 state.s = getStatusCode(state.d);
-                setDeviceState(deviceId, toUltraLight(state), isSensor);
+                if(animalsEmitting){
+                    setDeviceState(deviceId, toUltraLight(state), isSensor);
+                }
                 break;
             default:
                 break;
@@ -379,7 +406,9 @@ function activateDevices() {
                 if (state.h < 0) {
                     state.h = 0;
                 }
-                setDeviceState(deviceId, toUltraLight(state), isSensor);
+                if(devicesEmitting){
+                    setDeviceState(deviceId, toUltraLight(state), isSensor);
+                }
                 break;
             case 'tractor':
                 target = getDeviceState('targetTractor' + deviceId.replace(/[a-zA-Z]/g, ''));
@@ -418,7 +447,7 @@ function activateDevices() {
                 if (autoMoveTractors < 0 && state.d === 'MOVING') {
                     autoMoveTractors = 10000;
                 }
-                if (autoMoveTractors > 0) {
+                if (autoMoveTractors > 0 && tractorsEmitting) {
                     setDeviceState(deviceId, toUltraLight(state), isSensor);
                 }
                 break;
@@ -551,6 +580,12 @@ function alterWeather(newWeather) {
     SOCKET_IO.emit('weather', newWeather);
 }
 
+function toggle(newWeather) {
+    debug('The weather is: ' + newWeather);
+    weather = newWeather;
+    SOCKET_IO.emit('weather', newWeather);
+}
+
 // Check to see if a deviceId has a corresponding entry in the cache
 function notFound(deviceId) {
     const deviceUnknown = _.indexOf(myCache.keys(), deviceId) === -1;
@@ -569,11 +604,20 @@ function isUnknownCommand(device, command) {
     return invalid;
 }
 
+function barnDoor (){
+   if (animalsEmitting){
+        stopDevices();
+   } else {
+        initDevices();
+   }
+}
+
 module.exports = {
     actuateDevice,
     fireWaterSprinkler,
     alterTemperature,
     alterWeather,
     notFound,
-    isUnknownCommand
+    isUnknownCommand,
+    barnDoor
 };

@@ -42,7 +42,7 @@
     "pug": "3.0.2",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
-    "socket.io": "^4.4.1",
+    "socket.io": "^4.7.5",
     "twitter": "^1.7.1",
     "xml-parser": "^1.2.1",
     "xml2js": "^0.4.23"

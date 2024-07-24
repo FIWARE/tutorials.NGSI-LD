@@ -20,6 +20,11 @@ $(function () {
         $('#weathericon').css('background-image', "url('/img/" + msg + ".svg')");
     });
 
+    socket.on('barn', function (msg) {
+        $('#barnicon').attr('src', `/img/${msg}.svg`);
+        $('#barntext').val(msg === 'door-locked'? 'Open' : 'Shut');
+    });
+
     // eslint-disable-next-line no-unused-vars
     $('span').each(function (index, value) {
         const device = $(this).attr('id');

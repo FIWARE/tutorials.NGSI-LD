@@ -58,6 +58,12 @@ function createNGSILDRequest(action, id) {
 function sendCommand(req, res) {
     const action = req.body.action;
     const id = (COMMANDS[action] || '') + req.body.id;
+
+    if (id === 'barn' ) {
+        IoTDevices.barnDoor();
+        return res.status(204).send();
+    }
+
     debug('sendCommand: ' + id + ' ' + action);
     if (!res.locals.authorized) {
         // If the user is not authorized, return an error code.

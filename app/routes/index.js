@@ -15,12 +15,13 @@ const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context
 const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json">';
 
 const _ = require('lodash');
-//const debug = require('debug')('tutorial:ngsi-ld');
+const debug = require('debug')('tutorial:ngsi-ld');
 
 const TRANSPORT = process.env.DUMMY_DEVICES_TRANSPORT || 'HTTP';
 const DEVICE_PAYLOAD = process.env.DUMMY_DEVICES_PAYLOAD || 'ultralight';
 const GIT_COMMIT = process.env.GIT_COMMIT || 'unknown';
 const SECURE_ENDPOINTS = process.env.SECURE_ENDPOINTS || false;
+const ENTITY_LIMIT = process.env.ENTITY_LIMIT || 200;
 //const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
 
 const NOTIFY_ATTRIBUTES = ['controlledAsset', 'type', 'filling', 'humidity', 'temperature'];
@@ -51,13 +52,13 @@ router.get('/', async function (req, res) {
     const securityEnabled = SECURE_ENDPOINTS;
 
     const headers = ngsiLD.setHeaders(req.session.access_token, LinkHeader);
-
+try {
     const buildings = await ngsiLD.listEntities(
         {
             type: 'Building',
             options: 'concise',
             attrs: 'name',
-            limit: 200
+            limit: ENTITY_LIMIT
         },
         headers
     );
@@ -66,7 +67,7 @@ router.get('/', async function (req, res) {
             type: 'Animal',
             options: 'concise',
             attrs: 'name,species',
-            limit: 200
+            limit: ENTITY_LIMIT
         },
         headers
     );
@@ -75,7 +76,7 @@ router.get('/', async function (req, res) {
             type: 'AgriParcel',
             options: 'concise',
             attrs: 'name',
-            limit: 200
+            limit: ENTITY_LIMIT
         },
         headers
     );
@@ -85,7 +86,7 @@ router.get('/', async function (req, res) {
             type: 'Devices',
             options: 'concise',
             attrs: 'name',
-            limit: 200
+            limit: ENTITY_LIMIT
         },
         headers
     );
@@ -109,6 +110,17 @@ router.get('/', async function (req, res) {
         devices,
         ngsi: 'ngsi-ld'
     });
+} catch (e){
+    debug(e.error);
+    return  res.render('index', {
+        errors: [e.error],
+        buildings: [],
+        pigs: [],
+        cows: [],
+        parcels: [],
+        devices: []
+    });
+}
 });
 
 // Logs users in and out using Keyrock.
