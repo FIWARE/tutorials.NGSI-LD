@@ -273,8 +273,8 @@ and thermostat.
 
 ![](https://fiware.github.io/tutorials.Subscriptions/img/fmis.png)
 
-Remove some hay from the barn, update the thermostat and open the device monitor page at
-`http://localhost:3000/device/monitor` and start a **Tractor** and switch on a **Smart Lamp**. This can be done by
+Open the device monitor page at
+`http://localhost:3000/device/monitor` and open the barn door. This can be done by
 selecting an appropriate command from the drop-down list and pressing the `send` button. The stream of measurements
 coming from the devices can then be seen on the same page.
 
@@ -312,8 +312,8 @@ request is returning full normalized JSON-LD for every value, which includes _pr
 which Devices have the provided various readings and which units are being used. Every value has an associated
 `instanceId` which can be used for further manipulation of the individual entries where supported.
 
-> **TIP:** if the response is empty, you probably haven't started generating any context data yet. Remember to start up
-> the tractor first as described [here](#generating-context-data)
+> **TIP:** if the response is empty, you probably haven't started generating any context data yet. Remember to
+> open the barn door or start up the tractor first as described [here](#generating-context-data)
 
 In the example below, `heartRate` and `location` have been provided by a single Device.
 
