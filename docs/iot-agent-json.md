@@ -54,7 +54,7 @@ A direct comparison of the two IoT Agents can be seen below:
 | HTTP commands posted to a well-known URL - response is in the reply | HTTP commands posted to a well-known URL - response is in the reply | Communications Handshake   |
 | MQTT devices are identified by the path of the topic `/XXX/YYY`     | MQTT devices are identified by the path of the topic `/XXX/YYY`     | Device Identification      |
 | MQTT commands posted to the `cmd` topic                             | MQTT commands posted to the `cmd` topic                             | Communications Handshake   |
-| MQTT command responses posted to the `cmdexe` topic                 | MQTT commands posted to the `cmdexe` topic                          | Communications Handshake   |
+| MQTT command responses posted to the `cmdexe` topic                 | MQTT command responses posted to the `cmdexe` topic                          | Communications Handshake   |
 
 As can be seen, the message payload differs entirely between the two IoT Agents, but much of the rest of the protocol
 remains the same.
