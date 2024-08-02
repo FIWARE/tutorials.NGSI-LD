@@ -259,7 +259,7 @@ lepus:
 
 All containers are residing on the same network - the Orion-LD Context Broker is listening on Port `1026` and the first
 MongoDB is listening on the default port `27017`. The Orion NGSI-v2 Context Broker is listening on Port `1027` and
-second MongoDB is listening on port `27018`. Lepus uses port `3000`, but since that clashes with the the tutorial
+second MongoDB is listening on port `27018`. Lepus uses port `3000`, but since that clashes with the tutorial
 application, it has been amended externally to `3005`.
 
 Lepus is driven by the environment variables as shown:
@@ -527,7 +527,7 @@ The registration is structured as follows:
 
 - `information.entities` is stating that `Building` entities are potentially available on the `endpoint`. The `Link` header holds a JSON-LD `@context` which is mapping the short name `Building` to the IRI `https://uri.fiware.org/ns/dataModels#Building`.
 - The `mode` of the registration is `inclusive`, which means that the context broker will add together `Building` data from all registered and combine it with any `Building` entities found locally.
-- The `operation` mode indicates the the `endpoint` is capable of handling subscriptions and retrieval of entities only.
+- The `operation` mode indicates the `endpoint` is capable of handling subscriptions and retrieval of entities only.
 - The `contextSourceInfo` holds key-value pairs which are used when forwarding requests to the `endpoint`:
     -  `jsonldContext` is a special key, which is used to apply a JSON-LD compaction operation on the payload before forwarding to the registrant endpoint. This corresponds to the fixed terms used by Lepus itself and ensures that the NGSI-v2 broker behind it is always supplied with its preferred short name terms.
     -  `Prefer` appends a `Prefer` header to the forwarded request, which ensures that Lepus only returns elements which correspond to the 1.6.1 NGSI-LD specification
