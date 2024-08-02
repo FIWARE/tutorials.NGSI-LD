@@ -59,7 +59,7 @@ function sendCommand(req, res) {
     const action = req.body.action;
     const id = (COMMANDS[action] || '') + req.body.id;
 
-    if (id === 'barn' ) {
+    if (id === 'barn') {
         IoTDevices.barnDoor();
         return res.status(204).send();
     }

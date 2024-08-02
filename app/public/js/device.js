@@ -22,7 +22,7 @@ $(function () {
 
     socket.on('barn', function (msg) {
         $('#barnicon').attr('src', `/img/${msg}.svg`);
-        $('#barntext').val(msg === 'door-locked'? 'Open' : 'Shut');
+        $('#barntext').val(msg === 'door-locked' ? 'Open' : 'Shut');
     });
 
     // eslint-disable-next-line no-unused-vars

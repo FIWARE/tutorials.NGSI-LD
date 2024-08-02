@@ -52,75 +52,75 @@ router.get('/', async function (req, res) {
     const securityEnabled = SECURE_ENDPOINTS;
 
     const headers = ngsiLD.setHeaders(req.session.access_token, LinkHeader);
-try {
-    const buildings = await ngsiLD.listEntities(
-        {
-            type: 'Building',
-            options: 'concise',
-            attrs: 'name',
-            limit: ENTITY_LIMIT
-        },
-        headers
-    );
-    const animals = await ngsiLD.listEntities(
-        {
-            type: 'Animal',
-            options: 'concise',
-            attrs: 'name,species',
-            limit: ENTITY_LIMIT
-        },
-        headers
-    );
-    const parcels = await ngsiLD.listEntities(
-        {
-            type: 'AgriParcel',
-            options: 'concise',
-            attrs: 'name',
-            limit: ENTITY_LIMIT
-        },
-        headers
-    );
+    try {
+        const buildings = await ngsiLD.listEntities(
+            {
+                type: 'Building',
+                options: 'concise',
+                attrs: 'name',
+                limit: ENTITY_LIMIT
+            },
+            headers
+        );
+        const animals = await ngsiLD.listEntities(
+            {
+                type: 'Animal',
+                options: 'concise',
+                attrs: 'name,species',
+                limit: ENTITY_LIMIT
+            },
+            headers
+        );
+        const parcels = await ngsiLD.listEntities(
+            {
+                type: 'AgriParcel',
+                options: 'concise',
+                attrs: 'name',
+                limit: ENTITY_LIMIT
+            },
+            headers
+        );
 
-    const devices = await ngsiLD.listEntities(
-        {
-            type: 'Devices',
-            options: 'concise',
-            attrs: 'name',
-            limit: ENTITY_LIMIT
-        },
-        headers
-    );
+        const devices = await ngsiLD.listEntities(
+            {
+                type: 'Devices',
+                options: 'concise',
+                attrs: 'name',
+                limit: ENTITY_LIMIT
+            },
+            headers
+        );
 
-    const cows = _.filter(animals, (o) => {
-        return o.species === 'dairy cattle';
-    });
-    const pigs = _.filter(animals, (o) => {
-        return o.species === 'pig';
-    });
+        const cows = _.filter(animals, (o) => {
+            return o.species === 'dairy cattle';
+        });
+        const pigs = _.filter(animals, (o) => {
+            return o.species === 'pig';
+        });
 
-    res.render('index', {
-        success: req.flash('success'),
-        errors: req.flash('error'),
-        info: req.flash('info'),
-        securityEnabled,
-        buildings,
-        pigs,
-        cows,
-        parcels,
-        devices,
-        ngsi: 'ngsi-ld'
-    });
-} catch (e){
-    debug(e.error);
-    return  res.render('index', {
-        errors: [e.error],
-        buildings: [],
-        pigs: [],
-        cows: [],
-        parcels: [],
-        devices: []
-    });
-}
+        return res.render('index', {
+            success: req.flash('success'),
+            errors: req.flash('error'),
+            info: req.flash('info'),
+            securityEnabled,
+            buildings,
+            pigs,
+            cows,
+            parcels,
+            devices,
+            ngsi: 'ngsi-ld'
+        });
+    } catch (e) {
+        debug(e.error);
+        return res.render('index', {
+            errors: [e.error],
+            buildings: [],
+            pigs: [],
+            cows: [],
+            parcels: [],
+            devices: []
+        });
+    }
 });
 
 // Logs users in and out using Keyrock.

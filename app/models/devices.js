@@ -161,11 +161,11 @@ function initDevices() {
     SOCKET_IO.emit('barn', doorStatus);
 }
 
-function stopDevices(){
+function stopDevices() {
     debug('stopDevices');
-    clearInterval(animalsEmitting)
-    animalsEmitting = null
-    clearInterval(devicesEmitting)
+    clearInterval(animalsEmitting);
+    animalsEmitting = null;
+    clearInterval(devicesEmitting);
     devicesEmitting = null;
     if (autoMoveTractors > 0) {
         clearInterval(tractorsEmitting);
@@ -332,7 +332,7 @@ function activateAnimalCollars() {
                     }
                 }
                 state.s = getStatusCode(state.d);
-                if(animalsEmitting){
+                if (animalsEmitting) {
                     setDeviceState(deviceId, toUltraLight(state), isSensor);
                 }
                 break;
@@ -354,7 +354,7 @@ function activateAnimalCollars() {
                     }
                 }
                 state.s = getStatusCode(state.d);
-                if(animalsEmitting){
+                if (animalsEmitting) {
                     setDeviceState(deviceId, toUltraLight(state), isSensor);
                 }
                 break;
@@ -406,7 +406,7 @@ function activateDevices() {
                 if (state.h < 0) {
                     state.h = 0;
                 }
-                if(devicesEmitting){
+                if (devicesEmitting) {
                     setDeviceState(deviceId, toUltraLight(state), isSensor);
                 }
                 break;
@@ -580,12 +580,6 @@ function alterWeather(newWeather) {
     SOCKET_IO.emit('weather', newWeather);
 }
 
-function toggle(newWeather) {
-    debug('The weather is: ' + newWeather);
-    weather = newWeather;
-    SOCKET_IO.emit('weather', newWeather);
-}
-
 // Check to see if a deviceId has a corresponding entry in the cache
 function notFound(deviceId) {
     const deviceUnknown = _.indexOf(myCache.keys(), deviceId) === -1;
@@ -604,12 +598,12 @@ function isUnknownCommand(device, command) {
     return invalid;
 }
 
-function barnDoor (){
-   if (animalsEmitting){
+function barnDoor() {
+    if (animalsEmitting) {
         stopDevices();
-   } else {
+    } else {
         initDevices();
-   }
+    }
 }
 
 module.exports = {
