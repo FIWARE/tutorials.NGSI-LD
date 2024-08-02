@@ -19,11 +19,11 @@ nav:
       - Working with @context: working-with-@context.md
       - Normalized CRUD Operations: ngsi-ld-operations.md
       - Concise CRUD Operations: concise.md
+      - Extended Properties: extended-properties.md
       - Merge Patch and Put: merge-patch.md
       - Entity Relationships: entity-relationships.md
       - Subscriptions: subscriptions.md
       - Temporal Operations: short-term-history.md
-      - Extended Properties: "extended-properties.md"
   - IoT Agents & Robots:
       - IoT Sensors: iot-sensors.md
       - IoT Agent (Ultralight): iot-agent.md
@@ -37,6 +37,8 @@ nav:
       - Managing Roles and Permissions: roles-permissions.md
   - 'Processing, Analysis and Visualization':
       - Cloud Edge Computing: edge-computing.md
+  - Integrating NGSI-v2 Systems:
+      - Federative Data Spaces: linked-data.md
   - Appendix:
       - Data Models: datamodels.md
       - Installing Docker: docker-ubuntu.md

@@ -237,7 +237,7 @@ self-explanatory.
 
 ## Start Up
 
-All services can be initialised from the command-line by running the [services](/services) Bash script provided within
+All services can be initialised from the command-line by running the [services](https://github.com/FIWARE/tutorials.Extended-Properties/blob/NGSI-LD/services) Bash script provided within
 the repository. Please clone the repository and create the necessary images by running the commands as shown:
 
 ```bash

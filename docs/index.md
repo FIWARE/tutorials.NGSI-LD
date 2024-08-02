@@ -168,7 +168,7 @@ to use NGSI-LD.
 &nbsp; 101. [Understanding `@context`](understanding-@context.md)<br/> &nbsp; 102.
 [Working with `@context`](working-with-@context.md)<br/> &nbsp; 103. [CRUD Operations](ngsi-ld-operations.md)<br/>
 &nbsp; 104. [Entity Relationships](entity-relationships.md)<br/> &nbsp; 106. [Subscriptions](subscriptions.md)<br/>
-&nbsp; 107. [Temporal Operations](short-term-history.md)<br/>
+&nbsp; 107. [Temporal Operations](short-term-history.md)<br/>&nbsp; 108. [Extended Properties](short-term-history.md)<br/>
 
 <h3 style="box-shadow: 0px 4px 0px 0px #5dc0cf;">Internet of Things, Robots and third-party systems</h3>
 
@@ -200,3 +200,10 @@ assigning roles and permissions.
 These tutorials show how to create, process, analyze or visualize context information.
 
 &nbsp; 507. [Cloud-Edge Computing](edge-computing.md)<br/>
+
+<h3 style="box-shadow: 0px 4px 0px 0px #233c68;">Integrating NGSI-v2 Systems</h3>
+
+These tutorials show how to create data spaces using NGSI-LD and access NGSI-v2 sources
+
+&nbsp; 601. [Federative Data Spaces](linked-data.md)<br/>
+
