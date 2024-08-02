@@ -67,3 +67,7 @@
 [submodule "tutorials.Extended-Properties"]
 	path = tutorials.Extended-Properties
 	url = https://github.com/FIWARE/tutorials.Extended-Properties
+[submodule "tutorials.Linked-Data"]
+	path = tutorials.Linked-Data
+	url = https://github.com/FIWARE/tutorials.Linked-Data
+	branch = NGSI-LD
