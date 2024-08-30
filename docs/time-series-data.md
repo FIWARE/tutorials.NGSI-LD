@@ -1079,16 +1079,20 @@ The following values in **bold text** need to be placed in the graphing wizard:
 
 Then click on `ESC` on your keyboard and you will see a dashboard including the graph you created.
 
-The click on the `Add Panel` button and select `Choose Visualisation` and pick `Map panel`.
+The click on the `Add Panel` button and select `Choose Visualisation` and pick `Orchestra Cities Map`.
 
-In the map layout options set the following values:
+In the **map view** options set the following values:
 
--   Center: **custom**.
--   Latitude: **52.5031**.
--   Longitude: **13.4447**.
+-   View: **coordinates**.
+-   Latitude: **52.5012**.
+-   Longitude: **13.3682**.
 -   Initial Zoom: **12**.
 
 ![](https://fiware.github.io/tutorials.Time-Series-Data/img/grafana-lamp-map-config-1.png)
+
+In the **base layer** options set the following values:
+
+-   Layer: **Open Street Map**.
 
 Click on `Queries` tab on the left and set as follows:
 
@@ -1103,15 +1107,11 @@ Click on `Queries` tab on the left and set as follows:
 
 ![](https://fiware.github.io/tutorials.Time-Series-Data/img/grafana-lamp-map-config-2.png)
 
-Click on `Visualisation` tab on the left and set as follows:
+Within the `Orchestra Cities Map` Click on `Data Layer` tab on the left and set as follows:
 
--   Map Layers:
-    -   FillingLevelSensor:
-        -   Icon: **lightbulb-o**.
-        -   ClusterType: **average**.
-        -   ColorType: **fix**.
-        -   Column for value: **value**.
-        -   Maker color: **red**.
+-   Markers
+-   Name: Feedstock Level
+-   Query: A
 
 ![](https://fiware.github.io/tutorials.Time-Series-Data/img/grafana-lamp-map-config-3.png)
 

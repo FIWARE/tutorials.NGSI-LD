@@ -268,7 +268,7 @@ For the purpose of this tutorial, we must be monitoring a system where the conte
 dummy IoT Sensors can be used to do this.
 
 Details of various buildings around the farm can be found in the tutorial application. Open
-`http://localhost:3000/app/farm/urn:ngsi-ld:Building:farm001` to display a building with an associated filling sensor
+`http://localhost:3000/app/building/urn:ngsi-ld:Building:farm001` to display a building with an associated filling sensor
 and thermostat.
 
 ![](https://fiware.github.io/tutorials.Subscriptions/img/fmis.png)
