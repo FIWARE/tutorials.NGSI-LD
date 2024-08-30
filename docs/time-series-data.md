@@ -1088,7 +1088,7 @@ In the **map view** options set the following values:
 -   Longitude: **13.3682**.
 -   Initial Zoom: **12**.
 
-![](https://fiware.github.io/tutorials.Time-Series-Data/img/grafana-lamp-map-config-1.png)
+![](https://fiware.github.io/tutorials.Time-Series-Data/img/grafana-filling-map-view.png)
 
 In the **base layer** options set the following values:
 
@@ -1105,7 +1105,7 @@ Click on `Queries` tab on the left and set as follows:
     -   **column:location** **alias:geojson**.
     -   **column:entity_type** **alias:type**.
 
-![](https://fiware.github.io/tutorials.Time-Series-Data/img/grafana-lamp-map-config-2.png)
+![](https://fiware.github.io/tutorials.Time-Series-Data/img/grafana-filling-query.png)
 
 Within the `Orchestra Cities Map` Click on `Data Layer` tab on the left and set as follows:
 
@@ -1113,8 +1113,8 @@ Within the `Orchestra Cities Map` Click on `Data Layer` tab on the left and set 
 -   Name: Feedstock Level
 -   Query: A
 
-![](https://fiware.github.io/tutorials.Time-Series-Data/img/grafana-lamp-map-config-3.png)
+![](https://fiware.github.io/tutorials.Time-Series-Data/img/grafana-filling-data-layer.png)
 
 The final result can be seen below:
 
-![](https://fiware.github.io/tutorials.Time-Series-Data/img/grafana-result.png)
+![](https://fiware.github.io/tutorials.Time-Series-Data/img/grafana-filling-result.png)
