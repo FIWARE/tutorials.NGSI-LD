@@ -15,7 +15,7 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 
 This tutorial is designed for exisiting **NGSI-v2** developers looking to attach existing **NGSI-v2** systems to an
 **NGSI-LD** federation. If you are building a linked data system from scratch you should start from the beginnning of
-the [NGSI-LD developers tutorial](getting-started.md) documentation.
+the [NGSI-LD developers tutorial](understanding-@context.md) documentation.
 
 Similarly, if you an existing **NGSI-v2** developer and you just want to understand linked data concepts in general,
 checkout the equivalent [**NGSI-v2** tutorial](https://github.com/FIWARE/tutorials.Linked-Data/tree/NGSI-v2) on

@@ -22,6 +22,7 @@ nav:
       - Merge Patch and Put: merge-patch.md
       - Entity Relationships: entity-relationships.md
       - Subscriptions: subscriptions.md
+      - Registrations: context-providers.md
       - Temporal Operations: short-term-history.md
       - Extended Properties: extended-properties.md
   - IoT Agents & Robots:
