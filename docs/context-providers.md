@@ -40,11 +40,11 @@ where and which NGSI-LD API endpoints (or subset of endpoints) are available fro
 broker then uses this information from the registry to access and aggregate information to be returned - for example
 merging two views of an entity to retrieve the full information when making a **GET** request.
 
-The actual source of any context data is hidden from the end-user since NGSI-LD interactions are purely based around
+The actual source of any context data is hidden from the end user since NGSI-LD interactions are purely based around
 interfaces, this enables the creation of a hierarchy of context brokers - **Broker A** requests data from **Broker B**
 which in turn requests data from **Broker C** and so on. Securing the data space using distribute trust mechanisms is
 vital since no central control that can be assumed. Furthermore the standard JSON-LD concepts of `@context` and
-expansion/compaction operations mean that data can always be retrieved using the preferred terminology of the end-user.
+expansion/compaction operations mean that data can always be retrieved using the preferred terminology of the end user.
 
 There are four basic types of registration in NGSI-LD - these are described in more detail below:
 
@@ -994,11 +994,11 @@ The weather forecast context broker has more information and its values have a m
 ]
 ```
 
-### Creating an Auxilary registration
+### Creating an Auxiliary registration
 
 #### 1️⃣9️⃣ Request:
 
-An auxilary registration can be made on the **Farmer** context broker to only receive **live** information from the weather forecaster if it does not hold information locally. The `mode` is set to `"auxilary"`, and since the IoT Agent is only accepting **GET** requests the `"operations` attribute is set to `"retrieveOps"` only.
+An auxiliary registration can be made on the **Farmer** context broker to only receive **live** information from the weather forecaster if it does not hold information locally. The `mode` is set to `"auxilary"`, and since the IoT Agent is only accepting **GET** requests the `"operations` attribute is set to `"retrieveOps"` only.
 
 ```bash
 curl -L 'http://localhost:1026/ngsi-ld/v1/csourceRegistrations/' \
