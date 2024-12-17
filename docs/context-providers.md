@@ -730,7 +730,7 @@ The response has requested `comment` data from three sources - the farmer, the v
 
 ## Exclusive registration
 
-`exclusive` registrations should be familiar to anyone who has used an IoT Agent with NGSI-v2. An inclusive registration informs a context broker that a given set of attributes for an `id` is held externally - in another context source. Frequently this context source itself is not a context broker.
+`exclusive` registrations should be familiar to anyone who has used an IoT Agent with NGSI-v2. An exclusive registration informs a context broker that a given set of attributes for an `id` is held externally - in another context source. Frequently this context source itself is not a context broker.
 
 Imagine for example a sensor system where you do not want to rely on the sensor pushing values to a context broker, but every time a request is made you wish to obtain values direct from the device itself. This sort of "lazy" attribute technique is useful for GET requests when the attribute would not usually send data a regular intervals - requesting `batteryLevel` of charge for example. `exclusive` registrations can also be used for actuators where a PATCH request on the context broker should actuate a response on a device in the real world.
 
