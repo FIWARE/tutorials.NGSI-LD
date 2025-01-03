@@ -8,7 +8,6 @@
 const request = require('request');
 const debug = require('debug')('tutorial:command-listener');
 const Security = require('../security');
-const IoTDevices = require('../../models/devices');
 
 // Connect to the context broker and use fallback values if necessary
 const CONTEXT_BROKER = process.env.CONTEXT_BROKER || 'http://localhost:1026/ngsi-ld/v1';
@@ -17,6 +16,9 @@ const NGSI_LD_TENANT = process.env.NGSI_LD_TENANT !== undefined ? process.env.NG
 const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
 
 const port = process.env.WEB_APP_PORT || '3000';
+const devices_port = process.env.DUMMY_DEVICES_PORT || 3001
+const devices = process.env.DUMMY_DEVICES || `http://localhost:${devices_port}`;
+
 const dataModelContext =
     process.env.IOTA_JSON_LD_CONTEXT || 'http://localhost:' + port + '/data-models/ngsi-context.jsonld';
 
@@ -59,8 +61,10 @@ function sendCommand(req, res) {
     const action = req.body.action;
     const id = (COMMANDS[action] || '') + req.body.id;
 
+    // The barn Door is just a switch for operating the dummy devices
+    // Update the status of all devices
     if (id === 'barn') {
-        IoTDevices.barnDoor();
+        barnDoor();
         return res.status(204).send();
     }
 
@@ -72,16 +76,16 @@ function sendCommand(req, res) {
     }
 
     // The temperature Gauge does not accept commands,
-    // Update the state of the device directly
+    // Update the state of the device indirectly
     if (action === 'raise' || action === 'lower') {
-        IoTDevices.alterTemperature(id.replace('temperature', 'targetTemp'), action === 'raise');
+        alterTemperature(id.replace('temperature', 'targetTemp'), action === 'raise');
         return res.status(204).send();
     }
 
     // The Weather does not accept commands,
-    // Update the state of the weather directly to simulate changing conditions
+    // Update the state of the weather indirectly to simulate changing conditions
     if (action === 'sunny' || action === 'cloudy' || action === 'raining') {
-        IoTDevices.alterWeather(action);
+        alterWeather(action);
         return res.status(204).send();
     }
 
@@ -131,6 +135,50 @@ function accessControl(req, res, next) {
     }
     // LEVEL 1: AUTHENTICATION ONLY - Every user is authorized, just ensure the user exists.
     return Security.authenticate(req, res, next);
+}
+
+
+// The barn Door is just a switch for the dummy devices
+function barnDoor(){
+    const options = {
+        method: 'PUT',
+        url: `${devices}/barndoor`,
+        json: {update: true}
+    };
+    request(options, (error) => {
+        if (error) {
+            debug(error);
+        }
+    });
+}
+
+// Update the state of the weather to simulate changing conditions
+function alterWeather(action){
+    const options = {
+        method: 'PUT',
+        url: `${devices}/weather`,
+        json: {action}
+    };
+    request(options, (error) => {
+        if (error) {
+            debug(error);
+        }
+    });
+}
+
+// The temperature Gauge does not accept commands,
+// Update the state of the device indirectly
+function alterTemperature(id, raise){
+    const options = {
+        method: 'PUT',
+        url: `${devices}/temperature/${id}`,
+        json: {raise}
+    };
+    request(options, (error) => {
+        if (error) {
+            debug(error);
+        }
+    });
 }
 
 module.exports = {

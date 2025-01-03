@@ -1,9 +1,10 @@
 const createError = require('http-errors');
 const express = require('express');
 const Southbound = require('./controllers/iot/southbound');
-const debug = require('debug')('tutorial:iot-device');
+const debug = require('debug')('devices:iot-device');
 const mqtt = require('mqtt');
 const logger = require('morgan');
+const IoTDevices = require('./models/devices');
 
 /* global MQTT_CLIENT */
 const DEVICE_TRANSPORT = process.env.DUMMY_DEVICES_TRANSPORT || 'HTTP';
@@ -29,21 +30,34 @@ iot.use(rawBody);
 const mqttBrokerUrl = process.env.MQTT_BROKER_URL || 'mqtt://mosquitto';
 global.MQTT_CLIENT = mqtt.connect(mqttBrokerUrl);
 
+
+const iotRouter = express.Router();
 // If the Ultralight Dummy Devices are configured to use the HTTP transport, then
 // listen to the command endpoints using HTTP
 if (DEVICE_TRANSPORT === 'HTTP') {
     debug('Listening on HTTP endpoints: /iot/water, iot/tractor, /iot/filling');
-
-    const iotRouter = express.Router();
-
     // The router listening on the IoT port is responding to commands going southbound only.
     // Therefore we need a route for each actuator
     iotRouter.post('/iot/water:id', Southbound.HTTP.water);
     iotRouter.post('/iot/tractor:id', Southbound.HTTP.tractor);
     iotRouter.post('/iot/filling:id', Southbound.HTTP.filling);
-
-    iot.use('/', iotRouter);
 }
+
+iotRouter.put('/barndoor', (req, res) => {
+    IoTDevices.barnDoor();
+    res.status(204).send();
+});
+iotRouter.put('/weather', (req, res) => {
+    IoTDevices.alterWeather(req.body.action);
+    res.status(204).send();
+});
+iotRouter.put('/temperature/:id', (req, res) => {
+    IoTDevices.alterTemperature(req.params.id, req.body.raise);
+    res.status(204).send();
+});
+iot.use('/', iotRouter);
+
+
 // If the IoT Devices are configured to use the MQTT transport, then
 // subscribe to the assoicated topics for each device.
 if (DEVICE_TRANSPORT === 'MQTT') {

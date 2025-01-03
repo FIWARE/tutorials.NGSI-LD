@@ -3,13 +3,12 @@
 // The internal state is maintained using the Ultralight protocol
 //
 
-/* global SOCKET_IO */
-
 const NodeCache = require('node-cache');
 const myCache = new NodeCache();
 const _ = require('lodash');
-const debug = require('debug')('tutorial:devices');
+const debug = require('debug')('devices:devices');
 const Northbound = require('../controllers/iot/northbound');
+const Emitter = require('../lib/emitter');
 
 // A series of constants used by our set of devices
 
@@ -53,8 +52,6 @@ const numberOfCows = process.env.COW_COUNT || 5;
 const numberOfSoilSensors = process.env.SOIL_SENSOR_COUNT || 5;
 let autoMoveTractors = process.env.MOVE_TRACTOR || 10000;
 
-let weather = 'cloudy';
-let doorStatus = 'door-locked';
 let animalsEmitting = null;
 let devicesEmitting = null;
 let tractorsEmitting = null;
@@ -100,10 +97,10 @@ function actuateDevice(deviceId, command) {
         case 'water':
             if (command === 'on') {
                 setDeviceState(deviceId, WATER_ON, false);
-                SOCKET_IO.emit(deviceId, WATER_ON);
+                Emitter.emit(deviceId, WATER_ON);
             } else if (command === 'off') {
                 setDeviceState(deviceId, WATER_OFF, false);
-                SOCKET_IO.emit(deviceId, WATER_OFF);
+                Emitter.emit(deviceId, WATER_OFF);
             }
             break;
         case 'tractor':
@@ -157,8 +154,8 @@ function initDevices() {
     }
     animalsEmitting = setInterval(activateAnimalCollars, 5000);
     devicesEmitting = setInterval(activateDevices, 3000);
-    doorStatus = 'door-open';
-    SOCKET_IO.emit('barn', doorStatus);
+    myCache.set('barn', 'door-open');
+    Emitter.emit('barn', 'door-open');
 }
 
 function stopDevices() {
@@ -171,8 +168,8 @@ function stopDevices() {
         clearInterval(tractorsEmitting);
         tractorsEmitting = null;
     }
-    doorStatus = 'door-locked';
-    SOCKET_IO.emit('barn', doorStatus);
+    myCache.set('barn', 'door-locked');
+    Emitter.emit('barn', 'door-locked');
 }
 
 // Broadcast weather conditions
@@ -227,10 +224,13 @@ myCache.set('filling002', FILLING_STATION_FULL);
 myCache.set('filling003', FILLING_STATION_FULL);
 myCache.set('filling004', FILLING_STATION_EMPTY);
 
+myCache.set('barn', 'door-locked');
+myCache.set('weather', 'cloudy');
+
 function emitWeatherConditions() {
-    if (SOCKET_IO) {
-        SOCKET_IO.emit('weather', weather);
-        SOCKET_IO.emit('barn', doorStatus);
+    if (Emitter) {
+        Emitter.emit('weather', myCache.get('weather'));
+        Emitter.emit('barn', myCache.get('barn'));
     }
 }
 
@@ -275,6 +275,7 @@ function addAndTrim(value, add, weather) {
 
 function randomWalk(state, deviceId, lng, lat) {
     let moveFactor = 6;
+    let weather = myCache.get('weather');
 
     if (weather === 'raining' || lameAnimalIds.includes(deviceId)) {
         moveFactor = 8;
@@ -374,6 +375,7 @@ function activateDevices() {
     isDevicesActive = true;
 
     const deviceIds = myCache.keys();
+    const weather = myCache.get('weather');
 
     _.forEach(deviceIds, (deviceId) => {
         const state = getDeviceState(deviceId);
@@ -506,7 +508,7 @@ function setDeviceState(deviceId, state, isSensor = true, force = false) {
         Northbound.sendMeasure(deviceId, state);
     }
 
-    SOCKET_IO.emit(deviceId, state);
+    Emitter.emit(deviceId, state);
 }
 
 // Transformation function from a state object to the Ultralight Protocol
@@ -576,8 +578,8 @@ function alterTemperature(id, raise) {
 
 function alterWeather(newWeather) {
     debug('The weather is: ' + newWeather);
-    weather = newWeather;
-    SOCKET_IO.emit('weather', newWeather);
+    myCache.set('weather', newWeather);
+    Emitter.emit('weather', newWeather);
 }
 
 // Check to see if a deviceId has a corresponding entry in the cache
@@ -600,8 +602,10 @@ function isUnknownCommand(device, command) {
 
 function barnDoor() {
     if (animalsEmitting) {
+        myCache.set('barn', 'door-locked');
         stopDevices();
     } else {
+        myCache.set('barn', 'door-open');
         initDevices();
     }
 }

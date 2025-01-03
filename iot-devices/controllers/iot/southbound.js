@@ -4,11 +4,11 @@
 // dummy IoT devices
 //
 
-/* global SOCKET_IO */
-const debug = require('debug')('tutorial:southbound');
+const debug = require('debug')('devices:southbound');
 const UltralightCommand = require('../../models/command/ultralight');
 const JSONCommand = require('../../models/command/json');
 const XMLCommand = require('../../models/command/xml');
+const Emitter = require('../../lib/emitter');
 
 const DEVICE_PAYLOAD = process.env.DUMMY_DEVICES_PAYLOAD || 'ultralight';
 
@@ -63,7 +63,7 @@ function fillingHttpCommand(req, res) {
 function processMqttMessage(topic, message) {
     debug('processMqttMessage');
     const mqttBrokerUrl = process.env.MQTT_BROKER_URL || 'mqtt://mosquitto';
-    SOCKET_IO.emit('mqtt', mqttBrokerUrl + topic + '  ' + message);
+    Emitter.emit('mqtt', mqttBrokerUrl + topic + '  ' + message);
     Command.processMqttMessage(topic, message);
 }
 

@@ -31,23 +31,6 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListeningServer);
 
-
-
-/**
- * Create HTTP server for iot devices
- */
-const iot = require('../iot');
-const iotPort = normalizePort(process.env.DUMMY_DEVICES_PORT || '3001');
-iot.set('port', iotPort);
-//iot.set('io', io);
-
-const iotServer = http.createServer(iot);
-iotServer.listen(iotPort);
-iotServer.on('error', onError);
-iotServer.on('listening', onListeningIoT);
-
-
-
 /**
  * Normalize a port into a number, string, or false.
  */

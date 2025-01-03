@@ -5,7 +5,7 @@
 //
 
 const Security = require('../security');
-const debug = require('debug')('tutorial:northbound');
+const debug = require('debug')('devices:northbound');
 const UltralightMeasure = require('../../models/measure/ultralight');
 const JSONMeasure = require('../../models/measure/json');
 const XMLMeasure = require('../../models/measure/xml');

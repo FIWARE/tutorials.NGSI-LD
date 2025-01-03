@@ -28,6 +28,8 @@ const NOTIFY_ATTRIBUTES = ['controlledAsset', 'type', 'filling', 'humidity', 'te
 
 const numberOfPigs = process.env.PIG_COUNT || 5;
 
+/* global SOCKET_IO */
+
 // Error handler for async functions
 function catchErrors(fn) {
     return (req, res, next) => {
@@ -207,5 +209,11 @@ router.post('/subscription/:type', (req, res) => {
     });
     res.status(204).send();
 });
+
+router.post('/message/:type', (req, res) => {
+    SOCKET_IO.emit(req.params.type, req.body.data);
+    res.status(204).send();
+});
+
 
 module.exports = router;

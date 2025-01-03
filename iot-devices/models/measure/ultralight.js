@@ -1,7 +1,8 @@
 // Connect to an IoT Agent and use fallback values if necessary
 
 const request = require('request');
-const debug = require('debug')('tutorial:ultralight');
+const debug = require('debug')('devices:ultralight');
+const Emitter = require('../../lib/emitter');
 
 const DEVICE_API_KEY = process.env.DUMMY_DEVICES_API_KEY || '1234';
 
@@ -31,7 +32,6 @@ function hashCode(str) {
     return Math.abs(hash);
 }
 
-/* global SOCKET_IO */
 /* global MQTT_CLIENT */
 
 // This processor sends ultralight payload northbound to
@@ -73,7 +73,7 @@ class UltralightMeasure {
                 debug(debugText + ' ' + error.code);
             }
         });
-        SOCKET_IO.emit('http', debugText + '  ' + state);
+        Emitter.emit('http', debugText + '  ' + state);
     }
 
     // measures sent over MQTT are posted as topics (animal collars, temperature sensor, filling sensor etc.)

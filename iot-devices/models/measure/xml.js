@@ -1,7 +1,8 @@
 // Connect to an IoT Agent and use fallback values if necessary
 
 const request = require('request');
-const debug = require('debug')('tutorial:xml');
+const debug = require('debug')('devices:xml');
+const Emitter = require('../../lib/emitter');
 
 const DEVICE_API_KEY = process.env.DUMMY_DEVICES_API_KEY || '1234';
 
@@ -31,7 +32,6 @@ function hashCode(str) {
     return Math.abs(hash);
 }
 
-/* global SOCKET_IO */
 /* global MQTT_CLIENT */
 
 // This processor sends XML payloads northbound to
@@ -73,7 +73,7 @@ class XMLMeasure {
             }
         });
 
-        SOCKET_IO.emit(
+        Emitter.emit(
             'http',
             debugText + '<br/> ' + payload.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br/>')
         );
