@@ -5,6 +5,8 @@ const debug = require('debug')('devices:iot-device');
 const mqtt = require('mqtt');
 const logger = require('morgan');
 const IoTDevices = require('./models/devices');
+const os = require("os")
+const clusterWorkerSize = os.cpus().length
 
 /* global MQTT_CLIENT */
 const DEVICE_TRANSPORT = process.env.DUMMY_DEVICES_TRANSPORT || 'HTTP';
@@ -44,7 +46,13 @@ if (DEVICE_TRANSPORT === 'HTTP') {
 }
 
 iotRouter.put('/barndoor', (req, res) => {
-    IoTDevices.barnDoor();
+    const newStatus =  IoTDevices.toggleBarnDoor();
+    IoTDevices.barnDoor(newStatus);
+
+    if (clusterWorkerSize > 1){
+        process.send({device: 'barn', status: newStatus});
+    }
+
     res.status(204).send();
 });
 iotRouter.put('/weather', (req, res) => {

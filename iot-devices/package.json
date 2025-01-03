@@ -12,12 +12,12 @@
     "prettier": "prettier --parser flow --single-quote --write **/**/*.js  **/*.js *.js"
   },
   "dependencies": {
-    "debug": "^4.3.4",
+    "debug": "~4.3.3",
     "express": "^4.19.2",
     "http-errors": "^2.0.0",
-    "node-cache": "^5.1.2",
     "morgan": "^1.10.0",
     "mqtt": "^4.3.6",
+    "node-cache": "^5.1.2",
     "request": "^2.88.2",
     "xml-parser": "^1.2.1",
     "xml2js": "^0.4.23"
