@@ -32,7 +32,7 @@ Both of the following syntaxes (with and without `@`) are acceptable in NGSI-LD:
 {
     "id": "urn:ngsi-ld:Building:farm001",
     "type": "Building",
-    "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+    "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
 }
 ```
 
@@ -40,7 +40,7 @@ Both of the following syntaxes (with and without `@`) are acceptable in NGSI-LD:
 {
     "@id": "urn:ngsi-ld:Building:farm001",
     "@type": "Building",
-    "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+    "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
 }
 ```
 
@@ -558,7 +558,7 @@ Since **French** is not a supported language for this Entity, but a default alte
     },
     "@context": [
         "http://context/user-context.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ]
 }
 ```
@@ -594,7 +594,7 @@ _English_ string is returned.
     },
     "@context": [
         "http://context/user-context.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ]
 }
 ```
@@ -633,7 +633,7 @@ curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
         },
         "@context": [
             "http://context/user-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ]
     }
 ]
@@ -671,7 +671,7 @@ curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
         },
         "@context": [
             "http://context/user-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ]
     }
 ]
@@ -730,7 +730,7 @@ As can be seen, two Building entities are returned with the long names for all t
             "type": "VocabularyProperty",
             "vocab": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dfarm"
         },
-        "@context": ["https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"]
+        "@context": ["https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"]
     },
     {
         "id": "urn:ngsi-ld:Building:barn002",
@@ -739,7 +739,7 @@ As can be seen, two Building entities are returned with the long names for all t
             "type": "VocabularyProperty",
             "vocab": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn"
         },
-        "@context": ["https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"]
+        "@context": ["https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"]
     }
 ]
 ```
@@ -772,7 +772,7 @@ In the response the categories `farm` and `barn` are used.
         },
         "@context": [
             "http://context/user-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ]
     },
     {
@@ -784,7 +784,7 @@ In the response the categories `farm` and `barn` are used.
         },
         "@context": [
             "http://context/user-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ]
     }
 ]
@@ -837,7 +837,7 @@ shortname of the Entity `type` has also been amended.
         },
         "@context": [
             "http://context/alternate-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ]
     },
     {
@@ -849,7 +849,7 @@ shortname of the Entity `type` has also been amended.
         },
         "@context": [
             "http://context/alternate-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ]
     }
 ]
@@ -881,7 +881,7 @@ attribute can be re-expanded using JSON-LD `@vocab`)
     },
     "@context": [
         "http://context/context-context.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ]
 }
 ```
@@ -914,7 +914,7 @@ curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
         },
         "@context": [
             "http://context/user-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ]
     }
 ]

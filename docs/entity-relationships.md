@@ -258,7 +258,7 @@ curl -X GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=TemperatureSensor,F
     {
         "@context": [
             "http://context/user-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:TemperatureSensor:001",
         "type": "TemperatureSensor",
@@ -270,7 +270,7 @@ curl -X GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=TemperatureSensor,F
     {
         "@context": [
             "http://context/user-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:TemperatureSensor:002",
         "type": "TemperatureSensor",
@@ -379,7 +379,7 @@ The updated response including the `controlledAsset` attribute is shown below:
 {
     "@context": [
         "http://context/user-context.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ],
     "id": "urn:ngsi-ld:TemperatureSensor:001",
     "type": "TemperatureSensor",
@@ -445,7 +445,7 @@ response is a JSON array as shown.
     {
         "@context": [
             "http://context/user-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:TemperatureSensor:001",
         "type": "TemperatureSensor"
@@ -453,7 +453,7 @@ response is a JSON array as shown.
     {
         "@context": [
             "http://context/user-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:FillingLevelSensor:001",
         "type": "FillingLevelSensor"

@@ -336,7 +336,7 @@ been successful and the reason for failure (if any has occurred).
 {
     "@context": [
         "http://context/user-context.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ],
     "success": [
         "urn:ngsi-ld:TemperatureSensor:002",
@@ -438,7 +438,7 @@ moved due to content negotiation if the `Accept:application/json` had been set).
 {
     "@context": [
         "http://context/user-context.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ],
     "id": "urn:ngsi-ld:TemperatureSensor:001",
     "type": "TemperatureSensor",
@@ -497,7 +497,7 @@ The sensor `urn:ngsi-ld:TemperatureSensor:001` is reading at 25°C. The response
 {
     "@context": [
         "http://context/user-context.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ],
     "id": "urn:ngsi-ld:TemperatureSensor:001",
     "type": "TemperatureSensor",
@@ -599,7 +599,7 @@ context will now contain four sensors.
     {
         "@context": [
             "http://context/user-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:TemperatureSensor:004",
         "type": "TemperatureSensor",
@@ -616,7 +616,7 @@ context will now contain four sensors.
     {
         "@context": [
             "http://context/user-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:TemperatureSensor:002",
         "type": "TemperatureSensor",
@@ -633,7 +633,7 @@ context will now contain four sensors.
     {
         "@context": [
             "http://context/user-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:TemperatureSensor:003",
         "type": "TemperatureSensor",
@@ -650,7 +650,7 @@ context will now contain four sensors.
     {
         "@context": [
             "http://context/user-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:TemperatureSensor:001",
         "type": "TemperatureSensor",

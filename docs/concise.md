@@ -41,7 +41,7 @@ such as `"type": "Property"` throughout the payload to ensure that machines can 
 {
     "@context": [
         "https://fiware.github.io/tutorials.Step-by-Step/example.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ],
     "id": "urn:nsgi-ld:Beatle:John_Lennon",
     "type": "Beatle",
@@ -77,7 +77,7 @@ shorter and to the point, and not all information is returned by the request - s
 {
     "@context": [
         "https://fiware.github.io/tutorials.Step-by-Step/example.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ],
     "id": "urn:nsgi-ld:Beatle:John_Lennon",
     "name": "John Lennon",
@@ -119,7 +119,7 @@ representation, where redundant "type" members are omitted and the following rul
 {
     "@context": [
         "https://fiware.github.io/tutorials.Step-by-Step/example.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ],
     "id": "urn:nsgi-ld:Beatle:John_Lennon",
     "name": "John Lennon",
@@ -399,7 +399,7 @@ been successful and the reason for failure (if any has occurred).
 {
     "@context": [
         "http://context/user-context.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ],
     "success": [
         "urn:ngsi-ld:TemperatureSensor:002",
@@ -1167,7 +1167,7 @@ The result of a concise GeoJSON notification can be seen below.
                         }
                     }
                 },
-                "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld",
+                "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld",
                 "geometry": {
                     "value": {
                         "type": "Point",

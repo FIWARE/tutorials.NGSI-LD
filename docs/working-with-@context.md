@@ -365,7 +365,7 @@ The first request will take some time, as the context broker must navigate and l
 
 Since the `Content-Type: application/ld+json` the `@context` is supplied in the body of the request. As with all
 **NGSI-LD** interactions, the core **NGSI-LD** `@context`
-([`https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld`](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld))
+([`https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld`](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld))
 is implicitly included as well.
 
 This means that the actual `@context` is:
@@ -374,7 +374,7 @@ This means that the actual `@context` is:
 {
     "@context": [
         "http://context/ngsi-context.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ]
 }
 ```
@@ -489,7 +489,7 @@ curl -G -X GET \
 #### Response:
 
 Since no explicit `@context` was sent in the request, the response returns the Core `@context` by default
-(`https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld`) and all attributes are expanded whenever possible.
+(`https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld`) and all attributes are expanded whenever possible.
 
 -   `id`, `type`, `location` and `name`are defined in the core context and are not expanded.
 -   `address` has been mapped to `http://schema.org/address`
@@ -501,7 +501,7 @@ be displayed.
 ```json
 [
     {
-        "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld",
+        "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld",
         "id": "urn:ngsi-ld:Building:farm001",
         "type": "https://uri.fiware.org/ns/dataModels#Building",
         "https://schema.org/address": {
@@ -534,7 +534,7 @@ be displayed.
         }
     },
     {
-        "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld",
+        "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld",
         "id": "urn:ngsi-ld:Building:barn002",
         "type": "https://uri.fiware.org/ns/dataModels#Building",
         "https://schema.org/address": {
@@ -605,7 +605,7 @@ files explicitly as element in the array of `@context` sent. The response is nor
 {
     "@context": [
         "http://context/ngsi-context.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ],
     "id": "urn:ngsi-ld:Building:farm001",
     "type": "Building",
@@ -672,7 +672,7 @@ used as the `@context` returned to the response.
     {
         "@context": [
             "http://context/ngsi-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:Building:farm001",
         "type": "Building",
@@ -692,7 +692,7 @@ used as the `@context` returned to the response.
     {
         "@context": [
             "http://context/ngsi-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:Building:barn002",
         "type": "Building",
@@ -740,7 +740,7 @@ The use of the `Link` header and the `options=keyValues` parameter reduces the r
     {
         "@context": [
             "http://context/json-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:Building:barn002",
         "type": "Building",
@@ -810,7 +810,7 @@ overridden directly but would require an additional **JSON-LD** expansion/compac
     {
         "@context": [
             "http://context/alternate-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:Building:barn002",
         "type": "Gebäude",
@@ -860,7 +860,7 @@ The response is returned in JSON-LD format with short form attribute names:
     {
         "@context": [
             "http://context/ngsi-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:Building:barn002",
         "type": "Building",
@@ -907,7 +907,7 @@ Use of the `Link` header and the `options=keyValues` parameter reduces the respo
     {
         "@context": [
             "http://context/json-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:Building:farm001",
         "type": "Building",
@@ -927,7 +927,7 @@ Use of the `Link` header and the `options=keyValues` parameter reduces the respo
     {
         "@context": [
             "http://context/json-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:Building:barn002",
         "type": "Building",
