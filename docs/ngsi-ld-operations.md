@@ -202,8 +202,8 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
       "id": "urn:ngsi-ld:TemperatureSensor:001",
       "type": "TemperatureSensor",
       "category": {
-            "type": "Property",
-            "value": "sensor"
+            "type": "VocabProperty",
+            "vocab": "sensor"
       },
       "temperature": {
             "type": "Property",
@@ -291,8 +291,8 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/create' \
       "id": "urn:ngsi-ld:TemperatureSensor:002",
       "type": "TemperatureSensor",
       "category": {
-            "type": "Property",
-            "value": "sensor"
+            "type": "VocabProperty",
+            "vocab": "sensor"
       },
       "temperature": {
             "type": "Property",
@@ -304,8 +304,8 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/create' \
       "id": "urn:ngsi-ld:TemperatureSensor:003",
       "type": "TemperatureSensor",
       "category": {
-            "type": "Property",
-            "value": "sensor"
+            "type": "VocabProperty",
+            "vocab": "sensor"
       },
       "temperature": {
             "type": "Property",
@@ -317,8 +317,8 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/create' \
       "id": "urn:ngsi-ld:TemperatureSensor:004",
       "type": "TemperatureSensor",
       "category": {
-            "type": "Property",
-            "value": "sensor"
+            "type": "VocabProperty",
+            "vocab": "sensor"
       },
       "temperature": {
             "type": "Property",
@@ -367,8 +367,8 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/upsert' \
       "id": "urn:ngsi-ld:TemperatureSensor:002",
       "type": "TemperatureSensor",
       "category": {
-            "type": "Property",
-            "value": "sensor"
+            "type": "VocabProperty",
+            "vocab": "sensor"
       },
       "temperature": {
             "type": "Property",
@@ -380,8 +380,8 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/upsert' \
       "id": "urn:ngsi-ld:TemperatureSensor:003",
       "type": "TemperatureSensor",
       "category": {
-            "type": "Property",
-            "value": "sensor"
+            "type": "VocabProperty",
+            "vocab": "sensor"
       },
       "temperature": {
             "type": "Property",
@@ -445,10 +445,10 @@ moved due to content negotiation if the `Accept:application/json` had been set).
     "createdAt": "2020-08-27T14:33:06Z",
     "modifiedAt": "2020-08-27T14:33:10Z",
     "category": {
-        "type": "Property",
+        "type": "VocabProperty",
         "createdAt": "2020-08-27T14:33:06Z",
         "modifiedAt": "2020-08-27T14:33:06Z",
-        "value": "sensor"
+        "vocab": "sensor"
     },
     "temperature": {
         "type": "Property",
@@ -604,8 +604,8 @@ context will now contain four sensors.
         "id": "urn:ngsi-ld:TemperatureSensor:004",
         "type": "TemperatureSensor",
         "category": {
-            "type": "Property",
-            "value": "sensor"
+            "type": "VocabProperty",
+            "vocab": "sensor"
         },
         "temperature": {
             "type": "Property",
@@ -621,8 +621,8 @@ context will now contain four sensors.
         "id": "urn:ngsi-ld:TemperatureSensor:002",
         "type": "TemperatureSensor",
         "category": {
-            "type": "Property",
-            "value": "sensor"
+            "type": "VocabProperty",
+            "vocab": "sensor"
         },
         "temperature": {
             "type": "Property",
@@ -638,8 +638,8 @@ context will now contain four sensors.
         "id": "urn:ngsi-ld:TemperatureSensor:003",
         "type": "TemperatureSensor",
         "category": {
-            "type": "Property",
-            "value": "sensor"
+            "type": "VocabProperty",
+            "vocab": "sensor"
         },
         "temperature": {
             "type": "Property",
@@ -660,8 +660,8 @@ context will now contain four sensors.
             "unitCode": "C62"
         },
         "category": {
-            "type": "Property",
-            "value": "sensor"
+            "type": "VocabProperty",
+            "vocab": "sensor"
         },
         "controlledAsset": {
             "type": "Relationship",
@@ -777,8 +777,8 @@ curl -iX PATCH 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Temperatur
 -H 'Content-Type: application/json' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 --data-raw '{
-    "value": ["sensor", "actuator"],
-    "type": "Property"
+    "vocab": ["sensor", "actuator"],
+    "type": "VocabProperty"
 }'
 ```
 
@@ -799,11 +799,11 @@ curl -iX PATCH 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Temperatur
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 --data-raw '{
       "category": {
-            "value": [
+            "vocab": [
                   "sensor",
                   "actuator"
             ],
-            "type": "Property"
+            "type": "VocabProperty"
       },
       "controlledAsset": {
             "type": "Relationship",
@@ -827,8 +827,8 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/upsert?options=
     "id": "urn:ngsi-ld:TemperatureSensor:003",
     "type": "TemperatureSensor",
     "category": {
-      "type": "Property",
-      "value": [
+      "type": "VocabProperty",
+      "vocab": [
         "actuator",
         "sensor"
       ]
@@ -838,8 +838,8 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/upsert?options=
     "id": "urn:ngsi-ld:TemperatureSensor:004",
     "type": "TemperatureSensor",
     "category": {
-      "type": "Property",
-      "value": [
+      "type": "VocabProperty",
+      "vocab": [
         "actuator",
         "sensor"
       ]
@@ -870,8 +870,8 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/update?options=
     "id": "urn:ngsi-ld:TemperatureSensor:003",
     "type": "TemperatureSensor",
     "category": {
-      "type": "Property",
-      "value": [
+      "type": "VocabProperty",
+      "vocab": [
         "actuator",
         "sensor"
       ]
@@ -881,8 +881,8 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/update?options=
     "id": "urn:ngsi-ld:TemperatureSensor:004",
     "type": "TemperatureSensor",
     "temperature": {
-      "type": "Property",
-      "value": [
+      "type": "VocabProperty",
+      "vocab": [
         "actuator",
         "sensor"
       ]
@@ -978,17 +978,17 @@ curl -L -X PATCH 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Temperat
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 --data-raw '{
       "category": {
-            "value": null,
-            "type": "Property"
+            "vocab": "urn:ngsi-ld:null",
+            "type": "VocabProperty"
       },
       "controlledAsset": {
             "type": "Relationship",
-            "object": null
+            "object": "urn:ngsi-ld:null"
       }
 }'
 ```
 
-If a value is set to `null` the attribute is deleted.
+If a value is set to `urn:ngsi-ld:null` the attribute is deleted.
 
 ### Find existing data relationships
 

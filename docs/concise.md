@@ -267,7 +267,10 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
 --data-raw '{
       "id": "urn:ngsi-ld:TemperatureSensor:001",
       "type": "TemperatureSensor",
-      "category": "sensor",
+      "name": "Sensor 1",
+      "category": {
+        "vocab": "sensor"
+      },
       "temperature": {
             "value": 25,
             "unitCode": "CEL"
@@ -276,7 +279,7 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
 ```
 
 New entities can be added by making a POST request to the `/ngsi-ld/v1/entities` endpoint. Notice that because
-`category` has no sub-attributes, it does not require a `value` element.
+`name` is a Property that has no sub-attributes, it does not require a `value` element.
 
 As usual, the request will fail if the entity already exists in the context.
 
@@ -352,7 +355,9 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/create' \
     {
       "id": "urn:ngsi-ld:TemperatureSensor:002",
       "type": "TemperatureSensor",
-      "category": ["sensor"],
+      "category": {
+        "vocab": ["sensor"]
+      },
       "temperature": {
             "value": 20,
             "unitCode": "CEL"
@@ -361,7 +366,9 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/create' \
     {
       "id": "urn:ngsi-ld:TemperatureSensor:003",
       "type": "TemperatureSensor",
-      "category":  ["sensor" , "actuator"],
+      category": {
+        "vocab": ["sensor", "actuator"]
+      },
       "temperature": {
             "value": 2,
             "unitCode": "CEL"
@@ -371,8 +378,8 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/create' \
       "id": "urn:ngsi-ld:TemperatureSensor:004",
       "type": "TemperatureSensor",
       "category": {
-            "type": "Property",
-            "value": "sensor"
+            "type": "VocabProperty",
+            "vocab": "sensor"
       },
       "temperature": {
             "type": "Property",
@@ -429,7 +436,9 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/upsert' \
     {
       "id": "urn:ngsi-ld:TemperatureSensor:002",
       "type": "TemperatureSensor",
-      "category": "sensor",
+      category": {
+        "vocab": "sensor"
+      },
       "temperature": {
             "value": 21,
             "unitCode": "CEL"
@@ -500,7 +509,7 @@ to content negotiation if the `Accept:application/json` had been set). The full 
     "category": {
         "createdAt": "2020-08-27T14:33:06Z",
         "modifiedAt": "2020-08-27T14:33:06Z",
-        "value": "sensor"
+        "vocab": "sensor"
     },
     "temperature": {
         "createdAt": "2020-08-27T14:33:06Z",
@@ -579,7 +588,10 @@ The sensor `urn:ngsi-ld:TemperatureSensor:001` is reading at 25°C. The response
 {
     "id": "urn:ngsi-ld:TemperatureSensor:001",
     "type": "TemperatureSensor",
-    "category": "sensor",
+    "name": "Sensor 1",
+    "category": {
+        "vocab": "sensor"
+    },
     "temperature": {
         "value": 25,
         "unitCode": "CEL"
@@ -623,7 +635,10 @@ The sensor `urn:ngsi-ld:TemperatureSensor:001` is reading at 25°C. The response
 {
     "id": "urn:ngsi-ld:TemperatureSensor:001",
     "type": "TemperatureSensor",
-    "category": "sensor",
+    "name": "Sensor 1",
+    "category": {
+        "vocab": "sensor"
+    },
     "temperature": {
         "value": 25,
         "unitCode": "CEL"
@@ -656,7 +671,9 @@ context will now contain four sensors.
     {
         "id": "urn:ngsi-ld:TemperatureSensor:004",
         "type": "TemperatureSensor",
-        "category": "sensor",
+        "category": {
+            "vocab": "sensor"
+        },
         "temperature": {
             "value": 100,
             "unitCode": "CEL"
@@ -674,7 +691,9 @@ context will now contain four sensors.
     {
         "id": "urn:ngsi-ld:TemperatureSensor:003",
         "type": "TemperatureSensor",
-        "category": "sensor",
+        "category": {
+            "vocab": "sensor"
+        },
         "temperature": {
             "type": "Property",
             "value": 27,
@@ -684,6 +703,7 @@ context will now contain four sensors.
     {
         "id": "urn:ngsi-ld:TemperatureSensor:001",
         "type": "TemperatureSensor",
+        "name": "Sensor 1",
         "batteryLevel": {
             "value": 0.8,
             "unitCode": "C62"
@@ -839,8 +859,12 @@ The response details the selected attributes from the selected entities is retur
                     "observedAt": "2022-03-01T15:49:57.039Z",
                     "unitCode": "5K"
                 },
-                "phenologicalCondition": "femaleAdult",
-                "reproductiveCondition": "active",
+                "phenologicalCondition": {
+                    "vocab": "femaleAdult"
+                },
+                "reproductiveCondition": {
+                    "vocab": "active"
+                },
                 "name": "Carnation",
                 "legalID": "M-sow010-Carnation",
                 "sex": "female",
@@ -874,8 +898,12 @@ The response details the selected attributes from the selected entities is retur
                     "observedAt": "2022-03-01T15:49:57.287Z",
                     "unitCode": "5K"
                 },
-                "phenologicalCondition": "femaleAdult",
-                "reproductiveCondition": "inCalf",
+                "phenologicalCondition": {
+                    "vocab":  "femaleAdult"
+                },
+                "reproductiveCondition": {
+                    "vocab": "inCalf"
+                },
                 "name": "Peach",
                 "legalID": "M-sow006-Peach",
                 "sex": "female",
@@ -918,7 +946,7 @@ curl -iX PATCH 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Temperatur
 -H 'Content-Type: application/json' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 --data-raw '{
-    "value": ["sensor", "actuator"]
+    "vocab": ["sensor", "actuator"]
 }'
 ```
 
@@ -939,7 +967,7 @@ curl -iX PATCH 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Temperatur
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 --data-raw '{
       "category": {
-            "value": [
+            "vocab": [
                   "sensor",
                   "actuator"
             ]
@@ -964,18 +992,22 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/upsert?options=
   {
     "id": "urn:ngsi-ld:TemperatureSensor:003",
     "type": "TemperatureSensor",
-    "category": [
-        "actuator",
-        "sensor"
-    ]
+    "category": {
+         "vocab": [
+                  "sensor",
+                  "actuator"
+            ]
+        }
   },
   {
     "id": "urn:ngsi-ld:TemperatureSensor:004",
     "type": "TemperatureSensor",
-    "category":  [
-        "actuator",
-        "sensor"
-    ]
+    "category": {
+         "vocab": [
+                  "sensor",
+                  "actuator"
+            ]
+        }
   }
 ]'
 ```
@@ -1001,10 +1033,12 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/update?options=
   {
     "id": "urn:ngsi-ld:TemperatureSensor:003",
     "type": "TemperatureSensor",
-    "category":[
-        "actuator",
-        "sensor"
-      ]
+    "category": {
+        "vocab": [
+            "sensor",
+            "actuator"
+        ]
+    }
   },
   {
     "id": "urn:ngsi-ld:TemperatureSensor:004",

@@ -473,7 +473,7 @@ applications. The file is structured into three parts:
 -   A list of attributes (e.g. `address`) and enumerations (e.g. `barn`)
 
 Effectively this NGSI-LD `@context` can be combined with a copy of the NGSI-LD core context
-[https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld)
+[https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld)
 to mechanically define the following:
 
 If a computer encounters an entity of `type=Building` this really refers to a
@@ -498,8 +498,8 @@ For example this is a `Building` in _normalized_ NGSI-LD format:
     "id": "urn:ngsi-ld:Building:001",
     "type": "Building",
     "category": {
-        "type": "Property",
-        "value": "barn"
+        "type": "VocabProperty",
+        "vocab": "barn"
     },
     "address": {
         "type": "Property",
@@ -523,7 +523,7 @@ For example this is a `Building` in _normalized_ NGSI-LD format:
     },
     "@context": [
         "https://example.com/data-models.context-ngsild.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ]
 }
 ```

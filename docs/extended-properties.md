@@ -77,7 +77,7 @@ this principle, allowing the creation of NGSI-LD properties which directly confo
 
 -   An NGSI-LD **LanguageProperty** holds a set of internationalized strings and is defined using the JSON-LD
     `@language` keyword.
--   An NGSI-LD **VocabularyProperty** holds is a mapping of a URI to a value within the user'`@context` and is defined
+-   An NGSI-LD **VocabProperty** holds is a mapping of a URI to a value within the user'`@context` and is defined
     using the JSON-LD `@vocab` keyword.
 
 In each case, the meaning of the resultant payload will be altered according to the standard JSON-LD definitions, so the
@@ -289,7 +289,7 @@ strings representing [IETF RFC 5646](https://www.rfc-editor.org/info/rfc5646) la
 
 ### Creating a new data entity
 
-This example creates an entity with a **LanguageProperty** and a **VocabularyProperty**. Let's create a farm
+This example creates an entity with a **LanguageProperty** and a **VocabProperty**. Let's create a farm
 **Building** entity in which we want to make the `name` available in three different languages, _English_, _German_, and
 _Japanese_. The process will be to send a **POST** request to the Broker with the following information:
 
@@ -302,7 +302,7 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
     "id": "urn:ngsi-ld:Building:farm001",
     "type": "Building",
     "category": {
-        "type": "VocabularyProperty",
+        "type": "VocabProperty",
         "vocab": ["farm"]
     },
     "address": {
@@ -350,7 +350,7 @@ Content-Length: 0
 
 #### 2️⃣ Request:
 
-This example creates a second entity with a **LanguageProperty** and a **VocabularyProperty**. Each subsequent entity
+This example creates a second entity with a **LanguageProperty** and a **VocabProperty**. Each subsequent entity
 must have a unique `id` for the given `type`. Note that within a `languageMap`, the `@none` simplified pair indicates
 the default fallback value to be displayed for unknown languages.
 
@@ -362,7 +362,7 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
     "id": "urn:ngsi-ld:Building:barn002",
     "type": "Building",
     "category": {
-        "type": "VocabularyProperty",
+        "type": "VocabProperty",
         "vocab": ["barn"]
     },
     "address": {
@@ -681,7 +681,7 @@ curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
 
 The User's `@context` is a mechanism for mapping URNs and defining the Entities held within the system It is therefore
 possible to retrieve _the same data_ using a different set of short names for the attributes, and in the case of a
-**VocabularyProperty**, different short names for the values of the attributes themselves. This is particularly useful
+**VocabProperty**, different short names for the values of the attributes themselves. This is particularly useful
 when dealing with distributed data, federations and data spaces as the end user many not have full control of data held
 within another participant's context broker.
 
@@ -719,7 +719,7 @@ curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
 
 As can be seen, two Building entities are returned with the long names for all the attributes, and in the case of a
 `vocab` for the attribute value as well. Terms defined in the core context (such as `id`, `type`, `vocab` and
-`VocabularyProperty`) are not expanded, as the core context is implied as a default.
+`VocabProperty`) are not expanded, as the core context is implied as a default.
 
 ```json
 [
@@ -727,7 +727,7 @@ As can be seen, two Building entities are returned with the long names for all t
         "id": "urn:ngsi-ld:Building:farm001",
         "type": "https://uri.fiware.org/ns/dataModels#Building",
         "https://uri.fiware.org/ns/dataModels#category": {
-            "type": "VocabularyProperty",
+            "type": "VocabProperty",
             "vocab": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dfarm"
         },
         "@context": ["https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"]
@@ -736,7 +736,7 @@ As can be seen, two Building entities are returned with the long names for all t
         "id": "urn:ngsi-ld:Building:barn002",
         "type": "https://uri.fiware.org/ns/dataModels#Building",
         "https://uri.fiware.org/ns/dataModels#category": {
-            "type": "VocabularyProperty",
+            "type": "VocabProperty",
             "vocab": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn"
         },
         "@context": ["https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"]
@@ -747,7 +747,7 @@ As can be seen, two Building entities are returned with the long names for all t
 #### 1️⃣2️⃣ Request:
 
 If the `ngsi-context.jsonld` `@context` is included as a `Link` header in the request, the response will convert all the
-attribute names to short names, and in the case of a **VocabularyProperty**, use the short names for the value as well.
+attribute names to short names, and in the case of a **VocabProperty**, use the short names for the value as well.
 
 ```bash
 curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
@@ -767,7 +767,7 @@ In the response the categories `farm` and `barn` are used.
         "id": "urn:ngsi-ld:Building:farm001",
         "type": "Building",
         "category": {
-            "type": "VocabularyProperty",
+            "type": "VocabProperty",
             "vocab": "farm"
         },
         "@context": [
@@ -779,7 +779,7 @@ In the response the categories `farm` and `barn` are used.
         "id": "urn:ngsi-ld:Building:barn002",
         "type": "Building",
         "category": {
-            "type": "VocabularyProperty",
+            "type": "VocabProperty",
             "vocab": "barn"
         },
         "@context": [
@@ -810,7 +810,7 @@ The `alternate-context.jsonld` `@context` file maps all the terms and enumeratio
 #### 1️⃣3️⃣ Request:
 
 When `alternate-context.jsonld` included as a `Link` header in the request, the response will convert all the attribute
-names to short names used in `alternate-context.jsonld`, and in the case of a **VocabularyProperty**, return the short
+names to short names used in `alternate-context.jsonld`, and in the case of a **VocabProperty**, return the short
 names for the value as well.
 
 ```bash
@@ -832,7 +832,7 @@ shortname of the Entity `type` has also been amended.
         "id": "urn:ngsi-ld:Building:farm001",
         "type": "Gebäude",
         "kategorie": {
-            "type": "VocabularyProperty",
+            "type": "VocabProperty",
             "vocab": "bauernhof"
         },
         "@context": [
@@ -844,7 +844,7 @@ shortname of the Entity `type` has also been amended.
         "id": "urn:ngsi-ld:Building:barn002",
         "type": "Gebäude",
         "kategorie": {
-            "type": "VocabularyProperty",
+            "type": "VocabProperty",
             "vocab": "scheune"
         },
         "@context": [
@@ -909,7 +909,7 @@ curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
         "id": "urn:ngsi-ld:Building:barn002",
         "type": "Building",
         "category": {
-            "type": "VocabularyProperty",
+            "type": "VocabProperty",
             "vocab": "barn"
         },
         "@context": [

@@ -329,8 +329,8 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
     "id": "urn:ngsi-ld:Building:farm001",
     "type": "Building",
     "category": {
-        "type": "Property",
-        "value": ["farm"]
+        "type": "VocabProperty",
+        "vocab": ["farm"]
     },
     "address": {
         "type": "Property",
@@ -394,8 +394,8 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
     "id": "urn:ngsi-ld:Building:barn002",
     "type": "Building",
     "category": {
-        "type": "Property",
-        "value": ["barn"]
+        "type": "VocabProperty",
+        "vocab": ["barn"]
     },
     "address": {
         "type": "Property",
@@ -522,8 +522,8 @@ be displayed.
             "value": "Victory Farm"
         },
         "https://uri.fiware.org/ns/dataModels#category": {
-            "type": "Property",
-            "value": "farm"
+            "type": "VocabProperty",
+            "vocab": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dfarm"
         },
         "location": {
             "type": "GeoProperty",
@@ -555,8 +555,8 @@ be displayed.
             "value": "Big Red Barn"
         },
         "https://uri.fiware.org/ns/dataModels#category": {
-            "type": "Property",
-            "value": "barn"
+            "type": "VocabProperty",
+            "vocab": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn"
         },
         "location": {
             "type": "GeoProperty",
@@ -610,7 +610,7 @@ files explicitly as element in the array of `@context` sent. The response is nor
     "id": "urn:ngsi-ld:Building:farm001",
     "type": "Building",
     "category": {
-        "type": "Property",
+        "type": "VocabProperty",
         "value": "farm"
     },
     "address": {
@@ -683,7 +683,9 @@ used as the `@context` returned to the response.
             "postalCode": "10557"
         },
         "name": "Victory Farm",
-        "category": "farm",
+        "category": {
+            "vocab": "farm"
+        },
         "location": {
             "type": "Point",
             "coordinates": [13.3505, 52.5144]
@@ -703,7 +705,9 @@ used as the `@context` returned to the response.
             "postalCode": "10557"
         },
         "name": "Big Red Barn",
-        "category": "barn",
+        "category": {
+            "vocab":"barn"
+        },
         "location": {
             "type": "Point",
             "coordinates": [13.3698, 52.5163]
@@ -751,7 +755,9 @@ The use of the `Link` header and the `options=keyValues` parameter reduces the r
             "postalCode": "10557"
         },
         "name": "Big Red Barn",
-        "category": "barn",
+        "category": {
+            "vocab": "barn"
+        },
         "location": {
             "type": "Point",
             "coordinates": [13.3698, 52.5163]
@@ -871,7 +877,9 @@ The response is returned in JSON-LD format with short form attribute names:
             "postalCode": "10557"
         },
         "name": "Big Red Barn",
-        "category": "barn",
+        "category": {
+            "vocab": "barn"
+        },
         "location": {
             "type": "Point",
             "coordinates": [13.3698, 52.5163]
@@ -918,7 +926,9 @@ Use of the `Link` header and the `options=keyValues` parameter reduces the respo
             "postalCode": "10557"
         },
         "name": "Victory Farm",
-        "category": "farm",
+        "category": {
+            "vocab": "farm"
+        },
         "location": {
             "type": "Point",
             "coordinates": [13.3505, 52.5144]
@@ -938,7 +948,9 @@ Use of the `Link` header and the `options=keyValues` parameter reduces the respo
             "postalCode": "10557"
         },
         "name": "Big Red Barn",
-        "category": "barn",
+        "category": {
+            "vocab": "barn"
+        },
         "location": {
             "type": "Point",
             "coordinates": [13.3698, 52.5163]
@@ -983,7 +995,9 @@ consists of JSON only without the attribute `type` and `metadata` elements.
             "postalCode": "10557"
         },
         "name": "Victory Farm",
-        "category": "farm",
+        "category": {
+            "vocab": "farm"
+        },
         "location": {
             "type": "Point",
             "coordinates": [13.3505, 52.5144]
@@ -999,7 +1013,9 @@ consists of JSON only without the attribute `type` and `metadata` elements.
             "postalCode": "10557"
         },
         "name": "Big Red Barn",
-        "category": "barn",
+        "category": {
+            "vocab": "barn"
+        },
         "location": {
             "type": "Point",
             "coordinates": [13.3698, 52.5163]
@@ -1052,7 +1068,9 @@ consists of JSON only without the attribute `type` and `metadata` elements.
             "postalCode": "10557"
         },
         "name": "Big Red Barn",
-        "category": "barn",
+        "category": {
+            "vocab": "barn"
+        },
         "location": {
             "type": "Point",
             "coordinates": [13.3698, 52.5163]
