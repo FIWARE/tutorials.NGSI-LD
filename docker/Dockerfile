@@ -101,6 +101,7 @@ RUN sed -i -r "/^(root|nobody)/!d" /etc/passwd /etc/shadow /etc/group \
 # The following creates a distroless build for production.
 #
 
+# hadolint ignore=DL3006
 FROM gcr.io/distroless/${DISTROLESS_NODE_VERSION}
 ARG TARGET
 ARG GITHUB_ACCOUNT
