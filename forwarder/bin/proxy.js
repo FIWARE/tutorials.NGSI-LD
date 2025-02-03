@@ -33,11 +33,10 @@ if (clusterWorkerSize > 1) {
     })
   } else {
     // mount `exampleProxy` in web server
-    const app = express()
-    const router = express.Router();
-    router.get('/status', (req, res) => {
+    const app = express();
+    app.get('/status', (req, res) => {
         res.status(200).send();
-    });
+    });;
 
     app.use('/', exampleProxy);
     app.listen(PORT, function () {
