@@ -7,18 +7,16 @@ name: Deploy Baseimage
 on:
   push:
     paths:
-      - docker/**
       - app/**
+      - forwarder/**
+      - iot-devices/**
     branches:
       - master
   workflow_dispatch:
 
-env:
-  IMAGE_NAME: fiware/tutorials.ngsi-ld:latest
-
 jobs:
-  deploy:
-    runs-on: ubuntu-18.04
+  build-images:
+    runs-on: ubuntu-22.04
     if: ${{ github.repository_owner == 'FIWARE' }}
     steps:
       - uses: actions/checkout@v2
@@ -43,23 +41,63 @@ jobs:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
-      - name: Docker meta (Distroless)
-        id: meta
+      - name: Docker meta (FMIS)
+        id: meta-fmis
         uses: docker/metadata-action@v3
         with:
           # list of Docker images to use as base name for tags
           images: |
-            ${{ env.IMAGE_NAME }}
+            fiware/tutorials.ngsi-ld:latest
           labels: |
-            org.opencontainers.image.title=FIWARE NGSI-LD Tutorials
-            org.opencontainers.image.description=Simple Smart Farm Node.js express application for use with the FIWARE NGSI-LD tutorials
+            org.opencontainers.image.title=NGSI-LD Smart Farm
+            org.opencontainers.image.description=Node.js express application for the FMIS front-end
+      - name: Build and push (FMIS)
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: |
+            fiware/tutorials.ngsi-ld:latest
+            ghcr.io/fiware/tutorials.ngsi-ld:latest
+            quay.io/fiware/tutorials.ngsi-ld:latest
+          file: app/Dockerfile
+          labels: ${{ steps.meta-fmis.outputs.labels }}
+      - name: Docker meta (Forwarder)
+        id: meta-forwarder
+        uses: docker/metadata-action@v3
+        with:
+          # list of Docker images to use as base name for tags
+          images: |
+            fiware/tutorials.forwarder:latest
+          labels: |
+            org.opencontainers.image.title=Proxy Forwarder
+            org.opencontainers.image.description=Node.js express application as a dummy data space
+      - name: Build and push (Forwarder)
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: |
+            fiware/tutorials.forwarder:latest
+            ghcr.io/fiware/tutorials.forwarder:latest
+            quay.io/fiware/tutorials.forwarder:latest
+          file: app/Dockerfile
+          labels: ${{ steps.meta-forwarder.outputs.labels }}
+      - name: Docker meta (IoT Devices)
+        id: meta-iot-devices
+        uses: docker/metadata-action@v3
+        with:
+          # list of Docker images to use as base name for tags
+          images: |
+            fiware/tutorials.iot-devices:latest
+          labels: |
+            org.opencontainers.image.title=Dummy Devices
+            org.opencontainers.image.description=Node.js express application sending IoT Data
       - name: Build and push (Distroless)
         uses: docker/build-push-action@v2
         with:
           push: true
           tags: |
-            ${{ env.IMAGE_NAME }}
-            ghcr.io/${{ env.IMAGE_NAME }}
-            quay.io/${{ env.IMAGE_NAME }}
-          file: docker/Dockerfile
-          labels: ${{ steps.meta.outputs.labels }}
+            fiware/tutorials.iot-devices:latest
+            ghcr.io/fiware/tutorials.iot-devices:latest
+            quay.io/fiware/tutorials.iot-devices:latest
+          file: iot-devices/Dockerfile
+          labels: ${{ steps.meta-iot-devices.outputs.labels }}
