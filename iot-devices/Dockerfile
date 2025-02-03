@@ -81,7 +81,7 @@ RUN \
 USER node
 ENV NODE_ENV=development
 # Ports used by application
-EXPOSE ${WEB_APP_PORT:-3000} ${DUMMY_DEVICES_PORT:-3001}
+EXPOSE ${DUMMY_DEVICES_PORT:-3001}
 CMD ["node", "/opt/iot-devices/bin/devices"]
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s \
    CMD npm run healthcheck
@@ -126,7 +126,7 @@ WORKDIR /opt/iot-devices
 USER nobody
 ENV NODE_ENV=production
 # Ports used by application
-EXPOSE ${WEB_APP_PORT:-3000} ${DUMMY_DEVICES_PORT:-3001}
+EXPOSE ${DUMMY_DEVICES_PORT:-3001}
 CMD ["./bin/devices"]
 HEALTHCHECK  --interval=30s --timeout=3s --start-period=10s \
   CMD ["/nodejs/bin/node", "./bin/healthcheck"]

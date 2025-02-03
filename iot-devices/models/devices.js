@@ -280,7 +280,7 @@ function addAndTrim(value, add, weather) {
 
 function randomWalk(state, deviceId, lng, lat) {
     let moveFactor = 6;
-    let weather = myCache.get('weather');
+    const weather = myCache.get('weather');
 
     if (weather === 'raining' || lameAnimalIds.includes(deviceId)) {
         moveFactor = 8;

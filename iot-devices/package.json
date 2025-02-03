@@ -9,12 +9,14 @@
   },
   "scripts": {
     "start": "node ./bin/devices",
+    "lint": "eslint . --cache --fix",
     "prettier": "prettier --parser flow --single-quote --write **/**/*.js  **/*.js *.js"
   },
   "dependencies": {
     "debug": "~4.3.3",
     "express": "^4.19.2",
     "http-errors": "^2.0.0",
+    "lodash": "^4.17.21",
     "morgan": "^1.10.0",
     "mqtt": "^4.3.6",
     "node-cache": "^5.1.2",
@@ -23,7 +25,12 @@
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
-    "prettier": "~1.14.2"
+    "ajv": "^8.10.0",
+    "eslint": "^8.9.0",
+    "eslint-config-tamia": "^7.2.7",
+    "eslint-plugin-prettier": "^4.0.0",
+    "memfs": "3.4.1",
+    "prettier": "^2.5.1"
   },
   "keywords": []
 }

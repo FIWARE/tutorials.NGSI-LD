@@ -1,6 +1,5 @@
 
 const OAuth2 = require('../lib/oauth2').OAuth2;
-const debug = require('debug')('devices:security');
 const keyrockPort = process.env.KEYROCK_PORT || '3005';
 const keyrockUrl = (process.env.KEYROCK_URL || 'http://localhost') + ':' + keyrockPort;
 const keyrockIPAddress = (process.env.KEYROCK_IP_ADDRESS || 'http://127.0.0.1') + ':' + keyrockPort;
