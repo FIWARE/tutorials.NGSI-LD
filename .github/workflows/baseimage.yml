@@ -81,7 +81,7 @@ jobs:
             fiware/tutorials.forwarder:latest
             ghcr.io/fiware/tutorials.forwarder:latest
             quay.io/fiware/tutorials.forwarder:latest
-          file: app/Dockerfile
+          file: forwarder/Dockerfile
           labels: ${{ steps.meta-forwarder.outputs.labels }}
       - name: Docker meta (IoT Devices)
         id: meta-iot-devices
