@@ -58,7 +58,7 @@ RUN \
   curl -s -L https://github.com/"${GITHUB_ACCOUNT}"/"${GITHUB_REPOSITORY}"/archive/"${RELEASE}".zip > source.zip && \
   unzip -qq source.zip -x "*/docs/**" "*/.*" && \
   rm source.zip && \
-  mv "${GITHUB_REPOSITORY}-${RELEASE_CONCAT}/app" /opt/iot-devices && \
+  mv "${GITHUB_REPOSITORY}-${RELEASE_CONCAT}/iot-devices" /opt/iot-devices && \
   # Remove unzip and clean apt cache
   apt-get clean && \
   apt-get remove -y unzip && \
