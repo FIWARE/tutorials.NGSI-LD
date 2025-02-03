@@ -169,7 +169,7 @@ curl -iX POST \
       "id": "urn:ngsi-ld:TemperatureSensor:001",
       "type": "TemperatureSensor",
       "description" : {"type": "Property", "value": "Temperature Gauge 1"},
-      "category": {"type": "Property", "value": "sensor"},
+      "category": {"type": "VocabProperty", "vocab": "sensor"},
       "controlledProperty" : {"type": "Property", "value": "temperature"},
       "temperature": {"type": "Property", "value": 20, "unitCode": "CEL"}
     },
@@ -177,7 +177,7 @@ curl -iX POST \
       "id": "urn:ngsi-ld:TemperatureSensor:002",
       "type": "TemperatureSensor",
       "description" : {"type": "Property", "value": "Temperature Gauge 2"},
-      "category": {"type": "Property", "value": "sensor"},
+      "category": {"type": "VocabProperty", "vocab": "sensor"},
       "controlledProperty" : {"type": "Property", "value": "temperature"},
       "temperature": {"type": "Property", "value": 21, "unitCode": "CEL"}
     },
@@ -185,7 +185,7 @@ curl -iX POST \
       "id": "urn:ngsi-ld:TemperatureSensor:003",
       "type": "TemperatureSensor",
       "description" : {"type": "Property", "value": "Temperature Gauge 3"},
-      "category": {"type": "Property", "value": "sensor"},
+      "category": {"type": "VocabProperty", "vocab": "sensor"},
       "controlledProperty" : {"type": "Property", "value": "temperature"},
       "temperature": {"type": "Property", "value": 27, "unitCode": "CEL"}
     }
@@ -206,7 +206,7 @@ curl -iX POST \
       "id": "urn:ngsi-ld:FillingLevelSensor:001",
       "type": "FillingLevelSensor",
       "description" : {"type": "Property", "value": "Filling Level Sensor 1"},
-      "category": {"type": "Property", "value": "sensor"},
+      "category": {"type": "VocabProperty", "vocab": "sensor"},
       "controlledProperty" : {"type": "Property", "value": "fillingLevel"},
       "fillingLevel": {"type": "Property", "value": 1, "unitCode": "C62"}
     },
@@ -214,7 +214,7 @@ curl -iX POST \
       "id": "urn:ngsi-ld:FillingLevelSensor:002",
       "type": "FillingLevelSensor",
       "description" : {"type": "Property", "value": "Filling Level Sensor 2"},
-      "category": {"type": "Property", "value": "sensor"},
+      "category": {"type": "VocabProperty", "vocab": "sensor"},
       "controlledProperty" : {"type": "Property", "value": "fillingLevel"},
       "fillingLevel": {"type": "Property", "value": 0.9, "unitCode": "C62"}
     },
@@ -222,7 +222,7 @@ curl -iX POST \
       "id": "urn:ngsi-ld:FillingLevelSensor:003",
       "type": "FillingLevelSensor",
       "description" : {"type": "Property", "value": "Filling Gauge 3"},
-      "category": {"type": "Property", "value": "sensor"},
+      "category": {"type": "VocabProperty", "vocab": "sensor"},
       "controlledProperty" : {"type": "Property", "value": "fillingLevel"},
       "fillingLevel": {"type": "Property", "value": 0.8, "unitCode": "C62"}
     }
@@ -258,24 +258,24 @@ curl -X GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=TemperatureSensor,F
     {
         "@context": [
             "http://context/user-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:TemperatureSensor:001",
         "type": "TemperatureSensor",
         "description": "Temperature Gauge 1",
-        "category": "sensor",
+        "category": {"vocab": "sensor"},
         "controlledProperty": "temperature",
         "temperature": 20
     },
     {
         "@context": [
             "http://context/user-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:TemperatureSensor:002",
         "type": "TemperatureSensor",
         "description": "Temperature Gauge 2",
-        "category": "sensor",
+        "category": {"vocab": "sensor"},
         "controlledProperty": "temperature",
         "temperature": 21
     },
@@ -379,12 +379,12 @@ The updated response including the `controlledAsset` attribute is shown below:
 {
     "@context": [
         "http://context/user-context.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ],
     "id": "urn:ngsi-ld:TemperatureSensor:001",
     "type": "TemperatureSensor",
     "description": "Temperature Gauge 1",
-    "category": "sensor",
+    "category": {"vocab": "sensor"},
     "controlledProperty": "temperature",
     "temperature": 20,
     "controlledAsset": "urn:ngsi-ld:Building:farm001"
@@ -445,7 +445,7 @@ response is a JSON array as shown.
     {
         "@context": [
             "http://context/user-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:TemperatureSensor:001",
         "type": "TemperatureSensor"
@@ -453,7 +453,7 @@ response is a JSON array as shown.
     {
         "@context": [
             "http://context/user-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:FillingLevelSensor:001",
         "type": "FillingLevelSensor"

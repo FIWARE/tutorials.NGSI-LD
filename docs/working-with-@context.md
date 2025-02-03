@@ -329,8 +329,8 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
     "id": "urn:ngsi-ld:Building:farm001",
     "type": "Building",
     "category": {
-        "type": "Property",
-        "value": ["farm"]
+        "type": "VocabProperty",
+        "vocab": ["farm"]
     },
     "address": {
         "type": "Property",
@@ -365,7 +365,7 @@ The first request will take some time, as the context broker must navigate and l
 
 Since the `Content-Type: application/ld+json` the `@context` is supplied in the body of the request. As with all
 **NGSI-LD** interactions, the core **NGSI-LD** `@context`
-([`https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld`](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld))
+([`https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld`](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld))
 is implicitly included as well.
 
 This means that the actual `@context` is:
@@ -374,7 +374,7 @@ This means that the actual `@context` is:
 {
     "@context": [
         "http://context/ngsi-context.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ]
 }
 ```
@@ -394,8 +394,8 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
     "id": "urn:ngsi-ld:Building:barn002",
     "type": "Building",
     "category": {
-        "type": "Property",
-        "value": ["barn"]
+        "type": "VocabProperty",
+        "vocab": ["barn"]
     },
     "address": {
         "type": "Property",
@@ -489,7 +489,7 @@ curl -G -X GET \
 #### Response:
 
 Since no explicit `@context` was sent in the request, the response returns the Core `@context` by default
-(`https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld`) and all attributes are expanded whenever possible.
+(`https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld`) and all attributes are expanded whenever possible.
 
 -   `id`, `type`, `location` and `name`are defined in the core context and are not expanded.
 -   `address` has been mapped to `http://schema.org/address`
@@ -501,7 +501,7 @@ be displayed.
 ```json
 [
     {
-        "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld",
+        "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld",
         "id": "urn:ngsi-ld:Building:farm001",
         "type": "https://uri.fiware.org/ns/dataModels#Building",
         "https://schema.org/address": {
@@ -522,8 +522,8 @@ be displayed.
             "value": "Victory Farm"
         },
         "https://uri.fiware.org/ns/dataModels#category": {
-            "type": "Property",
-            "value": "farm"
+            "type": "VocabProperty",
+            "vocab": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dfarm"
         },
         "location": {
             "type": "GeoProperty",
@@ -534,7 +534,7 @@ be displayed.
         }
     },
     {
-        "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld",
+        "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld",
         "id": "urn:ngsi-ld:Building:barn002",
         "type": "https://uri.fiware.org/ns/dataModels#Building",
         "https://schema.org/address": {
@@ -555,8 +555,8 @@ be displayed.
             "value": "Big Red Barn"
         },
         "https://uri.fiware.org/ns/dataModels#category": {
-            "type": "Property",
-            "value": "barn"
+            "type": "VocabProperty",
+            "vocab": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn"
         },
         "location": {
             "type": "GeoProperty",
@@ -605,12 +605,12 @@ files explicitly as element in the array of `@context` sent. The response is nor
 {
     "@context": [
         "http://context/ngsi-context.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ],
     "id": "urn:ngsi-ld:Building:farm001",
     "type": "Building",
     "category": {
-        "type": "Property",
+        "type": "VocabProperty",
         "value": "farm"
     },
     "address": {
@@ -672,7 +672,7 @@ used as the `@context` returned to the response.
     {
         "@context": [
             "http://context/ngsi-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:Building:farm001",
         "type": "Building",
@@ -683,7 +683,9 @@ used as the `@context` returned to the response.
             "postalCode": "10557"
         },
         "name": "Victory Farm",
-        "category": "farm",
+        "category": {
+            "vocab": "farm"
+        },
         "location": {
             "type": "Point",
             "coordinates": [13.3505, 52.5144]
@@ -692,7 +694,7 @@ used as the `@context` returned to the response.
     {
         "@context": [
             "http://context/ngsi-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:Building:barn002",
         "type": "Building",
@@ -703,7 +705,9 @@ used as the `@context` returned to the response.
             "postalCode": "10557"
         },
         "name": "Big Red Barn",
-        "category": "barn",
+        "category": {
+            "vocab":"barn"
+        },
         "location": {
             "type": "Point",
             "coordinates": [13.3698, 52.5163]
@@ -740,7 +744,7 @@ The use of the `Link` header and the `options=keyValues` parameter reduces the r
     {
         "@context": [
             "http://context/json-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:Building:barn002",
         "type": "Building",
@@ -751,7 +755,9 @@ The use of the `Link` header and the `options=keyValues` parameter reduces the r
             "postalCode": "10557"
         },
         "name": "Big Red Barn",
-        "category": "barn",
+        "category": {
+            "vocab": "barn"
+        },
         "location": {
             "type": "Point",
             "coordinates": [13.3698, 52.5163]
@@ -810,7 +816,7 @@ overridden directly but would require an additional **JSON-LD** expansion/compac
     {
         "@context": [
             "http://context/alternate-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:Building:barn002",
         "type": "Gebäude",
@@ -860,7 +866,7 @@ The response is returned in JSON-LD format with short form attribute names:
     {
         "@context": [
             "http://context/ngsi-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:Building:barn002",
         "type": "Building",
@@ -871,7 +877,9 @@ The response is returned in JSON-LD format with short form attribute names:
             "postalCode": "10557"
         },
         "name": "Big Red Barn",
-        "category": "barn",
+        "category": {
+            "vocab": "barn"
+        },
         "location": {
             "type": "Point",
             "coordinates": [13.3698, 52.5163]
@@ -907,7 +915,7 @@ Use of the `Link` header and the `options=keyValues` parameter reduces the respo
     {
         "@context": [
             "http://context/json-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:Building:farm001",
         "type": "Building",
@@ -918,7 +926,9 @@ Use of the `Link` header and the `options=keyValues` parameter reduces the respo
             "postalCode": "10557"
         },
         "name": "Victory Farm",
-        "category": "farm",
+        "category": {
+            "vocab": "farm"
+        },
         "location": {
             "type": "Point",
             "coordinates": [13.3505, 52.5144]
@@ -927,7 +937,7 @@ Use of the `Link` header and the `options=keyValues` parameter reduces the respo
     {
         "@context": [
             "http://context/json-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.6.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:Building:barn002",
         "type": "Building",
@@ -938,7 +948,9 @@ Use of the `Link` header and the `options=keyValues` parameter reduces the respo
             "postalCode": "10557"
         },
         "name": "Big Red Barn",
-        "category": "barn",
+        "category": {
+            "vocab": "barn"
+        },
         "location": {
             "type": "Point",
             "coordinates": [13.3698, 52.5163]
@@ -983,7 +995,9 @@ consists of JSON only without the attribute `type` and `metadata` elements.
             "postalCode": "10557"
         },
         "name": "Victory Farm",
-        "category": "farm",
+        "category": {
+            "vocab": "farm"
+        },
         "location": {
             "type": "Point",
             "coordinates": [13.3505, 52.5144]
@@ -999,7 +1013,9 @@ consists of JSON only without the attribute `type` and `metadata` elements.
             "postalCode": "10557"
         },
         "name": "Big Red Barn",
-        "category": "barn",
+        "category": {
+            "vocab": "barn"
+        },
         "location": {
             "type": "Point",
             "coordinates": [13.3698, 52.5163]
@@ -1052,7 +1068,9 @@ consists of JSON only without the attribute `type` and `metadata` elements.
             "postalCode": "10557"
         },
         "name": "Big Red Barn",
-        "category": "barn",
+        "category": {
+            "vocab": "barn"
+        },
         "location": {
             "type": "Point",
             "coordinates": [13.3698, 52.5163]

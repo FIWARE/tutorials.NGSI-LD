@@ -73,7 +73,7 @@ Within the **NGSI-LD** Smart Farm, all of the Building Entities are marked using
 which can be expanded to a full URI `https://uri.fiware.org/ns/dataModels#Building` using JSON-LD expansion rules. All
 the attributes of each Building entity (such as `name`, `category` etc are defined using the
 [User `@context`](./data-models/ngsi-context.jsonld) and are structured as NGSI-LD attributes. The standard NGSI-LD
-Keywords are used to define the nature of each attribute - e.g. `Property`, `GeoProperty`, `VocabularyProperty`,
+Keywords are used to define the nature of each attribute - e.g. `Property`, `GeoProperty`, `VocabProperty`,
 `Relationship` and each of these terms is also defined within the
 [core `@context`](https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld).
 
@@ -82,7 +82,7 @@ Keywords are used to define the nature of each attribute - e.g. `Property`, `Geo
     "id": "urn:ngsi-ld:Building:farm001",
     "type": "Building",
     "category": {
-        "type": "VocabularyProperty",
+        "type": "VocabProperty",
         "vocab": "farm"
     },
     "address": {
@@ -118,7 +118,7 @@ Within the **NGSI-v2** Smart Supermarket, every entity must have a `id` and `typ
 a prerequisite for joining the data space. However due to the backend systems used, the internal short name is
 `"type":"Store"`. Within an **NGSI-v2** system there is no concept of `@context` - every attribute has a `type` and a
 `value` and the attribute `type` is usually aligned with the datatype (e.g. `Text`, `PostalAddress`) although since
-**NGSI-LD** keyword types such as `Relationship`, `VocabularyProperty` are also permissible and set by convention.
+**NGSI-LD** keyword types such as `Relationship`, `VocabProperty` are also permissible and set by convention.
 
 ```json
 {
@@ -134,7 +134,7 @@ a prerequisite for joining the data space. However due to the backend systems us
         }
     },
     "category": {
-        "type": "VocabularyProperty",
+        "type": "VocabProperty",
         "value": "supermarket"
     },
     "location": {
@@ -329,7 +329,7 @@ The response will be in NGSI-v2 format as follows:
         }, "metadata": {}
     },
     "category": {
-        "type": "VocabularyProperty", "value": "supermarket", "metadata": {}
+        "type": "VocabProperty", "value": "supermarket", "metadata": {}
     },
     "location": {
         "type": "geo:json",
@@ -348,14 +348,14 @@ The response will be in NGSI-v2 format as follows:
         "type": "Relationship", "value": "urn:ngsi-ld:Person:001",
         "metadata": {
             "objectType": {
-                "type": "VocabularyProperty", "value": "Person"
+                "type": "VocabProperty", "value": "Person"
             }
         }
     }
 }
 ```
 
-The `type` attribute in NGSI-v2 is loosely defined, but in this case, with the exception of ordinary properties, we are using `type` to correspond to the terms used in NGSI-LD such as `Relationship` or `VocabularyProperty`. For ordinary NGSI-v2 properties, the `type` corresponds to a datatype such as `Text` or `PostalAddress`, each of these datatypes will need to be mapped to a JSON-LD `@context` if the data is to be understood in an NGSI-LD system.
+The `type` attribute in NGSI-v2 is loosely defined, but in this case, with the exception of ordinary properties, we are using `type` to correspond to the terms used in NGSI-LD such as `Relationship` or `VocabProperty`. For ordinary NGSI-v2 properties, the `type` corresponds to a datatype such as `Text` or `PostalAddress`, each of these datatypes will need to be mapped to a JSON-LD `@context` if the data is to be understood in an NGSI-LD system.
 
 ### Reading NGSI-v2 Data in NGSI-LD format
 
@@ -393,7 +393,7 @@ The response will be in NGSI-LD format as follows:
         }
     },
     "category": {
-        "type": "VocabularyProperty", "vocab": "supermarket"
+        "type": "VocabProperty", "vocab": "supermarket"
     },
     "location": {
         "type": "GeoProperty",
@@ -414,7 +414,7 @@ The response will be in NGSI-LD format as follows:
 }
 ```
 
-It should be noted that the `@context` supplied in the `Link` header has been totally ignored, and a fixed `@context` used configured for the adaptor has been returned instead. The Adaptor doesn't fully understand NGSI-LD, it merely formats the underlying NGSI-v2 as NGSI-LD. You will notice that the NGSI-v2 `"type": "VocabularyProperty", "value": "supermarket"` has been amended to a valid **VocabularyProperty** - `"type": "VocabularyProperty", "vocab": "supermarket"`, and similarly the **Relationship** is now using `object` and `objectType` as defined in the core `@context`
+It should be noted that the `@context` supplied in the `Link` header has been totally ignored, and a fixed `@context` used configured for the adaptor has been returned instead. The Adaptor doesn't fully understand NGSI-LD, it merely formats the underlying NGSI-v2 as NGSI-LD. You will notice that the NGSI-v2 `"type": "VocabProperty", "value": "supermarket"` has been amended to a valid **VocabProperty** - `"type": "VocabProperty", "vocab": "supermarket"`, and similarly the **Relationship** is now using `object` and `objectType` as defined in the core `@context`
 
 
 
@@ -546,7 +546,7 @@ curl -L 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Store:001' \
 
 #### Response:
 
-Because of `Prefer: ngsi-ld=1.6` had been set in the registration, the retrieved entity does not a **VocabularyProperty** and `objectType` has been quietly dropped from the response. This ensures backwards compatibility to context brokers conformant to an earlier version of the NGSI-LD specification - in this case version 1.6.
+Because of `Prefer: ngsi-ld=1.6` had been set in the registration, the retrieved entity does not a **VocabProperty** and `objectType` has been quietly dropped from the response. This ensures backwards compatibility to context brokers conformant to an earlier version of the NGSI-LD specification - in this case version 1.6.
 
 ```json
 {
@@ -561,7 +561,7 @@ Because of `Prefer: ngsi-ld=1.6` had been set in the registration, the retrieved
             "postalCode": "10439"
         }
     },
-    "category": {"type": "Property", "value": "supermarket"},
+    "category": {"type": "VocabProperty", "vocab": "supermarket"},
     "location": {
         "type": "GeoProperty",
         "value": {

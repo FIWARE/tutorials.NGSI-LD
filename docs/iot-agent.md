@@ -452,7 +452,7 @@ curl -iX POST 'http://localhost:4041/iot/services' \
             ],
             "static_attributes": [
                 {
-                    "name": "category", "type": "Property", "value": "sensor"
+                    "name": "category", "type": "VocabProperty", "value": "sensor"
                 },
                 {
                     "name": "supportedProtocol", "type": "Property", "value": "ul20"
@@ -554,7 +554,7 @@ within the **Building** `urn:ngsi-ld:Building:barn001`.
 >
 > -   _Which **Actuators** currently have a low `batteryLevel`?_
 >
-> `/ngsi-ld/v1/entities?q=category=="actuator";batteryLevel<0.1`
+> `/ngsi-ld/v1/entities?q=category==actuator;batteryLevel<0.1&expandValues=category`
 >
 > -   _Which **Devices** measuring `fillingLevel` were installed before January 2020?_
 >
@@ -618,7 +618,7 @@ curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Device:te
 {
     "@context": [
         "http://context/user-context.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ],
     "id": "urn:ngsi-ld:Device:temperature001",
     "type": "Device",
@@ -673,7 +673,7 @@ curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=Device' \
     {
         "@context": [
             "http://context/user-context.jsonld",
-            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.7.jsonld"
+            "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
         ],
         "id": "urn:ngsi-ld:Device:motion003",
         "type": "Device",
@@ -683,8 +683,8 @@ curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/?type=Device' \
             "observedAt": "2020-09-17T09:41:56.755Z"
         },
         "category": {
-            "type": "Property",
-            "value": "sensor",
+            "type": "VocabProperty",
+            "vocab": "sensor",
             "observedAt": "2020-09-17T09:41:56.755Z"
         },
         "supportedProtocol": {
@@ -855,7 +855,6 @@ curl -L -X POST 'http://localhost:4041/iot/devices' \
 -H 'fiware-service: openiot' \
 -H 'fiware-servicepath: /' \
 -H 'Content-Type: application/json' \
--H 'Cookie: _csrf=MAPTGFPcoPnewsGCWklHi4Mq' \
 --data-raw '{
   "devices": [
     {

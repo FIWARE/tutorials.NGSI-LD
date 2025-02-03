@@ -1,4 +1,5 @@
-ARG NODE_VERSION=16
+ARG NODE_VERSION=20
+ARG DISTROLESS_NODE_VERSION=nodejs20-debian12
 ARG GITHUB_ACCOUNT=fiware
 ARG GITHUB_REPOSITORY=tutorials.NGSI-LD
 ARG DOWNLOAD=latest
@@ -100,7 +101,8 @@ RUN sed -i -r "/^(root|nobody)/!d" /etc/passwd /etc/shadow /etc/group \
 # The following creates a distroless build for production.
 #
 
-FROM gcr.io/distroless/nodejs:${NODE_VERSION}
+# hadolint ignore=DL3006
+FROM gcr.io/distroless/${DISTROLESS_NODE_VERSION}
 ARG TARGET
 ARG GITHUB_ACCOUNT
 ARG GITHUB_REPOSITORY

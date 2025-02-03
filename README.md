@@ -187,4 +187,4 @@ Full instructions can be found within the [documentation](https://ngsi-ld-tutori
 
 ## License
 
-[MIT](LICENSE) © 2020-2024 FIWARE Foundation e.V.
+[MIT](LICENSE) © 2020-2025 FIWARE Foundation e.V.
