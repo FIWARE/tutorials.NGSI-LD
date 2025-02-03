@@ -88,6 +88,8 @@ jobs:
           # list of Docker images to use as base name for tags
           images: |
             fiware/tutorials.iot-devices:latest
+            ghcr.io/fiware/tutorials.iot-devices:latest
+            quay.io/fiware/tutorials.iot-devices:latest
           labels: |
             org.opencontainers.image.title=Dummy Devices
             org.opencontainers.image.description=Node.js express application sending IoT Data

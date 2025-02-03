@@ -16,8 +16,8 @@ const NGSI_LD_TENANT = process.env.NGSI_LD_TENANT !== undefined ? process.env.NG
 const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
 
 const port = process.env.WEB_APP_PORT || '3000';
-const devices_port = process.env.DUMMY_DEVICES_PORT || 3001
-const devices = process.env.DUMMY_DEVICES || `http://localhost:${devices_port}`;
+const devicesPort = process.env.DUMMY_DEVICES_PORT || 3001
+const devices = process.env.DUMMY_DEVICES || `http://localhost:${devicesPort}`;
 
 const dataModelContext =
     process.env.IOTA_JSON_LD_CONTEXT || 'http://localhost:' + port + '/data-models/ngsi-context.jsonld';
