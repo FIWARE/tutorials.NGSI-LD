@@ -45,6 +45,10 @@ if (DEVICE_TRANSPORT === 'HTTP') {
     iotRouter.post('/iot/filling:id', Southbound.HTTP.filling);
 }
 
+iotRouter.get('/status', (req, res) => {
+    res.status(200).send();
+});
+
 iotRouter.put('/barndoor', (req, res) => {
     const newStatus =  IoTDevices.toggleBarnDoor();
     IoTDevices.barnDoor(newStatus);

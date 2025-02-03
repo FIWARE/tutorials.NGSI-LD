@@ -82,7 +82,7 @@ USER node
 ENV NODE_ENV=development
 # Ports used by application
 EXPOSE ${WEB_APP_PORT:-3000} ${DUMMY_DEVICES_PORT:-3001}
-CMD ["node", "/opt/forwarder/bin/www"]
+CMD ["node", "/opt/forwarder/bin/proxy"]
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s \
    CMD npm run healthcheck
 
@@ -127,7 +127,7 @@ USER nobody
 ENV NODE_ENV=production
 # Ports used by application
 EXPOSE ${WEB_APP_PORT:-3000} ${DUMMY_DEVICES_PORT:-3001}
-CMD ["./bin/www"]
+CMD ["./bin/proxy"]
 HEALTHCHECK  --interval=30s --timeout=3s --start-period=10s \
   CMD ["/nodejs/bin/node", "./bin/healthcheck"]
 

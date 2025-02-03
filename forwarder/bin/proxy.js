@@ -34,6 +34,11 @@ if (clusterWorkerSize > 1) {
   } else {
     // mount `exampleProxy` in web server
     const app = express()
+    const router = express.Router();
+    router.get('/status', (req, res) => {
+        res.status(200).send();
+    });
+
     app.use('/', exampleProxy);
     app.listen(PORT, function () {
       debug(`Server listening on port ${PORT} and worker ${process.pid}`)
