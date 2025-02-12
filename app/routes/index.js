@@ -9,6 +9,7 @@ const Person = require('../controllers/ngsi-ld/person');
 const History = require('../controllers/history');
 const DeviceListener = require('../controllers/iot/command-listener');
 const Security = require('../controllers/security');
+const Credentials = require('../controllers/credentials');
 
 const ngsiLD = require('../lib/ngsi-ld');
 const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context.jsonld';
@@ -190,6 +191,11 @@ router.get('/device/history', function (req, res) {
     });
 });
 
+router.get('/credentials', Credentials.init);
+router.post('/vc/generate', Credentials.generateCredential);
+router.post('/vp/generate', Credentials.generatePresentation);
+router.post('/vp/verify', Credentials.verifyPresentation);
+
 // Viewing Store information is secured by Keyrock PDP.
 // LEVEL 1: AUTHENTICATION ONLY - Users must be logged in to view the store page.
 router.get('/app/animal/:id', Security.authenticate, Animal.display);
@@ -214,6 +220,5 @@ router.post('/message/:type', (req, res) => {
     SOCKET_IO.emit(req.params.type, req.body.data);
     res.status(204).send();
 });
-
 
 module.exports = router;

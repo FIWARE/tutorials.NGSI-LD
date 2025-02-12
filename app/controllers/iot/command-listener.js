@@ -16,7 +16,7 @@ const NGSI_LD_TENANT = process.env.NGSI_LD_TENANT !== undefined ? process.env.NG
 const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
 
 const port = process.env.WEB_APP_PORT || '3000';
-const devicesPort = process.env.DUMMY_DEVICES_PORT || 3001
+const devicesPort = process.env.DUMMY_DEVICES_PORT || 3001;
 const devices = process.env.DUMMY_DEVICES || `http://localhost:${devicesPort}`;
 
 const dataModelContext =
@@ -137,13 +137,12 @@ function accessControl(req, res, next) {
     return Security.authenticate(req, res, next);
 }
 
-
 // The barn Door is just a switch for the dummy devices
-function barnDoor(){
+function barnDoor() {
     const options = {
         method: 'PUT',
         url: `${devices}/barndoor`,
-        json: {update: true}
+        json: { update: true }
     };
     request(options, (error) => {
         if (error) {
@@ -153,11 +152,11 @@ function barnDoor(){
 }
 
 // Update the state of the weather to simulate changing conditions
-function alterWeather(action){
+function alterWeather(action) {
     const options = {
         method: 'PUT',
         url: `${devices}/weather`,
-        json: {action}
+        json: { action }
     };
     request(options, (error) => {
         if (error) {
@@ -168,11 +167,11 @@ function alterWeather(action){
 
 // The temperature Gauge does not accept commands,
 // Update the state of the device indirectly
-function alterTemperature(id, raise){
+function alterTemperature(id, raise) {
     const options = {
         method: 'PUT',
         url: `${devices}/temperature/${id}`,
-        json: {raise}
+        json: { raise }
     };
     request(options, (error) => {
         if (error) {
