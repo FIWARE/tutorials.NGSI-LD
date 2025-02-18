@@ -193,6 +193,7 @@ router.get('/device/history', function (req, res) {
 
 router.get('/credentials', Credentials.init);
 router.post('/vc/generate', Credentials.catchErrors(Credentials.generateCredential));
+router.post('/vc/verify', Credentials.catchErrors(Credentials.verifyCredential));
 router.post('/vp/generate', Credentials.catchErrors(Credentials.generatePresentation));
 router.post('/vp/verify', Credentials.catchErrors(Credentials.verifyPresentation));
 

@@ -6,7 +6,6 @@
 //                           https://w3c-ccg.github.io/did-method-web/
 //
 
-
 const VerifiableCredentials = require('did-jwt-vc');
 const DIDJWTSigner = require('did-jwt');
 const DIDResolver = require('did-resolver');
@@ -27,13 +26,31 @@ function catchErrors(fn) {
 }
 
 /**
- *  Takes a JWT and checks the validity of the credential through resolving the public key
+ *  Takes a presentation as a JWT and checks the validity of the presentation
+ *  through resolving the public key
+ *
+ *  For example - these documents (an ID card and a Drivers License)
+ *  were presented by Alice
  */
 async function verifyPresentation(req, res) {
     const payload = req.body ? (typeof req.body === 'string' ? JSON.parse(req.body.payload) : req.body) : {};
     const resolver = new DIDResolver.Resolver(WebDIDResolver.getResolver());
     const verifiedVP = await VerifiableCredentials.verifyPresentation(payload.jwt, resolver);
     res.status(200).send(verifiedVP);
+}
+
+/**
+ *  Takes a credential as a JWT and checks the validity of the credential
+ *  through resolving the public key.
+ *
+ *  For example - this Driver's License is valid
+ */
+async function verifyCredential(req, res) {
+    const payload = req.body ? (typeof req.body === 'string' ? JSON.parse(req.body.payload) : req.body) : {};
+    const aud = req.body.aud;
+    const resolver = new DIDResolver.Resolver(WebDIDResolver.getResolver());
+    const verifiedVC = await VerifiableCredentials.verifyCredential(payload.jwt, resolver);
+    res.status(200).send(verifiedVC);
 }
 
 /**
@@ -212,6 +229,7 @@ module.exports = {
     init,
     generateCredential,
     generatePresentation,
+    verifyCredential,
     verifyPresentation,
     catchErrors
 };
