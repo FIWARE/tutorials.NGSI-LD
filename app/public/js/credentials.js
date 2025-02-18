@@ -79,8 +79,10 @@ $('form.addJWT').submit(function (event) {
     } else {
         payload = JSON.parse(payload);
     }
-
-    payload.verifiableCredential.push($('#credential').text());
+    const credential = $('#credential').text();
+    if (credential !== '') {
+        payload.verifiableCredential.push($('#credential').text());
+    }
     $('#presentationPayload').val(JSON.stringify(payload));
     $('#presentation').text(JSON.stringify(payload, null, 2));
 });

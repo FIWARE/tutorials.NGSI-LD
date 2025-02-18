@@ -29,15 +29,19 @@ function catchErrors(fn) {
 }
 
 async function verifyPresentation(req, res) {
-    const payload = req.body.payload;
+    const payload = req.body ? (typeof req.body === 'string' ? JSON.parse(req.body.payload) : req.body) : {};
     const resolver = new DIDResolver.Resolver(WebDIDResolver.getResolver());
-    const verifiedVP = await VerifiableCredentials.verifyPresentation(payload, resolver);
+    const verifiedVP = await VerifiableCredentials.verifyPresentation(payload.jwt, resolver);
     res.status(200).send(verifiedVP);
 }
 
 async function generatePresentation(req, res) {
     const iss = req.body.iss;
-    const payload = JSON.parse(req.body.payload);
+    const payload = req.body.payload
+        ? typeof req.body.payload === 'string'
+            ? JSON.parse(req.body.payload)
+            : req.body.payload
+        : {};
     // Create a signer by using a private key (hex).
     // All the participants are using the same private key in the demo
     // Usually this key should be key secret.
@@ -55,7 +59,7 @@ async function generatePresentation(req, res) {
 }
 
 async function generateCredential(req, res) {
-    const vc = req.body.vc ? JSON.parse(req.body.vc) : {};
+    const vc = req.body.vc ? (typeof req.body.vc === 'string' ? JSON.parse(req.body.vc) : req.body.vc) : {};
     const iss = req.body.iss;
     const sub = req.body.sub;
     const type = req.body.claimType;
