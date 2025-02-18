@@ -192,9 +192,9 @@ router.get('/device/history', function (req, res) {
 });
 
 router.get('/credentials', Credentials.init);
-router.post('/vc/generate', Credentials.generateCredential);
-router.post('/vp/generate', Credentials.generatePresentation);
-router.post('/vp/verify', Credentials.verifyPresentation);
+router.post('/vc/generate', Credentials.catchErrors(Credentials.generateCredential));
+router.post('/vp/generate', Credentials.catchErrors(Credentials.generatePresentation));
+router.post('/vp/verify', Credentials.catchErrors(Credentials.verifyPresentation));
 
 // Viewing Store information is secured by Keyrock PDP.
 // LEVEL 1: AUTHENTICATION ONLY - Users must be logged in to view the store page.

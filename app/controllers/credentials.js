@@ -13,6 +13,20 @@ const VerifiableCredentials = require('did-jwt-vc');
 const DIDJWTSigner = require('did-jwt');
 const DIDResolver = require('did-resolver');
 const WebDIDResolver = require('web-did-resolver');
+const debug = require('debug')('tutorial:credentials');
+
+function catchErrors(fn) {
+    return (req, res, next) => {
+        return fn(req, res, next).catch((e) => {
+            debug(e.message);
+            return res.status(400).send({
+                type: 'https://uri.etsi.org/ngsi-ld/errors/BadRequestData',
+                title: e.name,
+                detail: e.message
+            });
+        });
+    };
+}
 
 async function verifyPresentation(req, res) {
     const payload = req.body.payload;
@@ -41,7 +55,7 @@ async function generatePresentation(req, res) {
 }
 
 async function generateCredential(req, res) {
-    const vc = JSON.parse(req.body.vc);
+    const vc = req.body.vc ? JSON.parse(req.body.vc) : {};
     const iss = req.body.iss;
     const sub = req.body.sub;
     const type = req.body.claimType;
@@ -184,5 +198,6 @@ module.exports = {
     init,
     generateCredential,
     generatePresentation,
-    verifyPresentation
+    verifyPresentation,
+    catchErrors
 };

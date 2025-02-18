@@ -55,7 +55,10 @@ $('form.credential').submit(function (event) {
         $.ajax({
             url: '/vc/generate',
             type: 'post',
-            data: serializedData
+            data: serializedData,
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
         }).then(function (response) {
             const json = response;
             $('#credential').text(json.jwt);
@@ -89,7 +92,10 @@ $('form.presentation').submit(function (event) {
         $.ajax({
             url: '/vp/generate',
             type: 'post',
-            data: serializedData
+            data: serializedData,
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
         }).then(function (response) {
             const json = response;
             console.log(json);
@@ -106,7 +112,10 @@ $('form.verify').submit(function (event) {
         $.ajax({
             url: '/vp/verify',
             type: 'post',
-            data: serializedData
+            data: serializedData,
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
         }).then(function (response) {
             $('#decodedPresentation').text(JSON.stringify(response, null, 2));
         });
