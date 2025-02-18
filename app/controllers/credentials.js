@@ -1,13 +1,11 @@
-/*import { JwtCredentialPayload, createVerifiableCredentialJwt } from 'did-jwt-vc';
-import { ES256KSigner, hexToBytes } from 'did-jwt';
-import {
-    createVerifiableCredentialJwt,
-    createVerifiablePresentationJwt,
-    verifyCredential,
-    verifyPresentation
-} from 'did-jwt-vc';
-import { Resolver } from 'did-resolver';
-import { getResolver } from 'web-did-resolver';*/
+//
+// This controller demonstrates how to generate and validate
+// Verifiable credentials using the DID-web protocol
+//
+// For more information see: https://www.w3.org/TR/vc-data-model/
+//                           https://w3c-ccg.github.io/did-method-web/
+//
+
 
 const VerifiableCredentials = require('did-jwt-vc');
 const DIDJWTSigner = require('did-jwt');
@@ -28,6 +26,9 @@ function catchErrors(fn) {
     };
 }
 
+/**
+ *  Takes a JWT and checks the validity of the credential through resolving the public key
+ */
 async function verifyPresentation(req, res) {
     const payload = req.body ? (typeof req.body === 'string' ? JSON.parse(req.body.payload) : req.body) : {};
     const resolver = new DIDResolver.Resolver(WebDIDResolver.getResolver());
@@ -35,6 +36,9 @@ async function verifyPresentation(req, res) {
     res.status(200).send(verifiedVP);
 }
 
+/**
+ *  Takes one or more JWTs as part of a presentation and signs them
+ */
 async function generatePresentation(req, res) {
     const iss = req.body.iss;
     const payload = req.body.payload
@@ -45,7 +49,7 @@ async function generatePresentation(req, res) {
     // Create a signer by using a private key (hex).
     // All the participants are using the same private key in the demo
     // Usually this key should be key secret.
-    const key = '0b6366519a40eb4f384f7f84cf8bb716683ad1af8adbe60e59fe24ba042e396a';
+    const key = req.body.key || '0b6366519a40eb4f384f7f84cf8bb716683ad1af8adbe60e59fe24ba042e396a';
     const signer = DIDJWTSigner.ES256KSigner(DIDJWTSigner.hexToBytes(key));
 
     // Prepare an issuer
@@ -58,6 +62,9 @@ async function generatePresentation(req, res) {
     res.status(200).send({ jwt: vpJwt });
 }
 
+/**
+ * Takes a JSON-LD payload and generates as DID-web JWT.
+ */
 async function generateCredential(req, res) {
     const vc = req.body.vc ? (typeof req.body.vc === 'string' ? JSON.parse(req.body.vc) : req.body.vc) : {};
     const iss = req.body.iss;
@@ -67,7 +74,7 @@ async function generateCredential(req, res) {
     // Create a signer by using a private key (hex).
     // All the participants are using the same private key in the demo
     // Usually this key should be key secret.
-    const key = '0b6366519a40eb4f384f7f84cf8bb716683ad1af8adbe60e59fe24ba042e396a';
+    const key = req.body.key || '0b6366519a40eb4f384f7f84cf8bb716683ad1af8adbe60e59fe24ba042e396a';
     const signer = DIDJWTSigner.ES256KSigner(DIDJWTSigner.hexToBytes(key));
 
     // Prepare an issuer
@@ -89,6 +96,9 @@ async function generateCredential(req, res) {
     res.status(200).send({ jwt: vcJwt, type });
 }
 
+/**
+ *  A series of credentials to be used within the tutorial.
+ */
 function init(req, res) {
     const CLAIMS_WEBSITE = 'https://fiware.github.io/tutorials.Step-by-Step';
     const DID_WEB_DOMAIN_NAME = 'did:web:fiware.github.io:tutorials.Step-by-Step';
