@@ -60,12 +60,15 @@
 	branch = NGSI-LD
 [submodule "tutorials.Concise-Format"]
 	path = tutorials.Concise-Format
+	branch = NGSI-LD
 	url = https://github.com/FIWARE/tutorials.Concise-Format.git
 [submodule "tutorials.Merge-Patch-Put"]
 	path = tutorials.Merge-Patch-Put
+	branch = NGSI-LD
 	url = https://github.com/FIWARE/tutorials.Merge-Patch-Put
 [submodule "tutorials.Extended-Properties"]
 	path = tutorials.Extended-Properties
+	branch = NGSI-LD
 	url = https://github.com/FIWARE/tutorials.Extended-Properties
 [submodule "tutorials.Linked-Data"]
 	path = tutorials.Linked-Data
