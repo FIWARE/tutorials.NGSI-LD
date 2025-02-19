@@ -14,54 +14,121 @@ const WebDIDResolver = require('web-did-resolver');
 const VerifiableCredentials = require('did-jwt-vc');
 
 const resolver = new DIDResolver.Resolver(WebDIDResolver.getResolver());
-const Verifier = function(req, res, next) {
-  if (!req.token) {
-    deny(res, 'message', 'type', `Bearer realm="${tenant}"`);
+
+class Verifier {
+  constructor(config) {
+    this.config = config;
+    this.verify = this.verify.bind(this);
   }
-  VerifiableCredentials.verifyPresentation(req.token, resolver)
-    .then(presentation => {
-      debug('Presentation');
-      debug(`issued by: ${presentation.issuer}`);
-      for (const credential of presentation.verifiablePresentation
-        .verifiableCredential) {
-        VerifiableCredentials.verifyCredential(
-          credential.proof.jwt,
-          resolver
-        ).then(verifiedVC => {
-          const vc = {
-            type: credential.type,
-            data: credential.credentialSubject,
-            sub: verifiedVC.payload.sub,
-            iss: verifiedVC.payload.iss,
-            nbf: verifiedVC.payload.nbf
-          };
 
-          debug(`${vc.type}`);
-          debug(`     nbf: ${vc.nbf}`);
-          debug(`     iss: ${vc.iss}`);
-          debug(`     sub: ${vc.sub}`);
-          debug(`     data: ${JSON.stringify(vc.data)}\r\n`);
+  verify(req, res, next) {
+    if (!req.token) {
+      deny(res, 'message', 'type', `Bearer realm="${tenant}"`);
+    }
+
+    VerifiableCredentials.verifyPresentation(req.token, resolver)
+      .then(presentation => {
+        debug('Presentation');
+        debug(`issued by: ${presentation.issuer}`);
+        const credentialsPromises = [];
+
+        for (const credential of presentation.verifiablePresentation
+          .verifiableCredential) {
+          credentialsPromises.push(
+            verifyCredential(
+              credential.proof.jwt,
+              credential.type,
+              credential.credentialSubject
+            )
+          );
+        }
+
+        Promise.all(credentialsPromises).then(credentials => {
+          const trustedIssuersPromises = [];
+          for (const credential of credentials) {
+            const trustedList = getTrustedIssuerHost(
+              credential.type,
+              this.config
+            );
+            trustedIssuersPromises.push(
+              verifyTrustedIssuer(credential, trustedList)
+            );
+          }
+
+          Promise.all(trustedIssuersPromises).then(values => {
+            console.log(values);
+            next();
+          });
         });
-      }
 
-      next();
-    })
-    .catch(error => {
-      deny(res, error.message, 'type', `Bearer realm="${tenant}"`);
-    });
-};
-
-/*
-
-async function verifyPresentation(jwt) {
-    const verifiedVP = await VerifiableCredentials.verifyPresentation(jwt, resolver);
-    return verifiedVP;
+        // debug(`${vc.type}`);
+        // debug(`     nbf: ${vc.nbf}`);
+        // debug(`     iss: ${vc.iss}`);
+        // debug(`     sub: ${vc.sub}`);
+        // debug(`     data: ${JSON.stringify(vc.data)}\r\n`);
+      })
+      .catch(error => {
+        deny(res, error.message, 'type', `Bearer realm="${tenant}"`);
+      });
+  }
 }
 
-async function verifyCredential(jwt) {
-    const verifiedVC = await VerifiableCredentials.verifyCredential(jwt, resolver);
-    return verifiedVC;
-}*/
+function verifyCredential(jwt, type, data) {
+  return new Promise(function(resolve, reject) {
+    let vc = null;
+    VerifiableCredentials.verifyCredential(jwt, resolver)
+      .then(verifiedVC => {
+        const vc = {
+          type: type,
+          data: data,
+          sub: verifiedVC.payload.sub,
+          iss: verifiedVC.payload.iss,
+          nbf: verifiedVC.payload.nbf
+        };
+        return resolve(vc);
+      })
+      .catch(error => {
+        return reject(error);
+      });
+  });
+}
+
+function getTrustedIssuerHost(type, config) {
+  let host = null;
+  for (const item of config) {
+    if (type.includes(item.type)) {
+      host = item.trustedIssuersLists[0];
+      break;
+    }
+  }
+  return host;
+}
+
+// trusted-issuers-list
+function verifyTrustedIssuer(vc, trustedList) {
+  return new Promise(function(resolve, reject) {
+    //console.log(`${trustedList}/v4/issuers/${vc.iss}`);
+    const fetchPromise = fetch(`${trustedList}/v4/issuers/${vc.iss}`);
+    fetchPromise
+      .then(response => {
+        if (response.status === StatusCodes.NOT_FOUND) {
+          vc.trusted = false;
+          vc.claims = [];
+          resolve(vc);
+        }
+        return response.json();
+      })
+      .then(payload => {
+        const claims = JSON.parse(atob(payload.attributes[0].body));
+        vc.trusted = vc.type.includes(claims.credentialsType);
+        vc.claims = vc.trusted ? claims.claims : [];
+        resolve(vc);
+      })
+      .catch(error => {
+        return reject(error);
+      });
+  });
+}
 
 /**
  * Return an "Access Denied" response
