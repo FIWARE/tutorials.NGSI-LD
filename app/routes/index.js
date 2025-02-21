@@ -200,7 +200,6 @@ router.get('/vp/monitor', function (req, res) {
     res.render('trust', { title: 'Trust Monitor' });
 });
 
-
 // Viewing Store information is secured by Keyrock PDP.
 // LEVEL 1: AUTHENTICATION ONLY - Users must be logged in to view the store page.
 router.get('/app/animal/:id', Security.authenticate, Animal.display);

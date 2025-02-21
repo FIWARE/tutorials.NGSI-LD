@@ -2,6 +2,7 @@ const StatusCodes = require('http-status-codes').StatusCodes;
 const getReasonPhrase = require('http-status-codes').getReasonPhrase;
 const debug = require('debug')('broker:verifier');
 const tenant = process.env.TENANT || 'farmer';
+const trustedIssuerList = process.env.TRUSTED_ISSUER_LIST;
 const template = require('handlebars').compile(
   `{
     "type": "{{type}}",
@@ -12,6 +13,7 @@ const template = require('handlebars').compile(
 const DIDResolver = require('did-resolver');
 const WebDIDResolver = require('web-did-resolver');
 const VerifiableCredentials = require('did-jwt-vc');
+const Emitter = require('./emitter');
 
 const resolver = new DIDResolver.Resolver(WebDIDResolver.getResolver());
 
@@ -56,16 +58,10 @@ class Verifier {
           }
 
           Promise.all(trustedIssuersPromises).then(values => {
-            console.log(values);
+            Emitter.emit('trust', values);
             next();
           });
         });
-
-        // debug(`${vc.type}`);
-        // debug(`     nbf: ${vc.nbf}`);
-        // debug(`     iss: ${vc.iss}`);
-        // debug(`     sub: ${vc.sub}`);
-        // debug(`     data: ${JSON.stringify(vc.data)}\r\n`);
       })
       .catch(error => {
         deny(res, error.message, 'type', `Bearer realm="${tenant}"`);
@@ -94,6 +90,10 @@ function verifyCredential(jwt, type, data) {
 }
 
 function getTrustedIssuerHost(type, config) {
+  if (trustedIssuerList) {
+    return trustedIssuerList;
+  }
+
   let host = null;
   for (const item of config) {
     if (type.includes(item.type)) {
@@ -107,7 +107,6 @@ function getTrustedIssuerHost(type, config) {
 // trusted-issuers-list
 function verifyTrustedIssuer(vc, trustedList) {
   return new Promise(function(resolve, reject) {
-    //console.log(`${trustedList}/v4/issuers/${vc.iss}`);
     const fetchPromise = fetch(`${trustedList}/v4/issuers/${vc.iss}`);
     fetchPromise
       .then(response => {

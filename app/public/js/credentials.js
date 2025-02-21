@@ -56,7 +56,7 @@ $('form.credential').submit(function (event) {
             url: '/vc/generate',
             type: 'post',
             data: serializedData,
-            error (xhr) {
+            error(xhr) {
                 // eslint-disable-next-line no-alert
                 alert(xhr.responseText);
             }
@@ -96,7 +96,7 @@ $('form.presentation').submit(function (event) {
             url: '/vp/generate',
             type: 'post',
             data: serializedData,
-            error (xhr) {
+            error(xhr) {
                 // eslint-disable-next-line no-alert
                 alert(xhr.responseText);
             }
@@ -117,7 +117,7 @@ $('form.verify').submit(function (event) {
             url: '/vp/verify',
             type: 'post',
             data: serializedData,
-            error (xhr) {
+            error(xhr) {
                 // eslint-disable-next-line no-alert
                 alert(xhr.responseText);
             }

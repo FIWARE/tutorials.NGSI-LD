@@ -47,7 +47,7 @@ async function verifyPresentation(req, res) {
  */
 async function verifyCredential(req, res) {
     const payload = req.body ? (typeof req.body === 'string' ? JSON.parse(req.body.payload) : req.body) : {};
-//    const aud = req.body.aud;
+    //    const aud = req.body.aud;
     const resolver = new DIDResolver.Resolver(WebDIDResolver.getResolver());
     const verifiedVC = await VerifiableCredentials.verifyCredential(payload.jwt, resolver);
     res.status(200).send(verifiedVC);

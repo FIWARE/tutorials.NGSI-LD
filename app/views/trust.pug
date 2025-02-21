@@ -3,30 +3,42 @@ extends layout
 block content
   h1= title
   div(class="row p-2")
-    div.col
-      div( class="card p-2" )
-        p Recent Requests:
-        ul#messages
-    div.col
-      div(class="card p-2")
+    div(class="card p-2")
         p Recent Notifications:
         ul#notifications
-
-  div(class="row p-2")
-    div.col
-      div(class="card p-2")
-        p Last Payload:
-        pre
-          code#payload
-
-
 
   script(src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js')
   script(src='https://code.jquery.com/jquery-1.11.1.js')
   script.
     $(function () {
         const socket = io();
+        
         socket.on('trust', function(msg){
-            $('#payload').text(JSON.stringify(msg, null, " "));
+            const credentials= []
+            for (const credential of msg) {
+                appendMessage(credential);
+            }
         });
+
+        function appendMessage(vc){
+            let type = String(vc.type);
+            let msg = `<p>
+                <code>${type.replace("VerifiableCredential,", "")}</code> issued by <code>${vc.iss}</code> was <b>${vc.trusted? "TRUSTED" : "NOT TRUSTED"}</b></p>`;
+            if (vc.claims.length > 0){
+                 msg = msg + `<p>The following claims were made <code>${JSON.stringify(vc.claims)}</code></p>`
+            }
+
+
+            if (vc.trusted){
+                msg = msg + `<pre><code>${JSON.stringify(vc.data, null,2)}</code></pre>`
+            }
+
+
+            $('#notifications').append($(`<li>${msg}</li>`));
+                    
+            
+            if($('#notifications li').size() > 5){
+                $('#notifications li').first().remove();
+            }
+        }
     });

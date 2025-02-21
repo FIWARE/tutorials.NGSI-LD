@@ -1,5 +1,6 @@
 const StatusCodes = require('http-status-codes').StatusCodes;
 const configServiceURL = process.env.CONFIG_SERVICE || 'localhost:8081';
+const debug = require('debug')('broker:config');
 
 /**
  * Check that Keyrock is responding to requests
@@ -10,7 +11,9 @@ exports.checkConnectivity = function() {
 
 exports.getConfig = function(tenant) {
   return new Promise(function(resolve, reject) {
-    console.log(`http://${configServiceURL}/service/${tenant}`);
+    debug(
+      `Retrieving config from http://${configServiceURL}/service/${tenant}`
+    );
     const fetchPromise = fetch(`http://${configServiceURL}/service/${tenant}`);
     fetchPromise
       .then(response => {
