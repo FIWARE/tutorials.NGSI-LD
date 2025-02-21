@@ -196,6 +196,10 @@ router.post('/vc/generate', Credentials.catchErrors(Credentials.generateCredenti
 router.post('/vc/verify', Credentials.catchErrors(Credentials.verifyCredential));
 router.post('/vp/generate', Credentials.catchErrors(Credentials.generatePresentation));
 router.post('/vp/verify', Credentials.catchErrors(Credentials.verifyPresentation));
+router.get('/vp/monitor', function (req, res) {
+    res.render('trust', { title: 'Trust Monitor' });
+});
+
 
 // Viewing Store information is secured by Keyrock PDP.
 // LEVEL 1: AUTHENTICATION ONLY - Users must be logged in to view the store page.
