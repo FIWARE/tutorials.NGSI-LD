@@ -6,6 +6,7 @@ const debug = require('debug')('broker:config');
  * Check that Keyrock is responding to requests
  */
 exports.checkConnectivity = function() {
+  debug( `Connecting to Configuration Service at http://${configServiceURL}/service`);
   return fetch(`http://${configServiceURL}/service`);
 };
 
