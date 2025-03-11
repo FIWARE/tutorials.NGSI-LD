@@ -167,10 +167,16 @@ attributes used can be found in the following:
 These first tutorials are an introduction to the NGSI-LD Context Brokers, and are an essential first step when learning
 to use NGSI-LD.
 
-&nbsp; 101. [Understanding `@context`](understanding-@context.md)<br/> &nbsp; 102.
-[Working with `@context`](working-with-@context.md)<br/> &nbsp; 103. [CRUD Operations](ngsi-ld-operations.md)<br/>
-&nbsp; 104. [Entity Relationships](entity-relationships.md)<br/> &nbsp; 106. [Subscriptions](subscriptions.md)<br/>
-&nbsp; 107. [Temporal Operations](short-term-history.md)<br/>&nbsp; 108. [Extended Properties](short-term-history.md)<br/>
+&nbsp; 101. [Understanding `@context`](https://github.com/FIWARE/tutorials.Understanding-At-Context) <br/> 
+&nbsp; 102. [Working with `@context`](https://github.com/FIWARE/tutorials.Getting-Started/tree/NGSI-LD) <br/>
+&nbsp; 103. [CRUD Operations](https://github.com/FIWARE/tutorials.CRUD-Operations/tree/NGSI-LD) <br/>
+&nbsp; 104. [Concise Payloads](https://github.com/FIWARE/tutorials.Concise-Format/tree/NGSI-LD) <br/>
+&nbsp; 105. [Merge-Patch and Put](https://github.com/FIWARE/tutorials.Merge-Patch-Put/tree/NGSI-LD) <br/>
+&nbsp; 106. [Entity Relationships](https://github.com/FIWARE/tutorials.Entity-Relationships/tree/NGSI-LD) <br/>
+&nbsp; 107. [Subscriptions](https://github.com/FIWARE/tutorials.Subscriptions/tree/NGSI-LD) <br/>
+&nbsp; 108. [Registrations](https://github.com/FIWARE/tutorials.Context-Providers/tree/NGSI-LD) <br/>
+&nbsp; 109. [Temporal Operations](https://github.com/FIWARE/tutorials.Short-Term-History/tree/NGSI-LD) <br/>
+&nbsp; 110. [Extended Properties](https://github.com/FIWARE/tutorials.Extended-Properties/tree/NGSI-LD) <br/>
 
 <h3 style="box-shadow: 0px 4px 0px 0px #5dc0cf;">Internet of Things, Robots and third-party systems</h3>
 
