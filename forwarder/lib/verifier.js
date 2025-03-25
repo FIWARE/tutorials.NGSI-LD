@@ -42,12 +42,25 @@ class Verifier {
               credential.type,
               credential.credentialSubject
             )
+            .catch(err => {
+              return (err);
+            })
           );
         }
 
         Promise.all(credentialsPromises).then(credentials => {
           const trustedIssuersPromises = [];
-          for (const credential of credentials) {
+          const invalidResults = credentials.filter(result => (result instanceof Error));
+          console.log(invalidResults.length)
+
+          if (invalidResults.length > 0){
+            //return  res.status(StatusCodes.UNAUTHORIZED).send();
+            return deny(res, invalidResults[0].message, 'type', `Bearer realm="${tenant}"`);
+          }
+
+
+          const validResults = credentials.filter(result => !(result instanceof Error));
+          for (const credential of validResults) {
             const trustedList = getTrustedIssuerHost(
               credential.type,
               this.config
@@ -64,7 +77,7 @@ class Verifier {
         });
       })
       .catch(error => {
-        deny(res, error.message, 'type', `Bearer realm="${tenant}"`);
+        return deny(res, error.message, 'type', `Bearer realm="${tenant}"`);
       });
   }
 }
@@ -118,9 +131,19 @@ function verifyTrustedIssuer(vc, trustedList) {
         return response.json();
       })
       .then(payload => {
+
+        for (const attribute of payload.attributes) {
+          const trustedClaim = JSON.parse(atob(attribute.body));
+          if (vc.type.includes(trustedClaim.credentialsType)){
+            vc.trusted = vc.type.includes(trustedClaim.credentialsType);
+            vc.claims = vc.trusted ? trustedClaim.claims : [];
+          }
+        }
+
+        /*
         const claims = JSON.parse(atob(payload.attributes[0].body));
-        vc.trusted = vc.type.includes(claims.credentialsType);
-        vc.claims = vc.trusted ? claims.claims : [];
+        */
+        console.log(vc)
         resolve(vc);
       })
       .catch(error => {
