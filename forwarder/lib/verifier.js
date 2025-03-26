@@ -25,7 +25,7 @@ class Verifier {
 
   verify(req, res, next) {
     if (!req.token) {
-      deny(res, 'message', 'type', `Bearer realm="${tenant}"`);
+      deny(res, 'message', 'urn:dx:as:MissingAuthenticationToken', `Bearer realm="${tenant}"`);
     }
 
     VerifiableCredentials.verifyPresentation(req.token, resolver)
@@ -55,7 +55,7 @@ class Verifier {
 
           if (invalidResults.length > 0){
             //return  res.status(StatusCodes.UNAUTHORIZED).send();
-            return deny(res, invalidResults[0].message, 'type', `Bearer realm="${tenant}"`);
+            return deny(res, invalidResults[0].message, 'urn:dx:as:InvalidAuthenticationToken', `Bearer realm="${tenant}"`);
           }
 
 
@@ -77,7 +77,7 @@ class Verifier {
         });
       })
       .catch(error => {
-        return deny(res, error.message, 'type', `Bearer realm="${tenant}"`);
+        return deny(res, error.message, 'urn:dx:as:InvalidAuthenticationToken', `Bearer realm="${tenant}"`);
       });
   }
 }
