@@ -436,7 +436,7 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/upsert' \
     {
       "id": "urn:ngsi-ld:TemperatureSensor:002",
       "type": "TemperatureSensor",
-      category": {
+      "category": {
         "vocab": "sensor"
       },
       "temperature": {
