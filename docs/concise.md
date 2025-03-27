@@ -829,7 +829,7 @@ The concise format is also available for the GeoJSON format which can be request
 #### 14 Request:
 
 ```bash
-curl -G -iX GET 'http://localhost:1026//ngsi-ld/v1/entities/' \
+curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/geo+json' \
 -H 'NGSILD-Tenant: openiot' \
