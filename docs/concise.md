@@ -1067,7 +1067,7 @@ The concise format can also be used when generating a notification from a subscr
 
 ```bash
 curl -iX POST
- 'http://{{orion}}/ngsi-ld/v1/subscriptions/' \
+ 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'Content-Type: application/ld+json' \
 -H 'NGSILD-Tenant: openiot' \
 --data-raw '{
@@ -1140,7 +1140,7 @@ this with `"format": "concise"` results in a `FeatureCollection` with properties
 
 ```bash
 curl -iX POST
- 'http://{{orion}}/ngsi-ld/v1/subscriptions/' \
+ 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'Content-Type: application/ld+json' \
 -H 'NGSILD-Tenant: openiot' \
 --data-raw '{
