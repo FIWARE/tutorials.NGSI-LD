@@ -366,7 +366,7 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/create' \
     {
       "id": "urn:ngsi-ld:TemperatureSensor:003",
       "type": "TemperatureSensor",
-      category": {
+      "category": {
         "vocab": ["sensor", "actuator"]
       },
       "temperature": {
