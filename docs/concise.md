@@ -1045,7 +1045,7 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entityOperations/update?options=
     "type": "TemperatureSensor",
     "temperature": {
       "value": 16,
-      "unitCode": "CEL"
+      "unitCode": "CEL",
       "observedAt": "2022-03-01T15:00:00.000Z"
     }
   }
