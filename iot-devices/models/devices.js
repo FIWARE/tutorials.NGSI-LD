@@ -34,6 +34,7 @@ const OFFSET_RATE = {
 };
 
 const COW_HEART_RATE = 50;
+const ABNORMAL_COW_HEART_RATE = 65;
 const PIG_HEART_RATE = 60;
 
 const DEFAULT_TEMPERATURE = 't|25';
@@ -344,6 +345,9 @@ function activateAnimalCollars() {
                 break;
             case 'cow':
                 targetRate = COW_HEART_RATE + 2 * OFFSET_RATE[state.d] + (getRandom() % 4);
+                if (lactatingAnimalIds.includes(deviceId)) {
+                    targetRate = ABNORMAL_COW_HEART_RATE + 2 * OFFSET_RATE[state.d] + (getRandom() % 4);
+                }
                 if (targetRate > state.bpm) {
                     state.bpm++;
                 } else if (targetRate < state.bpm) {
