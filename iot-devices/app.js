@@ -32,7 +32,6 @@ iot.use(rawBody);
 const mqttBrokerUrl = process.env.MQTT_BROKER_URL || 'mqtt://mosquitto';
 global.MQTT_CLIENT = mqtt.connect(mqttBrokerUrl);
 
-
 const iotRouter = express.Router();
 // If the Ultralight Dummy Devices are configured to use the HTTP transport, then
 // listen to the command endpoints using HTTP
@@ -50,7 +49,7 @@ iotRouter.get('/status', (req, res) => {
 });
 
 iotRouter.put('/barndoor', (req, res) => {
-    const newStatus =  IoTDevices.toggleBarnDoor();
+    const newStatus = IoTDevices.toggleBarnDoor();
     IoTDevices.barnDoor(newStatus);
 
     /*if (clusterWorkerSize > 1){
@@ -68,7 +67,6 @@ iotRouter.put('/temperature/:id', (req, res) => {
     res.status(204).send();
 });
 iot.use('/', iotRouter);
-
 
 // If the IoT Devices are configured to use the MQTT transport, then
 // subscribe to the assoicated topics for each device.

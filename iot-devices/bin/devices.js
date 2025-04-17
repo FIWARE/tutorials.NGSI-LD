@@ -1,11 +1,10 @@
-
 const debug = require('debug')('devices:server');
-const PORT = process.env.DUMMY_DEVICES_PORT || 3001
-const app = require('../app')
+const PORT = process.env.DUMMY_DEVICES_PORT || 3001;
+const app = require('../app');
 
 app.listen(PORT, function () {
-  debug(`Server listening on port ${PORT} with the single worker ${process.pid}`)
-})
+    debug(`Server listening on port ${PORT} with the single worker ${process.pid}`);
+});
 
 /*
 // include dependencies
@@ -53,5 +52,3 @@ if (clusterWorkerSize > 1) {
     debug(`Server listening on port ${PORT} with the single worker ${process.pid}`)
   })
 }*/
-
-

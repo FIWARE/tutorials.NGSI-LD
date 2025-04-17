@@ -1,4 +1,3 @@
-
 const OAuth2 = require('../lib/oauth2').OAuth2;
 const keyrockPort = process.env.KEYROCK_PORT || '3005';
 const keyrockUrl = (process.env.KEYROCK_URL || 'http://localhost') + ':' + keyrockPort;

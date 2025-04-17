@@ -11,8 +11,6 @@ const debug = require('debug')('devices:devices');
 const Northbound = require('../controllers/iot/northbound');
 const Emitter = require('../lib/emitter');
 
-
-
 // A series of constants used by our set of devices
 
 const WATER_OFF = 's|OFF';
@@ -230,8 +228,6 @@ myCache.set('filling004', FILLING_STATION_EMPTY);
 
 myCache.set('barn', 'door-locked');
 myCache.set('weather', 'cloudy');
-
-
 
 function emitWeatherConditions() {
     if (Emitter) {
@@ -609,15 +605,15 @@ function isUnknownCommand(device, command) {
     return invalid;
 }
 
-function toggleBarnDoor(){
- return   animalsEmitting ? 'door-locked' : 'door-open';
+function toggleBarnDoor() {
+    return animalsEmitting ? 'door-locked' : 'door-open';
 }
 
 function barnDoor(status) {
-    if (status === 'door-locked'){
+    if (status === 'door-locked') {
         myCache.set('barn', 'door-locked');
         stopDevices();
-    } else if (status === 'door-open'){
+    } else if (status === 'door-open') {
         myCache.set('barn', 'door-open');
         initDevices();
     }
