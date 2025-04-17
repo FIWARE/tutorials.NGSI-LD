@@ -28,14 +28,14 @@ const proxy = createProxyMiddleware({
             if (tenant) {
                 proxyReq.setHeader('NGSILD-Tenant', tenant);
             }
-            if (tenant) {
-                proxyReq.setHeader('Wallet-type', tenant);
+            if (walletType) {
+                proxyReq.setHeader('Wallet-type', walletType);
             }
-            if (tenant) {
-                proxyReq.setHeader('Wallet-Token', tenant);
+            if (walletToken) {
+                proxyReq.setHeader('Wallet-Token', walletToken);
             }
-            if (tenant) {
-                proxyReq.setHeader('Wallet-address', tenant);
+            if (walletAddress) {
+                proxyReq.setHeader('Wallet-address', walletAddress);
             }
         }
     }
