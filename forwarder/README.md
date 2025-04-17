@@ -11,6 +11,10 @@ Simple nodejs express application for use with the FIWARE Step-by-Step tutorials
 This application provides various sources of context and demonstrates various aspects of FIWARE To run the application
 in debug mode add `DEBUG=broker:*`
 
+## Target Context Broker
+
+- `CONTEXT_BROKER` - location of the Context Broker
+
 ## Additional Request Headers
 
 - `TENANT` - sets an NGSI-LD Tenant header
