@@ -14,6 +14,7 @@ const tenant = process.env.TENANT;
 const walletType = process.env.WALLET_TYPE;
 const walletToken = process.env.WALLET_TOKEN;
 const walletAddress = process.env.WALLET_ADDRESS;
+const acceptEncoding = process.env.ACCEPT_ENCODING;
 
 const verify = process.env.VERIFY_CREDENTIALS || false;
 
@@ -36,6 +37,9 @@ const proxy = createProxyMiddleware({
             }
             if (walletAddress) {
                 proxyReq.setHeader('Wallet-address', walletAddress);
+            }
+            if (acceptEncoding) {
+                proxyReq.setHeader('accept-encoding', acceptEncoding);
             }
         }
     }

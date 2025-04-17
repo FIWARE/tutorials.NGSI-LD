@@ -21,6 +21,7 @@ in debug mode add `DEBUG=broker:*`
 - `WALLET_TYPE` - Sets a Wallet Type for Canis Major
 - `WALLET_TOKEN` - Sets a Wallet Token for Canis Major
 - `WALLET_ADDRESS` - Sets a Wallet Address for Canis Major
+- `ACCEPT_ENCODING` - sets an Accept-Encoding header
 
 ## Verifiable Credentials Verifier
 
