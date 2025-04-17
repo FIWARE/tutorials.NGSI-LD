@@ -6,41 +6,24 @@
 [![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.08.01_60/gs_cim009v010801p.pdf)
 [![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/)
 
-Simple nodejs express application for use with the FIWARE Step-by-Step tutorials. Each tutorial consists of a series of
-exercises to demonstrate the correct use of individual FIWARE components and shows the flow of context data within a
-simple Smart Solution either by connecting to a series of dummy IoT devices or manipulating the context directly or
-programmatically.
+Simple nodejs express application for use with the FIWARE Step-by-Step tutorials. This component can be used to proxy and amend requests.
 
 This application provides various sources of context and demonstrates various aspects of FIWARE To run the application
-in debug mode add `DEBUG=tutorial:*`
+in debug mode add `DEBUG=broker:*`
 
-## Store Application
+## Additional Request Headers
 
--   `WEB_APP_PORT=3000` # Port used by the content provider proxy and web-app for viewing
--   `CONTEXT_BROKER=http://orion:1026/v2` - URL of the context broker to update context
--   `NGSI_LD_PREFIX=` - Whether to use full URNs for devices
--   `SECURE_ENDPOINTS=true` - Enable Keyrock as PDP - default is `false`
+- `TENANT` - sets an NGSI-LD Tenant header
+- `WALLET_TYPE` - Sets a Wallet Type for Canis Major
+- `WALLET_TOKEN` - Sets a Wallet Token for Canis Major
+- `WALLET_ADDRESS` - Sets a Wallet Address for Canis Major
 
-## Dummy Ultralight Devices
+## Verifiable Credentials Verifier
 
--   `IOTA_HTTP_HOST=iot-agent` - The URL of the IoT Agent
--   `IOTA_HTTP_PORT=7896` - Port used by the dummy IoT devices to commuicate with the IoT Agent
--   `DUMMY_DEVICES_PORT=3001` - Port used by the dummy IoT devices to receive commands
--   `DUMMY_DEVICES_TRANSPORT=HTTP` - Default transport used by dummy IoT devices (either `HTTP` or `MQTT`)
--   `DUMMY_DEVICES_API_KEY=4jggokgpepnvsb2uv4s40d59ov` - Device API Key.
-
-## Identity Management - Keyrock
-
--   `KEYROCK_URL=http://localhost` - URL for Keyrock IDM
--   `KEYROCK_IP_ADDRESS=http://172.18.1.5` - IP address for Keyrock IDM
--   `KEYROCK_PORT=3005` - Port that Keyrock is listening on
--   `KEYROCK_CLIENT_ID=tutorial-dckr-site-0000-xpresswebapp` - Client ID for the appliction within keyrock
--   `KEYROCK_CLIENT_SECRET=tutorial-dckr-site-0000-clientsecret` - Client secret for the appliction within keyrock
-
-## Access Control - Authzforce
-
--   `AUTHZFORCE_URL=http://authzforce` - URL for Authzforce
--   `AUTHZFORCE_PORT=8080` - Port that Authzforce is listening on
+- `VERIFY_CREDENTIALS` - set to `true` to enable verification
+- `CONFIG_SERVICE` - location of the Credentials Config Service
+- `WEB_APP_HOST` - location of the Tutorial App to display on screen
+- `WEB_APP_PORT` - port of the Tutorial App
 
 ## How to build your own image
 
@@ -51,7 +34,7 @@ can be used to build an image in several ways:
     optional):
 
 ```console
-docker build -t fiware/tutorials.NGSI-LD . --build-arg DOWNLOAD=latest
+docker build -t fiware/tutorials.Forwarder . --build-arg DOWNLOAD=latest
 ```
 
 -   You can alter this to obtain the last **stable** release run this `Dockerfile` with the build argument
