@@ -6,8 +6,8 @@ function addSource(name, source) {
     });
 }
 
-const isCow = ['==', ['get', 'type'], 'Venue'];
-const isPig = ['==', ['get', 'type'], 'Attraction'];
+const isCow = ['==', ['get', 'species'], 'dairy cattle'];
+const isPig = ['==', ['get', 'species'], 'pig'];
 
 function addLayer(source) {
     if (map.getLayer('points')) {
@@ -18,7 +18,7 @@ function addLayer(source) {
         type: 'symbol',
         source,
         layout: {
-            'icon-image': ['case', isCow, 'cow', isPig, 'pig', 'cow'],
+            'icon-image': ['case', isCow, 'cow', isPig, 'pig', 'none'],
             'icon-size': 0.15,
             'icon-overlap': 'always'
         },
@@ -29,7 +29,8 @@ function addLayer(source) {
 let popups = null;
 const icons = {
     cow: '/img/cow.svg',
-    pig: '/img/pig.svg'
+    pig: '/img/pig.svg',
+    none: '/img/none.svg'
 };
 
 function initMap() {
@@ -59,11 +60,13 @@ function initMap() {
         if (popups) {
             popups.remove();
         }
-        popups = new maplibregl.Popup()
-            .setHTML(`<div class="popup-info"> ${content}</div>`)
-            .setLngLat(feature.geometry.coordinates);
+        if (feature.properties.species){
+            popups = new maplibregl.Popup()
+                .setHTML(`<div class="popup-info"> ${content}</div>`)
+                .setLngLat(feature.geometry.coordinates);
 
-        popups.addTo(map);
+            popups.addTo(map);
+        }
     });
 
     map.on('load', function () {
