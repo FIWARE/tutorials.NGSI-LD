@@ -1,0 +1,25 @@
+extends layout
+
+block content
+  h1 Animal Locations
+ 
+  div.row
+    div.col
+
+      div(id="map")
+    
+
+  link(rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.4.0/dist/maplibre-gl.css")
+  link(rel="preload" as="image" href="/img/cow.svg")
+  link(rel="preload" as="image" href="/img/pig.svg")
+  style.
+    #map {
+            width: 100%;
+            height: 400px;
+
+            padding: 0;
+            margin: 0;
+    }
+  script(src="https://unpkg.com/maplibre-gl@5.4.0/dist/maplibre-gl.js")  
+  script(src="/js/locations_map.js")
+     

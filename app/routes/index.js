@@ -202,6 +202,9 @@ router.get('/vp/monitor', function (req, res) {
 
 // Viewing Store information is secured by Keyrock PDP.
 // LEVEL 1: AUTHENTICATION ONLY - Users must be logged in to view the store page.
+
+router.get('/app/animals/locations.json', Animal.geojson);
+router.get('/app/animals', Security.authenticate, Animal.displayMap);
 router.get('/app/animal/:id', Security.authenticate, Animal.display);
 router.get('/app/agriparcel/:id', Security.authenticate, Land.display);
 

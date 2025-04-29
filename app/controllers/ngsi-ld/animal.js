@@ -4,6 +4,35 @@ const ngsiLD = require('../../lib/ngsi-ld');
 const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context.jsonld';
 const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json">';
 
+const ENTITY_LIMIT = process.env.ENTITY_LIMIT || 200;
+
+async function getAnimals(req, res) {
+    debug('getAnimals');
+
+    const headers = ngsiLD.setHeaders(req.session.access_token, LinkHeader);
+    headers['Accept'] = 'application/geo+json';
+    const animals = await ngsiLD.listEntities(
+        {
+            type: 'Animal',
+            options: 'concise',
+            limit: ENTITY_LIMIT
+        },
+        headers
+    );
+
+    animals.features.forEach((animal) => {
+        animal.properties.id = animal.id;
+    });
+
+    delete animals['@context'];
+    return res.send(animals);
+}
+
+async function displayMap(req, res) {
+    debug('displayMap');
+    return res.render('animalMap');
+}
+
 // This function receives the details of a person from the context
 //
 // It is effectively processing the following cUrl command:
@@ -31,7 +60,7 @@ async function displayAnimal(req, res) {
             imgId = `00${imgId % 10}`;
         }
 
-        console.log(imgId);
+        //console.log(imgId);
         //animal.img=)
 
         return res.render('animal', { title: animal.name, animal, imgId });
@@ -55,5 +84,7 @@ async function displayAnimal(req, res) {
 }
 
 module.exports = {
-    display: displayAnimal
+    display: displayAnimal,
+    displayMap: displayMap,
+    geojson: getAnimals
 };
