@@ -23,8 +23,9 @@ This is a collection of **NGSI-LD** tutorials for the FIWARE system. Each tutori
 demonstrate the correct use of individual FIWARE components and shows the flow of context data within a simple Smart
 Solution either by connecting to a series of dummy IoT devices or manipulating the context directly or programmatically.
 
+<!-- Global Summit
 <a href="https://www.fiware.org/global-summit/"><img src="https://fiware.github.io//catalogue/img/Summit25.png" width="240" height="70" /></a> &nbsp; <a href="https://www.eventbrite.co.uk/e/fiware-global-summit-2025-rabat-smart-city-morocco-tickets-1249129843989"><img src="https://fiware.github.io//catalogue/img/Training25.png" width="240" height="70" /></a> 
-
+-->
 
 <blockquote>
 <h3>Should I use NGSI-LD or NGSI-v2?</h3>
