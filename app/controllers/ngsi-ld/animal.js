@@ -10,7 +10,7 @@ async function getAnimals(req, res) {
     debug('getAnimals');
 
     const headers = ngsiLD.setHeaders(req.session.access_token, LinkHeader);
-    headers['Accept'] = 'application/geo+json';
+    headers.Accept = 'application/geo+json';
     const animals = await ngsiLD.listEntities(
         {
             type: 'Animal',
@@ -28,7 +28,7 @@ async function getAnimals(req, res) {
     return res.send(animals);
 }
 
-async function displayMap(req, res) {
+function displayMap(req, res) {
     debug('displayMap');
     return res.render('animalMap');
 }
@@ -85,6 +85,6 @@ async function displayAnimal(req, res) {
 
 module.exports = {
     display: displayAnimal,
-    displayMap: displayMap,
+    displayMap,
     geojson: getAnimals
 };

@@ -1,3 +1,5 @@
+/* global maplibregl */
+
 function addSource(name, source) {
     map.addSource(name, {
         type: 'geojson',
@@ -84,7 +86,7 @@ function initMap() {
                 map.addImage(key, image);
             };
         }
-        setTimeout(async () => {
+        setTimeout(() => {
             addSource('locations', './animals/locations.json');
             addLayer('locations');
 
@@ -94,7 +96,7 @@ function initMap() {
             ]);
         }, '1000');
 
-        setTimeout(async () => {
+        setTimeout(() => {
             map.addControl(
                 new maplibregl.ScaleControl({
                     maxWidth: 80,
