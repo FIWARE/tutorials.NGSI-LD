@@ -571,6 +571,7 @@ This example lists the full context of all **TemperatureSensor** entities.
 ```bash
 curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Accept: application/ld+json' \
 -d 'type=TemperatureSensor'
 ```
 
