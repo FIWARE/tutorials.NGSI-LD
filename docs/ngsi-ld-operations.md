@@ -333,18 +333,11 @@ The request will fail if any of the attributes already exist in the context. The
 been successful and the reason for failure (if any has occurred).
 
 ```json
-{
-    "@context": [
-        "http://context/user-context.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
-    ],
-    "success": [
+[
         "urn:ngsi-ld:TemperatureSensor:002",
         "urn:ngsi-ld:TemperatureSensor:003",
         "urn:ngsi-ld:TemperatureSensor:004"
-    ],
-    "errors": []
-}
+]
 ```
 
 ### Batch Create/Overwrite New Data Entities
@@ -436,10 +429,6 @@ moved due to content negotiation if the `Accept:application/json` had been set).
 
 ```json
 {
-    "@context": [
-        "http://context/user-context.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
-    ],
     "id": "urn:ngsi-ld:TemperatureSensor:001",
     "type": "TemperatureSensor",
     "createdAt": "2020-08-27T14:33:06Z",
@@ -458,7 +447,7 @@ moved due to content negotiation if the `Accept:application/json` had been set).
         "unitCode": "CEL"
     },
     "batteryLevel": {
-        "value": 0.8,
+        "value": 0.9,
         "type": "Property",
         "createdAt": "2020-08-27T14:33:10Z",
         "modifiedAt": "2020-08-27T14:33:10Z",
@@ -495,10 +484,6 @@ The sensor `urn:ngsi-ld:TemperatureSensor:001` is reading at 25°C. The response
 
 ```json
 {
-    "@context": [
-        "http://context/user-context.jsonld",
-        "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
-    ],
     "id": "urn:ngsi-ld:TemperatureSensor:001",
     "type": "TemperatureSensor",
     "temperature": {
@@ -535,8 +520,8 @@ The sensor `urn:ngsi-ld:TemperatureSensor:001` is reading at 25°C. The response
     "id": "urn:ngsi-ld:TemperatureSensor:001",
     "type": "TemperatureSensor",
     "category": "sensor",
-    "temperature": 25,
-    "batteryLevel": 0.8,
+    "temperature": {"vocab": "sensor"},
+    "batteryLevel": 0.9,
     "controlledAsset": "urn:ngsi-ld:Building:barn002"
 }
 ```
@@ -570,7 +555,7 @@ The sensor `urn:ngsi-ld:TemperatureSensor:001` is reading at 25°C. The response
 {
     "id": "urn:ngsi-ld:TemperatureSensor:001",
     "type": "TemperatureSensor",
-    "category": "sensor",
+    "category": {"vocab": "sensor"},
     "temperature": 25
 }
 ```
