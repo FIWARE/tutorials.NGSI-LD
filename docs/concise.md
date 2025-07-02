@@ -704,7 +704,9 @@ context will now contain four sensors.
             "value": 0.9,
             "unitCode": "C62"
         },
-        "category": "sensor",
+        "category": {
+            "vocab": "sensor"
+        },
         "controlledAsset": {
             "object": "urn:ngsi-ld:Building:barn002"
         },
@@ -920,7 +922,8 @@ The response details the selected attributes from the selected entities is retur
                 "coordinates": [13.347, 52.522]
             }
         }
-    ]
+    ],
+    "@context": "http://context/user-context.jsonld"
 }
 ```
 
