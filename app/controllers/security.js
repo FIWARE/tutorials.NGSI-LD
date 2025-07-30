@@ -1,4 +1,3 @@
-const Authzforce = require('../lib/azf').Authzforce;
 const OAuth2 = require('../lib/oauth2').OAuth2;
 const debug = require('debug')('tutorial:security');
 const keyrockPort = process.env.KEYROCK_PORT || '3005';
@@ -20,9 +19,6 @@ const oa = new OAuth2(
     '/oauth2/token',
     callbackURL
 );
-
-// Creates an authzforce library object with the config data
-const azf = new Authzforce(clientId);
 
 function logAccessToken(req, accessToken, refreshToken, store = true) {
     debug('<strong>Access Token</strong> received ' + accessToken);
@@ -263,44 +259,8 @@ function authorizeBasicPDP(req, res, next, resource = req.url) {
 // Use of Authzforce as a PDP (Policy Decision Point)
 // LEVEL 3: ADVANCED AUTHORIZATION - Resources are accessible via XACML Rules
 function authorizeAdvancedXACML(req, res, next, resource = req.url) {
-    debug('authorizeAdvancedXACML');
-
-    if (bypassAuthorization(req, res)) {
-        return next();
-    }
-    // Using the access token asks the IDM for the user info
-
-    const keyrockUserUrl =
-        keyrockIPAddress +
-        '/user' +
-        '?access_token=' +
-        req.session.access_token +
-        '&app_id=' +
-        clientId +
-        '&authzforce=true';
-
-    return oa
-        .get(keyrockUserUrl)
-        .then((response) => {
-            const user = JSON.parse(response);
-            return azf.policyDomainRequest(
-                user.app_azf_domain,
-                user.roles,
-                resource,
-                req.method,
-                user.username,
-                user.email
-            );
-        })
-        .then((authzforceResponse) => {
-            res.locals.authorized = authzforceResponse === 'Permit';
-            return next();
-        })
-        .catch((error) => {
-            debug(error);
-            res.locals.authorized = false;
-            return next();
-        });
+    // Not implemented
+    return next();
 }
 
 // Handles logout requests to remove access_token from the session cookie

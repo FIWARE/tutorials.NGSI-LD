@@ -2,7 +2,7 @@
 
 const http = require('http');
 const port = process.env.WEB_APP_PORT || '3000';
-const path = process.env.HEALTHCHECK_PATH || '/version';
+const path = process.env.HEALTHCHECK_PATH || '/health';
 const httpCode = process.env.HEALTHCHECK_CODE || 200;
 
 const options = {

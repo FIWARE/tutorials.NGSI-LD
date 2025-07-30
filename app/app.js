@@ -5,7 +5,6 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const indexRouter = require('./routes/index');
-const healthRouter = require('./routes/health');
 const crypto = require('crypto');
 const session = require('express-session');
 const flash = require('connect-flash');
@@ -83,19 +82,12 @@ app.use(function (req, res, next) {
     next();
 });
 
-const proxyLDRouter = require('./routes/proxy-ld');
-const DeviceConvertor = require('./controllers/ngsi-ld/device-convert');
 const DataPersist = require('./controllers/ngsi-ld/building-update');
 const japaneseRouter = require('./routes/japanese');
-app.use('/', proxyLDRouter);
-app.post('/device/subscription/initialize', DeviceConvertor.duplicateDevices);
 app.post('/building/subscription', DataPersist.duplicateBuildings);
-app.post('/device/subscription/:attrib', DeviceConvertor.shadowDeviceMeasures);
-
 app.use('/japanese/ngsi-ld/v1/', japaneseRouter);
-
-app.use('/health', healthRouter);
 app.use('/', indexRouter);
+app.use('/health', require('express-healthcheck')());
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

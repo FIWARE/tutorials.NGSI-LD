@@ -5,7 +5,6 @@
 // broker.
 //
 
-const request = require('request');
 const debug = require('debug')('tutorial:command-listener');
 const Security = require('../security');
 
@@ -51,6 +50,17 @@ function createNGSILDRequest(action, id) {
     };
 
     return { method, url, headers, body, json: true };
+}
+
+async function parse(response) {
+    let text = '';
+    try {
+        text = await response.text();
+        const data = JSON.parse(text);
+        return data;
+    } catch (err) {
+        return text;
+    }
 }
 
 // This function allows a Water Sprinkler, Tractor of FillingStation command to be sent to the Dummy IoT devices
@@ -102,16 +112,19 @@ function sendCommand(req, res) {
     }
 
     debug(JSON.stringify(options));
-    request(options, (error, response, body) => {
-        if (error) {
-            debug(error);
-        }
-        if (body) {
-            debug(body);
-        }
-        // Return a status code.
-        return res.status(response.statusCode).send();
-    });
+    return fetch(options.url, {
+        headers: options.headers,
+        method: options.method,
+        body: JSON.stringify(options.body)
+    })
+        .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
+        .then((data) => {
+            return res.status(data.status).send(data.body);
+        })
+        .catch((e) => {
+            debug(e);
+            return res.status(400).send();
+        });
 }
 
 // Ringing the bell and unlocking the door are restricted actions, everything else
@@ -139,44 +152,32 @@ function accessControl(req, res, next) {
 
 // The barn Door is just a switch for the dummy devices
 function barnDoor() {
-    const options = {
+    return fetch(`${devices}/barndoor`, {
         method: 'PUT',
-        url: `${devices}/barndoor`,
-        json: { update: true }
-    };
-    request(options, (error) => {
-        if (error) {
-            debug(error);
-        }
+        body: JSON.stringify({ update: true })
+    }).catch((e) => {
+        debug(e);
     });
 }
 
 // Update the state of the weather to simulate changing conditions
 function alterWeather(action) {
-    const options = {
+    return fetch(`${devices}/weather`, {
         method: 'PUT',
-        url: `${devices}/weather`,
-        json: { action }
-    };
-    request(options, (error) => {
-        if (error) {
-            debug(error);
-        }
+        body: JSON.stringify({ action })
+    }).catch((e) => {
+        debug(e);
     });
 }
 
 // The temperature Gauge does not accept commands,
 // Update the state of the device indirectly
 function alterTemperature(id, raise) {
-    const options = {
+    return fetch(`${devices}/temperature/${id}`, {
         method: 'PUT',
-        url: `${devices}/temperature/${id}`,
-        json: { raise }
-    };
-    request(options, (error) => {
-        if (error) {
-            debug(error);
-        }
+        body: JSON.stringify({ raise })
+    }).catch((e) => {
+        debug(e);
     });
 }
 

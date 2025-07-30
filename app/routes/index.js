@@ -135,11 +135,6 @@ router.post('/refreshToken', Security.refreshTokenGrant);
 router.get('/authCodeGrant', Security.authCodeGrant);
 router.get('/logout', Security.logOut);
 
-router.get('/version', function (req, res) {
-    res.setHeader('Content-Type', 'application/json');
-    res.send({ gitHash: GIT_COMMIT });
-});
-
 // Render the monitoring page
 router.get('/device/monitor', function (req, res) {
     const traffic = TRANSPORT === 'HTTP' ? 'Northbound Traffic' : 'MQTT Messages';

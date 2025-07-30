@@ -6,7 +6,6 @@
 //
 
 const debug = require('debug')('tutorial:ngsi-ld');
-const request = require('request-promise');
 const jsonld = require('jsonld');
 
 const BASE_PATH = process.env.CONTEXT_BROKER || 'http://localhost:1026/ngsi-ld/v1';
@@ -24,16 +23,11 @@ function translateRequest(req, res) {
 
     const headers = req.headers;
     headers.Accept = 'application/json';
-
-    const options = {
-        url: BASE_PATH + req.path,
-        method: req.method,
+    return fetch(`${BASE_PATH}${req.path}/?${new URLSearchParams(req.query)}`, {
         headers,
-        qs: req.query,
-        json: true
-    };
-
-    request(options)
+        method: req.method
+    })
+        .then((r) => r.json().then((data) => ({ status: r.status, body: data })))
         .then(async function (cbResponse) {
             // Having received a response, the payload is expanded using
             // the core context - this forces all attribute ids to be

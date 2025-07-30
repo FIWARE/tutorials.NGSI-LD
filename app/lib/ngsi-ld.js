@@ -2,14 +2,23 @@
 
 /* eslint-disable no-unused-vars */
 
-const request = require('request-promise');
-
 // The basePath must be set - this is the location of the Orion
 // context broker. It is best to do this with an environment
 // variable (with a fallback if necessary)
 const BASE_PATH = process.env.CONTEXT_BROKER || 'http://localhost:1026/ngsi-ld/v1';
 
 const JSON_LD_HEADER = 'application/ld+json';
+
+async function parse(response) {
+    let text = '';
+    try {
+        text = await response.text();
+        const data = JSON.parse(text);
+        return data;
+    } catch (err) {
+        return text;
+    }
+}
 
 function setHeaders(accessToken, link, contentType) {
     const headers = {};
@@ -30,108 +39,127 @@ function setHeaders(accessToken, link, contentType) {
 // This is a promise to make an HTTP POST request to the
 // /ngsi-ld/v1/entities/<entity-id>/attrs end point
 function createAttribute(entityId, body, headers = {}) {
-    return request({
-        url: BASE_PATH + '/entities/' + entityId + '/attrs',
+    return fetch(`${BASE_PATH}/entities/${entityId}/attrs`, {
         method: 'POST',
-        body,
         headers,
-        json: true
-    });
+        body
+    })
+        .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
+        .then((data) => {
+            return res.status(data.status).send(data.body);
+        });
 }
 
 // This is a promise to make an HTTP POST request to the
 // /ngsi-ld/v1/entities/<entity-id>/attrs end point
 function readAttribute(entityId, headers = {}) {
-    /*	
-  return request({
-    url: BASE_PATH + '/entities/' + entityId + '/attrs',
-    method: 'POST',
-    body,
-    headers,
-    json: true,
-  }); */
+    return fetch(`${BASE_PATH}/entities/${entityId}/attrs`, {
+        method: 'GET',
+        headers,
+        body
+    })
+        .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
+        .then((data) => {
+            return res.status(data.status).send(data.body);
+        });
 }
 
 // This is a promise to make an HTTP PATCH request to the
 // /ngsi-ld/v1/entities/<entity-id>/attr end point
 function updateAttribute(entityId, body, headers = {}) {
-    return request({
-        url: BASE_PATH + '/entities/' + entityId + '/attrs',
+    return fetch(`${BASE_PATH}/entities/${entityId}/attrs`, {
         method: 'PATCH',
-        body,
         headers,
-        json: true
-    });
+        body
+    })
+        .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
+        .then((data) => {
+            return res.status(data.status).send(data.body);
+        });
 }
 
 // This is a promise to make an HTTP DELETE request to the
 // /ngsi-ld/v1/entities/<entity-id>/attrs end point
 function deleteAttribute(entityId, headers = {}) {
-    return request({
-        url: BASE_PATH + '/entities/' + entityId + '/attrs',
+    return fetch(`${BASE_PATH}/entities/${entityId}/attrs`, {
         method: 'DELETE',
         headers,
-        json: true
-    });
+        body
+    })
+        .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
+        .then((data) => {
+            return res.status(data.status).send(data.body);
+        });
 }
 
 // This is a promise to make an HTTP POST request to the
 // /ngsi-ld/v1/entities end point
 function createEntity(entityId, type, body, headers = {}) {
-    /*  return request({
-    url: BASE_PATH + '/entities/' + entityId + '/attrs',
-    method: 'POST',
-    body,
-    headers,
-    json: true,
-  });*/
+    return fetch(`${BASE_PATH}/entities/${entityId}`, {
+        method: 'POST',
+        headers,
+        body
+    })
+        .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
+        .then((data) => {
+            return res.status(data.status).send(data.body);
+        });
 }
 
 // This is a promise to make an HTTP PATCH request to the
 // /ngsi-ld/v1/entities/<entity-id>/attr end point
 function updateEntity(entityId, body, headers = {}) {
-    /* return request({
-    url: BASE_PATH + '/entities/' + entityId + '/attrs',
-    method: 'PATCH',
-    body,
-    headers,
-    json: true,
-  });*/
+    return fetch(`${BASE_PATH}/entities/${entityId}/attrs`, {
+        method: 'PATCH',
+        headers,
+        body
+    })
+        .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
+        .then((data) => {
+            return res.status(data.status).send(data.body);
+        });
 }
 
 // This is a promise to make an HTTP DELETE request to the
 // /ngsi-ld/v1/entities/<entity-id> end point
 function deleteEntity(entityId, headers = {}) {
-    return request({
-        url: BASE_PATH + '/entities/' + entityId,
+    return fetch(`${BASE_PATH}/entities/${entityId}`, {
         method: 'DELETE',
         headers,
-        json: true
-    });
+        body
+    })
+        .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
+        .then((data) => {
+            return res.status(data.status).send(data.body);
+        });
 }
 
 // This is a promise to make an HTTP GET request to the
 // /ngsi-ld/v1/entities/<entity-id> end point
 function readEntity(entityId, opts, headers = {}) {
-    return request({
-        qs: opts,
-        url: BASE_PATH + '/entities/' + entityId,
+    return fetch(`${BASE_PATH}/entities/${entityId}/?${new URLSearchParams(opts)}`, {
         method: 'GET',
         headers,
-        json: true
-    });
+        body
+    })
+        .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
+        .then((data) => {
+            return res.status(data.status).send(data.body);
+        });
 }
 
 // This is a promise to make an HTTP GET request to the
 // /ngsi-ld/v1/entities/ end point
 function listEntities(opts, headers = {}) {
-    return request({
-        qs: opts,
-        url: BASE_PATH + '/entities',
+    return fetch(`${BASE_PATH}/entities/?${new URLSearchParams(opts)}`, {
         method: 'GET',
         headers,
-        json: true
-    });
+        body
+    })
+        .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
+        .then((data) => {
+            return res.status(data.status).send(data.body);
+        });
 }
 
 module.exports = {

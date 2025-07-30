@@ -62,7 +62,7 @@ function initMap() {
         if (popups) {
             popups.remove();
         }
-        if (feature.properties.species){
+        if (feature.properties.species) {
             popups = new maplibregl.Popup()
                 .setHTML(`<div class="popup-info"> ${content}</div>`)
                 .setLngLat(feature.geometry.coordinates);
