@@ -1,18 +1,18 @@
-const request = require('request');
 const debug = require('debug')('broker:emitter');
-const WEB_APP_URL = 'http://' + (process.env.WEB_APP_HOST || 'localhost') + ':' + (process.env.WEB_APP_PORT || 3000);
+const WEB_APP_URL =
+  'http://' +
+  (process.env.WEB_APP_HOST || 'localhost') +
+  ':' +
+  (process.env.WEB_APP_PORT || 3000);
 
-exports.emit = function (subject, data) {
-    const options = {
-        method: 'POST',
-        url: `${WEB_APP_URL}/message/${subject}`,
-        json: { data }
-    };
-
-    request(options, (error) => {
-        if (error) {
-            debug(error);
-            console.log(error);
-        }
-    });
+exports.emit = function(subject, data) {
+  return fetch(`${WEB_APP_URL}/message/${subject}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ data })
+  }).catch(e => {
+    debug(e);
+  });
 };

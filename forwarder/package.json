@@ -17,10 +17,10 @@
     "did-resolver": "^4.1.0",
     "express": "^4.19.2",
     "express-bearer-token": "^3.0.0",
+    "express-healthcheck": "^0.1.0",
     "handlebars": "^4.7.8",
     "http-proxy-middleware": "^3.0.0",
     "http-status-codes": "^2.3.0",
-    "request": "^2.88.2",
     "web-did-resolver": "^2.0.29"
   },
   "devDependencies": {
