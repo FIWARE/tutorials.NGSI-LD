@@ -3,7 +3,9 @@ const PORT = process.env.DUMMY_DEVICES_PORT || 3001;
 const app = require('../app');
 
 app.listen(PORT, function () {
-    debug(`Server listening on port ${PORT} with the single worker ${process.pid}`);
+  debug(
+    `Server listening on port ${PORT} with the single worker ${process.pid}`
+  );
 });
 
 /*

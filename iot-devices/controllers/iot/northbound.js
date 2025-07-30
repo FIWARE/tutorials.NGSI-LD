@@ -18,62 +18,65 @@ const DEVICE_PAYLOAD = process.env.DUMMY_DEVICES_PAYLOAD || 'ultralight';
 // It is just a user filling out the Username and password form and adding the access token to
 // subsequent requests.
 function setAuthToken(header, callback) {
-    Security.oa
-        .getOAuthPasswordCredentials(process.env.DUMMY_DEVICES_USER, process.env.DUMMY_DEVICES_PASSWORD)
-        .then((results) => {
-            header['X-Auth-Token'] = results.access_token;
-            callback();
-        })
-        .catch((error) => {
-            debug(error);
-            debug('retry after 5 seconds.');
-            setTimeout(function () {
-                setAuthToken(header, callback);
-            }, 5000);
-        });
+  Security.oa
+    .getOAuthPasswordCredentials(
+      process.env.DUMMY_DEVICES_USER,
+      process.env.DUMMY_DEVICES_PASSWORD
+    )
+    .then((results) => {
+      header['X-Auth-Token'] = results.access_token;
+      callback();
+    })
+    .catch((error) => {
+      debug(error);
+      debug('retry after 5 seconds.');
+      setTimeout(function () {
+        setAuthToken(header, callback);
+      }, 5000);
+    });
 }
 
 function setDevice() {
-    switch (DEVICE_PAYLOAD.toLowerCase()) {
-        case 'ultralight':
-            Measure = new UltralightMeasure(headers);
-            break;
-        case 'json':
-            Measure = new JSONMeasure(headers);
-            break;
-        case 'lorawan':
-            //Measure = new LoraMeasure();
-            break;
-        case 'sigfox':
-            //Measure = new SigfoxMeasure();
-            break;
-        case 'xml':
-            Measure = new XMLMeasure(headers);
-            break;
-        default:
-            debug('Device payload not recognized. Using default');
-            Measure = new UltralightMeasure(headers);
-            break;
-    }
+  switch (DEVICE_PAYLOAD.toLowerCase()) {
+    case 'ultralight':
+      Measure = new UltralightMeasure(headers);
+      break;
+    case 'json':
+      Measure = new JSONMeasure(headers);
+      break;
+    case 'lorawan':
+      //Measure = new LoraMeasure();
+      break;
+    case 'sigfox':
+      //Measure = new SigfoxMeasure();
+      break;
+    case 'xml':
+      Measure = new XMLMeasure(headers);
+      break;
+    default:
+      debug('Device payload not recognized. Using default');
+      Measure = new UltralightMeasure(headers);
+      break;
+  }
 }
 
 let Measure;
 const headers = {};
 if (process.env.DUMMY_DEVICES_USER && process.env.DUMMY_DEVICES_PASSWORD) {
-    setAuthToken(headers, setDevice);
+  setAuthToken(headers, setDevice);
 } else {
-    setDevice();
+  setDevice();
 }
 
 module.exports = {
-    sendMeasure(deviceId, state) {
-        if (DEVICE_TRANSPORT === 'HTTP') {
-            debug('sendHTTPMeasure: ' + deviceId);
-            Measure.sendAsHTTP(deviceId, state);
-        }
-        if (DEVICE_TRANSPORT === 'MQTT') {
-            debug('sendMQTTMeasure: ' + deviceId);
-            Measure.sendAsMQTT(deviceId, state);
-        }
+  sendMeasure(deviceId, state) {
+    if (DEVICE_TRANSPORT === 'HTTP') {
+      debug('sendHTTPMeasure: ' + deviceId);
+      Measure.sendAsHTTP(deviceId, state);
     }
+    if (DEVICE_TRANSPORT === 'MQTT') {
+      debug('sendMQTTMeasure: ' + deviceId);
+      Measure.sendAsMQTT(deviceId, state);
+    }
+  },
 };
