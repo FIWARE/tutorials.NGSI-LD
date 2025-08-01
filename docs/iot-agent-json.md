@@ -4,7 +4,7 @@
 **Description:** This tutorial a wires up the dummy [JSON](https://json.org/)-based IoT devices using the
 [IoT Agent for JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
 devices so that measurements can be read and commands can be sent using
-[NGSI LD](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.08.01_60/gs_cim009v010801p.pdf) requests sent to an
+[NGSI LD](https://cim.etsi.org/NGSI-LD/official/0--1.html) requests sent to an
 NGSI-LD compliant context broker such as the [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/).
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
@@ -492,7 +492,7 @@ however it has been included here for completeness.
 
 ### Provisioning a Sensor
 
-The NGSI-LD [specification](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.08.01_60/gs_cim009v010801p.pdf)
+The NGSI-LD [specification](https://cim.etsi.org/NGSI-LD/official/0--1.html)
 mandates full URNs when creating context data entities, however the incoming messages from the devices will not be aware
 of this convention. Furthermore, the attribute name on the context data entity should match the short names found within
 the associated `@context` file. These mappings can be defined at the service group level as seen in the previous

@@ -1,4 +1,4 @@
-# Smart Farm Tutorials[<img src="https://img.shields.io/badge/NGSI-LD-d6604d.svg" width="90"  align="left" />](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.08.01_60/gs_cim009v010801p.pdf) [<img src="docs/img/logo.png" align="left" width="162">](https://www.fiware.org/) <br/>
+# Smart Farm Tutorials[<img src="https://img.shields.io/badge/NGSI-LD-d6604d.svg" width="90"  align="left" />](https://cim.etsi.org/NGSI-LD/official/0--1.html) [<img src="docs/img/logo.png" align="left" width="162">](https://www.fiware.org/) <br/>
 
 [![Documentation](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/documentation.svg)](https://ngsi-ld-tutorials.rtfd.io)
 [![License: MIT](https://img.shields.io/github/license/fiware/tutorials.Step-by-Step.svg)](https://opensource.org/licenses/MIT)
@@ -121,7 +121,7 @@ We will start up our services using a simple bash script. Windows users should d
 [Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/install) to provide a command-line
 functionality similar to a Linux distribution on Windows.
 
-## Tutorials List[<img src="https://img.shields.io/badge/NGSI-LD-d6604d.svg" width="90"  align="left" />](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.08.01_60/gs_cim009v010801p.pdf)
+## Tutorials List[<img src="https://img.shields.io/badge/NGSI-LD-d6604d.svg" width="90"  align="left" />](https://cim.etsi.org/NGSI-LD/official/0--1.html)
 
 ### Core Context Management: NGSI-LD Fundamentals
 
