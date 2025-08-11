@@ -562,7 +562,7 @@ curl -L 'localhost:3000/vc/verify' \
 
 Now that Alice has been given a Verifiable credential, she can use it to claim the role of Operator within the Data Space and gain Access to the Vetenary Records. A First attempt to access the records without holding a token results in an error, indicating that the verifier is present on port `1030`
 
-### Accessing the Vetenary Records without a Veriable Credential
+### Accessing the Vetenary Records without a Verifiable Credential
 
 #### 5️⃣ Request:
 
@@ -584,7 +584,7 @@ The response is a **401 - Unauthorized** error code with the following response
 ```
 
 
-### Accessing the Vetenary Records with an invalid Veriable Credential
+### Accessing the Vetenary Records with an invalid Verifiable Credential
 
 The Verifiable Credential is added as a Bearer token to the Authorization header. The bearer token is a JWT which is then decoded and verified - if the content of the Bearer token does not match the claimed issuer, then the token is rejected.
 
@@ -613,7 +613,7 @@ In the case of a rejected credentials The response is a **401 - Unauthorized** e
 
 Note that a real Credential Verifier would not only check that all the claimed issuers of credentials had really signed each verifiable credential, but also ensure that the `exp` and `nbf` are also in range.
 
-### Accessing the Vetenary Records with a valid Veriable Credential
+### Accessing the Vetenary Records with a valid Verifiable Credential
 
 With a proper Verifiable Presentation, the **Animal** records can be accessed:
 
@@ -826,7 +826,7 @@ body, and a base64 encoded string respectively.
 
 
 
-### Accessing the Vetenary Records with a valid Veriable Credential
+### Accessing the Vetenary Records with a valid Verifiable Credential
 
 Now, with a proper Verifiable Presentation, the **Animal** records can be accessed:
 
