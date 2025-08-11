@@ -258,6 +258,7 @@ function authorizeBasicPDP(req, res, next, resource = req.url) {
 
 // Use of Authzforce as a PDP (Policy Decision Point)
 // LEVEL 3: ADVANCED AUTHORIZATION - Resources are accessible via XACML Rules
+/* eslint-disable-next-line no-unused-vars */
 function authorizeAdvancedXACML(req, res, next, resource = req.url) {
     // Not implemented
     return next();

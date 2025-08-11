@@ -46,7 +46,10 @@ function createAttribute(entityId, body, headers = {}) {
     })
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
-            return res.status(data.status).send(data.body);
+            if (data.status !== 201) {
+                throw new Error('', { cause: data.body });
+            }
+            return data.body;
         });
 }
 
@@ -55,12 +58,14 @@ function createAttribute(entityId, body, headers = {}) {
 function readAttribute(entityId, headers = {}) {
     return fetch(`${BASE_PATH}/entities/${entityId}/attrs`, {
         method: 'GET',
-        headers,
-        body
+        headers
     })
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
-            return res.status(data.status).send(data.body);
+            if (data.status !== 200) {
+                throw new Error('', { cause: data.body });
+            }
+            return data.body;
         });
 }
 
@@ -74,7 +79,10 @@ function updateAttribute(entityId, body, headers = {}) {
     })
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
-            return res.status(data.status).send(data.body);
+            if (data.status !== 204) {
+                throw new Error('', { cause: data.body });
+            }
+            return data.body;
         });
 }
 
@@ -83,12 +91,14 @@ function updateAttribute(entityId, body, headers = {}) {
 function deleteAttribute(entityId, headers = {}) {
     return fetch(`${BASE_PATH}/entities/${entityId}/attrs`, {
         method: 'DELETE',
-        headers,
-        body
+        headers
     })
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
-            return res.status(data.status).send(data.body);
+            if (data.status !== 204) {
+                throw new Error('', { cause: data.body });
+            }
+            return data.body;
         });
 }
 
@@ -102,7 +112,10 @@ function createEntity(entityId, type, body, headers = {}) {
     })
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
-            return res.status(data.status).send(data.body);
+            if (data.status !== 201) {
+                throw new Error('', { cause: data.body });
+            }
+            return data.body;
         });
 }
 
@@ -116,7 +129,10 @@ function updateEntity(entityId, body, headers = {}) {
     })
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
-            return res.status(data.status).send(data.body);
+            if (data.status !== 204) {
+                throw new Error('', { cause: data.body });
+            }
+            return data.body;
         });
 }
 
@@ -125,12 +141,14 @@ function updateEntity(entityId, body, headers = {}) {
 function deleteEntity(entityId, headers = {}) {
     return fetch(`${BASE_PATH}/entities/${entityId}`, {
         method: 'DELETE',
-        headers,
-        body
+        headers
     })
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
-            return res.status(data.status).send(data.body);
+            if (data.status !== 204) {
+                throw new Error('', { cause: data.body });
+            }
+            return data.body;
         });
 }
 
@@ -139,12 +157,14 @@ function deleteEntity(entityId, headers = {}) {
 function readEntity(entityId, opts, headers = {}) {
     return fetch(`${BASE_PATH}/entities/${entityId}/?${new URLSearchParams(opts)}`, {
         method: 'GET',
-        headers,
-        body
+        headers
     })
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
-            return res.status(data.status).send(data.body);
+            if (data.status !== 200) {
+                throw new Error('', { cause: data.body });
+            }
+            return data.body;
         });
 }
 
@@ -153,12 +173,14 @@ function readEntity(entityId, opts, headers = {}) {
 function listEntities(opts, headers = {}) {
     return fetch(`${BASE_PATH}/entities/?${new URLSearchParams(opts)}`, {
         method: 'GET',
-        headers,
-        body
+        headers
     })
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
-            return res.status(data.status).send(data.body);
+            if (data.status !== 200) {
+                throw new Error(data.body);
+            }
+            return data.body;
         });
 }
 

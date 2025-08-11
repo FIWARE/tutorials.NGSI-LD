@@ -1,4 +1,4 @@
-const debug = require('debug')('tutorial:ngsi-ld');
+const debug = require('debug')('tutorial:device');
 const monitor = require('../../lib/monitoring');
 const ngsiLD = require('../../lib/ngsi-ld');
 const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context.jsonld';

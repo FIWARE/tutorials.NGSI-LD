@@ -4,7 +4,7 @@
 // necessary HTTP calls and responds with success or failure.
 //
 
-const debug = require('debug')('tutorial:ngsi-ld');
+const debug = require('debug')('tutorial:farm');
 const monitor = require('../../lib/monitoring');
 const ngsiLD = require('../../lib/ngsi-ld');
 const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context.jsonld';
@@ -54,14 +54,12 @@ async function displayFarm(req, res) {
         building.mapUrl = mapTileUrl(15, building.location);
         return res.render('building', { title: building.name, building });
     } catch (error) {
-        const errorDetail = error.error;
-        debug(errorDetail);
-        // If no animal has been found, display an error screen
+        // If no farm has been found, display an error screen
         return res.render('error', {
-            title: `Error: ${errorDetail.title}`,
-            message: errorDetail.detail,
+            title: `Error: ${error.cause.title}`,
+            message: error.cause.detail,
             error: {
-                stack: errorDetail.title
+                stack: error.cause.title
             }
         });
     }

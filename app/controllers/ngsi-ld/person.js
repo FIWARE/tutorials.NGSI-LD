@@ -1,4 +1,4 @@
-const debug = require('debug')('tutorial:ngsi-ld');
+const debug = require('debug')('tutorial:person');
 const monitor = require('../../lib/monitoring');
 const ngsiLD = require('../../lib/ngsi-ld');
 const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context.jsonld';
@@ -26,14 +26,11 @@ async function displayPerson(req, res) {
         );
         return res.render('person', { title: person.name, person });
     } catch (error) {
-        const errorDetail = error.error;
-        debug(errorDetail);
-        // If no animal has been found, display an error screen
         return res.render('error', {
-            title: `Error: ${errorDetail.title}`,
-            message: errorDetail.detail,
+            title: `Error: ${error.cause.title}`,
+            message: error.cause.detail,
             error: {
-                stack: errorDetail.title
+                stack: error.cause.title
             }
         });
     }

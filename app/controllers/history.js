@@ -2,10 +2,7 @@ const moment = require('moment');
 const _ = require('lodash');
 const debug = require('debug')('tutorial:history');
 
-const cometUrl = (process.env.STH_COMET_SERVICE_URL || 'http://localhost:8666/STH/v1') + '/contextEntities/type/';
 const crateUrl = process.env.CRATE_DB_SERVICE_URL || 'http://localhost:4200/_sql';
-
-const nsgiLdPrefix = process.env.NGSI_LD_PREFIX !== undefined ? process.env.NGSI_LD_PREFIX : 'urn:ngsi-ld:';
 
 function readCrateMotionCount(id, aggMethod) {
     debug('readCrateMotionCount');

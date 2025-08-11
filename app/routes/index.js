@@ -20,7 +20,6 @@ const debug = require('debug')('tutorial:ngsi-ld');
 
 const TRANSPORT = process.env.DUMMY_DEVICES_TRANSPORT || 'HTTP';
 const DEVICE_PAYLOAD = process.env.DUMMY_DEVICES_PAYLOAD || 'ultralight';
-const GIT_COMMIT = process.env.GIT_COMMIT || 'unknown';
 const SECURE_ENDPOINTS = process.env.SECURE_ENDPOINTS || false;
 const ENTITY_LIMIT = process.env.ENTITY_LIMIT || 200;
 //const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
@@ -56,6 +55,7 @@ router.get('/', async function (req, res) {
 
     const headers = ngsiLD.setHeaders(req.session.access_token, LinkHeader);
     try {
+        monitor('NGSI', 'listEntities ?type=Building');
         const buildings = await ngsiLD.listEntities(
             {
                 type: 'Building',
@@ -65,6 +65,7 @@ router.get('/', async function (req, res) {
             },
             headers
         );
+        monitor('NGSI', 'listEntities ?type=Animal');
         const animals = await ngsiLD.listEntities(
             {
                 type: 'Animal',
@@ -74,6 +75,7 @@ router.get('/', async function (req, res) {
             },
             headers
         );
+        monitor('NGSI', 'listEntities ?type=AgriParcel');
         const parcels = await ngsiLD.listEntities(
             {
                 type: 'AgriParcel',
@@ -84,9 +86,10 @@ router.get('/', async function (req, res) {
             headers
         );
 
+        monitor('NGSI', 'listEntities ?type=Device');
         const devices = await ngsiLD.listEntities(
             {
-                type: 'Devices',
+                type: 'Device',
                 options: 'concise',
                 attrs: 'name',
                 limit: ENTITY_LIMIT

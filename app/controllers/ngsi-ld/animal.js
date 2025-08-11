@@ -1,4 +1,4 @@
-const debug = require('debug')('tutorial:ngsi-ld');
+const debug = require('debug')('tutorial:animal');
 const monitor = require('../../lib/monitoring');
 const ngsiLD = require('../../lib/ngsi-ld');
 const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context.jsonld';
@@ -11,6 +11,7 @@ async function getAnimals(req, res) {
 
     const headers = ngsiLD.setHeaders(req.session.access_token, LinkHeader);
     headers.Accept = 'application/geo+json';
+    monitor('NGSI', 'listEntities ?type=Animal');
     const animals = await ngsiLD.listEntities(
         {
             type: 'Animal',
@@ -59,27 +60,16 @@ async function displayAnimal(req, res) {
         if (imgId < 100) {
             imgId = `00${imgId % 10}`;
         }
-
-        //console.log(imgId);
-        //animal.img=)
-
         return res.render('animal', { title: animal.name, animal, imgId });
     } catch (error) {
-        const errorDetail = error.error;
-        debug(errorDetail);
         // If no animal has been found, display an error screen
-        return res.render(
-            'error',
-            errorDetail
-                ? {
-                      title: `Error: ${errorDetail.title}`,
-                      message: errorDetail.detail,
-                      error: {
-                          stack: errorDetail.title
-                      }
-                  }
-                : {}
-        );
+        return res.render('error', {
+            title: `Error: ${error.cause.title}`,
+            message: error.cause.detail,
+            error: {
+                stack: error.cause.title
+            }
+        });
     }
 }
 
