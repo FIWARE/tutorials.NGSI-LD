@@ -366,7 +366,7 @@ To read the data in NGSI-LD format, make an NGSI-LD request via the Lepus adapto
 ```console
 curl -G -X GET \
   'http://localhost:3005/ngsi-ld/v1/entities/urn:ngsi-ld:Store:001' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json' \
+-H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/ld+json'
 ```
 
@@ -506,7 +506,7 @@ This NGSI-LD **ContextSourceRegistration** example informs the NGSI-LD context b
 
 ```console
 curl -L 'http://localhost:1026/ngsi-ld/v1/csourceRegistrations/' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json' \
+-H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Content-Type: application/json' \
 -d '{
     "type": "ContextSourceRegistration",
@@ -541,7 +541,7 @@ NGSI-LD FMIS system:
 
 ```console
 curl -L 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Store:001' \
--H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json'
+-H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 ```
 
 #### Response:
@@ -641,7 +641,7 @@ In the example below, the **Building** entity `urn:ngsi-ld:Store:001` is request
 ```console
 curl -G -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Store:001' \
--H 'Link: <http://context/alternate-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json'
+-H 'Link: <http://context/alternate-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 ```
 
 #### Response:
