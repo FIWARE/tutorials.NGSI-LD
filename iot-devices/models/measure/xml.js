@@ -79,7 +79,7 @@ class XMLMeasure {
       headers: this.headers,
       body: payload,
     }).catch((e) => {
-      debug(debugText + ' ' + error.code);
+      debug(debugText + ' ' + e.code);
     });
   }
 

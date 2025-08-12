@@ -35,35 +35,8 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # the repository and replace the whole RUN statement below by the following COPY statement 
 # in your local source using :
 #
-# COPY ./app /opt/iot-devices
+COPY . /opt/iot-devices
 #
-
-# hadolint ignore=DL3008
-RUN \
-  # Ensure that unzip is installed prior to downloading
-  apt-get install -y --no-install-recommends unzip && \
-  if [ "${DOWNLOAD}" = "latest" ] ; \
-  then \
-    RELEASE="${SOURCE_BRANCH}"; \
-    echo "INFO: Building Latest Development from ${SOURCE_BRANCH} branch."; \
-  elif [ "${DOWNLOAD}" = "stable" ]; \
-  then \
-    RELEASE=$(curl -s https://api.github.com/repos/"${GITHUB_ACCOUNT}"/"${GITHUB_REPOSITORY}"/releases/latest | grep 'tag_name' | cut -d\" -f4); \
-    echo "INFO: Building Latest Stable Release: ${RELEASE}"; \
-  else \
-    RELEASE="${DOWNLOAD}"; \
-    echo "INFO: Building Release: ${RELEASE}"; \
-  fi && \
-  RELEASE_CONCAT=$(echo "${RELEASE}" | tr / -); \
-  curl -s -L https://github.com/"${GITHUB_ACCOUNT}"/"${GITHUB_REPOSITORY}"/archive/"${RELEASE}".zip > source.zip && \
-  unzip -qq source.zip -x "*/docs/**" "*/.*" && \
-  rm source.zip && \
-  mv "${GITHUB_REPOSITORY}-${RELEASE_CONCAT}/iot-devices" /opt/iot-devices && \
-  # Remove unzip and clean apt cache
-  apt-get clean && \
-  apt-get remove -y unzip && \
-  apt-get -y autoremove && \
-  rm -rf /var/lib/apt/lists/* 
 
 WORKDIR /opt/iot-devices
 

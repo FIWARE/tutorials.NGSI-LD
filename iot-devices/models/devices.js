@@ -3,13 +3,14 @@
 // The internal state is maintained using the Ultralight protocol
 //
 
-const NodeCache = require('node-cache');
-const myCache = new NodeCache();
+const myCache = require('../lib/cache');
 const _ = require('lodash');
 
 const debug = require('debug')('devices:devices');
 const Northbound = require('../controllers/iot/northbound');
 const Emitter = require('../lib/emitter');
+const os = require('os');
+const clusterWorkerSize = os.cpus().length;
 
 // A series of constants used by our set of devices
 
@@ -110,7 +111,6 @@ function getStatusCode(status) {
 // Change the state of a dummy IoT device based on the command received.
 function actuateDevice(deviceId, command) {
   debug('actuateDevice: ' + deviceId + ' ' + command);
-  let state;
   switch (deviceId.replace(/\d/g, '')) {
     case 'water':
       if (command === 'on') {
@@ -122,14 +122,15 @@ function actuateDevice(deviceId, command) {
       }
       break;
     case 'tractor':
-      state = getDeviceState(deviceId);
-      if (command === 'start') {
-        state.d = 'MOVING';
-      } else if (command === 'stop') {
-        state.d = 'IDLE';
-      }
-      state.s = getStatusCode(state.d);
-      setDeviceState(deviceId, toUltraLight(state));
+      getDeviceState(deviceId).then((state) => {
+        if (command === 'start') {
+          state.d = 'MOVING';
+        } else if (command === 'stop') {
+          state.d = 'IDLE';
+        }
+        state.s = getStatusCode(state.d);
+        setDeviceState(deviceId, toUltraLight(state));
+      });
       break;
     case 'filling':
       if (command === 'refill') {
@@ -170,8 +171,11 @@ function initDevices() {
   if (autoMoveTractors > 0) {
     tractorsEmitting = setInterval(changeTractorState, autoMoveTractors);
   }
-  animalsEmitting = setInterval(activateAnimalCollars, 5000);
-  devicesEmitting = setInterval(activateDevices, 3000);
+  animalsEmitting = setInterval(
+    activateAnimalCollars,
+    5000 * clusterWorkerSize
+  );
+  devicesEmitting = setInterval(activateDevices, 3000 * clusterWorkerSize);
   myCache.set('barn', 'door-open');
   Emitter.emit('barn', 'door-open');
 }
@@ -197,69 +201,83 @@ let isTractorActive = false;
 let isDevicesActive = false;
 let devicesInitialized = false;
 
-for (let i = 1; i <= numberOfPigs; i++) {
-  const lng = addAndTrim(13.356 + 0.0004 * getRandom(-10), true);
-  const lat = addAndTrim(52.515 + 0.0003 * getRandom(-10), true);
-  myCache.set(
-    'pig' + i.toString().padStart(3, '0'),
-    PIG_IDLE + '|bpm|60|gps|' + lng + ',' + lat
-  );
-}
-for (let i = 1; i <= numberOfCows; i++) {
-  const lng = addAndTrim(13.41 + 0.0003 * getRandom(-10), true);
-  const lat = addAndTrim(52.471 + 0.0004 * getRandom(-10), true);
-  myCache.set(
-    'cow' + i.toString().padStart(3, '0'),
-    COW_IDLE + '|bpm|50|gps|' + lng + ',' + lat
-  );
-}
+myCache.init().then(() => {
+  for (let i = 1; i <= numberOfPigs; i++) {
+    const lng = addAndTrim(13.356 + 0.0004 * getRandom(-10), true);
+    const lat = addAndTrim(52.515 + 0.0003 * getRandom(-10), true);
+    myCache.set(
+      'pig' + i.toString().padStart(3, '0'),
+      PIG_IDLE + '|bpm|60|gps|' + lng + ',' + lat
+    );
+  }
+  for (let i = 1; i <= numberOfCows; i++) {
+    const lng = addAndTrim(13.41 + 0.0003 * getRandom(-10), true);
+    const lat = addAndTrim(52.471 + 0.0004 * getRandom(-10), true);
+    myCache.set(
+      'cow' + i.toString().padStart(3, '0'),
+      COW_IDLE + '|bpm|50|gps|' + lng + ',' + lat
+    );
+  }
 
-myCache.set('water001', WATER_OFF, false);
-myCache.set('water002', WATER_OFF, false);
-myCache.set('water003', WATER_OFF, false);
-myCache.set('water004', WATER_OFF, false);
+  myCache.set('water001', WATER_OFF, false);
+  myCache.set('water002', WATER_OFF, false);
+  myCache.set('water003', WATER_OFF, false);
+  myCache.set('water004', WATER_OFF, false);
 
-myCache.set('tractor001', TRACTOR_IDLE + '|gps|13.3505, 52.5144');
-myCache.set('tractor002', TRACTOR_IDLE + '|gps|13.3698, 52.5163');
-myCache.set('tractor003', TRACTOR_IDLE + '|gps|13.3598, 52.5165');
-myCache.set('tractor004', TRACTOR_IDLE + '|gps|13.3127, 52.4893');
+  myCache.set('tractor001', TRACTOR_IDLE + '|gps|13.3505, 52.5144');
+  myCache.set('tractor002', TRACTOR_IDLE + '|gps|13.3698, 52.5163');
+  myCache.set('tractor003', TRACTOR_IDLE + '|gps|13.3598, 52.5165');
+  myCache.set('tractor004', TRACTOR_IDLE + '|gps|13.3127, 52.4893');
 
-myCache.set('targetTractor001', 'x|0|y|1');
-myCache.set('targetTractor002', 'x|1|y|0');
-myCache.set('targetTractor003', 'x|-1|y|0');
-myCache.set('targetTractor004', 'x|0|y|-1');
+  myCache.set('targetTractor001', 'x|0|y|1');
+  myCache.set('targetTractor002', 'x|1|y|0');
+  myCache.set('targetTractor003', 'x|-1|y|0');
+  myCache.set('targetTractor004', 'x|0|y|-1');
 
-for (let i = 1; i < numberOfSoilSensors; i++) {
-  myCache.set('humidity' + i.toString().padStart(3, '0'), HUMIDITY_WET);
-}
+  for (let i = 1; i < numberOfSoilSensors; i++) {
+    myCache.set('humidity' + i.toString().padStart(3, '0'), HUMIDITY_WET);
+  }
 
-myCache.set('temperature001', DEFAULT_TEMPERATURE);
-myCache.set('temperature002', DEFAULT_TEMPERATURE);
-myCache.set('temperature003', DEFAULT_TEMPERATURE);
-myCache.set('temperature004', DEFAULT_TEMPERATURE);
+  myCache.set('temperature001', DEFAULT_TEMPERATURE);
+  myCache.set('temperature002', DEFAULT_TEMPERATURE);
+  myCache.set('temperature003', DEFAULT_TEMPERATURE);
+  myCache.set('temperature004', DEFAULT_TEMPERATURE);
 
-myCache.set('targetTemp001', DEFAULT_TEMPERATURE);
-myCache.set('targetTemp002', DEFAULT_TEMPERATURE);
-myCache.set('targetTemp003', DEFAULT_TEMPERATURE);
-myCache.set('targetTemp004', DEFAULT_TEMPERATURE);
+  myCache.set('targetTemp001', DEFAULT_TEMPERATURE);
+  myCache.set('targetTemp002', DEFAULT_TEMPERATURE);
+  myCache.set('targetTemp003', DEFAULT_TEMPERATURE);
+  myCache.set('targetTemp004', DEFAULT_TEMPERATURE);
 
-myCache.set('filling001', FILLING_STATION_FULL);
-myCache.set('filling002', FILLING_STATION_FULL);
-myCache.set('filling003', FILLING_STATION_FULL);
-myCache.set('filling004', FILLING_STATION_EMPTY);
+  myCache.set('filling001', FILLING_STATION_FULL);
+  myCache.set('filling002', FILLING_STATION_FULL);
+  myCache.set('filling003', FILLING_STATION_FULL);
+  myCache.set('filling004', FILLING_STATION_EMPTY);
 
-myCache.set('barn', 'door-locked');
-myCache.set('weather', 'cloudy');
+  myCache.set('barn', 'door-locked');
+  myCache.set('weather', 'cloudy');
+});
 
 function emitWeatherConditions() {
   if (Emitter) {
-    Emitter.emit('weather', myCache.get('weather'));
-    Emitter.emit('barn', myCache.get('barn'));
+    myCache.get('weather').then((state) => {
+      Emitter.emit('weather', state);
+    });
+    myCache.get('barn').then((state) => {
+      Emitter.emit('barn', state);
+    });
   }
 }
 
-// Update the state of a tractor
 function changeTractorState() {
+  myCache.get('barn').then((state) => {
+    if (state === 'door-open') {
+      sendTractorReadings();
+    }
+  });
+}
+
+// Update the state of a tractor
+function sendTractorReadings() {
   if (isTractorActive || autoMoveTractors < 0) {
     return;
   }
@@ -268,21 +286,22 @@ function changeTractorState() {
   const deviceIds = myCache.keys();
 
   _.forEach(deviceIds, (deviceId) => {
-    const state = getDeviceState(deviceId);
-    const isSensor = true;
+    getDeviceState(deviceId).then((state) => {
+      const isSensor = true;
 
-    switch (deviceId.replace(/\d/g, '')) {
-      case 'tractor':
-        //  The tractor is IDLE, MOVING or SOWING
-        if (state.d !== 'IDLE') {
-          const rate =
-            getTractorState(deviceId, 'tractor') === 'MOVING' ? 3 : 6;
-          state.d = getRandom() > rate ? 'MOVING' : 'SOWING';
-        }
-        state.s = getStatusCode(state.d);
-        setDeviceState(deviceId, toUltraLight(state), isSensor);
-        break;
-    }
+      switch (deviceId.replace(/\d/g, '')) {
+        case 'tractor':
+          //  The tractor is IDLE, MOVING or SOWING
+          if (state.d !== 'IDLE') {
+            const rate =
+              getTractorState(deviceId, 'tractor') === 'MOVING' ? 3 : 6;
+            state.d = getRandom() > rate ? 'MOVING' : 'SOWING';
+          }
+          state.s = getStatusCode(state.d);
+          setDeviceState(deviceId, toUltraLight(state), isSensor);
+          break;
+      }
+    });
   });
   isTractorActive = false;
 }
@@ -329,78 +348,97 @@ function randomWalk(state, deviceId, lng, lat) {
 }
 
 function activateAnimalCollars() {
+  myCache.get('barn').then((state) => {
+    if (state === 'door-open') {
+      sendAnimalCollarReadings();
+    }
+  });
+}
+
+function sendAnimalCollarReadings() {
   isDevicesActive = true;
 
   const deviceIds = myCache.keys();
 
   _.forEach(deviceIds, (deviceId) => {
-    const state = getDeviceState(deviceId);
-    const isSensor = true;
-    let targetRate;
+    getDeviceState(deviceId).then((state) => {
+      const isSensor = true;
+      let targetRate;
 
-    switch (deviceId.replace(/\d/g, '')) {
-      case 'pig':
-        targetRate =
-          PIG_HEART_RATE + 2 * OFFSET_RATE[state.d] + (getRandom() % 4);
-
-        if (targetRate > state.bpm) {
-          state.bpm++;
-        } else if (targetRate < state.bpm) {
-          state.bpm--;
-        }
-        if (state.d === 'AT_REST') {
-          if (getRandom() * getRandom() > 63) {
-            state.d = PIG_STATE[getRandom() % 6];
-          }
-        } else {
-          randomWalk(state, deviceId, 13.356, 52.515);
-          if (getRandom() > 7) {
-            state.d = getRandom() > 3 ? PIG_STATE[getRandom() % 6] : 'AT_REST';
-          }
-        }
-        state.s = getStatusCode(state.d);
-        if (animalsEmitting) {
-          setDeviceState(deviceId, toUltraLight(state), isSensor);
-        }
-        break;
-      case 'cow':
-        targetRate =
-          COW_HEART_RATE + 2 * OFFSET_RATE[state.d] + (getRandom() % 4);
-        if (lactatingAnimalIds.includes(deviceId)) {
+      switch (deviceId.replace(/\d/g, '')) {
+        case 'pig':
           targetRate =
-            ABNORMAL_COW_HEART_RATE +
-            2 * OFFSET_RATE[state.d] +
-            (getRandom() % 4);
-        }
-        if (targetRate > state.bpm) {
-          state.bpm++;
-        } else if (targetRate < state.bpm) {
-          state.bpm--;
-        }
-        if (state.d === 'AT_REST') {
-          if (getRandom() * getRandom() > 80) {
-            state.d = COW_STATE[getRandom() % 6];
+            PIG_HEART_RATE + 2 * OFFSET_RATE[state.d] + (getRandom() % 4);
+
+          if (targetRate > state.bpm) {
+            state.bpm++;
+          } else if (targetRate < state.bpm) {
+            state.bpm--;
           }
-        } else {
-          randomWalk(state, deviceId, 13.41, 52.471);
-          if (getRandom() > 8) {
-            state.d = getRandom() > 7 ? COW_STATE[getRandom() % 6] : 'GRAZING';
+          if (state.d === 'AT_REST') {
+            if (getRandom() * getRandom() > 63) {
+              state.d = PIG_STATE[getRandom() % 6];
+            }
+          } else {
+            randomWalk(state, deviceId, 13.356, 52.515);
+            if (getRandom() > 7) {
+              state.d =
+                getRandom() > 3 ? PIG_STATE[getRandom() % 6] : 'AT_REST';
+            }
           }
-        }
-        state.s = getStatusCode(state.d);
-        if (animalsEmitting) {
-          setDeviceState(deviceId, toUltraLight(state), isSensor);
-        }
-        break;
-      default:
-        break;
-    }
+          state.s = getStatusCode(state.d);
+          if (animalsEmitting) {
+            setDeviceState(deviceId, toUltraLight(state), isSensor);
+          }
+          break;
+        case 'cow':
+          targetRate =
+            COW_HEART_RATE + 2 * OFFSET_RATE[state.d] + (getRandom() % 4);
+          if (lactatingAnimalIds.includes(deviceId)) {
+            targetRate =
+              ABNORMAL_COW_HEART_RATE +
+              2 * OFFSET_RATE[state.d] +
+              (getRandom() % 4);
+          }
+          if (targetRate > state.bpm) {
+            state.bpm++;
+          } else if (targetRate < state.bpm) {
+            state.bpm--;
+          }
+          if (state.d === 'AT_REST') {
+            if (getRandom() * getRandom() > 80) {
+              state.d = COW_STATE[getRandom() % 6];
+            }
+          } else {
+            randomWalk(state, deviceId, 13.41, 52.471);
+            if (getRandom() > 8) {
+              state.d =
+                getRandom() > 7 ? COW_STATE[getRandom() % 6] : 'GRAZING';
+            }
+          }
+          state.s = getStatusCode(state.d);
+          if (animalsEmitting) {
+            setDeviceState(deviceId, toUltraLight(state), isSensor);
+          }
+          break;
+        default:
+          break;
+      }
+    });
   });
   isDevicesActive = false;
 }
 
-// Update state of Sensors
 function activateDevices() {
+  myCache.get('barn').then((state) => {
+    if (state === 'door-open') {
+      sendDeviceReadings();
+    }
+  });
+}
+
+// Update state of Sensors
+function sendDeviceReadings() {
   if (isDevicesActive) {
     return;
   }
@@ -411,114 +449,120 @@ function activateDevices() {
   const weather = myCache.get('weather');
 
   _.forEach(deviceIds, (deviceId) => {
-    const state = getDeviceState(deviceId);
-    const isSensor = true;
-    let humid;
-    let isDry;
-    let target;
-    let targetTemp;
-    let location;
+    getDeviceState(deviceId).then((state) => {
+      const isSensor = true;
+      let humid;
+      let isDry;
+      let targetTemp;
+      let location;
 
-    switch (deviceId.replace(/\d/g, '')) {
-      case 'humidity':
-        humid = parseInt(state.h);
-        isDry = weather === 'sunny' ? getRandom() > 5 : getRandom() > 7;
+      switch (deviceId.replace(/\d/g, '')) {
+        case 'humidity':
+          humid = parseInt(state.h);
+          isDry = weather === 'sunny' ? getRandom() > 5 : getRandom() > 7;
 
-        // If the water is ON, randomly increase the soil humidity.
-        if (
-          weather === 'raining' ||
-          getWaterState(deviceId, 'humidity') === 'ON'
-        ) {
-          state.h = humid + (getRandom() % 3);
-        } else if (isDry && humid > 50) {
-          state.h = humid - (getRandom() % 3);
-        } else if (isDry && humid > 30) {
-          state.h = humid - 3 + (getRandom() % 4);
-        } else if (humid <= 30) {
-          state.h = humid + 3 - (getRandom() % 4);
-        }
-
-        if (state.h > 100) {
-          state.h = 100;
-        }
-        if (state.h < 0) {
-          state.h = 0;
-        }
-        if (devicesEmitting) {
-          setDeviceState(deviceId, toUltraLight(state), isSensor);
-        }
-        break;
-      case 'tractor':
-        target = getDeviceState(
-          'targetTractor' + deviceId.replace(/[a-zA-Z]/g, '')
-        );
-        location = state.gps.split(',');
-        state.y = parseFloat(location[0]);
-        state.x = parseFloat(location[1]);
-
-        if (state.d === 'SOWING') {
-          if (getRandom() > 9) {
-            state.y =
-              Math.round((state.y + 0.001 * parseInt(target.x)) * 1000) / 1000;
-            state.x =
-              Math.round((state.x + 0.001 * parseInt(target.y)) * 1000) / 1000;
+          // If the water is ON, randomly increase the soil humidity.
+          if (
+            weather === 'raining' ||
+            getWaterState(deviceId, 'humidity') === 'ON'
+          ) {
+            state.h = humid + (getRandom() % 3);
+          } else if (isDry && humid > 50) {
+            state.h = humid - (getRandom() % 3);
+          } else if (isDry && humid > 30) {
+            state.h = humid - 3 + (getRandom() % 4);
+          } else if (humid <= 30) {
+            state.h = humid + 3 - (getRandom() % 4);
           }
-        }
 
-        if (state.d === 'MOVING') {
-          state.x =
-            Math.round((state.x + parseInt(target.x) / 300) * 1000) / 1000;
-          state.y =
-            Math.round((state.y + parseInt(target.y) / 300) * 1000) / 1000;
-        }
+          if (state.h > 100) {
+            state.h = 100;
+          }
+          if (state.h < 0) {
+            state.h = 0;
+          }
+          if (devicesEmitting) {
+            setDeviceState(deviceId, toUltraLight(state), isSensor);
+          }
+          break;
+        case 'tractor':
+          getDeviceState(
+            'targetTractor' + deviceId.replace(/[a-zA-Z]/g, '')
+          ).then((target) => {
+            location = state.gps.split(',');
+            state.y = parseFloat(location[0]);
+            state.x = parseFloat(location[1]);
 
-        if (getRandom() > 9 && state.d === 'MOVING') {
-          state.d = 'SOWING';
-        } else if (getRandom() > 7 && state.d === 'SOWING') {
-          target.x = -target.x;
-          target.y = -target.y;
-          setDeviceState(
-            'targetTractor' + deviceId.replace(/[a-zA-Z]/g, ''),
-            toUltraLight(target),
-            false
+            if (state.d === 'SOWING') {
+              if (getRandom() > 9) {
+                state.y =
+                  Math.round((state.y + 0.001 * parseInt(target.x)) * 1000) /
+                  1000;
+                state.x =
+                  Math.round((state.x + 0.001 * parseInt(target.y)) * 1000) /
+                  1000;
+              }
+            }
+
+            if (state.d === 'MOVING') {
+              state.x =
+                Math.round((state.x + parseInt(target.x) / 300) * 1000) / 1000;
+              state.y =
+                Math.round((state.y + parseInt(target.y) / 300) * 1000) / 1000;
+            }
+
+            if (getRandom() > 9 && state.d === 'MOVING') {
+              state.d = 'SOWING';
+            } else if (getRandom() > 7 && state.d === 'SOWING') {
+              target.x = -target.x;
+              target.y = -target.y;
+              setDeviceState(
+                'targetTractor' + deviceId.replace(/[a-zA-Z]/g, ''),
+                toUltraLight(target),
+                false
+              );
+              state.y =
+                Math.round(
+                  (state.y + Math.abs(parseInt(target.x) / 1000)) * 1000
+                ) / 1000;
+              state.x =
+                Math.round(
+                  (state.x + Math.abs(parseInt(target.y) / 1000)) * 1000
+                ) / 1000;
+              state.d = 'MOVING';
+            }
+
+            state.s = getStatusCode(state.d);
+            state.gps = state.y + ',' + state.x;
+            delete state.y;
+            delete state.x;
+
+            if (autoMoveTractors < 0 && state.d === 'MOVING') {
+              autoMoveTractors = 10000;
+            }
+            if (autoMoveTractors > 0 && tractorsEmitting) {
+              setDeviceState(deviceId, toUltraLight(state), isSensor);
+            }
+          });
+          break;
+
+        case 'temperature':
+          getDeviceState('targetTemp' + deviceId.replace(/[a-zA-Z]/g, '')).then(
+            (target) => {
+              if (getRandom() > 7) {
+                targetTemp = parseInt(target.t);
+                if (state.t < targetTemp) {
+                  state.t++;
+                } else if (state.t > targetTemp) {
+                  state.t--;
+                }
+              }
+              setDeviceState(deviceId, toUltraLight(state), isSensor);
+            }
           );
-          state.y =
-            Math.round((state.y + Math.abs(parseInt(target.x) / 1000)) * 1000) /
-            1000;
-          state.x =
-            Math.round((state.x + Math.abs(parseInt(target.y) / 1000)) * 1000) /
-            1000;
-          state.d = 'MOVING';
-        }
-
-        state.s = getStatusCode(state.d);
-        state.gps = state.y + ',' + state.x;
-        delete state.y;
-        delete state.x;
-
-        if (autoMoveTractors < 0 && state.d === 'MOVING') {
-          autoMoveTractors = 10000;
-        }
-        if (autoMoveTractors > 0 && tractorsEmitting) {
-          setDeviceState(deviceId, toUltraLight(state), isSensor);
-        }
-        break;
-
-      case 'temperature':
-        target = getDeviceState(
-          'targetTemp' + deviceId.replace(/[a-zA-Z]/g, '')
-        );
-        if (getRandom() > 7) {
-          targetTemp = parseInt(target.t);
-          if (state.t < targetTemp) {
-            state.t++;
-          } else if (state.t > targetTemp) {
-            state.t--;
-          }
-        }
-        setDeviceState(deviceId, toUltraLight(state), isSensor);
-        break;
-    }
+          break;
+      }
+    });
   });
   isDevicesActive = false;
 }
@@ -532,13 +576,14 @@ function activateDevices() {
 // { s: 'ON', l: '1000'}
 //
 function getDeviceState(deviceId) {
-  const ultraLight = myCache.get(deviceId);
-  const obj = {};
-  const keyValuePairs = ultraLight.split('|');
-  for (let i = 0; i < keyValuePairs.length; i = i + 2) {
-    obj[keyValuePairs[i]] = keyValuePairs[i + 1];
-  }
-  return obj;
+  return myCache.get(deviceId).then((ultraLight) => {
+    const obj = {};
+    const keyValuePairs = ultraLight.split('|');
+    for (let i = 0; i < keyValuePairs.length; i = i + 2) {
+      obj[keyValuePairs[i]] = keyValuePairs[i + 1];
+    }
+    return obj;
+  });
 }
 //
 // Sets the device state in the in-memory cache. If the device is a sensor
@@ -579,22 +624,22 @@ function toUltraLight(object) {
 // Return the state of the tractor with the same number as the current element
 // this is because work will be done if the tractor is IDLE, and therefore
 // other devices will not update
-function getTractorState(deviceId, type) {
-  const tractor = getDeviceState(deviceId.replace(type, 'tractor'));
+async function getTractorState(deviceId, type) {
+  const tractor = await getDeviceState(deviceId.replace(type, 'tractor'));
   return tractor.d || 'IDLE';
 }
 
 // Return the state of the water sprinkler with the same number as the current element
 // this is because the humidity sensor is linked to the water sprinker (along with
 // the weather)
-function getWaterState(deviceId, type) {
-  const water = getDeviceState(deviceId.replace(type, 'water'));
+async function getWaterState(deviceId, type) {
+  const water = await getDeviceState(deviceId.replace(type, 'water'));
   return water.s || 'OFF';
 }
 
-function alterFilling(deviceId, raise) {
+async function alterFilling(deviceId, raise) {
   debug('alterFilling');
-  const state = getDeviceState(deviceId);
+  const state = await getDeviceState(deviceId);
   const fill = raise
     ? (getRandom() * getRandom()) / 1000
     : -(getRandom() * getRandom()) / 1000;
@@ -623,9 +668,9 @@ function fireWaterSprinkler(id) {
 
 // Indirectly alter the state of the temperature gauge
 // by raising or lowering the target temperature.
-function alterTemperature(id, raise) {
+async function alterTemperature(id, raise) {
   debug('alterTemperature');
-  const target = getDeviceState(id);
+  const target = await getDeviceState(id);
   target.t = raise ? parseInt(target.t) + 5 : parseInt(target.t) - 5;
   setDeviceState(id, toUltraLight(target), false);
 }
@@ -638,7 +683,7 @@ function alterWeather(newWeather) {
 
 // Check to see if a deviceId has a corresponding entry in the cache
 function notFound(deviceId) {
-  const deviceUnknown = _.indexOf(myCache.keys(), deviceId) === -1;
+  const deviceUnknown = myCache.exists(deviceId) === false;
   if (deviceUnknown) {
     debug('Unknown IoT device: ' + deviceId);
   }
@@ -654,18 +699,14 @@ function isUnknownCommand(device, command) {
   return invalid;
 }
 
-function toggleBarnDoor() {
-  return animalsEmitting ? 'door-locked' : 'door-open';
-}
-
-function barnDoor(status) {
-  if (status === 'door-locked') {
-    myCache.set('barn', 'door-locked');
-    stopDevices();
-  } else if (status === 'door-open') {
-    myCache.set('barn', 'door-open');
-    initDevices();
-  }
+function barnDoor() {
+  myCache.get('barn').then((status) => {
+    if (status === 'door-locked') {
+      initDevices();
+    } else if (status === 'door-open') {
+      stopDevices();
+    }
+  });
 }
 
 module.exports = {
@@ -676,5 +717,4 @@ module.exports = {
   notFound,
   isUnknownCommand,
   barnDoor,
-  toggleBarnDoor,
 };

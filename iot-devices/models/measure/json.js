@@ -77,7 +77,7 @@ class JSONMeasure {
       headers: this.headers,
       body: JSON.stringify(ultralightToJSON(state)),
     }).catch((e) => {
-      debug(debugText + ' ' + error.code);
+      debug(debugText + ' ' + e.code);
     });
   }
 
