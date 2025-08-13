@@ -125,7 +125,7 @@ function getTrustedIssuerHost(type, config) {
   }
 
   let host = null;
-  for (const item of config) {
+  for (const item of config.credentials) {
     if (type.includes(item.type)) {
       host = item.trustedIssuersLists[0];
       break;
