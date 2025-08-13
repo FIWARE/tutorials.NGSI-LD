@@ -169,13 +169,20 @@ function initDevices() {
   // Every few seconds, update the state of the dummy devices in a
   // semi-random fashion.
   if (autoMoveTractors > 0) {
-    tractorsEmitting = setInterval(changeTractorState, autoMoveTractors);
+    setTimeout(() => {
+      tractorsEmitting = setInterval(changeTractorState, autoMoveTractors);
+    }, 1600);
   }
-  animalsEmitting = setInterval(
-    activateAnimalCollars,
-    5000 * clusterWorkerSize
-  );
-  devicesEmitting = setInterval(activateDevices, 3000 * clusterWorkerSize);
+  setTimeout(() => {
+    animalsEmitting = setInterval(
+      activateAnimalCollars,
+      5000 * clusterWorkerSize
+    );
+  }, 1000);
+
+  setTimeout(() => {
+    devicesEmitting = setInterval(activateDevices, 3000 * clusterWorkerSize);
+  }, 400);
   myCache.set('barn', 'door-open');
   Emitter.emit('barn', 'door-open');
 }
