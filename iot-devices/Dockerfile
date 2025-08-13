@@ -35,7 +35,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # the repository and replace the whole RUN statement below by the following COPY statement 
 # in your local source using :
 #
-# COPY ./app /opt/iot-devices
+#COPY . /opt/iot-devices
 #
 
 # hadolint ignore=DL3008
@@ -64,6 +64,7 @@ RUN \
   apt-get remove -y unzip && \
   apt-get -y autoremove && \
   rm -rf /var/lib/apt/lists/* 
+
 
 WORKDIR /opt/iot-devices
 

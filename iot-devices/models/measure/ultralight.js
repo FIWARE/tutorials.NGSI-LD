@@ -68,7 +68,7 @@ class UltralightMeasure {
       headers: this.headers,
       body: state,
     }).catch((e) => {
-      debug(debugText + ' ' + error.code);
+      debug(debugText + ' ' + e.code);
     });
   }
 

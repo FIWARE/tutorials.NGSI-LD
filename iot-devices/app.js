@@ -49,13 +49,7 @@ iotRouter.get('/status', (req, res) => {
 });
 
 iotRouter.put('/barndoor', (req, res) => {
-  const newStatus = IoTDevices.toggleBarnDoor();
-  IoTDevices.barnDoor(newStatus);
-
-  /*if (clusterWorkerSize > 1){
-        process.send({device: 'barn', status: newStatus});
-    }*/
-
+  IoTDevices.barnDoor();
   res.status(204).send();
 });
 iotRouter.put('/weather', (req, res) => {
