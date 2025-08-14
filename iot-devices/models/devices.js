@@ -236,7 +236,7 @@ function emitOverallFarmStatus() {
   }
 }
 
-function fireTractorStatus() {
+function updateTractorStatus() {
   myCache.get('barn').then((state) => {
     if (state === 'door-open') {
       sendTractorReadings();
@@ -384,127 +384,129 @@ function sendAnimalCollarReadings() {
   });
 }
 
-function fireDevices() {
+function fireDevices(deviceType) {
   myCache.get('barn').then((state) => {
     if (state === 'door-open') {
-      sendDeviceReadings();
+      const deviceIds = myCache.keys();
+      _.forEach(deviceIds, (deviceId) => {
+        if (deviceId.replace(/\d/g, '') === deviceType) {
+          sendDeviceReading(deviceType, deviceId);
+        }
+      });
     }
   });
 }
 
 // Update state of Sensors
-function sendDeviceReadings() {
-  const deviceIds = myCache.keys();
+function sendDeviceReading(deviceType, deviceId) {
   const weather = myCache.get('weather');
 
-  _.forEach(deviceIds, (deviceId) => {
-    getDeviceState(deviceId).then((state) => {
-      const isSensor = true;
-      let humid;
-      let isDry;
-      let targetTemp;
-      let location;
+  getDeviceState(deviceId).then((state) => {
+    const isSensor = true;
+    let humid;
+    let isDry;
+    let targetTemp;
+    let location;
 
-      switch (deviceId.replace(/\d/g, '')) {
-        case 'humidity':
-          humid = parseInt(state.h);
-          isDry = weather === 'sunny' ? getRandom() > 5 : getRandom() > 7;
+    switch (deviceType) {
+      case 'humidity':
+        humid = parseInt(state.h);
+        isDry = weather === 'sunny' ? getRandom() > 5 : getRandom() > 7;
 
-          // If the water is ON, randomly increase the soil humidity.
-          if (
-            weather === 'raining' ||
-            getWaterState(deviceId, 'humidity') === 'ON'
-          ) {
-            state.h = humid + (getRandom() % 3);
-          } else if (isDry && humid > 50) {
-            state.h = humid - (getRandom() % 3);
-          } else if (isDry && humid > 30) {
-            state.h = humid - 3 + (getRandom() % 4);
-          } else if (humid <= 30) {
-            state.h = humid + 3 - (getRandom() % 4);
+        // If the water is ON, randomly increase the soil humidity.
+        if (
+          weather === 'raining' ||
+          getWaterState(deviceId, 'humidity') === 'ON'
+        ) {
+          state.h = humid + (getRandom() % 3);
+        } else if (isDry && humid > 50) {
+          state.h = humid - (getRandom() % 3);
+        } else if (isDry && humid > 30) {
+          state.h = humid - 3 + (getRandom() % 4);
+        } else if (humid <= 30) {
+          state.h = humid + 3 - (getRandom() % 4);
+        }
+
+        if (state.h > 100) {
+          state.h = 100;
+        }
+        if (state.h < 0) {
+          state.h = 0;
+        }
+        setDeviceState(deviceId, toUltraLight(state), isSensor);
+
+        break;
+      case 'tractor':
+        getDeviceState(
+          'targetTractor' + deviceId.replace(/[a-zA-Z]/g, '')
+        ).then((target) => {
+          location = state.gps.split(',');
+          state.y = parseFloat(location[0]);
+          state.x = parseFloat(location[1]);
+
+          if (state.d === 'SOWING') {
+            if (getRandom() > 9) {
+              state.y =
+                Math.round((state.y + 0.001 * parseInt(target.x)) * 1000) /
+                1000;
+              state.x =
+                Math.round((state.x + 0.001 * parseInt(target.y)) * 1000) /
+                1000;
+            }
           }
 
-          if (state.h > 100) {
-            state.h = 100;
+          if (state.d === 'MOVING') {
+            state.x =
+              Math.round((state.x + parseInt(target.x) / 300) * 1000) / 1000;
+            state.y =
+              Math.round((state.y + parseInt(target.y) / 300) * 1000) / 1000;
           }
-          if (state.h < 0) {
-            state.h = 0;
+
+          if (getRandom() > 9 && state.d === 'MOVING') {
+            state.d = 'SOWING';
+          } else if (getRandom() > 7 && state.d === 'SOWING') {
+            target.x = -target.x;
+            target.y = -target.y;
+            setDeviceState(
+              'targetTractor' + deviceId.replace(/[a-zA-Z]/g, ''),
+              toUltraLight(target),
+              false
+            );
+            state.y =
+              Math.round(
+                (state.y + Math.abs(parseInt(target.x) / 1000)) * 1000
+              ) / 1000;
+            state.x =
+              Math.round(
+                (state.x + Math.abs(parseInt(target.y) / 1000)) * 1000
+              ) / 1000;
+            state.d = 'MOVING';
           }
+
+          state.s = getStatusCode(state.d);
+          state.gps = state.y + ',' + state.x;
+          delete state.y;
+          delete state.x;
           setDeviceState(deviceId, toUltraLight(state), isSensor);
+        });
+        break;
 
-          break;
-        case 'tractor':
-          getDeviceState(
-            'targetTractor' + deviceId.replace(/[a-zA-Z]/g, '')
-          ).then((target) => {
-            location = state.gps.split(',');
-            state.y = parseFloat(location[0]);
-            state.x = parseFloat(location[1]);
-
-            if (state.d === 'SOWING') {
-              if (getRandom() > 9) {
-                state.y =
-                  Math.round((state.y + 0.001 * parseInt(target.x)) * 1000) /
-                  1000;
-                state.x =
-                  Math.round((state.x + 0.001 * parseInt(target.y)) * 1000) /
-                  1000;
+      case 'temperature':
+        getDeviceState('targetTemp' + deviceId.replace(/[a-zA-Z]/g, '')).then(
+          (target) => {
+            if (getRandom() > 7) {
+              targetTemp = parseInt(target.t);
+              if (state.t < targetTemp) {
+                state.t++;
+              } else if (state.t > targetTemp) {
+                state.t--;
               }
             }
-
-            if (state.d === 'MOVING') {
-              state.x =
-                Math.round((state.x + parseInt(target.x) / 300) * 1000) / 1000;
-              state.y =
-                Math.round((state.y + parseInt(target.y) / 300) * 1000) / 1000;
-            }
-
-            if (getRandom() > 9 && state.d === 'MOVING') {
-              state.d = 'SOWING';
-            } else if (getRandom() > 7 && state.d === 'SOWING') {
-              target.x = -target.x;
-              target.y = -target.y;
-              setDeviceState(
-                'targetTractor' + deviceId.replace(/[a-zA-Z]/g, ''),
-                toUltraLight(target),
-                false
-              );
-              state.y =
-                Math.round(
-                  (state.y + Math.abs(parseInt(target.x) / 1000)) * 1000
-                ) / 1000;
-              state.x =
-                Math.round(
-                  (state.x + Math.abs(parseInt(target.y) / 1000)) * 1000
-                ) / 1000;
-              state.d = 'MOVING';
-            }
-
-            state.s = getStatusCode(state.d);
-            state.gps = state.y + ',' + state.x;
-            delete state.y;
-            delete state.x;
             setDeviceState(deviceId, toUltraLight(state), isSensor);
-          });
-          break;
-
-        case 'temperature':
-          getDeviceState('targetTemp' + deviceId.replace(/[a-zA-Z]/g, '')).then(
-            (target) => {
-              if (getRandom() > 7) {
-                targetTemp = parseInt(target.t);
-                if (state.t < targetTemp) {
-                  state.t++;
-                } else if (state.t > targetTemp) {
-                  state.t--;
-                }
-              }
-              setDeviceState(deviceId, toUltraLight(state), isSensor);
-            }
-          );
-          break;
-      }
-    });
+          }
+        );
+        break;
+    }
   });
 }
 
@@ -654,7 +656,7 @@ module.exports = {
   barnDoor,
   fireDevices,
   fireAnimalCollars,
-  fireTractorStatus,
+  updateTractorStatus,
   emitOverallFarmStatus,
   initDevices,
 };

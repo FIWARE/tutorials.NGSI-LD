@@ -171,9 +171,9 @@ function alterWeather(action) {
     });
 }
 
-function fireDevices() {
-    return fetch(`${devices}/devices`, {
-        method: 'PUT'
+function fireDevices(type) {
+    return fetch(`${devices}/devices/${type}`, {
+        method: 'GET'
     }).catch((e) => {
         debug(e);
     });
@@ -181,7 +181,7 @@ function fireDevices() {
 
 function fireAnimalCollars() {
     return fetch(`${devices}/animals`, {
-        method: 'PUT'
+        method: 'GET'
     }).catch((e) => {
         debug(e);
     });
@@ -195,20 +195,28 @@ function fireOverallFarmStatus() {
     });
 }
 
-function fireTractors() {
-    return fetch(`${devices}/devices/tractors`, {
+function updateTractorStatus() {
+    return fetch(`${devices}/devices/tractor`, {
         method: 'PUT'
     }).catch((e) => {
         debug(e);
     });
 }
 
-setInterval(fireAnimalCollars, 5000);
-setInterval(fireDevices, 3000);
+setInterval(() => {
+    fireDevices('tractor');
+}, 3361);
+setInterval(fireAnimalCollars, 5099);
+setInterval(() => {
+    fireDevices('temperature');
+}, 7001);
 setInterval(fireOverallFarmStatus, 10000);
+setInterval(() => {
+    fireDevices('humidity');
+}, 8009);
 
 if (autoMoveTractors > 0) {
-    setInterval(fireTractors, autoMoveTractors);
+    setInterval(updateTractorStatus, autoMoveTractors);
 }
 
 // The temperature Gauge does not accept commands,

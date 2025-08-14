@@ -47,17 +47,17 @@ iotRouter.get('/status', (req, res) => {
   res.status(200).send();
 });
 
-iotRouter.put('/devices', (req, res) => {
-  IoTDevices.fireDevices();
+iotRouter.get('/devices/:type', (req, res) => {
+  IoTDevices.fireDevices(req.params.type);
   res.status(204).send();
 });
 
-iotRouter.put('/devices/tractors', (req, res) => {
-  IoTDevices.fireTractorStatus();
+iotRouter.put('/devices/tractor', (req, res) => {
+  IoTDevices.updateTractorStatus();
   res.status(204).send();
 });
 
-iotRouter.put('/animals', (req, res) => {
+iotRouter.get('/animals', (req, res) => {
   IoTDevices.fireAnimalCollars();
   res.status(204).send();
 });
