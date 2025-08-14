@@ -3,29 +3,15 @@ const os = require('os');
 const cluster = require('cluster');
 const PORT = process.env.DUMMY_DEVICES_PORT || 3001;
 const clusterWorkerSize = os.cpus().length;
-const IoTDevices = require('../models/devices');
 
 if (clusterWorkerSize > 1) {
   if (cluster.isMaster) {
     for (let i = 0; i < clusterWorkerSize; i++) {
-      const worker = cluster.fork();
-      worker.on('message', function (msg) {
-        if (msg.device === 'barn') {
-          IoTDevices.barnDoor(msg.status);
-          debug(`${msg.status} received`);
-        }
-      });
+      cluster.fork();
     }
     cluster.on('exit', function (worker) {
       debug('Worker', worker.id, ' has exited.');
-    });
-    cluster.on('message', function (x, msg) {
-      if (msg.device === 'barn') {
-        Object.keys(cluster.workers).forEach(function (id) {
-          debug('Worker', id, `sent ${msg.status}`);
-          cluster.workers[id].send(msg);
-        });
-      }
+      cluster.fork();
     });
   } else {
     // mount `exampleProxy` in web server

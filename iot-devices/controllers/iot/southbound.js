@@ -9,6 +9,7 @@ const UltralightCommand = require('../../models/command/ultralight');
 const JSONCommand = require('../../models/command/json');
 const XMLCommand = require('../../models/command/xml');
 const Emitter = require('../../lib/emitter');
+const IoTDevices = require('../../models/devices');
 
 const DEVICE_PAYLOAD = process.env.DUMMY_DEVICES_PAYLOAD || 'ultralight';
 
@@ -41,6 +42,7 @@ switch (DEVICE_PAYLOAD.toLowerCase()) {
 // The bell  is not a sensor - it will not report state northbound
 function tractorHttpCommand(req, res) {
   debug('tractorHttpCommand');
+  IoTDevices.initDevices();
   return Command.actuateTractor(req, res);
 }
 
@@ -49,12 +51,14 @@ function tractorHttpCommand(req, res) {
 // it can be opened and shut by external events.
 function waterHttpCommand(req, res) {
   debug('waterHttpCommand');
+  IoTDevices.initDevices();
   return Command.actuateWaterSprinkler(req, res);
 }
 
 // The filling can re-filled, or a proportion can be removed.
 function fillingHttpCommand(req, res) {
   debug('fillingHttpCommand');
+  IoTDevices.initDevices();
   return Command.actuateFillingStation(req, res);
 }
 
@@ -62,6 +66,7 @@ function fillingHttpCommand(req, res) {
 // cmd topics are consumed by the actuators (water sprinkler, tractor and fillingStation)
 function processMqttMessage(topic, message) {
   debug('processMqttMessage');
+  IoTDevices.initDevices();
   const mqttBrokerUrl = process.env.MQTT_BROKER_URL || 'mqtt://mosquitto';
   Emitter.emit('mqtt', mqttBrokerUrl + topic + '  ' + message);
   Command.processMqttMessage(topic, message);

@@ -5,8 +5,6 @@ const debug = require('debug')('devices:iot-device');
 const mqtt = require('mqtt');
 const logger = require('morgan');
 const IoTDevices = require('./models/devices');
-//const os = require("os")
-//const clusterWorkerSize = os.cpus().length
 
 /* global MQTT_CLIENT */
 const DEVICE_TRANSPORT = process.env.DUMMY_DEVICES_TRANSPORT || 'HTTP';
@@ -48,6 +46,21 @@ iotRouter.get('/status', (req, res) => {
   res.status(200).send();
 });
 
+iotRouter.put('/devices', (req, res) => {
+  IoTDevices.fireDevices();
+  res.status(204).send();
+});
+
+iotRouter.put('/devices/tractors', (req, res) => {
+  IoTDevices.fireTractorStatus();
+  res.status(204).send();
+});
+
+iotRouter.put('/animals', (req, res) => {
+  IoTDevices.fireAnimalCollars();
+  res.status(204).send();
+});
+
 iotRouter.put('/barndoor', (req, res) => {
   IoTDevices.barnDoor();
   res.status(204).send();
@@ -57,6 +70,7 @@ iotRouter.put('/weather', (req, res) => {
   res.status(204).send();
 });
 iotRouter.put('/temperature/:id', (req, res) => {
+  IoTDevices.initDevices();
   IoTDevices.alterTemperature(req.params.id, req.body.raise);
   res.status(204).send();
 });

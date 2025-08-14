@@ -17,6 +17,7 @@ const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
 const port = process.env.WEB_APP_PORT || '3000';
 const devicesPort = process.env.DUMMY_DEVICES_PORT || 3001;
 const devices = process.env.DUMMY_DEVICES || `http://localhost:${devicesPort}`;
+const autoMoveTractors = process.env.MOVE_TRACTOR || 10000;
 
 const dataModelContext =
     process.env.IOTA_JSON_LD_CONTEXT || 'http://localhost:' + port + '/data-models/ngsi-context.jsonld';
@@ -168,6 +169,37 @@ function alterWeather(action) {
     }).catch((e) => {
         debug(e);
     });
+}
+
+function fireDevices() {
+    return fetch(`${devices}/devices`, {
+        method: 'PUT'
+    }).catch((e) => {
+        debug(e);
+    });
+}
+
+function fireAnimalCollars() {
+    return fetch(`${devices}/animals`, {
+        method: 'PUT'
+    }).catch((e) => {
+        debug(e);
+    });
+}
+
+function fireTractors() {
+    return fetch(`${devices}/devices/tractors`, {
+        method: 'PUT'
+    }).catch((e) => {
+        debug(e);
+    });
+}
+
+setInterval(fireAnimalCollars, 5000);
+setInterval(fireDevices, 3000);
+
+if (autoMoveTractors > 0) {
+    setInterval(fireTractors, autoMoveTractors);
 }
 
 // The temperature Gauge does not accept commands,

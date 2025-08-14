@@ -9,8 +9,6 @@ const _ = require('lodash');
 const debug = require('debug')('devices:devices');
 const Northbound = require('../controllers/iot/northbound');
 const Emitter = require('../lib/emitter');
-const os = require('os');
-const clusterWorkerSize = os.cpus().length;
 
 // A series of constants used by our set of devices
 
@@ -69,11 +67,6 @@ const lactatingAnimalIds = process.env.LACTATING_ANIMAL
 const numberOfPigs = process.env.PIG_COUNT || 5;
 const numberOfCows = process.env.COW_COUNT || 5;
 const numberOfSoilSensors = process.env.SOIL_SENSOR_COUNT || 5;
-let autoMoveTractors = process.env.MOVE_TRACTOR || 10000;
-
-let animalsEmitting = null;
-let devicesEmitting = null;
-let tractorsEmitting = null;
 
 function getStatusCode(status) {
   let code = 0;
@@ -166,47 +159,18 @@ function actuateDevice(deviceId, command) {
 // The filling station will change level in response to add/remove c
 function initDevices() {
   debug('initDevices');
-  // Every few seconds, update the state of the dummy devices in a
-  // semi-random fashion.
-  if (autoMoveTractors > 0) {
-    setTimeout(() => {
-      tractorsEmitting = setInterval(changeTractorState, autoMoveTractors);
-    }, 1600);
-  }
-  setTimeout(() => {
-    animalsEmitting = setInterval(
-      activateAnimalCollars,
-      5000 * clusterWorkerSize
-    );
-  }, 1000);
-
-  setTimeout(() => {
-    devicesEmitting = setInterval(activateDevices, 3000 * clusterWorkerSize);
-  }, 400);
   myCache.set('barn', 'door-open');
   Emitter.emit('barn', 'door-open');
 }
 
 function stopDevices() {
   debug('stopDevices');
-  clearInterval(animalsEmitting);
-  animalsEmitting = null;
-  clearInterval(devicesEmitting);
-  devicesEmitting = null;
-  if (autoMoveTractors > 0) {
-    clearInterval(tractorsEmitting);
-    tractorsEmitting = null;
-  }
   myCache.set('barn', 'door-locked');
   Emitter.emit('barn', 'door-locked');
 }
 
 // Broadcast weather conditions
 setInterval(emitWeatherConditions, 10000);
-
-let isTractorActive = false;
-let isDevicesActive = false;
-let devicesInitialized = false;
 
 myCache.init().then(() => {
   for (let i = 1; i <= numberOfPigs; i++) {
@@ -275,7 +239,7 @@ function emitWeatherConditions() {
   }
 }
 
-function changeTractorState() {
+function fireTractorStatus() {
   myCache.get('barn').then((state) => {
     if (state === 'door-open') {
       sendTractorReadings();
@@ -285,11 +249,6 @@ function changeTractorState() {
 
 // Update the state of a tractor
 function sendTractorReadings() {
-  if (isTractorActive || autoMoveTractors < 0) {
-    return;
-  }
-
-  isTractorActive = true;
   const deviceIds = myCache.keys();
 
   _.forEach(deviceIds, (deviceId) => {
@@ -310,7 +269,6 @@ function sendTractorReadings() {
       }
     });
   });
-  isTractorActive = false;
 }
 
 function addAndTrim(value, add, weather) {
@@ -354,7 +312,7 @@ function randomWalk(state, deviceId, lng, lat) {
   state.gps = y + ',' + x;
 }
 
-function activateAnimalCollars() {
+function fireAnimalCollars() {
   myCache.get('barn').then((state) => {
     if (state === 'door-open') {
       sendAnimalCollarReadings();
@@ -363,8 +321,6 @@ function activateAnimalCollars() {
 }
 
 function sendAnimalCollarReadings() {
-  isDevicesActive = true;
-
   const deviceIds = myCache.keys();
 
   _.forEach(deviceIds, (deviceId) => {
@@ -394,9 +350,7 @@ function sendAnimalCollarReadings() {
             }
           }
           state.s = getStatusCode(state.d);
-          if (animalsEmitting) {
-            setDeviceState(deviceId, toUltraLight(state), isSensor);
-          }
+          setDeviceState(deviceId, toUltraLight(state), isSensor);
           break;
         case 'cow':
           targetRate =
@@ -424,19 +378,16 @@ function sendAnimalCollarReadings() {
             }
           }
           state.s = getStatusCode(state.d);
-          if (animalsEmitting) {
-            setDeviceState(deviceId, toUltraLight(state), isSensor);
-          }
+          setDeviceState(deviceId, toUltraLight(state), isSensor);
           break;
         default:
           break;
       }
     });
   });
-  isDevicesActive = false;
 }
 
-function activateDevices() {
+function fireDevices() {
   myCache.get('barn').then((state) => {
     if (state === 'door-open') {
       sendDeviceReadings();
@@ -446,12 +397,6 @@ function activateDevices() {
 
 // Update state of Sensors
 function sendDeviceReadings() {
-  if (isDevicesActive) {
-    return;
-  }
-
-  isDevicesActive = true;
-
   const deviceIds = myCache.keys();
   const weather = myCache.get('weather');
 
@@ -488,9 +433,8 @@ function sendDeviceReadings() {
           if (state.h < 0) {
             state.h = 0;
           }
-          if (devicesEmitting) {
-            setDeviceState(deviceId, toUltraLight(state), isSensor);
-          }
+          setDeviceState(deviceId, toUltraLight(state), isSensor);
+
           break;
         case 'tractor':
           getDeviceState(
@@ -543,13 +487,7 @@ function sendDeviceReadings() {
             state.gps = state.y + ',' + state.x;
             delete state.y;
             delete state.x;
-
-            if (autoMoveTractors < 0 && state.d === 'MOVING') {
-              autoMoveTractors = 10000;
-            }
-            if (autoMoveTractors > 0 && tractorsEmitting) {
-              setDeviceState(deviceId, toUltraLight(state), isSensor);
-            }
+            setDeviceState(deviceId, toUltraLight(state), isSensor);
           });
           break;
 
@@ -571,7 +509,6 @@ function sendDeviceReadings() {
       }
     });
   });
-  isDevicesActive = false;
 }
 
 //
@@ -600,12 +537,6 @@ function getDeviceState(deviceId) {
 function setDeviceState(deviceId, state, isSensor = true, force = false) {
   const previousState = myCache.get(deviceId);
   myCache.set(deviceId, state);
-
-  if (!devicesInitialized) {
-    initDevices();
-    devicesInitialized = true;
-  }
-
   // If we are running under HTTP mode the device will respond with a result
   // If we are running under MQTT mode the device will post the result as a topic
   if (isSensor && (state !== previousState || force)) {
@@ -724,4 +655,8 @@ module.exports = {
   notFound,
   isUnknownCommand,
   barnDoor,
+  fireDevices,
+  fireAnimalCollars,
+  fireTractorStatus,
+  initDevices,
 };
