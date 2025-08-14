@@ -225,7 +225,7 @@ myCache.init().then(() => {
   myCache.set('weather', 'cloudy');
 });
 
-function fireOverallFarmStatus() {
+function emitOverallFarmStatus() {
   if (Emitter) {
     myCache.get('weather').then((state) => {
       Emitter.emit('weather', state);
@@ -655,6 +655,6 @@ module.exports = {
   fireDevices,
   fireAnimalCollars,
   fireTractorStatus,
-  fireAppStatus,
+  emitOverallFarmStatus,
   initDevices,
 };
