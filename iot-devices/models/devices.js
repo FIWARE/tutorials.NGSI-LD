@@ -169,9 +169,6 @@ function stopDevices() {
   Emitter.emit('barn', 'door-locked');
 }
 
-// Broadcast weather conditions
-setInterval(emitWeatherConditions, 10000);
-
 myCache.init().then(() => {
   for (let i = 1; i <= numberOfPigs; i++) {
     const lng = addAndTrim(13.356 + 0.0004 * getRandom(-10), true);
@@ -228,7 +225,7 @@ myCache.init().then(() => {
   myCache.set('weather', 'cloudy');
 });
 
-function emitWeatherConditions() {
+function fireOverallFarmStatus() {
   if (Emitter) {
     myCache.get('weather').then((state) => {
       Emitter.emit('weather', state);
@@ -658,5 +655,6 @@ module.exports = {
   fireDevices,
   fireAnimalCollars,
   fireTractorStatus,
+  fireAppStatus,
   initDevices,
 };

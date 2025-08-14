@@ -43,6 +43,7 @@ if (DEVICE_TRANSPORT === 'HTTP') {
 }
 
 iotRouter.get('/status', (req, res) => {
+  IoTDevices.emitOverallFarmStatus();
   res.status(200).send();
 });
 

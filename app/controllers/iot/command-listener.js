@@ -187,6 +187,14 @@ function fireAnimalCollars() {
     });
 }
 
+function fireOverallFarmStatus() {
+    return fetch(`${devices}/status`, {
+        method: 'GET'
+    }).catch((e) => {
+        debug(e);
+    });
+}
+
 function fireTractors() {
     return fetch(`${devices}/devices/tractors`, {
         method: 'PUT'
@@ -197,6 +205,7 @@ function fireTractors() {
 
 setInterval(fireAnimalCollars, 5000);
 setInterval(fireDevices, 3000);
+setInterval(fireOverallFarmStatus, 10000);
 
 if (autoMoveTractors > 0) {
     setInterval(fireTractors, autoMoveTractors);
