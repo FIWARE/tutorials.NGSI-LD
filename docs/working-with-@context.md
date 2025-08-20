@@ -70,13 +70,13 @@ expansion and compaction algorithms.
 
 ## NGSI-LD Rules
 
-**NGSI-LD** is a formally structured _extended subset_ of **JSON-LD**. Therefore, **NGSI-LD** offers all the
+**NGSI-LD** is a formally structured _extended subset_ of **JSON-LD**. Therefore **NGSI-LD** offers all the
 interoperability and flexibility of **JSON-LD** itself. It also defines its own core `@context` which cannot be
 overridden for **NGSI-LD** operations. This means that **NGSI-LD** users agree to a common well-defined set of rules for
 structuring their data, and then supplement this with the rest of the **JSON-LD** specification.
 
 Whilst interacting directly with **NGSI-LD** interface of the context broker the additional **NGSI-LD** rules must be
-respected. However, after the data has been extracted it is possible to loosen this requirement and pass the results to
+respected. However after the data has been extracted it is possible to loosen this requirement and pass the results to
 third parties as **JSON-LD**.
 
 This tutorial is a simple introduction to the rules and restrictions behind **NGSI-LD** and will create some **NGSI-LD**
@@ -90,15 +90,15 @@ _key-value-pairs_ format is by definition not **NGSI-LD**.
 During content negotiation, **NGSI-LD** offers data in one of three formats, these effect the structure of the payload
 body.
 
--   `Accept: application/json` - the response is in **JSON** format.
--   `Accept: application/ld+json` - the response is in **JSON-LD** format.
--   `Accept: application/geo+json` - the response is in **GeoJSON** or **GeoJSON-LD** format.
+-   `Accept: application/json` - the response is in **JSON** format
+-   `Accept: application/ld+json` - the response is in **JSON-LD** format
+-   `Accept: application/geo+json` - the response is in **GeoJSON** or **GeoJSON-LD** format
 
 The major difference between **JSON** format and **JSON-LD** format, is that if **JSON-LD** format is chosen, then the
 `@context` is found as an additional attribute within the body of the response. If the **JSON** only format is used the
 `@context` is passed as an additional `Link` Header element and is not found in the response body.
 
-Similarly, when sending **NGSI-LD** data to the context broker, an application may choose to send a payload including an
+Similarly when sending **NGSI-LD** data to the context broker, an application may choose to send a payload including an
 additional `@context` attribute (in which case `Content-Type: application/ld+json`) or the application may send NGSI-LD
 data without an additional `@context` attribute (in which case `Content-Type: application/json` and the `Link` header
 must also be present).
@@ -120,19 +120,19 @@ Other Context Brokers such as Scorpio or Stello are using [Postgres](https://www
 
 To promote interoperability of data exchange, NGSI-LD context brokers explicitly expose a
 [JSON-LD `@context` file](https://json-ld.org/spec/latest/json-ld/#the-context) to define the data held within the
-context entities. This defines a unique URI for every entity type and every attribute so that other services outside the
-NGSI domain are able to pick and choose the names of their data structures. Every `@context` file must be available on
-the network. In our case, the tutorial application will be used to host a series of static files.
+context entities. This defines a unique URI for every entity type and every attribute so that other services outside of
+the NGSI domain are able to pick and choose the names of their data structures. Every `@context` file must be available
+on the network. In our case the tutorial application will be used to host a series of static files.
 
 Therefore, the architecture will consist of three elements:
 
 -   The [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests using
     [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
--   The underlying [MongoDB](https://www.mongodb.com/) database:
-    -   Used by the Orion Context Broker to hold context data information such as subscriptions, registrations and the
-        current state of data entities.
+-   The underlying [MongoDB](https://www.mongodb.com/) database :
+    -   Used by the Orion Context Broker to hold context data information such as data entities, subscriptions and
+        registrations
 -   An HTTP **Web-Server** which offers static `@context` files defining the context entities within the system.
--   The **Tutorial Application** does the following:
+-   The **Tutorial Application** (optional) does the following:
     -   Acts as set of dummy [agricultural IoT devices](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)
         using the
         [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
@@ -174,7 +174,6 @@ mongo-db:
         - "27017:27017"
     networks:
         - default
-    command: --nojournal
 ```
 
 ```yaml
@@ -257,13 +256,13 @@ The full data model description for a **Building** entity as used in this tutori
 [here](https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html#building) it is based on the standard Smart
 Data Models definition. A
 [Swagger Specification](https://petstore.swagger.io/?url=https://smart-data-models.github.io/dataModel.Building/Building/swagger.yaml)
-of the same model is also available, and would be used to generate code stubs in a full application.
+of the same model is also available, and would be use to generate code stubs in a full application.
 
 ### Checking the service health
 
 As usual, you can check if the Orion Context Broker is running by making an HTTP request to the exposed port:
 
-#### 1 Request:
+#### 1️⃣ Request:
 
 ```bash
 curl -X GET \
@@ -303,7 +302,7 @@ work with the requests defined below.
 New context data entities can be created by making a POST request to the `/ngsi-ld/v1/entities` endpoint and supply a
 `@context` along with structured **NGSI-LD** data.
 
-#### 2 Request:
+#### 2️⃣ Request:
 
 > **Note:** This entity is being created using the default **normalized** NGSI-LD format, which is the Gold Standard for
 > data exchange between context brokers. NGSI-LD supports two lossless data formats [normalized](ngsi-ld-operations.md)
@@ -324,8 +323,8 @@ New context data entities can be created by making a POST request to the `/ngsi-
 
 ```bash
 curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
--H 'Content-Type: application/ld+json' \
---data-raw '{
+  -H 'Content-Type: application/ld+json' \
+  -d '{
     "id": "urn:ngsi-ld:Building:farm001",
     "type": "Building",
     "category": {
@@ -382,15 +381,15 @@ This means that the actual `@context` is:
 with the core `@context` being processed **last** and therefore overriding any terms previously defined with the same
 `@id`.
 
-#### 3 Request:
+#### 3️⃣ Request:
 
 Each subsequent entity must have a unique `id` for the given `type`
 
 ```bash
 curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
--H 'Content-Type: application/json' \
--H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
--d '{
+  -H 'Content-Type: application/json' \
+  -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  -d '{
     "id": "urn:ngsi-ld:Building:barn002",
     "type": "Building",
     "category": {
@@ -477,13 +476,13 @@ This example returns the data of all `Building` entities within the context data
 NGSI-LD and is used to filter the response. The Accept HTTP header is needed to retrieve JSON-LD content in the response
 body.
 
-#### 4 Request:
+#### 4️⃣ Request:
 
 ```bash
 curl -G -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities' \
   -H 'Accept: application/ld+json' \
-  -d 'type=https://uri.fiware.org/ns/dataModels%23Building'
+  -d 'type=https://smartdatamodels.org/dataModel.Building/Building'
 ```
 
 #### Response:
@@ -491,9 +490,9 @@ curl -G -X GET \
 Since no explicit `@context` was sent in the request, the response returns the Core `@context` by default
 (`https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld`) and all attributes are expanded whenever possible.
 
--   `id`, `type`, `location` and `name`are defined in the core context and are not expanded.
+-   `id`, `type`, `location` and `name` are defined in the core context and are not expanded.
 -   `address` has been mapped to `http://schema.org/address`
--   `category` has been mapped to `https://uri.fiware.org/ns/dataModels#category`
+-   `category` has been mapped to `https://smartdatamodels.org/dataModel.Building/category`
 
 Note that if an attribute has not been associated to an FQN when the entity was created, the short name will **always**
 be displayed.
@@ -503,67 +502,73 @@ be displayed.
     {
         "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld",
         "id": "urn:ngsi-ld:Building:farm001",
-        "type": "https://uri.fiware.org/ns/dataModels#Building",
+        "type": "https://smartdatamodels.org/dataModel.Building/Building",
+        "https://smartdatamodels.org/dataModel.Building/category": {
+            "type": "VocabProperty",
+            "vocab": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dfarm"
+        },
         "https://schema.org/address": {
             "type": "Property",
             "value": {
-                "https://schema.org/streetAddress": "Großer Stern 1",
-                "https://schema.org/addressRegion": "Berlin",
-                "https://schema.org/addressLocality": "Tiergarten",
-                "https://schema.org/postalCode": "10557"
+                "streetAddress": "Großer Stern 1",
+                "addressRegion": "Berlin",
+                "addressLocality": "Tiergarten",
+                "postalCode": "10557"
             },
             "https://uri.fiware.org/ns/dataModels#verified": {
                 "type": "Property",
                 "value": true
+            }
+        },
+        "location": {
+            "type": "GeoProperty",
+            "value": {
+                "type": "Point",
+                "coordinates": [
+                    13.3505,
+                    52.5144
+                ]
             }
         },
         "https://schema.org/name": {
             "type": "Property",
             "value": "Victory Farm"
-        },
-        "https://uri.fiware.org/ns/dataModels#category": {
-            "type": "VocabProperty",
-            "vocab": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dfarm"
-        },
-        "location": {
-            "type": "GeoProperty",
-            "value": {
-                "type": "Point",
-                "coordinates": [13.3505, 52.5144]
-            }
         }
     },
     {
         "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld",
         "id": "urn:ngsi-ld:Building:barn002",
-        "type": "https://uri.fiware.org/ns/dataModels#Building",
+        "type": "https://smartdatamodels.org/dataModel.Building/Building",
+        "https://smartdatamodels.org/dataModel.Building/category": {
+            "type": "VocabProperty",
+            "vocab": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn"
+        },
         "https://schema.org/address": {
             "type": "Property",
             "value": {
-                "https://schema.org/streetAddress": "Straße des 17. Juni",
-                "https://schema.org/addressRegion": "Berlin",
-                "https://schema.org/addressLocality": "Tiergarten",
-                "https://schema.org/postalCode": "10557"
+                "streetAddress": "Straße des 17. Juni",
+                "addressRegion": "Berlin",
+                "addressLocality": "Tiergarten",
+                "postalCode": "10557"
             },
             "https://uri.fiware.org/ns/dataModels#verified": {
                 "type": "Property",
                 "value": true
             }
         },
-        "https://schema.org/name": {
-            "type": "Property",
-            "value": "Big Red Barn"
-        },
-        "https://uri.fiware.org/ns/dataModels#category": {
-            "type": "VocabProperty",
-            "vocab": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn"
-        },
         "location": {
             "type": "GeoProperty",
             "value": {
                 "type": "Point",
-                "coordinates": [13.3698, 52.5163]
+                "coordinates": [
+                    13.3698,
+                    52.5163
+                ]
             }
+        },
+        "https://schema.org/name": {
+            "type": "Property",
+            "value": "Big Red Barn"
         }
     }
 ]
@@ -578,13 +583,13 @@ This example returns the data of `urn:ngsi-ld:Building:farm001`. The NGSI-LD `@c
 The full link header syntax can be seen below:
 
 ```text
-Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json
+Link: <ttp://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json
 ```
 
 The standard HTTP `Link` header allows metadata (in this case the `@context`) to be passed in without actually touching
 the resource in question. In the case of NGSI-LD, the metadata is a file in `application/ld+json` format.
 
-#### 5 Request:
+#### 5️⃣ Request:
 
 ```bash
 curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
@@ -643,14 +648,14 @@ files explicitly as element in the array of `@context` sent. The response is nor
 ### Obtain entity data by type
 
 When filtering by `type`, a [`Link` header](https://www.w3.org/wiki/LinkHeader) must be supplied to associate the short
-form `type="Building"` with the FQN `https://uri.fiware.org/ns/dataModels/Building`.
+form `type="Building"` with the FQN `https://smartdatamodels.org/dataModel.Building/Building`.
 
 If a reference to the supplied data is supplied, it is possible to return short name data and limit responses to a
 specific `type` of data. For example, the request below returns the data of all `Building` entities within the context
 data. Use of the `type` parameter limits the response to `Building` entities only, use of the `options=keyValues` query
 parameter reduces the response down to standard JSON-LD.
 
-#### 6 Request:
+#### 6️⃣ Request:
 
 ```bash
 curl -G -X GET \
@@ -706,7 +711,7 @@ used as the `@context` returned to the response.
         },
         "name": "Big Red Barn",
         "category": {
-            "vocab":"barn"
+            "vocab": "barn"
         },
         "location": {
             "type": "Point",
@@ -723,7 +728,7 @@ This example returns all `Building` entities with the `name` attribute `Big Red 
 `"` = `%22`. Since `options=keyValues` is sent, this will affect the structure of the payload, and we will need to
 supply a different `@context` file - `json-context.jsonld`
 
-#### 7 Request:
+#### 7️⃣ Request:
 
 ```bash
 curl -G -X GET \
@@ -731,7 +736,8 @@ curl -G -X GET \
 -H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/ld+json' \
     -d 'type=Building' \
-    -d 'q=name==%22Big%20Red%20Barn%22&options=keyValues'
+    -d 'q=name==%22Big%20Red%20Barn%22' \
+    -d 'options=keyValues'
 ```
 
 #### Response:
@@ -770,7 +776,7 @@ This **JSON-LD** is no longer **NGSI-LD** (since the `type` and `value` elements
 used reflects this. The `json-context.jsonld` file does not merely define the attribute names, it also includes
 additional **JSON-LD** information within it such as the following:
 
-```json
+```json-ld
 {
     "barn": "https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn",
     "category": {
@@ -793,7 +799,7 @@ data_ using a different set of short names.
 The `alternate-context.jsonld` maps the names of various attributes to their equivalents in German. If it is supplied in
 the request a query can be made using alternate short names (e.g. `type=Building` becomes `type=Gebäude`)
 
-#### 8 Request:
+#### 8️⃣ Request:
 
 ```bash
 curl -G -X GET \
@@ -827,7 +833,9 @@ overridden directly but would require an additional **JSON-LD** expansion/compac
             "postalCode": "10557"
         },
         "name": "Big Red Barn",
-        "kategorie": "barn",
+        "kategorie": {
+            "vocab": "scheune"
+        },
         "location": {
             "type": "Point",
             "coordinates": [13.3698, 52.5163]
@@ -836,25 +844,26 @@ overridden directly but would require an additional **JSON-LD** expansion/compac
 ]
 ```
 
-It should also be noted that the sub-attributes of the `adresse` have also not been amended, since `address` = `adresse`
-=`http://schema.org/address` and this definition defines the sub-attributes.
+It should also be noted that the sub-attributes of the `addresse` have also not been amended, since `address` =
+`addresse` = `http://schema.org/address` and this definition defines the sub-attributes.
 
 ### Filter context data by comparing the values of an attribute in an Array
 
 Within the standard `Building` model, the `category` attribute refers to an array of strings. This example returns all
-`Building` entities with a `category` attribute which contains either `commercial` or `office` strings. Filtering can be
+`Building` entities with a `category` attribute which contains either `barn` or `22farm_auxiliary` strings. Filtering can be
 done using the `q` parameter, comma separating the acceptable values.
 
-#### 9 Request:
+#### 9️⃣ Request:
 
 ```bash
 curl -G -X GET \
     'http://localhost:1026/ngsi-ld/v1/entities/' \
--H 'Link: <http://context/nsgi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+-H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/ld+json' \
     -d 'type=Building' \
     -d 'q=category==%22barn%22,%22farm_auxiliary%22' \
-    -d 'options=keyValues'
+    -d 'options=keyValues' \
+    -d 'expandValues=category'
 ```
 
 #### Response:
@@ -895,10 +904,10 @@ This example returns all stores found in the `Tiergarten District`.
 Filtering can be done using the `q` parameter - sub-attributes are annotated using the bracket syntax e.g.
 `q=address[addressLocality]=="Tiergarten"`.
 
-#### 10 Request:
+#### 1️⃣0️⃣ Request:
 
 ```bash
-curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
+curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/ld+json' \
     -d 'type=Building' \
@@ -966,12 +975,12 @@ of a _Property-of-a-Property_
 
 Metadata queries (i.e. Properties of Properties) are annotated using the dot syntax e.g. `q=address.verified==true`.
 
-#### 11 Request:
+#### 1️⃣1️⃣ Request:
 
 ```bash
 curl -G -X GET \
     'http://localhost:1026/ngsi-ld/v1/entities' \
-    -H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+    -H 'Link: <http://context/json-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context; type="application/ld+json"' \
     -H 'Accept: application/json' \
     -d 'type=Building' \
     -d 'q=address.verified==true' \
@@ -1037,7 +1046,7 @@ brackets.
 Note that by default the geo-query will be applied to the `location` attribute, as this is default specified in NGSI-LD.
 If another attribute is to be used, an additional `geoproperty` parameter is required.
 
-#### 12 Request:
+#### 1️⃣2️⃣ Request:
 
 ```bash
 curl -G -X GET \
