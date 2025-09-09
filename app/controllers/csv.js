@@ -58,7 +58,7 @@ function createEntitiesFromRows(rows) {
                     case 'birthdate':
                     case 'comment':
                     case 'fedWith':
-                    case 'giveName':
+                    case 'givenName':
                     case 'legalId':
                     case 'name':
                     case 'species':
@@ -142,11 +142,9 @@ function createEntitiesFromRows(rows) {
                         break;
                     case 'id':
                     case 'type':
-                    case 'lat':
-                    case 'lng':
                         break;
                     default:
-                        debug('unknown : ' + key);
+                        //debug('unknown : ' + key);
                         break;
                 }
             }

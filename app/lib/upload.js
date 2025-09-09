@@ -1,12 +1,10 @@
 const multer = require('multer');
 const path = require('path');
+const debug = require('debug')('tutorial:upload');
 
 const csvFilter = (req, file, callback) => {
-    if (file.mimetype.includes('csv') || file.mimetype.includes('excel') || file.mimetype.includes('spreadsheetml')) {
-        callback(null, true);
-    } else {
-        callback('Please upload only csv and excel file.', false);
-    }
+    debug(file)
+    callback(null, true);
 };
 
 const storage = multer.diskStorage({
