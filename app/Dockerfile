@@ -120,13 +120,14 @@ LABEL "org.opencontainers.image.description"="Simple Node.js express application
 LABEL "org.opencontainers.image.source"=https://github.com/${GITHUB_ACCOUNT}/${GITHUB_REPOSITORY}
 LABEL "org.nodejs.version"=${NODE_VERSION}
 
-COPY --from=builder /opt/ngsi-tutorial /opt/ngsi-tutorial
+COPY --from=builder   --chown=nonroot:nonroot /opt/ngsi-tutorial /opt/ngsi-tutorial
 WORKDIR /opt/ngsi-tutorial
 
 USER nobody
 ENV NODE_ENV=production
 # Ports used by application
 EXPOSE ${WEB_APP_PORT:-3000}
+USER nonroot
 CMD ["./bin/www"]
 HEALTHCHECK  --interval=30s --timeout=3s --start-period=10s \
   CMD ["/nodejs/bin/node", "./bin/healthcheck"]
