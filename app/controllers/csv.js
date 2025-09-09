@@ -5,7 +5,6 @@ const debug = require('debug')('tutorial:csv');
 const _ = require('lodash');
 const Status = require('http-status-codes');
 const path = require('path');
-const moment = require('moment-timezone');
 
 /*
  * Delete the temporary file
@@ -40,30 +39,19 @@ function readCsvFile(path) {
     });
 }
 
-/*
- *  Strip the id and an key from the header row.
- */
-function parseId(input) {
-    const regexId = /^[^\s]+/;
-    const regexKey = /[\w]+$/;
-    const id = regexId.exec(input)[0];
-    const key = regexKey.exec(input)[0];
 
-    return { id, key };
-}
 
 function createEntitiesFromRows(rows) {
     const allEntities = [];
     const timestamp = new Date().toISOString();
 
     rows.forEach((row) => {
-        const timestamp = moment.tz(row.annee, 'Etc/UTC').toISOString();
         const entity = {
             id: row.id,
             type: row.type
         };
 
-        Object.keys(row).forEach((key, index) => {
+        Object.keys(row).forEach((key) => {
             const value = row[key];
             if (value !== '') {
                 switch (key) {
@@ -74,7 +62,7 @@ function createEntitiesFromRows(rows) {
                     case 'legalId':
                     case 'name':
                     case 'species':
-                        entity[key] = { value: value, type: 'Property' };
+                        entity[key] = { value, type: 'Property' };
                         break;
 
                     case 'temperature':
@@ -154,6 +142,8 @@ function createEntitiesFromRows(rows) {
                         break;
                     case 'id':
                     case 'type':
+                    case 'lat':
+                    case 'lng':
                         break;
                     default:
                         debug('unknown : ' + key);
@@ -200,7 +190,7 @@ const upload = (req, res) => {
         .then((entities) => {
             //console.log(JSON.stringify(entities[0], null, 2))
 
-            batchEntities = [];
+            const batchEntities = [];
             const chunkSize = 10;
 
             for (let i = 0; i < entities.length; i += chunkSize) {
@@ -213,6 +203,7 @@ const upload = (req, res) => {
         .then(async (promises) => {
             const results = [];
             for (const promise of promises) {
+                // eslint-disable-next-line no-await-in-loop
                 const result = await promise;
                 results.push(result);
             }

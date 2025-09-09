@@ -1,5 +1,6 @@
 const CONTEXT_BROKER_URL = process.env.CONTEXT_BROKER || 'http://localhost:1026/ngsi-ld/v1';
-const LINKED_DATA = process.env.IOTA_JSON_LD_CONTEXT || config.contextBroker.jsonLdContext;
+const LINKED_DATA = process.env.IOTA_JSON_LD_CONTEXT ||  'http://context/ngsi-context.jsonld';
+const debug = require('debug')('tutorial:batchUpdate');
 
 async function parse(response) {
     let text = '';
@@ -17,7 +18,7 @@ function is2xxSuccessful(status) {
 }
 
 // measures sent over HTTP are POST requests with params
-async function sendAsHTTP(state) {
+function sendAsHTTP(state) {
     const url = CONTEXT_BROKER_URL + '/entityOperations/upsert';
     const headers = {
         'Content-Type': 'application/json',
@@ -38,7 +39,7 @@ async function sendAsHTTP(state) {
                 return data.body;
             });
     } catch (e) {
-        console.log(e);
+        debug(e);
         return null;
     }
 }
