@@ -10,8 +10,11 @@ const History = require('../controllers/history');
 const DeviceListener = require('../controllers/iot/command-listener');
 const Security = require('../controllers/security');
 const Credentials = require('../controllers/credentials');
+const csvController = require('../controllers/csv');
 
 const ngsiLD = require('../lib/ngsi-ld');
+const upload = require('../lib/upload');
+
 const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context.jsonld';
 const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json">';
 
@@ -225,5 +228,13 @@ router.post('/message/:type', (req, res) => {
     SOCKET_IO.emit(req.params.type, req.body.data);
     res.status(204).send();
 });
+
+router.post(
+    '/csv/:type',
+    upload.single('file'),
+    catchErrors(async (req, res) => {
+        await csvController.upload(req, res);
+    })
+);
 
 module.exports = router;

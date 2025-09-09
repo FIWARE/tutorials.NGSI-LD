@@ -18,6 +18,7 @@ const port = process.env.WEB_APP_PORT || '3000';
 const devicesPort = process.env.DUMMY_DEVICES_PORT || 3001;
 const devices = process.env.DUMMY_DEVICES || `http://localhost:${devicesPort}`;
 const autoMoveTractors = process.env.MOVE_TRACTOR || 10000;
+const devicesOff = process.env.DUMMY_OFF || false;
 
 const dataModelContext =
     process.env.IOTA_JSON_LD_CONTEXT || 'http://localhost:' + port + '/data-models/ngsi-context.jsonld';
@@ -203,20 +204,25 @@ function updateTractorStatus() {
     });
 }
 
-setInterval(() => {
-    fireDevices('tractor');
-}, 3361);
-setInterval(fireAnimalCollars, 5099);
-setInterval(() => {
-    fireDevices('temperature');
-}, 7001);
-setInterval(fireOverallFarmStatus, 10000);
-setInterval(() => {
-    fireDevices('humidity');
-}, 8009);
+if (!devicesOff) {
+    debug(`Enabling dummy device updates on ${devices}`);
+    setInterval(() => {
+        fireDevices('tractor');
+    }, 3361);
+    setInterval(fireAnimalCollars, 5099);
+    setInterval(() => {
+        fireDevices('temperature');
+    }, 7001);
+    setInterval(fireOverallFarmStatus, 10000);
+    setInterval(() => {
+        fireDevices('humidity');
+    }, 8009);
 
-if (autoMoveTractors > 0) {
-    setInterval(updateTractorStatus, autoMoveTractors);
+    if (autoMoveTractors > 0) {
+        setInterval(updateTractorStatus, autoMoveTractors);
+    }
+} else {
+    debug('Dummy device updates are disabled.');
 }
 
 // The temperature Gauge does not accept commands,
