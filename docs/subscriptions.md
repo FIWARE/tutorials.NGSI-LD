@@ -12,7 +12,7 @@ The cUrl commands are also available as
 [Postman documentation](https://fiware.github.io/tutorials.Subscriptions/ngsi-ld).
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/7f7b555ed4169e27bcef)
-[![Run in GitPod](https://fiware.github.io/tutorials.NGSI-LD/img/gitpod.png)](https://gitpod.io/#https://github.com/FIWARE/tutorials.Subscriptions/tree/NGSI-LD)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?repo=FIWARE/tutorials.Subscriptions&ref=NGSI-LD)
 
 <hr class="core"/>
 

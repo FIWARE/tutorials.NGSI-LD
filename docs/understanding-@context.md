@@ -12,7 +12,7 @@ interface.
 
 The tutorial is mainly concerned with online and command-line tooling.
 
-[![Run in GitPod](https://fiware.github.io/tutorials.NGSI-LD/img/gitpod.png)](https://gitpod.io/#https://github.com/FIWARE/tutorials.Understanding-At-Context/tree/NGSI-LD)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?repo=FIWARE/tutorials.Understanding-At-Context&ref=NGSI-LD)
 
 <hr class="core"/>
 

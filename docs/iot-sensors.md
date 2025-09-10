@@ -20,7 +20,7 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 [Postman documentation](https://fiware.github.io/tutorials.IoT-Sensors/ngsi-ld.html)
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/1805fa92c4d6abaa374f)
-[![Run in GitPod](https://fiware.github.io/tutorials.NGSI-LD/img/gitpod.png)](https://gitpod.io/#https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?repo=FIWARE/tutorials.IoT-Sensors&ref=NGSI-LD)
 
 <hr class="iotagents"/>
 
