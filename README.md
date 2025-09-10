@@ -55,6 +55,8 @@ cd tutorials.NGSI-LD/
 git submodule update --init --recursive
 ```
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?template_repository=FIWARE/tutorials.NGSI-LD)
+
 ### Swagger <img src="https://static1.smartbear.co/swagger/media/assets/swagger_fav.png" align="left"  height="30" width="30" style="border-right-style:solid; border-right-width:10px; border-color:transparent; background: transparent">
 
 The OpenAPI Specification (commonly known as Swagger) is an API description format for REST APIs. A Swagger spec allows
