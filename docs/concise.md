@@ -9,6 +9,7 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 [Postman documentation](https://fiware.github.io/tutorials.Concise-Format/ngsi-ld.html)
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/d24facc3c430bb5d5aaf)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?repo=FIWARE/tutorials.Concise-Format&ref=NGSI-LD)
 
 # Concise NGSI-LD Payloads
 
