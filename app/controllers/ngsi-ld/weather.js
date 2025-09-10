@@ -22,7 +22,7 @@ async function displayWeather(req, res) {
     } catch (error) {
         const errorDetail = error.error;
         debug(errorDetail);
-        // If no animal has been found, display an error screen
+        // If no weather has been found, display an error screen
         return res.render('error', {
             title: `Error: ${errorDetail.title}`,
             message: errorDetail.detail,

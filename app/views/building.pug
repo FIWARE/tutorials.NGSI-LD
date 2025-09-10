@@ -38,9 +38,11 @@ block content
               dd.col-lg-9 #{building.location.coordinates[1]}&deg;N, #{building.location.coordinates[0]}&deg;E
             dt.col-lg-3 Category: 
             - if (building.category.vocab)
-              dd.col-lg-9 #{building.category.vocab}
+              dd.col-lg-9 
+                code #{building.category.vocab}
             - else
-              dd.col-lg-9 #{building.category}
+              dd.col-lg-9 
+                code #{building.category}
             dt.col-lg-3 Owner:
             dd.col-lg-9 
               a(class="link-underline link-underline-opacity-0" href=`/app/person/${building.owner}`) #{building.owner}

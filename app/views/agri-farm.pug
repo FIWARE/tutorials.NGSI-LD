@@ -1,0 +1,69 @@
+extends layout
+
+block content
+  h1= title
+
+  div.row
+    div.col
+      div(class="card m-2")
+        div.card-body
+          div.container
+            div.row
+              div.col-sm-4
+                dl.row
+                  dt address: 
+                  dd
+                    address
+                      | #{farm.address.streetAddress} #[br]
+                      | #{farm.address.addressLocality} #[br]
+                      | #{farm.address.postalCode} #[br]
+                      | #{farm.address.addressRegion} #[br]
+            div.row
+              - if (farm.description)
+                dt.col-lg-3 Description: 
+                dd.col-lg-9 #{farm.description}
+            div.row
+              - if (farm.category)
+                dt.col-lg-3 Category: 
+                dd.col-lg-9
+                  code #{farm.category.vocab}
+            div.row
+              - if (farm.controlledProperty)
+                dt.col-lg-3 Controlled Property: 
+                dd.col-lg-9 #{farm.controlledProperty}
+            div.row
+              - if (farm.hasAgriParcel)
+                dt.col-lg-3 Agri Parcel: 
+                dd.col-lg-9
+                  ul
+                    each item in farm.hasAgriParcel
+                      li
+                        a(class="link-underline link-underline-opacity-0" href=`/app/agriparcel/${item}`) #{item}
+                     
+            div.row
+              - if (farm.hasBuilding)
+                dt.col-lg-3 Buildings: 
+                dd.col-lg-9
+                  ul
+                    each item in farm.hasBuilding
+                      li
+                        a(class="link-underline link-underline-opacity-0" href=`/app/building/${item}`) #{item}
+
+            div.row
+              - if (farm.location)
+                dt.col-lg-3 Location: 
+                dd.col-lg-9 #{farm.location.coordinates[1]}&deg;N, #{farm.location.coordinates[0]}&deg;E
+
+            div.row
+              - if (farm.owner)
+                dt.col-lg-3 Owned By: 
+                    dd.col-lg-9 
+                      a(class="link-underline link-underline-opacity-0" href=`/app/person/${farm.owner}`) #{farm.owner}
+
+  div.row
+    div.col
+      div(class="card m-2")
+        div.card-body
+          summary.list-unstyled
+            details
+              pre #{JSON.stringify(farm, null, 4)}

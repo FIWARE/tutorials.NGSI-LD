@@ -10,7 +10,10 @@ block content
         - if (person.owns)
           li
             | owns: 
-            a(class="link-underline link-underline-opacity-0" href=`/app/building/${person.owns}`) #{person.owns}
+            - if (person.owns.includes('AgriFarm'))
+              a(class="link-underline link-underline-opacity-0" href=`/app/agri-farm/${person.owns}`) #{person.owns}
+            - if (person.owns.includes('Building'))
+              a(class="link-underline link-underline-opacity-0" href=`/app/building/${person.owns}`) #{person.owns}
   div.row
     div.col
       div(class="card m-2")

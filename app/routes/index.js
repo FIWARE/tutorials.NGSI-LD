@@ -8,6 +8,7 @@ const Crop = require('../controllers/ngsi-ld/crop');
 const Soil = require('../controllers/ngsi-ld/soil');
 const Pest = require('../controllers/ngsi-ld/pest');
 const AgriDevice = require('../controllers/ngsi-ld/agri-device');
+const AgriFarm = require('../controllers/ngsi-ld/agri-farm');
 const Weather = require('../controllers/ngsi-ld/weather');
 const Land = require('../controllers/ngsi-ld/land');
 const Person = require('../controllers/ngsi-ld/person');
@@ -218,6 +219,7 @@ router.get('/app/soil/:id', Security.authenticate, Soil.display);
 router.get('/app/pest/:id', Security.authenticate, Pest.display);
 router.get('/app/weather/:id', Security.authenticate, Weather.display);
 router.get('/app/agri-device/:id', Security.authenticate, AgriDevice.display);
+router.get('/app/agri-farm/:id', Security.authenticate, AgriFarm.display);
 
 router.get('/app/building/:id', Security.authenticate, Farm.display);
 router.get('/app/person/:id', Security.authenticate, Person.display);

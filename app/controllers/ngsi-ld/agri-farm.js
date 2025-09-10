@@ -1,11 +1,11 @@
-const debug = require('debug')('tutorial:land');
+const debug = require('debug')('tutorial:farm');
 const monitor = require('../../lib/monitoring');
 const ngsiLD = require('../../lib/ngsi-ld');
 const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context.jsonld';
 const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json">';
 
-async function displayLand(req, res) {
-    debug('displayLand');
+async function displayAgriFarm(req, res) {
+    debug('displayAgriFarm');
     // If the user is not authorized, display the main page.
     if (!res.locals.authorized) {
         req.flash('error', 'Access Denied');
@@ -13,16 +13,16 @@ async function displayLand(req, res) {
     }
     try {
         monitor('NGSI', 'readEntity ' + req.params.id);
-        const land = await ngsiLD.readEntity(
+        const farm = await ngsiLD.readEntity(
             req.params.id,
             { options: 'keyValues' },
             ngsiLD.setHeaders(req.session.access_token, LinkHeader)
         );
-        return res.render('land', { title: land.name, land });
+        return res.render('agri-farm', { title: farm.name, farm });
     } catch (error) {
-        const errorDetail = error.error;
+        const errorDetail = error.error | error;
         debug(errorDetail);
-        // If no agri-parcel has been found, display an error screen
+        // If no farm has been found, display an error screen
         return res.render('error', {
             title: `Error: ${errorDetail.title}`,
             message: errorDetail.detail,
@@ -34,5 +34,5 @@ async function displayLand(req, res) {
 }
 
 module.exports = {
-    display: displayLand
+    display: displayAgriFarm
 };

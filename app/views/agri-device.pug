@@ -34,11 +34,11 @@ block content
             div.row
               - if (device.batteryLevel)
                 dt.col-lg-3 Battery Level: 
-                dd.col-lg-9 #{device.batteryLevel}
+                dd.col-lg-9 #{device.batteryLevel * 100} %
             div.row
               - if (device.supportedProtocol)
                 dt.col-lg-3 Protocol: 
-                dd.col-lg-9 #{device.supportedProtocol}
+                dd.col-lg-9 #{device.supportedProtocol.toUpperCase()}
             div.row
               - if (device.deviceModel)
                 dt.col-lg-3 Description: 
