@@ -49,6 +49,19 @@ function tryParse(value) {
 
 function createEntitiesFromRows(rows) {
     const allEntities = [];
+    const unitCode = {
+        atmosphericPressure: 'PAL',
+        illuminance: 'CDL',
+        precipitation: 'MMT',
+        windSpeed: 'MTS',
+        relativeHumidity: 'C68',
+        precipitationProbability: 'C68',
+        heartRate: '5K',
+        humidity: 'P1',
+        temperature: 'CEL',
+        weight: 'KGM',
+        batteryLevel: 'C68'
+    };
     const timestamp = new Date().toISOString();
 
     rows.forEach((row) => {
@@ -61,51 +74,60 @@ function createEntitiesFromRows(rows) {
             const value = row[key];
             if (value !== '') {
                 switch (key) {
+                    case 'agroVocConcept':
                     case 'alternateName':
                     case 'birthdate':
                     case 'comment':
                     case 'controlledProperty':
+                    case 'dataProvider':
+                    case 'dateIssued':
+                    case 'dateObserved':
+                    case 'dateRetrieved':
+                    case 'dayMaximum':
+                    case 'dayMinimum':
                     case 'description':
                     case 'deviceState':
                     case 'fedWith':
+                    case 'feelsLikeTemperature':
                     case 'givenName':
                     case 'legalId':
                     case 'name':
+                    case 'pressureTendency':
                     case 'species':
                     case 'soilTextureType':
                     case 'status':
+                    case 'streamGauge':
+                    case 'source':
                     case 'supportedProtocol':
-                    case 'agroVocConcept':
+                    case 'uVIndexMax':
+                    case 'validFrom':
+                    case 'validTo':
+                    case 'validity':
+                    case 'weatherType':
+                    case 'windDirection':
                         entity[key] = { value: tryParse(value), type: 'Property' };
                         break;
 
-                    case 'temperature':
+                    case 'atmosphericPressure':
+                    case 'illuminance':
+                    case 'precipitation':
+                    case 'windSpeed':
+                    case 'relativeHumidity':
+                    case 'precipitationProbability':
+                    case 'batteryLevel':
                         entity[key] = {
                             value: Number(value),
-                            type: 'Property',
-                            unitCode: 'CEL',
-                            observedAt: timestamp
+                            type: 'Property'
                         };
                         break;
                     case 'heartRate':
-                        entity[key] = { value: Number(value), type: 'Property', unitCode: '5K', observedAt: timestamp };
-                        break;
                     case 'humidity':
-                        entity[key] = { value: Number(value), type: 'Property', unitCode: 'P1', observedAt: timestamp };
-                        break;
+                    case 'temperature':
                     case 'weight':
                         entity[key] = {
                             value: Number(value),
                             type: 'Property',
-                            unitCode: 'KGM',
                             observedAt: timestamp
-                        };
-                        break;
-                    case 'batteryLevel':
-                        entity[key] = {
-                            value: Number(value),
-                            type: 'Property',
-                            unitCode: 'C62'
                         };
                         break;
 
@@ -186,6 +208,9 @@ function createEntitiesFromRows(rows) {
                             debug('unknown : ' + key);
                         }
                         break;
+                }
+                if (unitCode[key]) {
+                    entity[key].unitCode = unitCode[key];
                 }
             }
         });
