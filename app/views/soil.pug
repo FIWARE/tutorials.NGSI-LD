@@ -1,0 +1,27 @@
+extends layout
+
+block content
+  h1= title
+
+  div.row
+    div.col
+      div(class="card m-2")
+        div.card-body
+          div.container
+            div.row
+              - if (soil.description)
+                dt.col-lg-3 Description: 
+                dd.col-lg-9 #{soil.description}
+            div.row
+              - if (soil.agroVocConcept)
+                dt.col-lg-3 AgroVocConcept: 
+                dd.col-lg-9
+                  code #{soil.agroVocConcept}
+
+  div.row
+    div.col
+      div(class="card m-2")
+        div.card-body
+          summary.list-unstyled
+            details
+              pre #{JSON.stringify(soil, null, 4)}

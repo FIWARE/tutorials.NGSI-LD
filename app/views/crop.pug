@@ -1,0 +1,36 @@
+extends layout
+
+block content
+  h1= title
+
+  div.row
+    div.col
+      div(class="card m-2")
+        div.card-body
+          div.container
+            div.row
+              - if (crop.description)
+                dt.col-lg-3 Description: 
+                dd.col-lg-9 #{crop.description}
+              - if (crop.hasAgriSoil)
+                dt.col-lg-3 Preferred Soils: 
+                dd.col-lg-9
+                  ul
+                    each item in crop.hasAgriSoil
+                      li
+                        a(class="link-underline link-underline-opacity-0" href=`/app/soil/${item}`) #{item}
+              - if (crop.hasAgriPest)
+                dt.col-lg-3 Pests: 
+                dd.col-lg-9
+                  ul
+                    each item in crop.hasAgriPest
+                      li
+                        a(class="link-underline link-underline-opacity-0" href=`/app/pest/${item}`) #{item}
+
+  div.row
+    div.col
+      div(class="card m-2")
+        div.card-body
+          summary.list-unstyled
+            details
+              pre #{JSON.stringify(crop, null, 4)}

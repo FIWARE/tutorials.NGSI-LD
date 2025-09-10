@@ -1,0 +1,86 @@
+extends layout
+
+block content
+  h1= title
+
+  div.row
+    div.col
+      div(class="card m-2")
+        div.card-body
+          div.container
+            div.row
+              - if (weather.dataProvider)
+                dt.col-lg-3 Provider: 
+                dd.col-lg-9 #{weather.dataProvider}
+            div.row
+              - if (weather.relativeHumidity)
+                dt.col-lg-3 relativeHumidity: 
+                dd.col-lg-9
+                  code #{weather.relativeHumidity*100} %
+            div.row
+              - if (weather.temperature)
+                dt.col-lg-3 temperature: 
+                dd.col-lg-9
+                  code #{weather.temperature} &deg;C
+            div.row
+              - if (weather.uVIndexMax)
+                dt.col-lg-3 UV Index: 
+                dd.col-lg-9
+                  code #{weather.uVIndexMax}
+            div.row
+              - if (weather.atmosphericPressure)
+                dt.col-lg-3 atmosphericPressure: 
+                dd.col-lg-9
+                  code #{weather.atmosphericPressure} mBar
+            div.row
+              - if (weather.illuminance)
+                dt.col-lg-3 illuminance: 
+                dd.col-lg-9
+                  code #{weather.illuminance} cdl
+            div.row
+              - if (weather.precipitation)
+                dt.col-lg-3 precipitation: 
+                dd.col-lg-9
+                  code #{weather.precipitation} mm
+            div.row
+              - if (weather.pressureTendency)
+                dt.col-lg-3 pressureTendency: 
+                dd.col-lg-9
+                  code #{weather.pressureTendency} 
+            div.row
+              - if (weather.streamGauge)
+                dt.col-lg-3 streamGauge: 
+                dd.col-lg-9
+                  code #{weather.streamGauge}
+            div.row
+              - if (weather.windSpeed)
+                dt.col-lg-3 Wind Speed: 
+                dd.col-lg-9
+                  code #{weather.windSpeed}
+            div.row
+              - if (weather.windDirection)
+                dt.col-lg-3 Wind Bearing: 
+                dd.col-lg-9
+                  code #{weather.windDirection} &deg; 
+            div.row
+              - if (weather.weatherType)
+                dt.col-lg-3 Weather Type: 
+                dd.col-lg-9 #{weather.weatherType}
+            div.row
+              - if (weather.dateObserved)
+                dt.col-lg-3 dateObserved: 
+                dd.col-lg-9 #{weather.dateObserved}
+            div.row
+              - if (weather.location && weather.location.coordinates)
+                  dt.col-lg-3 Location: 
+                  dd.col-lg-3 
+                    | #{weather.location.coordinates[1]}&deg;N, #{weather.location.coordinates[0]}&deg;E
+
+
+  div.row
+    div.col
+      div(class="card m-2")
+        div.card-body
+          summary.list-unstyled
+            details
+              pre #{JSON.stringify(weather, null, 4)}

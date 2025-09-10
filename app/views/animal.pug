@@ -70,10 +70,16 @@ block content
                     dt.col-lg-3 Located At:
                     - if (animal.location)
                         dd.col-lg-3 
-                          a(class="link-underline link-underline-opacity-0" href=`/app/agriparcel/${animal.locatedAt.object}`) #{animal.locatedAt.object}
+                          - if (animal.locatedAt.object.includes('AgriParcel'))
+                            a(class="link-underline link-underline-opacity-0" href=`/app/agriparcel/${animal.locatedAt.object}`) #{animal.locatedAt.object}
+                          - if (animal.locatedAt.object.includes('Building'))
+                            a(class="link-underline link-underline-opacity-0" href=`/app/building/${animal.locatedAt.object}`) #{animal.locatedAt.object}
                     - else
                         dd.col-lg-9 
-                          a(class="link-underline link-underline-opacity-0" href=`/app/agriparcel/${animal.locatedAt.object}`) #{animal.locatedAt.object}
+                          - if (animal.locatedAt.object.includes('AgriParcel'))
+                            a(class="link-underline link-underline-opacity-0" href=`/app/agriparcel/${animal.locatedAt.object}`) #{animal.locatedAt.object}
+                          - if (animal.locatedAt.object.includes('Building'))
+                            a(class="link-underline link-underline-opacity-0" href=`/app/building/${animal.locatedAt.object}`) #{animal.locatedAt.object}
                   - if (animal.location && animal.location.value.coordinates)
                     dt.col-lg-3 Current Location: 
                     dd.col-lg-3 
@@ -81,7 +87,7 @@ block content
                   - if (animal.ownedBy)
                     dt.col-lg-3 Owned By: 
                     dd.col-lg-9 
-                      a(class="link-underline link-underline-opacity-0" href=`/app/agriparcel/${animal.ownedBy.object}`) #{animal.ownedBy.object}
+                      a(class="link-underline link-underline-opacity-0" href=`/app/person/${animal.ownedBy.object}`) #{animal.ownedBy.object}
 
   - if (animal.comment)
     div.row

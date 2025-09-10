@@ -3,6 +3,54 @@ extends layout
 block content
   h1= title
 
+
+  div.row
+    div.col
+      div(class="card m-2")
+        div.card-body
+          div.container
+            div.row
+              - if (land.cropStatus)
+                dt.col-lg-3 Status: 
+                dd.col-lg-9 #{land.cropStatus.vocab}
+              - if (land.soilTextureType)
+                dt.col-lg-3 Soil Texture: 
+                dd.col-lg-9 #{land.soilTextureType}
+              - if (land.hasAgriSoil)
+                dt.col-lg-3 Soil: 
+                dd.col-lg-9
+                  a(class="link-underline link-underline-opacity-0" href=`/app/soil/${land.hasAgriSoil}`) #{land.hasAgriSoil}
+              - if (land.hasAgriCrop)
+                dt.col-lg-3 Crop:
+                dd.col-lg-9 
+                  a(class="link-underline link-underline-opacity-0" href=`/app/crop/${land.hasAgriCrop}`) #{land.hasAgriCrop}
+              - if (land.observation)
+                dt.col-lg-3 Weather Observed:
+                dd.col-lg-9 
+                  a(class="link-underline link-underline-opacity-0" href=`/app/weather/${land.observation}`) #{land.observation}
+              - if (land.observation)
+                dt.col-lg-3 Weather Prediction:
+                dd.col-lg-9  
+                  a(class="link-underline link-underline-opacity-0" href=`/app/weather/${land.prediction}`) #{land.prediction}
+              - if (land.temperature)
+                dt.col-lg-3 Temperature 
+                dd.col-lg-9 #{land.temperature} &deg;C
+              - if (land.humidity)
+                dt.col-lg-3 Humidity 
+                dd.col-lg-9 #{land.humidity*100} %
+              - if (land.hasDevices)
+                dt.col-lg-3 Devices 
+                dd.col-lg-9
+                 ul
+                    each item in land.hasDevices
+                      li
+                          a(class="link-underline link-underline-opacity-0" href=`/app/agri-device/${item}`) #{item}
+
+              - if (land.ownedBy)
+                dt.col-lg-3 OwnedBy
+                dd.col-lg-9 
+                  a(class="link-underline link-underline-opacity-0" href=`/app/person/${land.ownedBy}`) #{land.ownedBy}
+
   div.row
     div.col
       div(class="card m-2")

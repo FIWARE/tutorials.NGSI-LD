@@ -1,0 +1,32 @@
+extends layout
+
+block content
+  h1= title
+
+  div.row
+    div.col
+      div(class="card m-2")
+        div.card-body
+          div.container
+            div.row
+              - if (pest.alternateName)
+                dt.col-lg-3 Scientific Name: 
+                dd.col-lg-9 #{pest.alternateName}
+            div.row
+              - if (pest.description)
+                dt.col-lg-3 Description: 
+                dd.col-lg-9 #{pest.description}
+            div.row
+              - if (pest.agroVocConcept)
+                dt.col-lg-3 AgroVocConcept: 
+                dd.col-lg-9
+                  code #{pest.agroVocConcept}
+
+
+  div.row
+    div.col
+      div(class="card m-2")
+        div.card-body
+          summary.list-unstyled
+            details
+              pre #{JSON.stringify(pest, null, 4)}
