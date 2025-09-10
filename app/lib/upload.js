@@ -3,7 +3,7 @@ const path = require('path');
 const debug = require('debug')('tutorial:upload');
 
 const csvFilter = (req, file, callback) => {
-    debug(file)
+    debug(file);
     callback(null, true);
 };
 

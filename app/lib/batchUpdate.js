@@ -1,5 +1,5 @@
 const CONTEXT_BROKER_URL = process.env.CONTEXT_BROKER || 'http://localhost:1026/ngsi-ld/v1';
-const LINKED_DATA = process.env.IOTA_JSON_LD_CONTEXT ||  'http://context/ngsi-context.jsonld';
+const LINKED_DATA = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context.jsonld';
 const debug = require('debug')('tutorial:batchUpdate');
 
 async function parse(response) {

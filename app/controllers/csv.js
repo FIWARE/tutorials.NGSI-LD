@@ -39,7 +39,13 @@ function readCsvFile(path) {
     });
 }
 
-
+function tryParse(value) {
+    try {
+        return JSON.parse(value);
+    } catch (e) {
+        return value;
+    }
+}
 
 function createEntitiesFromRows(rows) {
     const allEntities = [];
@@ -55,14 +61,22 @@ function createEntitiesFromRows(rows) {
             const value = row[key];
             if (value !== '') {
                 switch (key) {
+                    case 'alternateName':
                     case 'birthdate':
                     case 'comment':
+                    case 'controlledProperty':
+                    case 'description':
+                    case 'deviceState':
                     case 'fedWith':
                     case 'givenName':
                     case 'legalId':
                     case 'name':
                     case 'species':
-                        entity[key] = { value, type: 'Property' };
+                    case 'soilTextureType':
+                    case 'status':
+                    case 'supportedProtocol':
+                    case 'agroVocConcept':
+                        entity[key] = { value: tryParse(value), type: 'Property' };
                         break;
 
                     case 'temperature':
@@ -76,12 +90,22 @@ function createEntitiesFromRows(rows) {
                     case 'heartRate':
                         entity[key] = { value: Number(value), type: 'Property', unitCode: '5K', observedAt: timestamp };
                         break;
+                    case 'humidity':
+                        entity[key] = { value: Number(value), type: 'Property', unitCode: 'P1', observedAt: timestamp };
+                        break;
                     case 'weight':
                         entity[key] = {
                             value: Number(value),
                             type: 'Property',
                             unitCode: 'KGM',
                             observedAt: timestamp
+                        };
+                        break;
+                    case 'batteryLevel':
+                        entity[key] = {
+                            value: Number(value),
+                            type: 'Property',
+                            unitCode: 'C62'
                         };
                         break;
 
@@ -125,31 +149,72 @@ function createEntitiesFromRows(rows) {
                     case 'phenologicalCondition':
                     case 'reproductiveCondition':
                     case 'sex':
-                        entity[key] = { vocab: value, type: 'VocabProperty' };
+                        entity[key] = { vocab: tryParse(value), type: 'VocabProperty' };
                         break;
                     case 'calvedBy':
+                    case 'controlledAsset':
+                    case 'deviceModel':
                     case 'cropType':
                     case 'owns':
                     case 'owner':
                     case 'ownedBy':
                     case 'siredBy':
-                        entity[key] = { object: value, type: 'Relationship' };
+                    case 'hasAgriSoil':
+                    case 'hasAgriCrop':
+                    case 'hasDevices':
+                    case 'hasAgriPest':
+                    case 'hasAgriParcel':
+                    case 'hasBuilding':
+                        entity[key] = { object: tryParse(value), type: 'Relationship' };
                         break;
                     case 'locatedAt':
                     case 'observation':
                     case 'prediction':
-                        entity[key] = { object: value, type: 'Relationship', observedAt: timestamp };
+                        entity[key] = { object: tryParse(value), type: 'Relationship', observedAt: timestamp };
                         break;
                     case 'id':
                     case 'type':
+                    case 'lat':
+                    case 'lng':
+                    case 'addressLocality':
+                    case 'addressRegion':
+                    case 'postalCode':
+                    case 'providedBy':
                         break;
                     default:
-                        //debug('unknown : ' + key);
+                        if (!key.includes('_')) {
+                            debug('unknown : ' + key);
+                        }
                         break;
                 }
             }
-
         });
+
+        switch (entity.type) {
+            case 'Animal':
+                if (row.providedBy) {
+                    if (entity.heartRate) {
+                        entity.heartRate.providedBy = {
+                            type: 'Relationship',
+                            object: row.providedBy
+                        };
+                    }
+                    if (entity.location) {
+                        entity.location.providedBy = {
+                            type: 'Relationship',
+                            object: row.providedBy
+                        };
+                    }
+                }
+                break;
+            case 'AgriParcel':
+                if (row.providedBy) {
+                    entity.humidity.providedBy = {
+                        type: 'Relationship',
+                        object: row.providedBy
+                    };
+                }
+        }
 
         allEntities.push(entity);
     });
