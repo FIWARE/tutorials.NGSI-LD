@@ -114,6 +114,7 @@ router.get('/', async function (req, res) {
         });
 
         return res.render('index', {
+            title: 'NGSI-LD Smart Farm',
             success: req.flash('success'),
             errors: req.flash('error'),
             info: req.flash('info'),

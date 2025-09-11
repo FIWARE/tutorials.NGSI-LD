@@ -77,7 +77,7 @@ function createEntitiesFromRows(rows) {
                     case 'agroVocConcept':
                     case 'alternateName':
                     case 'birthdate':
-                    case 'comment':
+                    
                     case 'controlledProperty':
                     case 'dataProvider':
                     case 'dateIssued':
@@ -106,6 +106,9 @@ function createEntitiesFromRows(rows) {
                     case 'weatherType':
                     case 'windDirection':
                         entity[key] = { value: tryParse(value), type: 'Property' };
+                        break;
+                    case 'comment':
+                        entity[key] = { value: tryParse(value), type: 'Property', observedAt: timestamp };
                         break;
 
                     case 'atmosphericPressure':

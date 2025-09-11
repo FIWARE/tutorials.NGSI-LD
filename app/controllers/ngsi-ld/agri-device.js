@@ -22,7 +22,7 @@ async function displayAgriDevice(req, res) {
     } catch (error) {
         const errorDetail = error.error | error;
         debug(errorDetail);
-        // If no animal has been found, display an error screen
+        // If no device has been found, display an error screen
         return res.render('error', {
             title: `Error: ${errorDetail.title}`,
             message: errorDetail.detail,

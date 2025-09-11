@@ -83,7 +83,18 @@ block content
                       | #{building.name}
   div.row
     div.col
-      h3 Animal Details
+      div.d-flex.flex-row
+        div
+          h3 Animal Details
+        - if (cows.length > 0)
+        div.ms-auto
+        div.ms-2
+          div(style="margin-top: 15px")
+            a(class="link-underline link-underline-opacity-0" href=`app/animals`)
+              img(class="ps-2" src='/img/cow.svg' width="32" height="32")
+              span.px-2 /
+              img(class="pe-2" src='/img/pig.svg' width="32" height="32")
+              | Map
   div.row
     div.col
       div.card
