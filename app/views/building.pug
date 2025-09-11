@@ -7,6 +7,9 @@ block content
   script(src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js')
   script(src='https://code.jquery.com/jquery-1.11.1.js')
 
+  link(rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.4.0/dist/maplibre-gl.css")
+  script(src="https://unpkg.com/maplibre-gl@5.4.0/dist/maplibre-gl.js")
+ 
   h1= title
   div.row
     div.col-lg
@@ -15,10 +18,7 @@ block content
           div.container
             div.row
               div.col-sm-8
-                img.img-thumbnail(src=`${building.mapUrl}`)
-                small(style="display: inherit")
-                  a(href="https://www.openstreetmap.org/copyright")
-                    | © OpenStreetMap contributors
+                div(id="map" style="height:100%;width:100%;background:#eee;min-height:30vh;")
               div.col-sm-4
                 dl.row
                   dt address: 
@@ -131,7 +131,22 @@ block content
                }
             }); 
         });
+        const map = new maplibregl.Map({
+          container: 'map',
+          style: 'https://api.maptiler.com/maps/streets-v2/style.json?key=foqzh86Jk2Ia9CL7w8ks',
+          center: [#{building.location.coordinates[0]}, #{building.location.coordinates[1]}],
+          zoom: 15,
+          attributionControl: {compact: true}
+        });
+        map.addControl(new maplibregl.NavigationControl());   
+        const marker = new maplibregl.Marker()
+            .setLngLat([#{building.location.coordinates[0]}, #{building.location.coordinates[1]}])
+            .addTo(map); 
       });
+
+
+
+     
 
 //-    div(style="float: left; padding:0px 20px 20px 20px; border: none;")
       iframe(width='560', height='270', src=`/app/building/${building.id}/till`, frameborder='0')
