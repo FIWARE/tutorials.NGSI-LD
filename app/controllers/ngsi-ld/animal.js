@@ -31,7 +31,7 @@ async function getAnimals(req, res) {
 
 function displayMap(req, res) {
     debug('displayMap');
-    return res.render('animalMap');
+    return res.render('animalMap', {title: 'Animal Locations'});
 }
 
 // This function receives the details of a person from the context
