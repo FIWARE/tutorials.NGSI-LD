@@ -16,63 +16,20 @@ block content
       each item in info
         div!= item
 
-
-
-  - if (securityEnabled)
-    - if (!session.username)
-      div(style='width:20em;line-height: 1.6;')
-        ul(style='list-style-type: none;')
-          li
-            a.button(href="authCodeGrant") Authorization Code
-          li
-            a.button(href="clientCredentials") Client Credentials
-          li
-            a.button(href="implicitGrant") Implicit Grant
-        form(action='userCredentials',method='post')
-          div
-            label(for='email') email: &nbsp;
-              input(id='email',type='text',value='',placeholder='@',name='email')
-          div
-            label(for='password') password: &nbsp;
-              input(id='password',type='password',value='',placeholder='',name='password')
-          div  
-            ul(style='list-style-type: none;')
-              li
-                input.button(type='submit',value='User Credentials')
   div.row
     div.col
-      h3 Monitors
-      ul.list-inline
-        li.list-inline-item 
-          a(href="app/monitor") App Monitor
-        li.list-inline-item
-          a(href="device/monitor") Device Monitor
-        li.list-inline-item
-          a(href="device/history") Short-Term History
-        li.list-inline-item
-          a(href="vp/monitor") Trust
-
-  div.row
-    div.col
-      h3 Generate
-      a(href="credentials") Verifiable Credentials
-
-  div.row
-    div.col
-      h3 Farm Buildings
+      h3 Cities
   div.row
     div.col
       div.card
         div.card-body
 
-          - if (buildings.length === 0)
+          - if (cities.length === 0)
             p None Found
           - else 
-            - if (securityEnabled)
-              p Any logged-in user can access these:
-            ul.list-inline  
-              each building in buildings
-                li.list-inline-item
+            ul.list-unstyled  
+              each building in cities
+                li.list-item
                   - if (securityEnabled)
                     a(class="link-danger link-underline link-underline-opacity-0" href=`app/building/${building.id}`) 
                       img(class="p-2" src='/img/barn.png' width="32" height="32")
@@ -81,82 +38,21 @@ block content
                     a(class="link-underline link-underline-opacity-0" href=`app/building/${building.id}`)
                       img(class="p-2" src='/img/barn.png' width="32" height="32")
                       | #{building.name}
-  div.row
-    div.col
-      div.d-flex.flex-row
-        div
-          h3 Animal Details
-        - if (cows.length > 0)
-        div.ms-auto
-        div.ms-2
-          div(style="margin-top: 15px")
-            a(class="link-underline link-underline-opacity-0" href=`app/animals`)
-              img(class="ps-2" src='/img/cow.svg' width="32" height="32")
-              span.px-2 /
-              img(class="pe-2" src='/img/pig.svg' width="32" height="32")
-              | Map
-  div.row
-    div.col
-      div.card
-        div.card-body
-          - if (cows.length === 0)
-            p None Found
-          - else
-            ul.list-unstyled
-              each animal in cows
-                li
-                  img(class="pe-2" src='/img/cow.svg' width="32" height="32")
-                  a(class="link-underline link-underline-opacity-0" href=`app/animal/${animal.id}`)  #{animal.name}
-    div.col
-      div.card
-        div.card-body
-          - if (pigs.length === 0)
-            p None Found
-          - else
-            ul.list-unstyled
-              each animal in pigs
-                li
-                  img(class="pe-2" src='/img/pig.svg' width="32" height="32")
-                  a(class="link-underline link-underline-opacity-0" href=`app/animal/${animal.id}`)  #{animal.name}
-  div.row
-    div.col
-      h3 Agri Parcel Details
-  div.row
-    div.col
-      div.card
-        div.card-body
-          - if (parcels.length === 0)
-            p None Found
-          - else
-            ul.list-inline
-              each parcel in parcels
-                li.list-inline-item
-                  img(class="p-2" src='/img/corn.png' width="32" height="32")
-                  a(class="link-underline link-underline-opacity-0" href=`app/agriparcel/${parcel.id}`)  #{parcel.name}
-  div
-    h3
-    - if (session.username)
-      ul.list-unstyled
-        li
-          a.button(href="logout") Log out
-        li
-          form(action='refreshToken',method='post') 
-            input.button(type='submit',value='Refresh Token')
 
-  hr
-  small
-    strong
-      - if (securityEnabled)
-        | Security ON. &nbsp;
-      - else
-        | Security OFF. &nbsp;
-    | . &nbsp;Icons made by 
-    a(href='https://www.flaticon.com/authors/smashicons', title='Smashicons') Smashicons
-    | ,&nbsp;
-    a(href='https://www.flaticon.com/authors/those-icons' title='Those Icons') Those Icons
-    |   and&nbsp; 
-    a(href='https://www.flaticon.com/authors/freepik', title='Freepik') Freepik
-    |  from&nbsp; 
-    a(href='https://www.flaticon.com', title='Flaticon') www.flaticon.com
-    |  licensed by&nbsp;
-    a(href='http://creativecommons.org/licenses/by/3.0/', title='Creative Commons BY 3.0', target='_blank') CC 3.0 BY
+  div.row
+    div.col
+      h3 Products
+  div.row
+    div.col
+      div.card
+        div.card-body
+
+          - if (cities.length === 0)
+            p None Found
+          - else 
+            ul.list-unstyled  
+              each building in products
+                li.list-item
+                    a(class="link-underline link-underline-opacity-0" href=`app/pest/${encodeURI(building.id)}`)
+                      img(class="p-2" src='/img/barn.png' width="32" height="32")
+                      | #{building.name}

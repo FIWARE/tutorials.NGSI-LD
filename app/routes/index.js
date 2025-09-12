@@ -64,66 +64,38 @@ router.get('/', async function (req, res) {
 
     const headers = ngsiLD.setHeaders(req.session.access_token, LinkHeader);
     try {
-        monitor('NGSI', 'listEntities ?type=Building');
-        const buildings = await ngsiLD.listEntities(
+        monitor('NGSI', 'listEntities ?type=City');
+        const cities = await ngsiLD.listEntities(
             {
-                type: 'Building',
+                type: 'https://case-agri.com/City',
+                options: 'simplified',
+                attrs: 'name',
+                limit: ENTITY_LIMIT
+            },
+            headers
+        );
+        monitor('NGSI', 'listEntities ?type=Product');
+        const products = await ngsiLD.listEntities(
+            {
+                type: 'https://case-agri.com/Product',
                 options: 'concise',
                 attrs: 'name',
                 limit: ENTITY_LIMIT
             },
             headers
         );
-        monitor('NGSI', 'listEntities ?type=Animal');
-        const animals = await ngsiLD.listEntities(
-            {
-                type: 'Animal',
-                options: 'concise',
-                attrs: 'name,species',
-                limit: ENTITY_LIMIT
-            },
-            headers
-        );
-        monitor('NGSI', 'listEntities ?type=AgriParcel');
-        const parcels = await ngsiLD.listEntities(
-            {
-                type: 'AgriParcel',
-                options: 'concise',
-                attrs: 'name',
-                limit: ENTITY_LIMIT
-            },
-            headers
-        );
+        
 
-        monitor('NGSI', 'listEntities ?type=Device');
-        const devices = await ngsiLD.listEntities(
-            {
-                type: 'Device',
-                options: 'concise',
-                attrs: 'name',
-                limit: ENTITY_LIMIT
-            },
-            headers
-        );
-
-        const cows = _.filter(animals, (o) => {
-            return o.species === 'dairy cattle';
-        });
-        const pigs = _.filter(animals, (o) => {
-            return o.species === 'pig';
-        });
+        console.log(cities)
 
         return res.render('index', {
-            title: 'NGSI-LD Smart Farm',
+            title: 'Casa Agri Demo',
             success: req.flash('success'),
             errors: req.flash('error'),
             info: req.flash('info'),
             securityEnabled,
-            buildings,
-            pigs,
-            cows,
-            parcels,
-            devices,
+            cities,
+            products,
             ngsi: 'ngsi-ld'
         });
     } catch (e) {

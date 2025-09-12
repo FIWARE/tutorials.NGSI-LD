@@ -1,51 +1,30 @@
 extends layout
 
-include product
-
 block content
-
-  script(src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js')
-  script(src='https://code.jquery.com/jquery-1.11.1.js')
-
-  link(rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.4.0/dist/maplibre-gl.css")
-  script(src="https://unpkg.com/maplibre-gl@5.4.0/dist/maplibre-gl.js")
- 
   h1= title
+
   div.row
-    div.col-lg
+    div.col
       div(class="card m-2")
         div.card-body
           div.container
             div.row
-              div.col-sm-8
-                div(id="map" style="height:100%;width:100%;background:#eee;min-height:30vh;")
-              div.col-sm-4
-                dl.row
-                  dt address: 
-                  dd
-                    address
-                      | #{building.address.streetAddress} #[br]
-                      | #{building.address.addressLocality} #[br]
-                      | #{building.address.postalCode} #[br]
-                      | #{building.address.addressRegion} #[br]
-
-    div.col-lg
-      div(class="card m-2")
-        div.card-body
-          dl.row
-            - if (building.location)
-              dt.col-lg-3 Location: 
-              dd.col-lg-9 #{building.location.coordinates[1]}&deg;N, #{building.location.coordinates[0]}&deg;E
-            dt.col-lg-3 Category: 
-            - if (building.category.vocab)
-              dd.col-lg-9 
-                code #{building.category.vocab}
-            - else
-              dd.col-lg-9 
-                code #{building.category}
-            dt.col-lg-3 Owner:
-            dd.col-lg-9 
-              a(class="link-underline link-underline-opacity-0" href=`/app/person/${building.owner}`) #{building.owner}
+               - if (building.hasStockPrice)
+                dt.col-lg-3 Stocks: 
+                dd.col-lg-9
+                  ul
+                    each item in building.hasStockPrice
+                      li
+                        a(class="link-underline link-underline-opacity-0" href=`/app/soil/${item}`) #{item}
+ 
+  div.col-lg
+    div(class="card m-2")
+      div.card-body
+        dl.row
+          - if (building.location)
+            dt.col-lg-3 Location: 
+            dd.col-lg-9 #{building.location.coordinates[1]}&deg;N, #{building.location.coordinates[0]}&deg;E
+           
   
   div.row
     div.col
@@ -54,120 +33,3 @@ block content
           summary.list-unstyled
             details
               pre #{JSON.stringify(building, null, 4)}
-  div.row
-    div.col
-      div(class="card m-2")
-        div.card-body
-          form.p-2(action="/device/command" method="POST")
-            h3 Feedstock levels
-            p Add, remove or refill the hay in the barn.
-            div(style="background-repeat: no-repeat;background-image: url('/img/warehouse-full.svg')") &nbsp;&nbsp;
-              code(style="margin-left: 1em;")
-                span.device(id=`filling${building.id.replace(/\D/g,'')}`) &nbsp;
-            
-              input.d-none(type="text" name="id" value=`${building.id.replace(/\D/g,'')}`)
-              input(type="submit" value="refill" name="action" class="ms-2 btn btn-primary btn-sm")
-              input(type="submit" value="add" name="action" class="ms-2 btn btn-primary btn-sm")
-              input(type="submit" value="remove" name="action" class="ms-2 btn btn-primary btn-sm")
-
-          form.p-2(action="/device/command" method="POST")
-            h3 Thermostat
-            p Raise or lower the desired temperature of the barn.
-            div(style="background-repeat: no-repeat;background-image: url('/img/temperature.svg')") &nbsp;&nbsp;
-              code(style="margin-left: 1em;")
-                span( class="device p-2" id=`temperature${building.id.replace(/\D/g,'')}`) 25
-            
-              input.d-none(type="text" name="id" value=`${building.id.replace(/\D/g,'')}`)
-              input(type="submit"  value="raise" name="action" class="ms-2 btn btn-primary btn-sm") 
-              input(type="submit" value="lower" name="action" class="ms-2 btn btn-primary btn-sm") 
-
-          form.p-2(action="/device/command" method="POST")
-            h3 Current Weather Conditions: 
-
-            p Alter the current weather
-            span.mx-2(id="weather") cloudy
-            img(id="weathericon2" class="ps-2" src='/img/none.svg' width="32" height="32")
-            input.d-none(type="text" name="id" value="weather")
-            input(type="submit" value="sunny" name="action" class="ms-2 btn btn-primary btn-sm") 
-            input(type="submit" value="raining" name="action" class="ms-2 btn btn-primary btn-sm")
-            input(type="submit" value="cloudy" name="action" class="ms-2 btn btn-primary btn-sm") 
-
-  script.
-    $(function () {
-      const socket = io();
-      socket.on('weather', function (msg) {
-         $('#weather').text(msg);
-         $('#weathericon').css('background-image', "url('/img/" + msg + ".svg')");
-         $('#weathericon2').css('background-image', "url('/img/" + msg + ".svg')");
-      });
-      $('span.device').each(function (index, value) {
-        const device = $(this).attr('id');
-        socket.on(device, function (msg) {
-          $('#' + device).text(msg);
-          let measure;
-          const li = $('#' + device).parent().parent();
-          switch (device.replace(/\d/g, '')) {
-              case 'temperature':
-                  measure = parseFloat(msg.replace(/[^(\d.)]/g, ''));
-                  if (measure > 28) {
-                      li.css('background-image', "url('/img/temperature-high.svg')");
-                  } else if (measure < 23) {
-                      li.css('background-image', "url('/img/temperature-low.svg')");
-                  } else {
-                      li.css('background-image', "url('/img/temperature.svg')");
-                  }
-                  break;
-
-              case 'filling':
-                  measure = Math.round(parseFloat(msg.replace(/[^(\d.)]/g, '')) * 10);
-                  if (measure >= 10) {
-                      li.css('background-image', "url('/img/warehouse-full.svg')");
-                  } else if (measure === 0) {
-                      li.css('background-image', "url('/img/warehouse-empty.svg')");
-                  } else {
-                      li.css('background-image', "url('/img/warehouse-" + measure + ".svg')");
-                  }
-                  break;
-               }
-            }); 
-        });
-        const map = new maplibregl.Map({
-          container: 'map',
-          style: 'https://api.maptiler.com/maps/streets-v2/style.json?key=foqzh86Jk2Ia9CL7w8ks',
-          center: [#{building.location.coordinates[0]}, #{building.location.coordinates[1]}],
-          zoom: 15,
-          attributionControl: {compact: true}
-        });
-        map.addControl(new maplibregl.NavigationControl());   
-        const marker = new maplibregl.Marker()
-            .setLngLat([#{building.location.coordinates[0]}, #{building.location.coordinates[1]}])
-            .addTo(map); 
-      });
-
-
-
-     
-
-//-    div(style="float: left; padding:0px 20px 20px 20px; border: none;")
-      iframe(width='560', height='270', src=`/app/building/${building.id}/till`, frameborder='0')
-    div(style="clear: both;")
-    div(style="padding:5px 20px 20px 20px; border:none;")
-      - if (building.tweets)
-        h3 Tweets:
-        ul
-          each item in building.tweets
-            li= item
-      - if (building.temperature)
-        p 
-          b Temperature:&nbsp;
-          | #{building.temperature}
-      - if (building.relativeHumidity)
-        p 
-          b Humidity:&nbsp;
-          | #{building.relativeHumidity}
-      - if (building.luminosity)
-        p 
-          b Luminosity:&nbsp;
-          | #{!isNaN(building.luminosity) ? building.luminosity : 'Unknown'}
-    div(style="float: left; padding:5px 20px 20px 20px; border: none;")
-      iframe(width='560', height='315', src=`/app/building/${building.id}/warehouse`, frameborder='0')

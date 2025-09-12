@@ -9,18 +9,14 @@ block content
         div.card-body
           div.container
             div.row
-              - if (pest.alternateName)
-                dt.col-lg-3 Scientific Name: 
-                dd.col-lg-9 #{pest.alternateName}
-            div.row
-              - if (pest.description)
-                dt.col-lg-3 Description: 
-                dd.col-lg-9 #{pest.description}
-            div.row
-              - if (pest.agroVocConcept)
-                dt.col-lg-3 AgroVocConcept: 
+               - if (pest.hasStockPrice)
+                dt.col-lg-3 Stocks: 
                 dd.col-lg-9
-                  code #{pest.agroVocConcept}
+                  ul
+                    each item in pest.hasStockPrice
+                      li
+                        a(class="link-underline link-underline-opacity-0" href=`/app/soil/${item}`) #{item}
+ 
 
 
   div.row

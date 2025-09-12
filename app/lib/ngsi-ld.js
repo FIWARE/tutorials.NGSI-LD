@@ -168,6 +168,20 @@ function readEntity(entityId, opts, headers = {}) {
         });
 }
 
+function readTemporalEntity(entityId, opts, headers = {}) {
+    return fetch(`${BASE_PATH}/temporal/entities/${entityId}/?${new URLSearchParams(opts)}`, {
+        method: 'GET',
+        headers
+    })
+        .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
+        .then((data) => {
+            if (data.status !== 200) {
+                throw new Error('', { cause: data.body });
+            }
+            return data.body;
+        });
+}
+
 // This is a promise to make an HTTP GET request to the
 // /ngsi-ld/v1/entities/ end point
 function listEntities(opts, headers = {}) {
@@ -191,6 +205,7 @@ module.exports = {
     deleteAttribute,
     createEntity,
     readEntity,
+    readTemporalEntity,
     updateEntity,
     deleteEntity,
     listEntities,
