@@ -16,6 +16,7 @@ const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 
 const MONGO_DB = process.env.MONGO_URL || 'mongodb://localhost:27017';
+const sessionOff = process.env.SESSION_OFF || false;
 
 const connectWithRetry = () => {
     mongoose
@@ -32,7 +33,13 @@ const connectWithRetry = () => {
             setTimeout(connectWithRetry, 5000);
         });
 };
-connectWithRetry();
+
+if (!sessionOff) {
+    debug(`Enabling sessions`);
+    connectWithRetry();
+} else {
+    debug('Sessions are disabled.');
+}
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -44,29 +51,31 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(flash());
 
-if (process.env.NODE_ENV === 'production') {
-    // Use Mongo-DB to store session data.
-    app.use(
-        session({
-            resave: false,
-            saveUninitialized: true,
-            secret: SECRET,
-            store: MongoStore.create({
-                mongoUrl: MONGO_DB + '/sessions',
-                mongooseConnection: mongoose.connection,
-                ttl: 14 * 24 * 60 * 60 // save session for 14 days
+if (!sessionOff) {
+    if (process.env.NODE_ENV === 'production') {
+        // Use Mongo-DB to store session data.
+        app.use(
+            session({
+                resave: false,
+                saveUninitialized: true,
+                secret: SECRET,
+                store: MongoStore.create({
+                    mongoUrl: MONGO_DB + '/sessions',
+                    mongooseConnection: mongoose.connection,
+                    ttl: 14 * 24 * 60 * 60 // save session for 14 days
+                })
             })
-        })
-    );
-} else {
-    // Use Memstore for session data.
-    app.use(
-        session({
-            secret: SECRET,
-            resave: false,
-            saveUninitialized: true
-        })
-    );
+        );
+    } else {
+        // Use Memstore for session data.
+        app.use(
+            session({
+                secret: SECRET,
+                resave: false,
+                saveUninitialized: true
+            })
+        );
+    }
 }
 
 app.use(express.static(path.join(__dirname, 'public')));

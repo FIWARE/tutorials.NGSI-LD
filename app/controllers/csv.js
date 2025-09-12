@@ -62,13 +62,19 @@ function createEntitiesFromRows(rows) {
         weight: 'KGM',
         batteryLevel: 'C68'
     };
-    const timestamp = new Date().toISOString();
+    const now = new Date();
+    const currentTimestamp = now.toISOString();
 
     rows.forEach((row) => {
         const entity = {
             id: row.id,
             type: row.type
         };
+
+        let timestamp = currentTimestamp;
+        if (row.offset) {
+            timestamp = new Date(now.getTime() + Number(row.offset) * 60000).toISOString();
+        }
 
         Object.keys(row).forEach((key) => {
             const value = row[key];
@@ -78,7 +84,7 @@ function createEntitiesFromRows(rows) {
                     case 'agroVocConcept':
                     case 'alternateName':
                     case 'birthdate':
-                    
+
                     case 'controlledProperty':
                     case 'dataProvider':
                     case 'dateIssued':
@@ -206,6 +212,7 @@ function createEntitiesFromRows(rows) {
                     case 'addressRegion':
                     case 'postalCode':
                     case 'providedBy':
+                    case 'offset':
                         break;
 
                     default:
@@ -257,10 +264,10 @@ function createEntitiesFromRows(rows) {
  * Create an array of promises to send data to the context broker.
  * Each insert represents a series of readings at a given timestamp
  */
-function createContextRequests(entities) {
+function createContextRequests(entities, tenant) {
     const promises = [];
     entities.forEach((entitiesAtTimeStamp) => {
-        promises.push(BatchUpdate.sendAsHTTP(entitiesAtTimeStamp));
+        promises.push(BatchUpdate.sendAsHTTP(entitiesAtTimeStamp, tenant));
     });
     return promises;
 }
@@ -293,7 +300,7 @@ const upload = (req, res) => {
                 batchEntities.push(chunk);
             }
 
-            return createContextRequests(batchEntities);
+            return createContextRequests(batchEntities, req.get('NGSILD-Tenant'));
         })
         .then(async (promises) => {
             const results = [];

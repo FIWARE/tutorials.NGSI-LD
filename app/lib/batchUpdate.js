@@ -18,12 +18,17 @@ function is2xxSuccessful(status) {
 }
 
 // measures sent over HTTP are POST requests with params
-function sendAsHTTP(state) {
+function sendAsHTTP(state, tenant) {
     const url = CONTEXT_BROKER_URL + '/entityOperations/upsert';
     const headers = {
         'Content-Type': 'application/json',
         Link: '<' + LINKED_DATA + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
     };
+
+    if (tenant) {
+        headers['NGSILD-Tenant'] = tenant;
+    }
+
     const body = Array.isArray(state) ? state : [state];
     try {
         return fetch(`${url}?${new URLSearchParams({ options: 'update' })}`, {
