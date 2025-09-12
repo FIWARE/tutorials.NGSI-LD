@@ -16,6 +16,7 @@ const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 
 const MONGO_DB = process.env.MONGO_URL || 'mongodb://localhost:27017';
+const sessionOff = process.env.SESSION_OFF || false;
 
 const connectWithRetry = () => {
     mongoose
@@ -32,7 +33,13 @@ const connectWithRetry = () => {
             setTimeout(connectWithRetry, 5000);
         });
 };
-connectWithRetry();
+
+if (!sessionOff) {
+    debug(`Enabling sessions`);
+    connectWithRetry();
+} else {
+    debug('Sessions are disabled.');
+}
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
