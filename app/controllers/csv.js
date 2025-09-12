@@ -73,6 +73,7 @@ function createEntitiesFromRows(rows) {
         Object.keys(row).forEach((key) => {
             const value = row[key];
             if (value !== '') {
+                /* eslint-disable no-fallthrough */
                 switch (key) {
                     case 'agroVocConcept':
                     case 'alternateName':
@@ -206,11 +207,14 @@ function createEntitiesFromRows(rows) {
                     case 'postalCode':
                     case 'providedBy':
                         break;
+
                     default:
                         if (!key.includes('_')) {
                             debug('unknown : ' + key);
                         }
                         break;
+
+                    /* eslint-enable no-fallthrough */
                 }
                 if (unitCode[key]) {
                     entity[key].unitCode = unitCode[key];
