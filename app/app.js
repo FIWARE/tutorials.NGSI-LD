@@ -51,31 +51,29 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(flash());
 
-if (!sessionOff) {
-    if (process.env.NODE_ENV === 'production') {
-        // Use Mongo-DB to store session data.
-        app.use(
-            session({
-                resave: false,
-                saveUninitialized: true,
-                secret: SECRET,
-                store: MongoStore.create({
-                    mongoUrl: MONGO_DB + '/sessions',
-                    mongooseConnection: mongoose.connection,
-                    ttl: 14 * 24 * 60 * 60 // save session for 14 days
-                })
+if (process.env.NODE_ENV === 'production' && !sessionOff) {
+    // Use Mongo-DB to store session data.
+    app.use(
+        session({
+            resave: false,
+            saveUninitialized: true,
+            secret: SECRET,
+            store: MongoStore.create({
+                mongoUrl: MONGO_DB + '/sessions',
+                mongooseConnection: mongoose.connection,
+                ttl: 14 * 24 * 60 * 60 // save session for 14 days
             })
-        );
-    } else {
-        // Use Memstore for session data.
-        app.use(
-            session({
-                secret: SECRET,
-                resave: false,
-                saveUninitialized: true
-            })
-        );
-    }
+        })
+    );
+} else {
+    // Use Memstore for session data.
+    app.use(
+        session({
+            secret: SECRET,
+            resave: false,
+            saveUninitialized: true
+        })
+    );
 }
 
 app.use(express.static(path.join(__dirname, 'public')));
