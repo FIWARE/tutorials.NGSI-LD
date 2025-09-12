@@ -5,6 +5,7 @@ const debug = require('debug')('devices:iot-device');
 const mqtt = require('mqtt');
 const logger = require('morgan');
 const IoTDevices = require('./models/devices');
+const MyCache = require('./lib/cache');
 
 /* global MQTT_CLIENT */
 const DEVICE_TRANSPORT = process.env.DUMMY_DEVICES_TRANSPORT || 'HTTP';
@@ -54,6 +55,11 @@ iotRouter.get('/devices/:type', (req, res) => {
 
 iotRouter.put('/devices/tractor', (req, res) => {
   IoTDevices.updateTractorStatus();
+  res.status(204).send();
+});
+
+iotRouter.put('/devices', (req, res) => {
+  MyCache.setCacheValues(req.body);
   res.status(204).send();
 });
 

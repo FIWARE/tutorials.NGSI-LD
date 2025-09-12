@@ -31,6 +31,15 @@ exports.set = async function (key, value) {
   return await client.set(key, value);
 };
 
+exports.setCacheValues = function (data) {
+  Object.keys(data).forEach(async (key) => {
+    if (keys.includes(key) === false) {
+      keys.push(key);
+    }
+    await client.set(key, data[key]);
+  });
+};
+
 exports.keys = function () {
   return keys;
 };
