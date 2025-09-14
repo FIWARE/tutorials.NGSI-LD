@@ -36,6 +36,7 @@ exports.setCacheValues = function (data) {
     if (keys.includes(key) === false) {
       keys.push(key);
     }
+    debug(`${key}, ${data[key]}`);
     await client.set(key, data[key]);
   });
 };

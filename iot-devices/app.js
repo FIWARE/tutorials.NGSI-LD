@@ -59,7 +59,7 @@ iotRouter.put('/devices/tractor', (req, res) => {
 });
 
 iotRouter.put('/devices', (req, res) => {
-  MyCache.setCacheValues(req.body);
+  MyCache.setCacheValues(JSON.parse(req.body));
   res.status(204).send();
 });
 
