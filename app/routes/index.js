@@ -62,7 +62,7 @@ function broadcastEvents(req, item, types) {
 router.get('/', async function (req, res) {
     const securityEnabled = SECURE_ENDPOINTS;
 
-    const headers = ngsiLD.setHeaders(req.session.access_token, LinkHeader);
+    const headers = ngsiLD.setHeaders(null,LinkHeader);
     try {
         monitor('NGSI', 'listEntities ?type=City');
         const cities = await ngsiLD.listEntities(
