@@ -16,12 +16,12 @@ async function displayPest(req, res) {
         const pest = await ngsiLD.readEntity(
             req.params.id,
             { options: 'keyValues' },
-            ngsiLD.setHeaders(req.session.access_token, LinkHeader)
+            ngsiLD.setHeaders(null, LinkHeader)
         );
         return res.render('pest', { title: pest.name, pest });
     } catch (error) {
-        const errorDetail = error.error | error;
-        debug(errorDetail);
+        
+        debug(error);
         // If no pest has been found, display an error screen
         return res.render('error', {
             title: `Error: ${errorDetail.title}`,

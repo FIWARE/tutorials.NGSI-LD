@@ -31,13 +31,14 @@ async function displaySoil(req, res) {
         const color = [];
 
 
-
-        _.forEach(timeseries.price.values.reverse(), (element) => {
-            const date = new Date(element[1]);
-            data.push({ t: element[1], y: element[0] });
-            labels.push(date.toISOString().slice(0, 10)) ;
-            color.push('#45d3dd');
-        });
+        if (timeseries.price.values){
+            _.forEach(timeseries.price.values.reverse(), (element) => {
+                const date = new Date(element[1]);
+                data.push({ t: element[1], y: element[0] });
+                labels.push(date.toISOString().slice(0, 10)) ;
+                color.push('#45d3dd');
+            });
+        }
 
         const chartData = {data, labels, color}
        
@@ -45,13 +46,12 @@ async function displaySoil(req, res) {
 
         return res.render('soil', { title: soil.name, soil , timeseries,  chartData});
     } catch (error) {
-        const errorDetail = error.error;
+        const errorDetail = error.error ||  error;
         debug(errorDetail);
-            console.log(error)
         // If no soil has been found, display an error screen
         return res.render('error', {
 
-            title: `Error: ${errorDetail.title}`,
+            title: `Error: ${errorDetail.title || 'Not Found'}`,
             message: errorDetail.detail,
             error: {
                 stack: errorDetail.title

@@ -20,7 +20,7 @@ async function displayAgriFarm(req, res) {
         );
         return res.render('agri-farm', { title: farm.name, farm });
     } catch (error) {
-        const errorDetail = error.error | error;
+        const errorDetail = error.error || error;
         debug(errorDetail);
         // If no farm has been found, display an error screen
         return res.render('error', {
