@@ -49,19 +49,24 @@ block content
                 - if (farm.hasAgriParcel)
                   dt.col-lg-3 Agri Parcel: 
                   dd.col-lg-9
-                    ul
-                      each item in farm.hasAgriParcel
-                        li
-                          a(class="link-underline link-underline-opacity-0" href=`/app/agriparcel/${item}`) #{item}
-                       
+                    - if (Array.isArray(farm.hasAgriParcel))
+                      ul
+                        each item in farm.hasAgriParcel
+                          li
+                              a(class="link-underline link-underline-opacity-0" href=`/app/agriparcel/${item}`) #{item}
+                    - else
+                      a(class="link-underline link-underline-opacity-0" href=`/app/agriparcel/${farm.hasAgriParcel}`) #{farm.hasAgriParcel}
               div.row
                 - if (farm.hasBuilding)
                   dt.col-lg-3 Buildings: 
                   dd.col-lg-9
-                    ul
-                      each item in farm.hasBuilding
-                        li
-                          a(class="link-underline link-underline-opacity-0" href=`/app/building/${item}`) #{item}
+                    - if (Array.isArray(farm.hasBuilding))
+                      ul
+                        each item in farm.hasBuilding
+                          li
+                              a(class="link-underline link-underline-opacity-0" href=`/app/building/${item}`) #{item}
+                    - else
+                      a(class="link-underline link-underline-opacity-0" href=`/app/building/${farm.hasBuilding}`) #{farm.hasBuilding}
 
               div.row
                 - if (farm.location)
