@@ -490,7 +490,7 @@ curl -G -X GET \
   -H 'NGSILD-Tenant: vet' \
   -H 'Content-Type: application/json' \
   -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
-  -d 'format=Animal' \
+  -d 'type=Animal' \
   -d 'limit=100' \
   -d 'format=concise'
 ```
@@ -563,7 +563,7 @@ curl -G -X GET \
   -H 'NGSILD-Tenant: farmer' \
   -H 'Content-Type: application/json' \
   -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
-  -d 'format=Animal' \
+  -d 'type=Animal' \
   -d 'limit=100' \
   -d 'format=concise'
 ```

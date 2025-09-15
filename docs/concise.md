@@ -36,7 +36,7 @@ payloads are exceedingly regular and parseable, and can easily be reduced down t
 an operation necessary. However with the normalized format, is necessary to repeatedly supply common defining attributes
 such as `"type": "Property"` throughout the payload to ensure that machines can fully understand the data represented.
 
-#### Normalized NGSI-LD using `options=normalized`
+#### Normalized NGSI-LD using `format=normalized`
 
 ```json
 {
@@ -481,7 +481,8 @@ format.
 curl -G -iX GET \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
--d 'options=concise,sysAttrs'
+-d 'options=sysAttrs' \
+-d 'format=concise'
 ```
 
 #### Response:
