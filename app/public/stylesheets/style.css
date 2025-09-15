@@ -2,7 +2,7 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto+Mono");
 
 body {
-  font-family: Montserrat, Helvetica, Arial, sans-serif !important;
+  font-family: Nunito, Helvetica, Arial, sans-serif !important;
   font-weight: 400;
   font-size: 16px;
   line-height: 24px;
@@ -16,7 +16,7 @@ strong {
 }
 a {
   font-weight: 500;
-  color: #002e67;
+  color: #000000;
 }
 a:hover {
   color: #002452;
@@ -33,7 +33,7 @@ h4,
 h5,
 h6 {
   font-family: Montserrat, Helvetica, Arial, sans-serif !important;
-  color: #002e67 !important;
+  color: #198754 !important;
   font-weight: 600;
   text-transform: capitalize;
   font-size: 18px;
@@ -78,7 +78,7 @@ code {
   font-family: "Roboto Mono", monospace !important;
   background-color: transparent !important;
   font-size: 100% !important;
-  color: #5dc0cf;
+  color: #198754;
   white-space: break-spaces !important;
   border: none !important;
 }

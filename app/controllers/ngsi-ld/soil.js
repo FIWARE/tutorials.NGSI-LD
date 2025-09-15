@@ -36,7 +36,7 @@ async function displaySoil(req, res) {
                 const date = new Date(element[1]);
                 data.push({ t: element[1], y: element[0] });
                 labels.push(date.toISOString().slice(0, 10)) ;
-                color.push('#45d3dd');
+                color.push('#198754');
             });
         }
 
