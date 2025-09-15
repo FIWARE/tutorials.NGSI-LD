@@ -24,7 +24,7 @@ block content
       div.card
         div.card-body
 
-          - if (cities.length === 0)
+          - if (!cities)
             p None Found
           - else 
             ul.list-unstyled  
@@ -47,7 +47,7 @@ block content
       div.card
         div.card-body
 
-          - if (cities.length === 0)
+          - if (!cities)
             p None Found
           - else 
             ul.list-unstyled  

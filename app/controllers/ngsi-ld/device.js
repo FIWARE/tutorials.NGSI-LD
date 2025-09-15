@@ -14,7 +14,7 @@ async function displayDevice(req, res) {
     debug('displayDevice');
     // If the user is not authorized, display the main page.
     if (!res.locals.authorized) {
-        req.flash('error', 'Access Denied');
+        //req.flash('error', 'Access Denied');
         return res.redirect('/');
     }
     try {

@@ -8,7 +8,7 @@ async function displayAgriFarm(req, res) {
     debug('displayAgriFarm');
     // If the user is not authorized, display the main page.
     if (!res.locals.authorized) {
-        req.flash('error', 'Access Denied');
+        //req.flash('error', 'Access Denied');
         return res.redirect('/');
     }
     try {
@@ -16,7 +16,7 @@ async function displayAgriFarm(req, res) {
         const farm = await ngsiLD.readEntity(
             req.params.id,
             { options: 'keyValues' },
-            ngsiLD.setHeaders(req.session.access_token, LinkHeader)
+            ngsiLD.setHeaders(null, LinkHeader)
         );
         return res.render('agri-farm', { title: farm.name, farm });
     } catch (error) {

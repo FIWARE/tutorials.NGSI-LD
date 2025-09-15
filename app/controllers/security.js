@@ -197,11 +197,9 @@ function refreshTokenGrant(req, res) {
 function authenticate(req, res, next) {
     debug('authenticate');
 
-    if (!SECURE_ENDPOINTS) {
-        res.locals.authorized = true;
-    } else {
-        res.locals.authorized = !!req.session.access_token;
-    }
+   
+    res.locals.authorized = true;
+    
     return next();
 }
 

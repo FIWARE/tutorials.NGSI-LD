@@ -6,6 +6,7 @@
 // context broker. It is best to do this with an environment
 // variable (with a fallback if necessary)
 const BASE_PATH = process.env.CONTEXT_BROKER || 'http://localhost:1026/ngsi-ld/v1';
+const debug = require('debug')('tutorial:ngsi-ld');
 
 const JSON_LD_HEADER = 'application/ld+json';
 
@@ -33,6 +34,8 @@ function setHeaders(accessToken, link, contentType) {
     if (contentType) {
         headers['Content-Type'] = contentType || JSON_LD_HEADER;
     }
+
+    headers['Demo'] = 'Demo';
     return headers;
 }
 
@@ -185,6 +188,7 @@ function readTemporalEntity(entityId, opts, headers = {}) {
 // This is a promise to make an HTTP GET request to the
 // /ngsi-ld/v1/entities/ end point
 function listEntities(opts, headers = {}) {
+    debug('listEntities')
     return fetch(`${BASE_PATH}/entities/?${new URLSearchParams(opts)}`, {
         method: 'GET',
         headers
@@ -192,10 +196,12 @@ function listEntities(opts, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 200) {
+                debug(data.body)
                 throw new Error(data.body);
             }
             return data.body;
-        });
+        })
+        .catch ((e)=>{console.log(e);});
 }
 
 module.exports = {

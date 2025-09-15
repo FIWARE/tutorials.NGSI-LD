@@ -10,7 +10,7 @@ async function displaySoil(req, res) {
     debug('displaySoil');
     // If the user is not authorized, display the main page.
     if (!res.locals.authorized) {
-        req.flash('error', 'Access Denied');
+        //req.flash('error', 'Access Denied');
         return res.redirect('/');
     }
     try {
@@ -18,13 +18,13 @@ async function displaySoil(req, res) {
         const soil = await ngsiLD.readEntity(
             req.params.id,
             { options: 'keyValues' },
-            ngsiLD.setHeaders(req.session.access_token, LinkHeader)
+            ngsiLD.setHeaders(null, LinkHeader)
         );
 
         const timeseries = await ngsiLD.readTemporalEntity(
             req.params.id,
             { options: 'temporalValues' },
-            ngsiLD.setHeaders(req.session.access_token, LinkHeader)
+            ngsiLD.setHeaders(null, LinkHeader)
         );
         const data = [];
         const labels = [];

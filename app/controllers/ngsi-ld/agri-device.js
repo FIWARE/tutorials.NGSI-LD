@@ -8,7 +8,7 @@ async function displayAgriDevice(req, res) {
     debug('displayAgriDevice');
     // If the user is not authorized, display the main page.
     if (!res.locals.authorized) {
-        req.flash('error', 'Access Denied');
+        //req.flash('error', 'Access Denied');
         return res.redirect('/');
     }
     try {
@@ -16,19 +16,17 @@ async function displayAgriDevice(req, res) {
         const device = await ngsiLD.readEntity(
             req.params.id,
             { options: 'keyValues' },
-            ngsiLD.setHeaders(req.session.access_token, LinkHeader)
+            ngsiLD.setHeaders(null, LinkHeader)
         );
         return res.render('agri-device', { title: device.name, device });
     } catch (error) {
-        const errorDetail = error.error | error;
-        debug(errorDetail);
+        const errorDetail = error.error | error | {};
+        debug(error);
         // If no device has been found, display an error screen
         return res.render('error', {
-            title: `Error: ${errorDetail.title}`,
-            message: errorDetail.detail,
-            error: {
-                stack: errorDetail.title
-            }
+            title: '',
+            message: '',
+            error
         });
     }
 }

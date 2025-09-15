@@ -25,7 +25,7 @@ const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context
 const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json">';
 
 const _ = require('lodash');
-const debug = require('debug')('tutorial:ngsi-ld');
+const debug = require('debug')('tutorial:index');
 
 const TRANSPORT = process.env.DUMMY_DEVICES_TRANSPORT || 'HTTP';
 const DEVICE_PAYLOAD = process.env.DUMMY_DEVICES_PAYLOAD || 'ultralight';
@@ -64,6 +64,7 @@ router.get('/', async function (req, res) {
 
     const headers = ngsiLD.setHeaders(null,LinkHeader);
     try {
+        console.log('x')
         monitor('NGSI', 'listEntities ?type=City');
         const cities = await ngsiLD.listEntities(
             {
@@ -74,6 +75,8 @@ router.get('/', async function (req, res) {
             },
             headers
         );
+
+
         monitor('NGSI', 'listEntities ?type=Product');
         const products = await ngsiLD.listEntities(
             {
@@ -87,19 +90,20 @@ router.get('/', async function (req, res) {
         
 
         console.log(cities)
+        console.log(products)
 
         return res.render('index', {
             title: 'Casa Agri Demo',
-            success: req.flash('success'),
-            errors: req.flash('error'),
-            info: req.flash('info'),
+            success: '',
+            errors: '',
+            info: '',
             securityEnabled,
             cities,
             products,
             ngsi: 'ngsi-ld'
         });
     } catch (e) {
-        debug(e.error);
+        debug(e);
         return res.render('index', {
             errors: [e.error],
             buildings: [],

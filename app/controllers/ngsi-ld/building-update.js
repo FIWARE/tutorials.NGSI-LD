@@ -1,5 +1,5 @@
 const mongoDB = require('../../lib/mongoDB-building');
-const debug = require('debug')('tutorial:ngsi-ld');
+const debug = require('debug')('tutorial:building-update');
 
 // This is a promise to send data to a MongoDB database
 // for each individual building.

@@ -8,7 +8,7 @@ async function displayPest(req, res) {
     debug('displayPest');
     // If the user is not authorized, display the main page.
     if (!res.locals.authorized) {
-        req.flash('error', 'Access Denied');
+        //req.flash('error', 'Access Denied');
         return res.redirect('/');
     }
     try {
@@ -20,7 +20,7 @@ async function displayPest(req, res) {
         );
         return res.render('pest', { title: pest.name, pest });
     } catch (error) {
-        const errorDetail = error.error;
+        const errorDetail = error.error | error;
         debug(errorDetail);
         // If no pest has been found, display an error screen
         return res.render('error', {

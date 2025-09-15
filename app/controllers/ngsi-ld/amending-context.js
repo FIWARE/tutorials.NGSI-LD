@@ -5,7 +5,7 @@
 // For more information see: https://json-ld.org/
 //
 
-const debug = require('debug')('tutorial:ngsi-ld');
+const debug = require('debug')('tutorial:amending-context');
 const jsonld = require('jsonld');
 
 const BASE_PATH = process.env.CONTEXT_BROKER || 'http://localhost:1026/ngsi-ld/v1';

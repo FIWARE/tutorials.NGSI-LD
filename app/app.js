@@ -7,7 +7,6 @@ const bodyParser = require('body-parser');
 const indexRouter = require('./routes/index');
 const crypto = require('crypto');
 const session = require('express-session');
-const flash = require('connect-flash');
 const debug = require('debug')('tutorial:server');
 const SECRET = process.env.SESSION_SECRET || crypto.randomBytes(20).toString('hex');
 
@@ -49,7 +48,6 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(flash());
 
 
 if (!sessionOff) {
