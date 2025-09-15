@@ -2,7 +2,7 @@ extends layout
 
 block content
   h1
-    | #{animal.name} - 
+    | #{animal.name.value} - 
     - if (animal.id)
       small
         code(style="text-transform:initial")
@@ -22,11 +22,11 @@ block content
                 dl.row
                   - if (animal.species)
                     dt.col-lg-3 Species: 
-                    dd.col-lg-9 #{animal.species}
-                  - if (animal.legalId||animal.legalID)
+                    dd.col-lg-9 #{animal.species.value}
+                  - if (animal.legalId||animal.legalID.value)
                     dt.col-lg-3 Legal ID: 
                     dd.col-lg-9
-                      code #{animal.legalId||animal.legalID}
+                      code #{animal.legalId.value||animal.legalID.value}
                   - if (animal.phenologicalCondition)
                     dt.col-lg-3 Phenological
                       br 
@@ -44,10 +44,10 @@ block content
                     dt.col-lg-3 Sex: 
                     dd.col-lg-3 #{animal.sex.vocab||animal.sex}
                     dt.col-lg-3 Date of Birth: 
-                    dd.col-lg-3 #{animal.birthdate ? animal.birthdate.substring(0,10) : 'unknown'}
+                    dd.col-lg-3 #{animal.birthdate ? animal.birthdate.value.substring(0,10) : 'unknown'}
                   - if (animal.fedWith)
                     dt.col-lg-3 Fed With: 
-                    dd.col-lg-3 #{animal.fedWith}
+                    dd.col-lg-3 #{animal.fedWith.value}
                     - if (animal.weight)
                       dt.col-lg-3 Weight
                       dd.col-lg-3
@@ -114,7 +114,7 @@ block content
     div.col
       div(class="card m-2")
         div.card-body
-          summary.list-unstyled
+          summary.list-unstyled Entity (normalised)
             details
               pre 
                 code #{JSON.stringify(animal, null, 4)}

@@ -51,6 +51,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(flash());
 
+console.log(sessionOff)
+
 if (process.env.NODE_ENV === 'production' && !sessionOff) {
     // Use Mongo-DB to store session data.
     app.use(

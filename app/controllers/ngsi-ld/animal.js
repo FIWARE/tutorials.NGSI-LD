@@ -15,7 +15,7 @@ async function getAnimals(req, res) {
     const animals = await ngsiLD.listEntities(
         {
             type: 'Animal',
-            options: 'concise',
+            format: 'normalized',
             limit: ENTITY_LIMIT
         },
         headers
@@ -51,7 +51,7 @@ async function displayAnimal(req, res) {
         monitor('NGSI', 'readEntity ' + req.params.id);
         const animal = await ngsiLD.readEntity(
             req.params.id,
-            { options: 'concise' },
+            { format: 'normalized' },
             ngsiLD.setHeaders(req.session.access_token, LinkHeader)
         );
 
@@ -60,7 +60,7 @@ async function displayAnimal(req, res) {
         if (imgId < 100) {
             imgId = `00${imgId % 10}`;
         }
-        return res.render('animal', { title: animal.name, animal, imgId });
+        return res.render('animal', { title: animal.name.value, animal, imgId });
     } catch (error) {
         // If no animal has been found, display an error screen
         return res.render('error', {
