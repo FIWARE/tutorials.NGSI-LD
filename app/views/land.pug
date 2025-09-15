@@ -41,10 +41,13 @@ block content
               - if (land.hasDevices)
                 dt.col-lg-3 Devices 
                 dd.col-lg-9
-                 ul
-                    each item in land.hasDevices
-                      li
-                          a(class="link-underline link-underline-opacity-0" href=`/app/agri-device/${item}`) #{item}
+                  - if (Array.isArray(land.hasDevices))
+                    ul
+                      each item in land.hasDevices
+                        li
+                            a(class="link-underline link-underline-opacity-0" href=`/app/agri-device/${item}`) #{item}
+                  - else
+                    a(class="link-underline link-underline-opacity-0" href=`/app/agri-device/${land.hasDevices}`) #{land.hasDevices}
 
               - if (land.ownedBy)
                 dt.col-lg-3 OwnedBy
