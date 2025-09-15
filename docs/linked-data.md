@@ -423,7 +423,8 @@ It should be noted that the `@context` supplied in the `Link` header has been to
 The `fixed-context` JSON-LD `@context` file fully defines all the terms found within the NGSI-v2 system in terms of IRIs - the file can be accessed as shown.
 
 ```console
-curl -L 'http://localhost:3004/fixed-context.jsonld'
+curl -X GET \
+  'http://localhost:3004/fixed-context.jsonld'
 ```
 
 #### Response:
@@ -505,7 +506,8 @@ This NGSI-LD **ContextSourceRegistration** example informs the NGSI-LD context b
 #### 5️⃣ Request:
 
 ```console
-curl -L 'http://localhost:1026/ngsi-ld/v1/csourceRegistrations/' \
+curl -X POST \
+  'http://localhost:1026/ngsi-ld/v1/csourceRegistrations/' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Content-Type: application/json' \
 -d '{
@@ -540,7 +542,8 @@ NGSI-LD FMIS system:
 #### 6️⃣ Request:
 
 ```console
-curl -L 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Store:001' \
+curl -X GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Store:001' \
 -H 'Link: <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 ```
 
@@ -590,8 +593,8 @@ curl -G -X GET \
     -H 'Accept: application/ld+json' \
     -d 'type=Building' \
     -d 'q=category==%22supermarket%22' \
-    -d 'attrs=name' \
-    -d 'options=keyValues'
+    -d 'pick=id,type,name' \
+    -d 'format=simplified'
 ```
 
 #### Response:

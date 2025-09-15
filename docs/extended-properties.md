@@ -408,7 +408,7 @@ the data. We should execute the following command:
 ```bash
 curl -G -X  GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
   -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
-  -d 'attrs=name'
+  -d 'pick=id,type,name'
 ```
 
 And the response that we obtain the whole `languageMap` including all the string values defined for the different
@@ -437,9 +437,10 @@ language, we should specify the corresponding query parameter `lang` equal to `d
 #### 4️⃣ Request:
 
 ```bash
-curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
+curl -G -X GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
   -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'  \
-  -d 'attrs=name' \
+  -d 'pick=id,type,name' \
   -d 'lang=de'
 ```
 
@@ -470,9 +471,10 @@ format, we need to send the corresponding request parameter `format` equal to `s
 #### 5️⃣ Request:
 
 ```bash
-curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
+curl -G -X GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
   -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
-  -d 'attrs=name' \
+  -d 'pick=id,type,name' \
   -d 'format=simplified'
 ```
 
@@ -502,9 +504,10 @@ be present in the request.
 #### 6️⃣ Request:
 
 ```bash
-curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
+curl -G -X GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
   -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
-  -d 'attrs=name' \
+  -d 'pick=id,type,name' \
   -d 'format=simplified' \
   -d 'lang=en'
 ```
@@ -533,11 +536,12 @@ preferred default is the `@none` language, but if this is not present, any other
 For `urn:ngsi-ld:Building:barn002` return the name of the enity in _French_ by adding the `lang=fr` parameter
 
 ```bash
-curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:barn002' \
+curl -G -X GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:barn002' \
   -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -H 'Accept: application/ld+json'  \
   -d 'type=Building' \
-  -d 'attrs=name' \
+  -d 'pick=id,type,name' \
   -d 'lang=fr'
 ```
 
@@ -568,11 +572,12 @@ Since **French** is not a supported language for this Entity, but a default alte
 For `urn:ngsi-ld:Building:farm001` return the name of the entity in _French_ by adding the `lang=fr` parameter
 
 ```bash
-curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
+curl -G -X GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001' \
   -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -H 'Accept: application/ld+json'  \
   -d 'type=Building' \
-  -d 'attrs=name' \
+  -d 'pick=id,type,name' \
   -d 'lang=fr'
 ```
 
@@ -607,11 +612,12 @@ For example, if we want to obtain the Building whose name is equal to `Big Red B
 #### 9️⃣ Request:
 
 ```bash
-curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
+curl -G -X GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/' \
   -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -H 'Accept: application/ld+json'  \
   -d 'type=Building' \
-  -d 'attrs=name' \
+  -d 'pick=id,type,name' \
   -d 'q=name[en]==%22Big%20Red%20Barn%22'
 ```
 
@@ -645,11 +651,12 @@ Now, I wanted to receive the response but corresponding to `Big Red Barn` in _An
 #### 1️⃣0️⃣ Request:
 
 ```bash
-curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
+curl -G -X GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/' \
   -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -H 'Accept: application/ld+json'  \
   -d 'type=Building' \
-  -d 'attrs=name' \
+  -d 'pick=id,type,name' \
   -d 'q=name[*]==%22Big%20Red%20Barn%22'
 ```
 
@@ -709,10 +716,11 @@ adding a User `@context`.
 #### 1️⃣1️⃣ Request:
 
 ```bash
-curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
+curl -G -X GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/' \
   -H 'Accept: application/ld+json'  \
   -d 'type=https://uri.fiware.org/ns/dataModels%23Building' \
-  -d 'attrs=https://uri.fiware.org/ns/dataModels%23category'
+  -d 'pick=id,type,https://uri.fiware.org/ns/dataModels%23category'
 ```
 
 #### Response:
@@ -750,11 +758,12 @@ If the `ngsi-context.jsonld` `@context` is included as a `Link` header in the re
 attribute names to short names, and in the case of a **VocabProperty**, use the short names for the value as well.
 
 ```bash
-curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
+curl -G -X GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/' \
   -H 'Accept: application/ld+json'  \
   -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -d 'type=Building' \
-  -d 'attrs=category'
+  -d 'pick=id,type,category'
 ```
 
 #### Response:
@@ -814,11 +823,12 @@ names to short names used in `alternate-context.jsonld`, and in the case of a **
 names for the value as well.
 
 ```bash
-curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
+curl -G -X GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/' \
   -H 'Accept: application/ld+json'  \
   -H 'Link: <http://context/alternate-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
   -d 'type=Geb%C3%A4ude' \
-  -d 'attrs=kategorie'
+  -d 'pick=id,type,kategorie'
 ```
 
 #### Response:
@@ -860,10 +870,11 @@ shortname of the Entity `type` has also been amended.
 To make a key-values or simplified request, include the `format=simplified'` parameter
 
 ```bash
-curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:barn002' \
+curl -G -X GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Building:barn002' \
   -H 'Accept: application/ld+json'  \
   -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
-  -d 'attrs=category' \
+  -d 'pick=id,type,category' \
   -d 'format=simplified'
 ```
 
@@ -892,11 +903,12 @@ When querying using the `q` parameter, also include the `expandValues` parameter
 query are **VocabularyProperties**
 
 ```bash
-curl -G -X GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
+curl -G -X GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/' \
   -H 'Accept: application/ld+json'  \
   -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/json"' \
   -d 'type=Building' \
-  -d 'attrs=category' \
+  -d 'pick=id,type,category' \
   -d 'q=category==%22barn%22' \
   -d 'expandValues=category'
 ```

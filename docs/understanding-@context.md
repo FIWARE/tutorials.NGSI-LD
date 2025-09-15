@@ -652,7 +652,7 @@ extends `Device`) and so on.
 Further information about `@graph` can be found in the section on
 [Named Graphs](https://w3c.github.io/json-ld-syntax/#named-graphs).
 
-If NGSI-LD requests are made using the `options=keyValues` parameter, the response a generic JSON-LD object (as shown
+If NGSI-LD requests are made using the `format=simplified` parameter, the response a generic JSON-LD object (as shown
 below) rather than a full NGSI-LD object:
 
 ```json

@@ -405,7 +405,7 @@ curl -L -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:002' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
--d 'options=concise'
+-d 'format=concise'
 ```
 
 #### Response:
@@ -503,7 +503,8 @@ Re-retrieving the `urn:ngsi-ld:City:001`, you can see that the `location` and `t
 _Properties_ and _Properties of Properties_ such as `unitCode` ands `observedAt` remain unchanged:
 
 ```bash
-curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
+curl -L -X GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json'
 ```
@@ -615,7 +616,7 @@ curl -G -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
--d 'attrs=temperature' \
+-d 'pick=id,type,temperature' \
 ```
 
 #### Response:
@@ -677,7 +678,7 @@ curl -G -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:002' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
--d 'options=concise'
+-d 'format=concise'
 ```
 
 #### Response:
@@ -759,7 +760,7 @@ curl -G -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
--d 'attrs=address' \
+-d 'pick=id,type,address' \
 ```
 
 #### Response:
@@ -799,7 +800,7 @@ broker.
 curl -G -X PATCH \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
--d 'options=keyValues' \
+-d 'format=simplified' \
 -H 'Content-Type: application/json' \
 --data-raw '{
     "temperature": 19,
@@ -829,7 +830,7 @@ curl -G -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
--d 'attrs=address,temperature,location,runBy' \
+-d 'pick=id,type,address,temperature,location,runBy' \
 ```
 
 #### Response:
@@ -882,7 +883,7 @@ curl -G -X PATCH \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Content-Type: application/json' \
--d 'options=keyValues' \
+-d 'format=simplified' \
 -d 'observedAt=2022-10-10T10:10:00.000Z' \
 --data-raw '{
     "temperature": 19,
@@ -906,7 +907,7 @@ curl -G -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
--d 'attrs=temperature,location' \
+-d 'pick=id,type,temperature,location' \
 ```
 
 #### Response:
@@ -947,7 +948,7 @@ curl -G -X PATCH \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Content-Type: application/json' \
--d 'options=keyValues' \
+-d 'format=simplified' \
 -d 'lang=en'
 --data-raw '{
     "temperature": 19,
@@ -963,8 +964,8 @@ curl -G -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:City:001' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
--d 'options=keyValues' \
--d 'attrs=temperature,population,name'
+-d 'format=simplified' \
+-d 'pick=id,type,temperature,population,name'
 ```
 
 #### Response:

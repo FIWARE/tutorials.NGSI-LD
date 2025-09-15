@@ -278,7 +278,8 @@ the record within the **CrateDB** itself.
 #### 1 Request:
 
 ```bash
-curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
+curl -L -X POST \
+  'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'Content-Type: application/ld+json' \
 -H 'NGSILD-Tenant: openiot' \
 --data-raw '{
@@ -322,7 +323,8 @@ including the `throttling` attribute in the request body.
 #### 2 Request:
 
 ```bash
-curl -L -X POST 'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
+curl -L -X POST \
+  'http://localhost:1026/ngsi-ld/v1/subscriptions/' \
 -H 'Content-Type: application/ld+json' \
 -H 'NGSILD-Tenant: openiot' \
 --data-raw '{
@@ -447,11 +449,12 @@ in no data being returned.
 #### 4 Request:
 
 ```bash
-curl -X GET \
-  'http://localhost:8668/v2/entities/urn:ngsi-ld:Device:filling001/attrs/filling?limit=3' \
+curl -G -X GET \
+  'http://localhost:8668/v2/entities/urn:ngsi-ld:Device:filling001/attrs/filling' \
   -H 'Accept: application/json' \
   -H 'Fiware-Service: openiot' \
-  -H 'Fiware-ServicePath: /'
+  -H 'Fiware-ServicePath: /' \
+  -d 'limit=3'
 ```
 
 #### Response:
@@ -474,11 +477,14 @@ This example shows the fourth, fifth and sixth sampled `filling` values of `urn:
 #### 5 Request:
 
 ```bash
-curl -X GET \
-  'http://localhost:8668/v2/entities/urn:ngsi-ld:Device:filling001/attrs/filling?offset=3&limit=3' \
+curl -G -X GET \
+  'http://localhost:8668/v2/entities/urn:ngsi-ld:Device:filling001/attrs/filling' \
   -H 'Accept: application/json' \
   -H 'Fiware-Service: openiot' \
-  -H 'Fiware-ServicePath: /'
+  -H 'Fiware-ServicePath: /' \
+  -d 'offset=3' \
+  -d 'limit=3'
+
 ```
 
 #### Response:

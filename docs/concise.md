@@ -72,7 +72,7 @@ concentrating purely on the values of the first level of attributes only. The pa
 shorter and to the point, and not all information is returned by the request - second level attributes such as
 `unitCode` and `observedAt` will not be returned in the payload for example.
 
-#### Simplified NGSI-LD using `options=keyValues`
+#### Simplified NGSI-LD using `format=simplified`
 
 ```json
 {
@@ -114,7 +114,7 @@ representation, where redundant "type" members are omitted and the following rul
 -   Every **LanguageProperty** is defined by a `languageMap` key-value pair.
 -   Every **Relationship** is defined by an `object` key-value pair.
 
-#### Concise NGSI-LD using `options=concise`
+#### Concise NGSI-LD using `format=concise`
 
 ```json
 {
@@ -290,7 +290,8 @@ You can check to see if the new **TemperatureSensor** can be found in the contex
 the full normalized form:
 
 ```bash
-curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
+curl -L -X GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 ```
 
@@ -332,7 +333,8 @@ Subsequent requests using the same `id` will update the value of the attribute i
 You can check to see if the new **TemperatureSensor** can be found in the context by making a GET request.
 
 ```bash
-curl -L -X GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
+curl -L -X GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"'
 ```
 
@@ -476,7 +478,8 @@ format.
 #### 7 Request:
 
 ```bash
-curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
+curl -G -iX GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -d 'options=concise,sysAttrs'
 ```
@@ -536,10 +539,11 @@ known `id`.
 #### 8 Request:
 
 ```bash
-curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
+curl -G -iX GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
--d 'attrs=temperature' \
--d 'options=concise'
+-d 'pick=id,type,temperature' \
+-d 'format=concise'
 
 ```
 
@@ -558,7 +562,7 @@ The sensor `urn:ngsi-ld:TemperatureSensor:001` is reading at 25°C. The response
 }
 ```
 
-Because `options=concise` was used this is response includes the metadata such as `unitCode` but not
+Because `format=concise` was used this is response includes the metadata such as `unitCode` but not
 `"type": "Property"` Context data can be retrieved by making a GET request to the `/ngsi-ld/v1/entities/<entity-id>`
 endpoint and selecting the `attrs` using a comma separated list.
 
@@ -570,10 +574,11 @@ known `id`.
 #### 9 Request:
 
 ```bash
-curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
+curl -G -iX GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
--d 'options=concise'
+-d 'format=concise'
 ```
 
 #### Response:
@@ -606,7 +611,7 @@ The response contains an unfiltered list of context data from an entity containi
 `urn:ngsi-ld:TemperatureSensor:001`. The payload body does not contain an `@context` attribute since the
 `Accept: application/json` was set.
 
-Combine the `options=concise` parameter with the `attrs` parameter to retrieve a limited set of key-value pairs.
+Combine the `format=concise` parameter with the `attrs` parameter to retrieve a limited set of key-value pairs.
 
 ### Read Multiple attributes values from a Data Entity
 
@@ -616,11 +621,12 @@ This example reads the value of two attributes (`category` and `temperature`) fr
 #### 10 Request:
 
 ```bash
-curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
+curl -G -iX GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:TemperatureSensor:001' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
--d 'options=concise' \
--d 'attrs=category,temperature'
+-d 'format=concise' \
+-d 'pick=id,type,category,temperature'
 ```
 
 #### Response:
@@ -641,7 +647,7 @@ The sensor `urn:ngsi-ld:TemperatureSensor:001` is reading at 25°C. The response
 }
 ```
 
-Combine the `options=concise` parameter and the `attrs` parameter to return a list of values.
+Combine the `format=concise` parameter and the `attrs` parameter to return a list of values.
 
 ### List all Data Entities (concise)
 
@@ -650,10 +656,11 @@ This example lists the full context of all **TemperatureSensor** entities.
 #### 11 Request:
 
 ```bash
-curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
+curl -G -iX GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -d 'type=TemperatureSensor' \
--d 'options=concise'
+-d 'format=concise'
 ```
 
 #### Response:
@@ -726,12 +733,13 @@ This example lists the `temperature` attribute of all **TemperatureSensor** enti
 #### 12 Request:
 
 ```bash
-curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
+curl -G -iX GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
 -d 'type=TemperatureSensor' \
--d 'options=concise' \
--d 'attrs=temperature'
+-d 'format=concise' \
+-d 'pick=id,type,temperature'
 ```
 
 #### Response:
@@ -776,7 +784,7 @@ The full context contains four sensors, they are returned in a random order:
 ```
 
 Context data for a specified entity type can be retrieved by making a GET request to the `/ngsi-ld/v1/entities/`
-endpoint and supplying the `type` parameter, combine this with the `options=keyValues` parameter and the `attrs`
+endpoint and supplying the `type` parameter, combine this with the `format=simplified` parameter and the `pick`
 parameter to retrieve key-values.
 
 ### Filter Data Entities by ID
@@ -787,12 +795,13 @@ unique, so `type` is not required for this request. To filter by `id` add the en
 #### 13 Request:
 
 ```bash
-curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
+curl -G -iX GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
 -d 'id=urn:ngsi-ld:TemperatureSensor:001,urn:ngsi-ld:TemperatureSensor:002' \
--d 'attrs=temperature' \
--d 'options=concise'
+-d 'pick=id,type,temperature' \
+-d 'format=concise'
 ```
 
 #### Response:
@@ -823,17 +832,18 @@ The response details the selected attributes from the selected entities.
 ### Returning data as GeoJSON
 
 The concise format is also available for the GeoJSON format which can be requested by setting the `Accept` header to
-`application/geo+json` and setting the `options=concise` parameter.
+`application/geo+json` and setting the `format=concise` parameter.
 
 #### 14 Request:
 
 ```bash
-curl -G -iX GET 'http://localhost:1026/ngsi-ld/v1/entities/' \
+curl -G -iX GET \
+  'http://localhost:1026/ngsi-ld/v1/entities/' \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/geo+json' \
 -H 'NGSILD-Tenant: openiot' \
 -d 'id=urn:ngsi-ld:Animal:pig010,urn:ngsi-ld:Animal:pig006' \
--d 'options=concise'
+-d 'format=concise'
 ```
 
 #### Response:
