@@ -12,6 +12,8 @@ const AgriFarm = require('../controllers/ngsi-ld/agri-farm');
 const Weather = require('../controllers/ngsi-ld/weather');
 const Land = require('../controllers/ngsi-ld/land');
 const Person = require('../controllers/ngsi-ld/person');
+const Stocks = require('../controllers/ngsi-ld/stocks');
+
 const History = require('../controllers/history');
 const DeviceListener = require('../controllers/iot/command-listener');
 const Security = require('../controllers/security');
@@ -62,9 +64,9 @@ function broadcastEvents(req, item, types) {
 router.get('/', async function (req, res) {
     const securityEnabled = SECURE_ENDPOINTS;
 
-    const headers = ngsiLD.setHeaders(null,LinkHeader);
+    console.log(req.params.local);
+    const headers = ngsiLD.setHeaders(null, LinkHeader);
     try {
-        console.log('x')
         monitor('NGSI', 'listEntities ?type=City');
         const cities = await ngsiLD.listEntities(
             {
@@ -76,7 +78,6 @@ router.get('/', async function (req, res) {
             headers
         );
 
-
         monitor('NGSI', 'listEntities ?type=Product');
         const products = await ngsiLD.listEntities(
             {
@@ -87,10 +88,9 @@ router.get('/', async function (req, res) {
             },
             headers
         );
-        
 
-        console.log(cities)
-        console.log(products)
+        console.log(cities);
+        console.log(products);
 
         return res.render('index', {
             title: 'Casa Agri Demo',
@@ -115,27 +115,6 @@ router.get('/', async function (req, res) {
     }
 });
 
-// Logs users in and out using Keyrock.
-router.get('/login', Security.logInCallback);
-router.get('/clientCredentials', Security.clientCredentialGrant);
-router.get('/implicitGrant', Security.implicitGrant);
-router.post('/userCredentials', Security.userCredentialGrant);
-router.post('/refreshToken', Security.refreshTokenGrant);
-router.get('/authCodeGrant', Security.authCodeGrant);
-router.get('/logout', Security.logOut);
-
-// Render the monitoring page
-router.get('/device/monitor', function (req, res) {
-    const traffic = TRANSPORT === 'HTTP' ? 'Northbound Traffic' : 'MQTT Messages';
-    const title = 'IoT Devices (' + DEVICE_PAYLOAD + ' over ' + TRANSPORT + ')';
-    const securityEnabled = SECURE_ENDPOINTS;
-    res.render('device-monitor', {
-        title,
-        traffic,
-        securityEnabled
-    });
-});
-
 // Access to IoT devices is secured by a Policy Decision Point (PDP).
 // LEVEL 1: AUTHENTICATION ONLY -  For most actions, any user is authorized, just ensure the user exists.
 // LEVEL 2: BASIC AUTHORIZATION -  Ringing the alarm bell and unlocking the Door are restricted to certain
@@ -158,37 +137,11 @@ router.get('/app/monitor', function (req, res) {
     res.render('monitor', { title: 'Event Monitor' });
 });
 
-// Display the app monitor page
-router.get('/device/history', function (req, res) {
-    const stores = [];
-    if (process.env.CRATE_DB_SERVICE_URL || process.env.STH_COMET_SERVICE_URL) {
-        for (let i = 1; i <= numberOfPigs; i++) {
-            stores.push({
-                name: 'Device' + i.toString().padStart(3, '0'),
-                href: 'history/' + i.toString().padStart(3, '0')
-            });
-        }
-    }
-    res.render('history-index', {
-        title: 'Short-Term History',
-        stores
-    });
-});
-
-router.get('/credentials', Credentials.init);
-router.post('/vc/generate', Credentials.catchErrors(Credentials.generateCredential));
-router.post('/vc/verify', Credentials.catchErrors(Credentials.verifyCredential));
-router.post('/vp/generate', Credentials.catchErrors(Credentials.generatePresentation));
-router.post('/vp/verify', Credentials.catchErrors(Credentials.verifyPresentation));
-router.get('/vp/monitor', function (req, res) {
-    res.render('trust', { title: 'Trust Monitor' });
-});
-
 // Viewing Store information is secured by Keyrock PDP.
 // LEVEL 1: AUTHENTICATION ONLY - Users must be logged in to view the store page.
 
 router.get('/app/animals/locations.json', Animal.geojson);
-router.get('/app/animals', Security.authenticate, Animal.displayMap);
+router.get('/app/map', Security.authenticate, Animal.displayMap);
 router.get('/app/animal/:id', Security.authenticate, Animal.display);
 router.get('/app/agriparcel/:id', Security.authenticate, Land.display);
 router.get('/app/crop/:id', Security.authenticate, Crop.display);
@@ -201,6 +154,8 @@ router.get('/app/agri-farm/:id', Security.authenticate, AgriFarm.display);
 router.get('/app/building/:id', Security.authenticate, Farm.display);
 router.get('/app/person/:id', Security.authenticate, Person.display);
 router.get('/app/device-details/:id', Security.authenticate, Device.display);
+
+router.post('/app/get-stocks', Stocks.display);
 
 // Whenever a subscription is received, display it on the monitor
 // and notify any interested parties using Socket.io

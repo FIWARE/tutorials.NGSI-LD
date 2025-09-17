@@ -20,7 +20,6 @@ async function displayPest(req, res) {
         );
         return res.render('pest', { title: pest.name, pest });
     } catch (error) {
-        
         debug(error);
         // If no pest has been found, display an error screen
         return res.render('error', {

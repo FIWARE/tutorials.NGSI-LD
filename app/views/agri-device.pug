@@ -1,57 +1,19 @@
-extends layout
+extends layout2
 
 block content
   h1= title
 
-  div.row
-    div.col
-      div(class="card m-2")
+  div(class="card m-2")
         div.card-body
           div.container
             div.row
-              - if (device.description)
-                dt.col-lg-3 Description: 
-                dd.col-lg-9 #{device.description}
-            div.row
-              - if (device.category)
-                dt.col-lg-3 Category: 
-                dd.col-lg-9
-                  code #{device.category.vocab}
-            div.row
-              - if (device.controlledProperty)
-                dt.col-lg-3 Controlled Property: 
-                dd.col-lg-9 #{device.controlledProperty}
-            div.row
-              - if (device.controlledAsset)
-                dt.col-lg-3 ControlledAsset: 
-                dd.col-lg-9
-                  - if (device.controlledAsset.includes('AgriParcel'))
-                      a(class="link-underline link-underline-opacity-0" href=`/app/agriparcel/${device.controlledAsset}`) #{device.controlledAsset}
-                  - if (device.controlledAsset.includes('Animal'))
-                      a(class="link-underline link-underline-opacity-0" href=`/app/animal/${device.controlledAsset}`) #{device.controlledAsset}
-                  - if (device.controlledAsset.includes('Building'))
-                      a(class="link-underline link-underline-opacity-0" href=`/app/building/${device.controlledAsset}`) #{device.controlledAsset}
-            div.row
-              - if (device.batteryLevel)
-                dt.col-lg-3 Battery Level: 
-                dd.col-lg-9 #{device.batteryLevel * 100} %
-            div.row
-              - if (device.supportedProtocol)
-                dt.col-lg-3 Protocol: 
-                dd.col-lg-9 #{device.supportedProtocol.toUpperCase()}
-            div.row
-              - if (device.deviceModel)
-                dt.col-lg-3 Description: 
-                dd.col-lg-9 #{device.deviceModel}
-            div.row
-              - if (device.location)
-                dt.col-lg-3 Location: 
-                dd.col-lg-9 #{device.location.coordinates[1]}&deg;N, #{device.location.coordinates[0]}&deg;E
+              each item in stocks
+              
+                dt.col-lg-9 #{item.description}
+                dd.col-lg-3 
+                  code #{item.price} CFA
 
-            div.row
-              - if (device.status)
-                dt.col-lg-3 Status: 
-                dd.col-lg-9 #{device.status}
+ 
 
   div.row
     div.col
@@ -59,4 +21,4 @@ block content
         div.card-body
           summary.list-unstyled
             details
-              pre #{JSON.stringify(device, null, 4)}
+              pre #{JSON.stringify(stocks, null, 4)}

@@ -1,4 +1,4 @@
-extends layout
+extends layout2
 
 block content
   h1= title
@@ -7,7 +7,14 @@ block content
     div.col
 
       div(id="map")
-    
+  div(class="row p-4")
+    div(class="col card p-2")
+      div.row
+        form.credential(action="/app/get-stocks" method="POST")
+          input(id="lat" name="lat" value="")
+          input(id="lng" name="lng" value="")
+          input(id="text" name="text" value="")
+          input(type="submit" value=`Generate SMS` class="btn btn-primary  btn-sm")    
 
   link(rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.4.0/dist/maplibre-gl.css")
   link(rel="preload" as="image" href="/img/cow.svg")

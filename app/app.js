@@ -49,7 +49,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-
 if (!sessionOff) {
     if (process.env.NODE_ENV === 'production') {
         // Use Mongo-DB to store session data.

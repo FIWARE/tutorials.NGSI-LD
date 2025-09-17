@@ -19,18 +19,18 @@ const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context
 async function displayFarm(req, res) {
     debug('displayFarm');
     // If the user is not authorized, display the main page.
-   
+
     try {
         monitor('NGSI', 'readEntity ' + req.params.id);
         const building = await ngsiLD.readEntity(
             req.params.id,
-            { options: 'keyValues' },
+            { options: 'keyValues', local: req.query.local },
             ngsiLD.setHeaders(null, LinkHeader)
         );
         return res.render('building', { title: building.name, building });
     } catch (error) {
         // If no farm has been found, display an error screen
-        console.log(error)
+        console.log(error);
         return res.render('error', {
             title: `Error: ${error.cause.title}`,
             message: error.cause.detail,

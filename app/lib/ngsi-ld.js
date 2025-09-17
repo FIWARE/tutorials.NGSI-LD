@@ -188,7 +188,8 @@ function readTemporalEntity(entityId, opts, headers = {}) {
 // This is a promise to make an HTTP GET request to the
 // /ngsi-ld/v1/entities/ end point
 function listEntities(opts, headers = {}) {
-    debug('listEntities')
+    debug('listEntities');
+    console.log(`${BASE_PATH}/entities/?${new URLSearchParams(opts)}`);
     return fetch(`${BASE_PATH}/entities/?${new URLSearchParams(opts)}`, {
         method: 'GET',
         headers
@@ -196,12 +197,14 @@ function listEntities(opts, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 200) {
-                debug(data.body)
+                debug(data.body);
                 throw new Error(data.body);
             }
             return data.body;
         })
-        .catch ((e)=>{console.log(e);});
+        .catch((e) => {
+            console.log(e);
+        });
 }
 
 module.exports = {

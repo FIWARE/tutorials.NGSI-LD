@@ -5,7 +5,6 @@ const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context
 const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json">';
 const _ = require('lodash');
 
-
 async function displaySoil(req, res) {
     debug('displaySoil');
     // If the user is not authorized, display the main page.
@@ -20,37 +19,38 @@ async function displaySoil(req, res) {
             { options: 'keyValues' },
             ngsiLD.setHeaders(null, LinkHeader)
         );
+        let timeseries = {};
+        let chartData = {};
+        try {
+            const timeseries = await ngsiLD.readTemporalEntity(
+                req.params.id,
+                { options: 'temporalValues' },
+                ngsiLD.setHeaders(null, LinkHeader)
+            );
+            const data = [];
+            const labels = [];
+            const color = [];
 
-        const timeseries = await ngsiLD.readTemporalEntity(
-            req.params.id,
-            { options: 'temporalValues' },
-            ngsiLD.setHeaders(null, LinkHeader)
-        );
-        const data = [];
-        const labels = [];
-        const color = [];
+            if (timeseries.price.values) {
+                _.forEach(timeseries.price.values.reverse(), (element) => {
+                    const date = new Date(element[1]);
+                    data.push({ t: element[1], y: element[0] });
+                    labels.push(date.toISOString().slice(0, 10));
+                    color.push('#198754');
+                });
+            }
 
-
-        if (timeseries.price.values){
-            _.forEach(timeseries.price.values.reverse(), (element) => {
-                const date = new Date(element[1]);
-                data.push({ t: element[1], y: element[0] });
-                labels.push(date.toISOString().slice(0, 10)) ;
-                color.push('#198754');
-            });
+            chartData = { data, labels, color };
+        } catch (e) {
+            /// Nowt
         }
 
-        const chartData = {data, labels, color}
-       
-    
-
-        return res.render('soil', { title: soil.name, soil , timeseries,  chartData});
+        return res.render('soil', { title: soil.name, soil, timeseries, chartData });
     } catch (error) {
-        const errorDetail = error.error ||  error;
+        const errorDetail = error.error || error;
         debug(errorDetail);
         // If no soil has been found, display an error screen
         return res.render('error', {
-
             title: `Error: ${errorDetail.title || 'Not Found'}`,
             message: errorDetail.detail,
             error: {

@@ -77,7 +77,7 @@ function createEntitiesFromRows(rows) {
                     case 'agroVocConcept':
                     case 'alternateName':
                     case 'birthdate':
-                    
+
                     case 'controlledProperty':
                     case 'dataProvider':
                     case 'dateIssued':

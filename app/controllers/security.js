@@ -197,9 +197,8 @@ function refreshTokenGrant(req, res) {
 function authenticate(req, res, next) {
     debug('authenticate');
 
-   
     res.locals.authorized = true;
-    
+
     return next();
 }
 

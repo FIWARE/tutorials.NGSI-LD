@@ -31,11 +31,11 @@ block content
               each building in cities
                 li.list-item
                   - if (securityEnabled)
-                    a(class="link-danger link-underline link-underline-opacity-0" href=`app/building/${building.id}`) 
+                    a(class="link-danger link-underline link-underline-opacity-0" href=`app/building/${building.id}?local=true`) 
                       img(class="p-2" src='/img/barn.png' width="32" height="32")
                       | #{building.name}
                   - else
-                    a(class="link-underline link-underline-opacity-0" href=`app/building/${building.id}`)
+                    a(class="link-underline link-underline-opacity-0" href=`app/building/${building.id}?local=true`)
                       img(class="p-2" src='/img/barn.png' width="32" height="32")
                       | #{building.name}
 
