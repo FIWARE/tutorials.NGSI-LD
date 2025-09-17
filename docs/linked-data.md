@@ -1,4 +1,3 @@
-
 [![FIWARE Core Context Management](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/core.svg)](https://github.com/FIWARE/catalogue/blob/master/core/README.md)
 [![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/)
 
@@ -29,7 +28,6 @@ upgrading **NGSI-v2** data sources to **NGSI-LD**
 >
 > ― Judy Garland
 
-
 ## NGSI-v2/NGSI-LD Data Spaces
 
 The first introduction to FIWARE [Getting Started tutorial](https://github.com/FIWARE/tutorials.Getting-Started)
@@ -52,8 +50,6 @@ as a mapping mechanism for attributes allowing the each local system to continue
 within the data it holds and for federated data from other users within the data space to be renamed using a standard
 expansion/compaction operation allowing each individual system understand data holistically from across the whole data
 space.
-
-
 
 ### Creating a common data space
 
@@ -298,11 +294,13 @@ git checkout NGSI-LD
 
 ## Offering NGSI-v2 Entities as part of an NGSI-LD Data Space
 
-This tutorial starts up both the NGSI-LD Smart Farm (on port `1027`) and NGSI-v2 Smart Supermarket (on port `1027`) and thenoffers the NGSI-v2 entities into the building finder to the Smart Farm FMIS as part of a federated data space.
+This tutorial starts up both the NGSI-LD Smart Farm (on port `1027`) and NGSI-v2 Smart Supermarket (on port `1027`) and
+thenoffers the NGSI-v2 entities into the building finder to the Smart Farm FMIS as part of a federated data space.
 
 ### Reading NGSI-v2 Data directly
 
-As usual, you can check if NGSI-v2 context broker holding the supermarket data is running by making an HTTP request to the exposed port, the request is in NGSI-v2 format. It does not require a `Link` header for the `@context`
+As usual, you can check if NGSI-v2 context broker holding the supermarket data is running by making an HTTP request to
+the exposed port, the request is in NGSI-v2 format. It does not require a `Link` header for the `@context`
 
 #### 1️⃣ Request:
 
@@ -326,36 +324,44 @@ The response will be in NGSI-v2 format as follows:
             "addressRegion": "Berlin",
             "addressLocality": "Prenzlauer Berg",
             "postalCode": "10439"
-        }, "metadata": {}
+        },
+        "metadata": {}
     },
     "category": {
-        "type": "VocabProperty", "value": "supermarket", "metadata": {}
+        "type": "VocabProperty",
+        "value": "supermarket",
+        "metadata": {}
     },
     "location": {
         "type": "geo:json",
         "value": {
             "type": "Point",
-            "coordinates": [
-                13.3986,
-                52.5547
-            ]
-        }, "metadata": {}
+            "coordinates": [13.3986, 52.5547]
+        },
+        "metadata": {}
     },
     "name": {
-        "type": "Text", "value": "Bösebrücke Einkauf", "metadata": {}
+        "type": "Text",
+        "value": "Bösebrücke Einkauf",
+        "metadata": {}
     },
     "owner": {
-        "type": "Relationship", "value": "urn:ngsi-ld:Person:001",
+        "type": "Relationship",
+        "value": "urn:ngsi-ld:Person:001",
         "metadata": {
             "objectType": {
-                "type": "VocabProperty", "value": "Person"
+                "type": "VocabProperty",
+                "value": "Person"
             }
         }
     }
 }
 ```
 
-The `type` attribute in NGSI-v2 is loosely defined, but in this case, with the exception of ordinary properties, we are using `type` to correspond to the terms used in NGSI-LD such as `Relationship` or `VocabProperty`. For ordinary NGSI-v2 properties, the `type` corresponds to a datatype such as `Text` or `PostalAddress`, each of these datatypes will need to be mapped to a JSON-LD `@context` if the data is to be understood in an NGSI-LD system.
+The `type` attribute in NGSI-v2 is loosely defined, but in this case, with the exception of ordinary properties, we are
+using `type` to correspond to the terms used in NGSI-LD such as `Relationship` or `VocabProperty`. For ordinary NGSI-v2
+properties, the `type` corresponds to a datatype such as `Text` or `PostalAddress`, each of these datatypes will need to
+be mapped to a JSON-LD `@context` if the data is to be understood in an NGSI-LD system.
 
 ### Reading NGSI-v2 Data in NGSI-LD format
 
@@ -373,7 +379,6 @@ curl -G -X GET \
 #### Response:
 
 The response will be in NGSI-LD format as follows:
-
 
 ```json
 {
@@ -393,34 +398,39 @@ The response will be in NGSI-LD format as follows:
         }
     },
     "category": {
-        "type": "VocabProperty", "vocab": "supermarket"
+        "type": "VocabProperty",
+        "vocab": "supermarket"
     },
     "location": {
         "type": "GeoProperty",
         "value": {
             "type": "Point",
-            "coordinates": [
-                13.3986,
-                52.5547
-            ]
+            "coordinates": [13.3986, 52.5547]
         }
     },
     "name": {
-        "type": "Property", "value": "Bösebrücke Einkauf"
+        "type": "Property",
+        "value": "Bösebrücke Einkauf"
     },
     "owner": {
-        "type": "Relationship", "object": "urn:ngsi-ld:Person:001", "objectType": "Person"
+        "type": "Relationship",
+        "object": "urn:ngsi-ld:Person:001",
+        "objectType": "Person"
     }
 }
 ```
 
-It should be noted that the `@context` supplied in the `Link` header has been totally ignored, and a fixed `@context` used configured for the adaptor has been returned instead. The Adaptor doesn't fully understand NGSI-LD, it merely formats the underlying NGSI-v2 as NGSI-LD. You will notice that the NGSI-v2 `"type": "VocabProperty", "value": "supermarket"` has been amended to a valid **VocabProperty** - `"type": "VocabProperty", "vocab": "supermarket"`, and similarly the **Relationship** is now using `object` and `objectType` as defined in the core `@context`
-
-
+It should be noted that the `@context` supplied in the `Link` header has been totally ignored, and a fixed `@context`
+used configured for the adaptor has been returned instead. The Adaptor doesn't fully understand NGSI-LD, it merely
+formats the underlying NGSI-v2 as NGSI-LD. You will notice that the NGSI-v2
+`"type": "VocabProperty", "value": "supermarket"` has been amended to a valid **VocabProperty** -
+`"type": "VocabProperty", "vocab": "supermarket"`, and similarly the **Relationship** is now using `object` and
+`objectType` as defined in the core `@context`
 
 #### 3️⃣ Request:
 
-The `fixed-context` JSON-LD `@context` file fully defines all the terms found within the NGSI-v2 system in terms of IRIs - the file can be accessed as shown.
+The `fixed-context` JSON-LD `@context` file fully defines all the terms found within the NGSI-v2 system in terms of
+IRIs - the file can be accessed as shown.
 
 ```console
 curl -X GET \
@@ -429,7 +439,8 @@ curl -X GET \
 
 #### Response:
 
-The response is a valid JSON-LD `@context`. As can be seen the NGSI-v2 `Store` is being mapped to `fiware>Building` which corresponds to a `https://uri.fiware.org/ns/dataModels#Building`
+The response is a valid JSON-LD `@context`. As can be seen the NGSI-v2 `Store` is being mapped to `fiware>Building`
+which corresponds to a `https://uri.fiware.org/ns/dataModels#Building`
 
 ```json
 {
@@ -460,8 +471,11 @@ The response is a valid JSON-LD `@context`. As can be seen the NGSI-v2 `Store` i
 }
 ```
 
-
-The Lepus adaptor aims to offer all the endpoints of an NGSI-LD context broker, except that it has no understanding of JSON-LD `@context` - hence all terms must always be compacted - a query for all `Stores` would be `/ngsi-ld/v1/entities/?type=Store` for example. One of the endpoints defined in the 1.8.1 NGSI-LD specification is `/info/sourceIdentity`, which gives informatation about the underlying context broker - uptime, aliasing and detailed information. In this case the adaptor is merely standardizing the data from the Orion broker's `/version` endpoint:
+The Lepus adaptor aims to offer all the endpoints of an NGSI-LD context broker, except that it has no understanding of
+JSON-LD `@context` - hence all terms must always be compacted - a query for all `Stores` would be
+`/ngsi-ld/v1/entities/?type=Store` for example. One of the endpoints defined in the 1.8.1 NGSI-LD specification is
+`/info/sourceIdentity`, which gives informatation about the underlying context broker - uptime, aliasing and detailed
+information. In this case the adaptor is merely standardizing the data from the Orion broker's `/version` endpoint:
 
 #### 4️⃣ Request:
 
@@ -473,7 +487,9 @@ curl -G -X GET \
 
 #### Response:
 
-The response holds an `contextSourceAlias` (or nickname) for the adapter as well as data corresponding to the uptime in ISO 8601 duration format, and also the server time. The attribute  `contextSourceExtras` is a freeform JSON object (defined as `"@type": "@JSON"`) which can hold any additional unspecified data about the context broker:
+The response holds an `contextSourceAlias` (or nickname) for the adapter as well as data corresponding to the uptime in
+ISO 8601 duration format, and also the server time. The attribute `contextSourceExtras` is a freeform JSON object
+(defined as `"@type": "@JSON"`) which can hold any additional unspecified data about the context broker:
 
 ```json
 {
@@ -497,11 +513,10 @@ The response holds an `contextSourceAlias` (or nickname) for the adapter as well
 }
 ```
 
-
-
 ### Creating a federation registration
 
-This NGSI-LD **ContextSourceRegistration** example informs the NGSI-LD context broker, that data is also available from the adapter:
+This NGSI-LD **ContextSourceRegistration** example informs the NGSI-LD context broker, that data is also available from
+the adapter:
 
 #### 5️⃣ Request:
 
@@ -527,17 +542,22 @@ curl -X POST \
 
 The registration is structured as follows:
 
-- `information.entities` is stating that `Building` entities are potentially available on the `endpoint`. The `Link` header holds a JSON-LD `@context` which is mapping the short name `Building` to the IRI `https://uri.fiware.org/ns/dataModels#Building`.
-- The `mode` of the registration is `inclusive`, which means that the context broker will add together `Building` data from all registered and combine it with any `Building` entities found locally.
-- The `operation` mode indicates the `endpoint` is capable of handling subscriptions and retrieval of entities only.
-- The `contextSourceInfo` holds key-value pairs which are used when forwarding requests to the `endpoint`:
-    -  `jsonldContext` is a special key, which is used to apply a JSON-LD compaction operation on the payload before forwarding to the registrant endpoint. This corresponds to the fixed terms used by Lepus itself and ensures that the NGSI-v2 broker behind it is always supplied with its preferred short name terms.
-    -  `Prefer` appends a `Prefer` header to the forwarded request, which ensures that Lepus only returns elements which correspond to the 1.6.1 NGSI-LD specification
-- The `endpoint` holds the location of the adaptor which is in front of the NGSI-v2 context broker
+-   `information.entities` is stating that `Building` entities are potentially available on the `endpoint`. The `Link`
+    header holds a JSON-LD `@context` which is mapping the short name `Building` to the IRI
+    `https://uri.fiware.org/ns/dataModels#Building`.
+-   The `mode` of the registration is `inclusive`, which means that the context broker will add together `Building` data
+    from all registered and combine it with any `Building` entities found locally.
+-   The `operation` mode indicates the `endpoint` is capable of handling subscriptions and retrieval of entities only.
+-   The `contextSourceInfo` holds key-value pairs which are used when forwarding requests to the `endpoint`:
+    -   `jsonldContext` is a special key, which is used to apply a JSON-LD compaction operation on the payload before
+        forwarding to the registrant endpoint. This corresponds to the fixed terms used by Lepus itself and ensures that
+        the NGSI-v2 broker behind it is always supplied with its preferred short name terms.
+    -   `Prefer` appends a `Prefer` header to the forwarded request, which ensures that Lepus only returns elements
+        which correspond to the 1.6.1 NGSI-LD specification
+-   The `endpoint` holds the location of the adaptor which is in front of the NGSI-v2 context broker
 
-
-Once a registration is in place, it is possible to read information about the NGSI-v2 Stores by querying the
-NGSI-LD FMIS system:
+Once a registration is in place, it is possible to read information about the NGSI-v2 Stores by querying the NGSI-LD
+FMIS system:
 
 #### 6️⃣ Request:
 
@@ -549,7 +569,9 @@ curl -X GET \
 
 #### Response:
 
-Because of `Prefer: ngsi-ld=1.6` had been set in the registration, the retrieved entity does not a **VocabProperty** and `objectType` has been quietly dropped from the response. This ensures backwards compatibility to context brokers conformant to an earlier version of the NGSI-LD specification - in this case version 1.6.
+Because of `Prefer: ngsi-ld=1.6` had been set in the registration, the retrieved entity does not a **VocabProperty** and
+`objectType` has been quietly dropped from the response. This ensures backwards compatibility to context brokers
+conformant to an earlier version of the NGSI-LD specification - in this case version 1.6.
 
 ```json
 {
@@ -564,19 +586,16 @@ Because of `Prefer: ngsi-ld=1.6` had been set in the registration, the retrieved
             "postalCode": "10439"
         }
     },
-    "category": {"type": "VocabProperty", "vocab": "supermarket"},
+    "category": { "type": "VocabProperty", "vocab": "supermarket" },
     "location": {
         "type": "GeoProperty",
         "value": {
             "type": "Point",
-            "coordinates": [
-                13.3986,
-                52.5547
-            ]
+            "coordinates": [13.3986, 52.5547]
         }
     },
-    "name": {"type": "Property", "value": "Bösebrücke Einkauf"},
-    "owner": {"type": "Relationship", "object": "urn:ngsi-ld:Person:001"}
+    "name": { "type": "Property", "value": "Bösebrücke Einkauf" },
+    "owner": { "type": "Relationship", "object": "urn:ngsi-ld:Person:001" }
 }
 ```
 
@@ -599,8 +618,8 @@ curl -G -X GET \
 
 #### Response:
 
-The response returns all **Building** entities known locally, and all **Building** entities found on registered context brokers.
-
+The response returns all **Building** entities known locally, and all **Building** entities found on registered context
+brokers.
 
 ```json
 [
@@ -627,17 +646,18 @@ The response returns all **Building** entities known locally, and all **Building
 ]
 ```
 
-This can be checked using the FMIS system itself on `localhost:3000` where both farm buildings and supermarket stores can be accessed:
+This can be checked using the FMIS system itself on `localhost:3000` where both farm buildings and supermarket stores
+can be accessed:
 
 ![](https://fiware.github.io//tutorials.Linked-Data/img/buildings.png)
 
-
 ### Using an alternate `@context`
 
-Neither Lepus nor the NGSI-v2 context broker able to handle alternative `@context` files, however, when requesting data from the NGSI-LD context broker, JSON-LD is fully supported, so a response can be returned using the preferred short names of the user agent.
+Neither Lepus nor the NGSI-v2 context broker able to handle alternative `@context` files, however, when requesting data
+from the NGSI-LD context broker, JSON-LD is fully supported, so a response can be returned using the preferred short
+names of the user agent.
 
 In the example below, the **Building** entity `urn:ngsi-ld:Store:001` is requested using terms in German.
-
 
 #### 8️⃣ Request:
 
@@ -649,7 +669,8 @@ curl -G -X GET \
 
 #### Response:
 
-The response is returned in JSON format with short form attribute names in German. The true source of the entity (NGSI-v2 data via the adapter) is not visible to the end user.
+The response is returned in JSON format with short form attribute names in German. The true source of the entity
+(NGSI-v2 data via the adapter) is not visible to the end user.
 
 ```json
 {
@@ -664,19 +685,15 @@ The response is returned in JSON format with short form attribute names in Germa
             "postalCode": "10439"
         }
     },
-    "kategorie": {"type": "Property", "value": "supermarket"},
+    "kategorie": { "type": "Property", "value": "supermarket" },
     "location": {
         "type": "GeoProperty",
         "value": {
             "type": "Point",
-            "coordinates": [
-                13.3986,
-                52.5547
-            ]
+            "coordinates": [13.3986, 52.5547]
         }
     },
-    "name": {"type": "Property", "value": "Bösebrücke Einkauf"},
-    "inhaber": {"type": "Relationship", "object": "urn:ngsi-ld:Person:001"}
+    "name": { "type": "Property", "value": "Bösebrücke Einkauf" },
+    "inhaber": { "type": "Relationship", "object": "urn:ngsi-ld:Person:001" }
 }
 ```
-

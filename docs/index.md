@@ -26,7 +26,7 @@ Solution either by connecting to a series of dummy IoT devices or manipulating t
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?template_repository=FIWARE/tutorials.NGSI-LD)
 
 <!-- Global Summit
-<a href="https://www.fiware.org/global-summit/"><img src="https://fiware.github.io//catalogue/img/Summit25.png" width="240" height="70" /></a> &nbsp; <a href="https://www.eventbrite.co.uk/e/fiware-global-summit-2025-rabat-smart-city-morocco-tickets-1249129843989"><img src="https://fiware.github.io//catalogue/img/Training25.png" width="240" height="70" /></a> 
+<a href="https://www.fiware.org/global-summit/"><img src="https://fiware.github.io//catalogue/img/Summit25.png" width="240" height="70" /></a> &nbsp; <a href="https://www.eventbrite.co.uk/e/fiware-global-summit-2025-rabat-smart-city-morocco-tickets-1249129843989"><img src="https://fiware.github.io//catalogue/img/Training25.png" width="240" height="70" /></a>
 -->
 
 <blockquote>
@@ -144,8 +144,7 @@ consume context information. The concept of Linked Data based upon JSON-LD paylo
 passing data between participating organisations.
 
 The NGSI-LD Specification is regularly updated published by ETSI. The latest specification is
-[version 1.7.1](https://cim.etsi.org/NGSI-LD/official/front-page.html) which was
-published in June 2023.
+[version 1.7.1](https://cim.etsi.org/NGSI-LD/official/front-page.html) which was published in June 2023.
 
 An Excel file detailing the current compatibility of the bleeding edge development version of each context broker
 (Orion-LD, Scorpio, Stellio) against the features of the 1.6.1 specification can be found
@@ -168,16 +167,12 @@ attributes used can be found in the following:
 These first tutorials are an introduction to the NGSI-LD Context Brokers, and are an essential first step when learning
 to use NGSI-LD.
 
-&nbsp; 101. [Understanding `@context`](understanding-@context.md) <br/>
-&nbsp; 102. [Working with `@context`](working-with-@context.md) <br/>
-&nbsp; 103. [CRUD Operations](ngsi-ld-operations.md) <br/>
-&nbsp; 104. [Concise Payloads](concise.md) <br/>
-&nbsp; 105. [Merge-Patch and Put](merge-patch.md) <br/>
-&nbsp; 106. [Entity Relationships](entity-relationships.md) <br/>
-&nbsp; 107. [Subscriptions](subscriptions.md) <br/>
-&nbsp; 108. [Registrations](context-providers.md) <br/>
-&nbsp; 109. [Temporal Operations](short-term-history.md) <br/>
-&nbsp; 110. [Extended Properties](extended-properties.md) <br/>
+&nbsp; 101. [Understanding `@context`](understanding-@context.md) <br/> &nbsp; 102.
+[Working with `@context`](working-with-@context.md) <br/> &nbsp; 103. [CRUD Operations](ngsi-ld-operations.md) <br/>
+&nbsp; 104. [Concise Payloads](concise.md) <br/> &nbsp; 105. [Merge-Patch and Put](merge-patch.md) <br/> &nbsp; 106.
+[Entity Relationships](entity-relationships.md) <br/> &nbsp; 107. [Subscriptions](subscriptions.md) <br/> &nbsp; 108.
+[Registrations](context-providers.md) <br/> &nbsp; 109. [Temporal Operations](short-term-history.md) <br/> &nbsp; 110.
+[Extended Properties](extended-properties.md) <br/>
 
 <h3 style="box-shadow: 0px 4px 0px 0px #5dc0cf;">Internet of Things, Robots and third-party systems</h3>
 
@@ -215,4 +210,3 @@ These tutorials show how to create, process, analyze or visualize context inform
 These tutorials show how to create data spaces using NGSI-LD and access NGSI-v2 sources
 
 &nbsp; 601. [Federative Data Spaces](linked-data.md)<br/>
-

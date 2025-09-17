@@ -268,13 +268,12 @@ For the purpose of this tutorial, we must be monitoring a system where the conte
 dummy IoT Sensors can be used to do this.
 
 Details of various buildings around the farm can be found in the tutorial application. Open
-`http://localhost:3000/app/building/urn:ngsi-ld:Building:farm001` to display a building with an associated filling sensor
-and thermostat.
+`http://localhost:3000/app/building/urn:ngsi-ld:Building:farm001` to display a building with an associated filling
+sensor and thermostat.
 
 ![](https://fiware.github.io/tutorials.Subscriptions/img/fmis.png)
 
-Open the device monitor page at
-`http://localhost:3000/device/monitor` and open the barn door. This can be done by
+Open the device monitor page at `http://localhost:3000/device/monitor` and open the barn door. This can be done by
 selecting an appropriate command from the drop-down list and pressing the `send` button. The stream of measurements
 coming from the devices can then be seen on the same page.
 
@@ -313,8 +312,8 @@ request is returning full normalized JSON-LD for every value, which includes _pr
 which Devices have the provided various readings and which units are being used. Every value has an associated
 `instanceId` which can be used for further manipulation of the individual entries where supported.
 
-> **TIP:** if the response is empty, you probably haven't started generating any context data yet. Remember to
-> open the barn door or start up the tractor first as described [here](#generating-context-data)
+> **TIP:** if the response is empty, you probably haven't started generating any context data yet. Remember to open the
+> barn door or start up the tractor first as described [here](#generating-context-data)
 
 In the example below, `heartRate` and `location` have been provided by a single Device.
 

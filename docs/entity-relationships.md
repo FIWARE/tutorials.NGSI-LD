@@ -230,9 +230,8 @@ curl -iX POST \
 ```
 
 In both cases we have encoded each entity `id` according to the NGSI-LD
-[specification](https://cim.etsi.org/NGSI-LD/official/front-page.html) - the proposal
-is that each `id` is a URN follows a standard format: `urn:ngsi-ld:<entity-type>:<entity-id>`. This will mean that every
-`id` in the system will be unique.
+[specification](https://cim.etsi.org/NGSI-LD/official/front-page.html) - the proposal is that each `id` is a URN follows
+a standard format: `urn:ngsi-ld:<entity-type>:<entity-id>`. This will mean that every `id` in the system will be unique.
 
 Device information can be requested by making a GET request on the `/ngsi-ld/v1/entities` endpoint. For example to
 return the context data of the devices.
@@ -386,7 +385,7 @@ The updated response including the `controlledAsset` attribute is shown below:
     "id": "urn:ngsi-ld:TemperatureSensor:001",
     "type": "TemperatureSensor",
     "description": "Temperature Gauge 1",
-    "category": {"vocab": "sensor"},
+    "category": { "vocab": "sensor" },
     "controlledProperty": "temperature",
     "temperature": 20,
     "controlledAsset": "urn:ngsi-ld:Building:farm001"

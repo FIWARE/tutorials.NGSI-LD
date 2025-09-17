@@ -2,10 +2,10 @@
 [![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://cim.etsi.org/NGSI-LD/official/front-page.html)
 [![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/)
 
-**Description:** This tutorial discusses the use of registrations within an NGSI-LD data space. The four different forms of registration
-are explained and detailed examples given. Based on a simple data space of interacting context brokers, a complete Farm
-Management Information System is created using the _System-of-Systems_ approach, displaying a holistic overview of the
-entire farm.
+**Description:** This tutorial discusses the use of registrations within an NGSI-LD data space. The four different forms
+of registration are explained and detailed examples given. Based on a simple data space of interacting context brokers,
+a complete Farm Management Information System is created using the _System-of-Systems_ approach, displaying a holistic
+overview of the entire farm.
 
 The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also available as
 [Postman documentation](https://fiware.github.io/tutorials.Context-Providers/ngsi-ld.html)
@@ -53,35 +53,34 @@ There are four basic types of registration in NGSI-LD - these are described in m
 With additive registrations, a Context Broker is permitted to hold context data about the Entities and Attributes
 locally itself, and also obtain data from (possibly multiple) external sources:
 
-- An **inclusive** Context Source Registration specifies that the Context Broker considers all registered Context
-  Sources as equals and will distribute operations to those Context Sources even if relevant context data is available
-  directly within the Context Broker itself (in which case, all results will be integrated in the final response).
-  This is the default mode of operation.
-- An **auxiliary** Context Source Registration never overrides data held directly within a Context Broker. Auxiliary
-  distributed operations are limited to context information consumption operations (see clause 5.7). Context data from
-  auxiliary context sources is only included if it is supplementary to the context data otherwise available to the
-  Context Broker.
+-   An **inclusive** Context Source Registration specifies that the Context Broker considers all registered Context
+    Sources as equals and will distribute operations to those Context Sources even if relevant context data is available
+    directly within the Context Broker itself (in which case, all results will be integrated in the final response).
+    This is the default mode of operation.
+-   An **auxiliary** Context Source Registration never overrides data held directly within a Context Broker. Auxiliary
+    distributed operations are limited to context information consumption operations (see clause 5.7). Context data from
+    auxiliary context sources is only included if it is supplementary to the context data otherwise available to the
+    Context Broker.
 
 ## Proxied Registrations
 
 With proxied registrations, Context Broker is **not permitted** to hold context data about the Entities and Attributes
 locally itself. All context data is obtained from the external registered sources.
 
-- An **exclusive** Context Source Registration specifies that all of the registered context data is held in a single
-  location external to the Context Broker. The Context Broker itself holds no data locally about the registered
-  Attributes and no overlapping proxied Context Source Registrations shall be supported for the same combination of
-  registered Attributes on the Entity. An exclusive registration must be fully specified. It always relates to
-  specific Attributes found on a single Entity. It can be used for actuations
-- A **redirect** Context Source Registration also specifies that the registered context data is held in a location
-  external to the Context Broker, but potentially multiple distinct redirect registrations can apply at the same time.
+-   An **exclusive** Context Source Registration specifies that all of the registered context data is held in a single
+    location external to the Context Broker. The Context Broker itself holds no data locally about the registered
+    Attributes and no overlapping proxied Context Source Registrations shall be supported for the same combination of
+    registered Attributes on the Entity. An exclusive registration must be fully specified. It always relates to
+    specific Attributes found on a single Entity. It can be used for actuations
+-   A **redirect** Context Source Registration also specifies that the registered context data is held in a location
+    external to the Context Broker, but potentially multiple distinct redirect registrations can apply at the same time.
 
+> -   **Inclusive** registrations are the default operation mode for NGSI-LD systems.
+> -   **Exclusive** registrations remain as the default operation mode for simpler NGSI-v2 systems.
 >
-> - **Inclusive** registrations are the default operation mode for NGSI-LD systems.
-> - **Exclusive** registrations remain as the default operation mode for simpler NGSI-v2 systems.
->
-> This is because NGSI-v2 uses JSON - not JSON-LD. JSON-based systems NGSI-v2 are unable to freely function within a federated data space
-> without the concept of `@context`. Therefore an NGSI-v2 context broker always forms the leaf node in a broker hierarchy. A comparision
-> between NGSI-v2 and NGSI-LD registrations can be found
+> This is because NGSI-v2 uses JSON - not JSON-LD. JSON-based systems NGSI-v2 are unable to freely function within a
+> federated data space without the concept of `@context`. Therefore an NGSI-v2 context broker always forms the leaf node
+> in a broker hierarchy. A comparision between NGSI-v2 and NGSI-LD registrations can be found
 > [here](https://github.com/FIWARE/tutorials.LD-Subscriptions-Registrations/).
 >
 > It remains possible to attach NGSI-v2 data sources into an NGSI-LD data space using a proxy serving a fixed
@@ -91,29 +90,29 @@ locally itself. All context data is obtained from the external registered source
 
 An animal is livestock found on the farm. Each **Animal** entity would have properties such as:
 
-- A name of the Animal e.g. "Twilight the Cow"
-- A physical location e.g. _52.5075 N, 13.3903 E_
-- The weight of the Animal
-- An association to the store in which the shelf is present
-- Relationships to their parental lineage `calvedBy` / `siredBy`
-- Relationship to their feedstock e.g. "Oats"
+-   A name of the Animal e.g. "Twilight the Cow"
+-   A physical location e.g. _52.5075 N, 13.3903 E_
+-   The weight of the Animal
+-   An association to the store in which the shelf is present
+-   Relationships to their parental lineage `calvedBy` / `siredBy`
+-   Relationship to their feedstock e.g. "Oats"
 
 An **Animal** can be `locatedAt` either a **Building** or an **AgriParcel**
 
-- A building is a real world bricks and mortar farm building. **Building** entities would have properties such as:
+-   A building is a real world bricks and mortar farm building. **Building** entities would have properties such as:
 
-- A name of the building e.g. "The Big Red Barn"
-- An address "Friedrichstraße 44, 10969 Kreuzberg, Berlin"
-- A physical location e.g. _52.5075 N, 13.3903 E_
-- A relationship to the owner of the building.
+-   A name of the building e.g. "The Big Red Barn"
+-   An address "Friedrichstraße 44, 10969 Kreuzberg, Berlin"
+-   A physical location e.g. _52.5075 N, 13.3903 E_
+-   A relationship to the owner of the building.
 
-An AgriParcel is a plot of land on the farm, sometimes called a partfield. **AgriParcel** entities would have
-properties such as:
+An AgriParcel is a plot of land on the farm, sometimes called a partfield. **AgriParcel** entities would have properties
+such as:
 
-- A name of the parcel e.g. "The Northern Hay Meadow"
-- A physical location e.g. _52.5075 N, 13.3903 E_
-- A crop type - e.g. _Pasture_
-- A soil temperature.
+-   A name of the parcel e.g. "The Northern Hay Meadow"
+-   A physical location e.g. _52.5075 N, 13.3903 E_
+-   A crop type - e.g. _Pasture_
+-   A soil temperature.
 
 Additionally devices such as a **TemperatureSensor** can be placed in a **Building** or an **AgriParcel** to measure the
 `temperature`
@@ -146,7 +145,6 @@ Buildings can be found under `http://localhost:3000/app/building/<urn>`
 
 Animals can be found under `http://localhost:3000/app/agriparcel/<urn>`
 
-
 ## Architecture
 
 The demo Farm Management Information System (FMIS) application will send and receive NGSI-LD calls using a compliant
@@ -160,31 +158,31 @@ proxy has also been added. To visualize and interact with the Context we will ad
 
 Therefore the overall architecture will consist of the following elements:
 
-- The [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will send and receive requests
-  using
-  [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json).
-  This is split into the following systems, each running on their own tenant:
-  - The default tenant which holds **Building** data and is used for collating data from all systems
-  - The `farmer` tenant which holds **Animal**, **Device** and **AgriParcel** information
-  - The `contractor` tenant holds **Animal** data about animals needing additional care.
-  - The `vet` tenant which holds **Animal** data about new-born animals
-- The FIWARE [IoT Agent for UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/) which will receive
-  southbound requests using
-  [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
-  and convert them to
-  [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
-  commands for the devices
-- The underlying [MongoDB](https://www.mongodb.com/) database :
-  - Used by the **Orion Context Broker** to hold context data information such as data entities, subscriptions and
-    registrations
-  - Used by the **IoT Agent** to hold device information such as device URLs and Keys
-- An HTTP **Web-Server** which offers static `@context` files defining the context entities within the system.
-- The **Tutorial Application** does the following:
-  - Acts as set of dummy [agricultural IoT devices](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)
-    using the
+-   The [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will send and receive requests
+    using
+    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json).
+    This is split into the following systems, each running on their own tenant:
+    -   The default tenant which holds **Building** data and is used for collating data from all systems
+    -   The `farmer` tenant which holds **Animal**, **Device** and **AgriParcel** information
+    -   The `contractor` tenant holds **Animal** data about animals needing additional care.
+    -   The `vet` tenant which holds **Animal** data about new-born animals
+-   The FIWARE [IoT Agent for UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/) which will receive
+    southbound requests using
+    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
+    and convert them to
     [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
-    protocol running over HTTP.
-  - Displays a running Farm Management Information System (FMIS)
+    commands for the devices
+-   The underlying [MongoDB](https://www.mongodb.com/) database :
+    -   Used by the **Orion Context Broker** to hold context data information such as data entities, subscriptions and
+        registrations
+    -   Used by the **IoT Agent** to hold device information such as device URLs and Keys
+-   An HTTP **Web-Server** which offers static `@context` files defining the context entities within the system.
+-   The **Tutorial Application** does the following:
+    -   Acts as set of dummy [agricultural IoT devices](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)
+        using the
+        [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
+        protocol running over HTTP.
+    -   Displays a running Farm Management Information System (FMIS)
 
 Since all interactions between the elements are initiated by HTTP requests, the entities can be containerized and run
 from exposed ports.
@@ -223,10 +221,12 @@ only the Building data from the previous tutorial is available, since this has b
 
 ### Reading Animal data
 
-Animals are not available on the default tenant, Data about animals on the farm has been preloaded into the **farmer's context broker**
+Animals are not available on the default tenant, Data about animals on the farm has been preloaded into the **farmer's
+context broker**
 
-- for simplicitiy this is actually set up as the `farmer` tenant and a simple forwarding proxy set up on port `1027`. The farmer's data
-- can be read as shown:
+-   for simplicitiy this is actually set up as the `farmer` tenant and a simple forwarding proxy set up on port `1027`.
+    The farmer's data
+-   can be read as shown:
 
 #### 1️⃣ Request:
 
@@ -253,10 +253,10 @@ curl -G -X GET \
   -d 'format=concise'
 ```
 
-
 #### Response:
 
-The response on port `1027` consists of the details of the **Animal** entities held within the **farmer's context broker**.
+The response on port `1027` consists of the details of the **Animal** entities held within the **farmer's context
+broker**.
 
 ```json
 [
@@ -295,7 +295,8 @@ curl -G -X GET \
 
 #### Response:
 
-Since no registrations have been created yet, the equivalent request on the **FMIS system context broker** initially returns no data
+Since no registrations have been created yet, the equivalent request on the **FMIS system context broker** initially
+returns no data
 
 ```json
 []
@@ -303,7 +304,8 @@ Since no registrations have been created yet, the equivalent request on the **FM
 
 ### Creating a redirection registration
 
-A redirection registration informs a context broker that **all data** for a given `type` is held externally - in another context source.
+A redirection registration informs a context broker that **all data** for a given `type` is held externally - in another
+context source.
 
 | Request    | Action at **Context Broker** (Primary)                                      | Action at **Context Source** (Secondary)                                                           |
 | ---------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
@@ -319,10 +321,11 @@ In the case that multiple redirection registrations have been set up on the same
 | **PATCH**  | Pass request to the **Context Consumers**, proxy back the HTTP back status code.                               | Update the entity within the **Context Source**, Respond to the context broker with a status code                 |
 | **DELETE** | Pass request to the **Context Consumers**                                                                      | Delete the entity within the **Context Source**, Respond to the context broker with a status code                 |
 
-Similarly, if a subscription CRUD request is passed into the primary context broker, it is passed onto the secondary sources to deal with.
+Similarly, if a subscription CRUD request is passed into the primary context broker, it is passed onto the secondary
+sources to deal with.
 
-The result of a `redirect` registration is a hierarchy of context brokers, in that each of the registered **Context Sources** should end up with a duplicate copy of the data,
-but no data is held in the primary context broker whatsoever.
+The result of a `redirect` registration is a hierarchy of context brokers, in that each of the registered **Context
+Sources** should end up with a duplicate copy of the data, but no data is held in the primary context broker whatsoever.
 
 #### 3️⃣ Request:
 
@@ -350,12 +353,12 @@ curl -X POST \
 }'
 ```
 
-`"mode":"redirect"` prevents the **FMIS context broker** from holding any `type=Animal` data whatsoever. All `type=Animal`
-requests are forwarded elsewhere. `operations": "redirectionOps"` is a short-hand for all NGSI-LD endpoints - any CRUD
-operations will now affect the farmer sub-system (i.e. the farmer tenant), not the FMIS system (i.e. the default
-tenant). Effectively this registration has ceded the control of `type=Animal` to the farmer's subsystem. After creating
-the registration, resending the `type=Animal` request on the FMIS system (the default tenant) now returns all the
-animals from the farmer subsystem:
+`"mode":"redirect"` prevents the **FMIS context broker** from holding any `type=Animal` data whatsoever. All
+`type=Animal` requests are forwarded elsewhere. `operations": "redirectionOps"` is a short-hand for all NGSI-LD
+endpoints - any CRUD operations will now affect the farmer sub-system (i.e. the farmer tenant), not the FMIS system
+(i.e. the default tenant). Effectively this registration has ceded the control of `type=Animal` to the farmer's
+subsystem. After creating the registration, resending the `type=Animal` request on the FMIS system (the default tenant)
+now returns all the animals from the farmer subsystem:
 
 #### 4️⃣ Request:
 
@@ -400,10 +403,10 @@ The animals are now also visible within the tutorial application `http://localho
 
 ### Read Registration Details
 
-Registration details can be read by making a GET request to the `/ngsi-ld/v1/csourceRegistrations/`. All registration CRUD
-actions continue to be mapped to the same HTTP verbs as before. For NGSI-LD systems, the request must be limited somehow.
-In this case we are looking for registrations regarding **Animal** entities, `type=Animal` the mapping of which is defined
-by the associated `@context` file.
+Registration details can be read by making a GET request to the `/ngsi-ld/v1/csourceRegistrations/`. All registration
+CRUD actions continue to be mapped to the same HTTP verbs as before. For NGSI-LD systems, the request must be limited
+somehow. In this case we are looking for registrations regarding **Animal** entities, `type=Animal` the mapping of which
+is defined by the associated `@context` file.
 
 #### 5️⃣ Request:
 
@@ -416,45 +419,46 @@ curl -G -X GET \
 
 #### Response:
 
-The response consists of the details of the registration within the system. The `management.timeout` is the default length of time a
-registration will wait to receive a response.
+The response consists of the details of the registration within the system. The `management.timeout` is the default
+length of time a registration will wait to receive a response.
 
 ```json
 [
-  {
-    "id": "urn:ngsi-ld:ContextSourceRegistration:-225064078",
-    "type": "ContextSourceRegistration",
-    "endpoint": "http://farmer",
-    "information": [
-      {
-        "entities": [
-          {
-            "type": "AgriParcel"
-          },
-          {
-            "type": "Animal"
-          }
-        ]
-      }
-    ],
-    "management": {
-      "timeout": 1000
-    },
-    "mode": "redirect",
-    "operations": "redirectionOps"
-  }
+    {
+        "id": "urn:ngsi-ld:ContextSourceRegistration:-225064078",
+        "type": "ContextSourceRegistration",
+        "endpoint": "http://farmer",
+        "information": [
+            {
+                "entities": [
+                    {
+                        "type": "AgriParcel"
+                    },
+                    {
+                        "type": "Animal"
+                    }
+                ]
+            }
+        ],
+        "management": {
+            "timeout": 1000
+        },
+        "mode": "redirect",
+        "operations": "redirectionOps"
+    }
 ]
 ```
 
 ## Inclusive Registration
 
-The default type of registration within **NGSI-LD** systems is `inclusive` mode. In this case, data from all context sources is considered
-to be equally valid and the context broker returns the most recent data found from across all registered context sources. `inclusive` mode is typically used
-to create a federation of peers (i.e. ``"operations": "federationOps"`) where context brokers are able to augment their understanding of the
-world with data from other sources, but more often than not are unable to **PATCH** or **POST** onto each other.
+The default type of registration within **NGSI-LD** systems is `inclusive` mode. In this case, data from all context
+sources is considered to be equally valid and the context broker returns the most recent data found from across all
+registered context sources. `inclusive` mode is typically used to create a federation of peers (i.e.
+``"operations": "federationOps"`) where context brokers are able to augment their understanding of the world with data
+from other sources, but more often than not are unable to **PATCH** or **POST** onto each other.
 
-Imagine the situation where the farmer has his own animal data, but wishes to add additional data from the vet and the contract labourer.
-In this case there is data within the farmer's context broker, as well as the other context sources.
+Imagine the situation where the farmer has his own animal data, but wishes to add additional data from the vet and the
+contract labourer. In this case there is data within the farmer's context broker, as well as the other context sources.
 
 In the case where an `inclusive` registrations has been set up, the following occurs:
 
@@ -464,7 +468,8 @@ In the case where an `inclusive` registrations has been set up, the following oc
 | **PATCH**  | Update the data locally and pass request to the **Context Consumers**, proxy back the HTTP back status code.                                                                                                | Update the entity within the **Context Source**, Respond to the context broker with a status code                 |
 | **DELETE** | Delete the data locally, pass request to the **Context Consumers**                                                                                                                                          | Delete the entity within the **Context Source**, Respond to the context broker with a status code                 |
 
-Similarly, if a subscription CRUD request is passed into the primary context broker, it is passed onto the secondary sources to deal with.
+Similarly, if a subscription CRUD request is passed into the primary context broker, it is passed onto the secondary
+sources to deal with.
 
 Effectively every `inclusive` registration is saying _"this entity is held both locally and elsewhere"_.
 
@@ -499,20 +504,20 @@ curl -G -X GET \
 
 ```json
 {
-  "id": "urn:ngsi-ld:Animal:cow001",
-  "type": "Animal",
-  "comment": {
-    "type": "Property",
-    "value": "Please check hooves.",
-    "observedAt": "2024-01-01T15:00:00.000Z"
-  }
+    "id": "urn:ngsi-ld:Animal:cow001",
+    "type": "Animal",
+    "comment": {
+        "type": "Property",
+        "value": "Please check hooves.",
+        "observedAt": "2024-01-01T15:00:00.000Z"
+    }
 }
 ```
 
 ### Creating an inclusive registration
 
-An `inclusive` federative registration can be invoked on the **Farmer's Context Broker** - this is merely stating that the farmer will coalesce Animal data from their
-own broker and the vet:
+An `inclusive` federative registration can be invoked on the **Farmer's Context Broker** - this is merely stating that
+the farmer will coalesce Animal data from their own broker and the vet:
 
 #### 7️⃣ Request:
 
@@ -544,7 +549,8 @@ curl -X POST \
 }'
 ```
 
-A subsequent request on the **Farmer's Context Broker** - port `1027`, will receive more information on the cow than previously - Farmer data + Vet data:
+A subsequent request on the **Farmer's Context Broker** - port `1027`, will receive more information on the cow than
+previously - Farmer data + Vet data:
 
 #### 8️⃣ Request:
 
@@ -570,54 +576,57 @@ curl -G -X GET \
 
 #### Response:
 
-The response now includes the Farmer's own data as well as the `comment` attribute found only within the **Vet's context broker**
+The response now includes the Farmer's own data as well as the `comment` attribute found only within the **Vet's context
+broker**
 
 ```json
 {
-  "id": "urn:ngsi-ld:Animal:cow001",
-  "type": "Animal",
-  "name": {
-    "type": "Property",
-    "value": "Beany"
-  },
-  "comment": {
-    "type": "Property",
-    "value": "Please check hooves.",
-    "observedAt": "2024-01-01T15:00:00.000Z"
-  },
-  "fedWith": {
-    "type": "Property",
-    "value": "Grass"
-  },
-  "legalId": {
-    "type": "Property",
-    "value": "M-bull001-Beany"
-  },
-  "phenologicalCondition": {
-    "type": "VocabProperty",
-    "vocab": "maleAdult"
-  },
-  "reproductiveCondition": {
-    "type": "VocabProperty",
-    "vocab": "active",
-    "observedAt": "2024-01-01T15:00:00.000Z"
-  },
-  "sex": {
-    "type": "VocabProperty",
-    "vocab": "Male"
-  },
-  "species": {
-    "type": "Property",
-    "value": "dairy cattle"
-  }
+    "id": "urn:ngsi-ld:Animal:cow001",
+    "type": "Animal",
+    "name": {
+        "type": "Property",
+        "value": "Beany"
+    },
+    "comment": {
+        "type": "Property",
+        "value": "Please check hooves.",
+        "observedAt": "2024-01-01T15:00:00.000Z"
+    },
+    "fedWith": {
+        "type": "Property",
+        "value": "Grass"
+    },
+    "legalId": {
+        "type": "Property",
+        "value": "M-bull001-Beany"
+    },
+    "phenologicalCondition": {
+        "type": "VocabProperty",
+        "vocab": "maleAdult"
+    },
+    "reproductiveCondition": {
+        "type": "VocabProperty",
+        "vocab": "active",
+        "observedAt": "2024-01-01T15:00:00.000Z"
+    },
+    "sex": {
+        "type": "VocabProperty",
+        "vocab": "Male"
+    },
+    "species": {
+        "type": "Property",
+        "value": "dairy cattle"
+    }
 }
 ```
 
-Furthermore, additional **Animal** entities only found within the **Vet's Context Broker** are now also visible within the tutorial application `http://localhost:3000/` -
-this is the response from the FMIS (which holds no animals locally) plus the response from the Farmer, plus the response from the Vet. The result is a listing which
-includes all the animals on the farm, plus all the animals which are requiring vetenary care.
+Furthermore, additional **Animal** entities only found within the **Vet's Context Broker** are now also visible within
+the tutorial application `http://localhost:3000/` - this is the response from the FMIS (which holds no animals locally)
+plus the response from the Farmer, plus the response from the Vet. The result is a listing which includes all the
+animals on the farm, plus all the animals which are requiring vetenary care.
 
-It is still possible to retrieve the locally held data in the **Farmer's Context Broker** without invoking the registration, through adding the `local=true` parameter
+It is still possible to retrieve the locally held data in the **Farmer's Context Broker** without invoking the
+registration, through adding the `local=true` parameter
 
 #### 9️⃣ Request:
 
@@ -631,45 +640,47 @@ curl -G -X GET \
 
 #### Response:
 
-The response now includes the Farmer's own data only without the `comment` attribute found only within the **Vet's context broker**
+The response now includes the Farmer's own data only without the `comment` attribute found only within the **Vet's
+context broker**
 
 ```json
 {
-  "id": "urn:ngsi-ld:Animal:cow001",
-  "type": "Animal",
-  "name": {
-    "type": "Property",
-    "value": "Beany"
-  },
-  "fedWith": {
-    "type": "Property",
-    "value": "Grass"
-  },
-  "legalId": {
-    "type": "Property",
-    "value": "M-bull001-Beany"
-  },
-  "phenologicalCondition": {
-    "type": "VocabProperty",
-    "vocab": "maleAdult"
-  },
-  "reproductiveCondition": {
-    "type": "VocabProperty",
-    "vocab": "active",
-    "observedAt": "2024-01-01T15:00:00.000Z"
-  },
-  "sex": {
-    "type": "VocabProperty",
-    "vocab": "Male"
-  },
-  "species": {
-    "type": "Property",
-    "value": "dairy cattle"
-  }
+    "id": "urn:ngsi-ld:Animal:cow001",
+    "type": "Animal",
+    "name": {
+        "type": "Property",
+        "value": "Beany"
+    },
+    "fedWith": {
+        "type": "Property",
+        "value": "Grass"
+    },
+    "legalId": {
+        "type": "Property",
+        "value": "M-bull001-Beany"
+    },
+    "phenologicalCondition": {
+        "type": "VocabProperty",
+        "vocab": "maleAdult"
+    },
+    "reproductiveCondition": {
+        "type": "VocabProperty",
+        "vocab": "active",
+        "observedAt": "2024-01-01T15:00:00.000Z"
+    },
+    "sex": {
+        "type": "VocabProperty",
+        "vocab": "Male"
+    },
+    "species": {
+        "type": "Property",
+        "value": "dairy cattle"
+    }
 }
 ```
 
-A second source of federative data can be found within the `Contractor` tenant - the information can be requested directly
+A second source of federative data can be found within the `Contractor` tenant - the information can be requested
+directly
 
 #### 1️⃣0️⃣ Request:
 
@@ -684,17 +695,18 @@ curl -G -X GET \
 
 #### Response:
 
-The response now includes the Contractor's own data only. Note that the `comment` attribute holds more recent information than the Vet's context broker. This is differenciated by the `observedAt` _Property-of-a-Property_
+The response now includes the Contractor's own data only. Note that the `comment` attribute holds more recent
+information than the Vet's context broker. This is differenciated by the `observedAt` _Property-of-a-Property_
 
 ```json
 {
-  "id": "urn:ngsi-ld:Animal:cow001",
-  "type": "Animal",
-  "comment": {
-    "type": "Property",
-    "value": "Checked Hooves, Bull is OK.",
-    "observedAt": "2024-02-02T15:00:00.000Z"
-  }
+    "id": "urn:ngsi-ld:Animal:cow001",
+    "type": "Animal",
+    "comment": {
+        "type": "Property",
+        "value": "Checked Hooves, Bull is OK.",
+        "observedAt": "2024-02-02T15:00:00.000Z"
+    }
 }
 ```
 
@@ -729,7 +741,8 @@ curl -iX POST \
 
 #### 1️⃣2️⃣ Request:
 
-Now when requesting data from the farmer's context broker, the response includes the most recent information found across all brokers in the federation.
+Now when requesting data from the farmer's context broker, the response includes the most recent information found
+across all brokers in the federation.
 
 ```bash
 curl -G -X GET \
@@ -742,27 +755,36 @@ curl -G -X GET \
 
 #### Response:
 
-The response has requested `comment` data from three sources - the farmer, the vet and the contractor. The attribute value with the most recent timestamp has been returned.
+The response has requested `comment` data from three sources - the farmer, the vet and the contractor. The attribute
+value with the most recent timestamp has been returned.
 
 ```json
 {
-  "id": "urn:ngsi-ld:Animal:cow001",
-  "type": "Animal",
-  "comment": {
-    "type": "Property",
-    "value": "Checked Hooves, Bull is OK.",
-    "observedAt": "2024-02-02T15:00:00.000Z"
-  }
+    "id": "urn:ngsi-ld:Animal:cow001",
+    "type": "Animal",
+    "comment": {
+        "type": "Property",
+        "value": "Checked Hooves, Bull is OK.",
+        "observedAt": "2024-02-02T15:00:00.000Z"
+    }
 }
 ```
 
 ## Exclusive registration
 
-`exclusive` registrations should be familiar to anyone who has used an IoT Agent with NGSI-v2. An exclusive registration informs a context broker that a given set of attributes for an `id` is held externally - in another context source. Frequently this context source itself is not a context broker.
+`exclusive` registrations should be familiar to anyone who has used an IoT Agent with NGSI-v2. An exclusive registration
+informs a context broker that a given set of attributes for an `id` is held externally - in another context source.
+Frequently this context source itself is not a context broker.
 
-Imagine for example a sensor system where you do not want to rely on the sensor pushing values to a context broker, but every time a request is made you wish to obtain values direct from the device itself. This sort of "lazy" attribute technique is useful for GET requests when the attribute would not usually send data a regular intervals - requesting `batteryLevel` of charge for example. `exclusive` registrations can also be used for actuators where a PATCH request on the context broker should actuate a response on a device in the real world.
+Imagine for example a sensor system where you do not want to rely on the sensor pushing values to a context broker, but
+every time a request is made you wish to obtain values direct from the device itself. This sort of "lazy" attribute
+technique is useful for GET requests when the attribute would not usually send data a regular intervals - requesting
+`batteryLevel` of charge for example. `exclusive` registrations can also be used for actuators where a PATCH request on
+the context broker should actuate a response on a device in the real world.
 
-`exclusive` registrations form a proxy for the local data within the context broker - they differ from `redirection` registrations in that there can only ever be a single source for the registered attributes, whereas in theory multiple `redirection` registrations could be in place.
+`exclusive` registrations form a proxy for the local data within the context broker - they differ from `redirection`
+registrations in that there can only ever be a single source for the registered attributes, whereas in theory multiple
+`redirection` registrations could be in place.
 
 | Request    | Action at **Context Broker** (Primary)                                                                                                 | Action at **Context Source** (Device)                                                                       |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
@@ -770,13 +792,16 @@ Imagine for example a sensor system where you do not want to rely on the sensor 
 | **PATCH**  | Deal with local attributes locally _(if any)_, Pass other attributes to **Context Consumer**, proxy back the overall HTTP status code. | Update the registered attributes n the **Context Source**, Respond to the context broker with a status code |
 | **DELETE** | Delete local attributes locally _(if any)_, Pass attribute request to **Context Consumer**                                             | Delete the attributes held within the **Context Source**, Respond to the context broker with a status code  |
 
-The result of a `exclusive` registration is that no data for the registered attributes are held directly in the context broker and a single **Context Source** acts as a proxy location for the request instead.
+The result of a `exclusive` registration is that no data for the registered attributes are held directly in the context
+broker and a single **Context Source** acts as a proxy location for the request instead.
 
 ### Reading Animal Data via an IoT Agent
 
 #### 1️⃣3️⃣ Request:
 
-Consider for example an Animal collar which supplies data for the entity `urn:ngsi-ld:Animal:cow001` - this is likely to be a device attached to an IoT Agent. The underlying device protocol and payload doesn't matter, since we are able to make an NGSI-LD request to the IoT Agent which then requests information from the device itself:
+Consider for example an Animal collar which supplies data for the entity `urn:ngsi-ld:Animal:cow001` - this is likely to
+be a device attached to an IoT Agent. The underlying device protocol and payload doesn't matter, since we are able to
+make an NGSI-LD request to the IoT Agent which then requests information from the device itself:
 
 ```bash
 curl -X GET \
@@ -792,30 +817,30 @@ The response shows the live readings from the device itself.
 
 ```json
 {
-  "id": "urn:ngsi-ld:Animal:cow001",
-  "type": "Animal",
-  "heartRate": {
-    "type": "Property",
-    "value": 10.4,
-    "unitCode": "5K",
-    "observedAt": "2024-02-02T15:00:00.000Z",
-    "providedBy": {
-      "type": "Relationship",
-      "object": "urn:ngsi-ld:Device:cow001"
-    }
-  },
-  "location": {
-    "type": "GeoProperty",
-    "value": {
-      "type": "Point",
-      "coordinates": [13.404, 52.47]
+    "id": "urn:ngsi-ld:Animal:cow001",
+    "type": "Animal",
+    "heartRate": {
+        "type": "Property",
+        "value": 10.4,
+        "unitCode": "5K",
+        "observedAt": "2024-02-02T15:00:00.000Z",
+        "providedBy": {
+            "type": "Relationship",
+            "object": "urn:ngsi-ld:Device:cow001"
+        }
     },
-    "observedAt": "2024-02-02T15:00:00.000Z",
-    "providedBy": {
-      "type": "Relationship",
-      "object": "urn:ngsi-ld:Device:cow001"
+    "location": {
+        "type": "GeoProperty",
+        "value": {
+            "type": "Point",
+            "coordinates": [13.404, 52.47]
+        },
+        "observedAt": "2024-02-02T15:00:00.000Z",
+        "providedBy": {
+            "type": "Relationship",
+            "object": "urn:ngsi-ld:Device:cow001"
+        }
     }
-  }
 }
 ```
 
@@ -823,7 +848,10 @@ The response shows the live readings from the device itself.
 
 #### 1️⃣4️⃣ Request:
 
-An exclusive registration can be made on the **Farmer** context broker to always receive **live** information from the IoT Agent. The `mode` is set to `"exclusive"`, and since the IoT Agent is only accepting **GET** requests the `"operations` attribute is set to `"retrieveOps"` only. A fixed `contextSourceInfo` can be used if the endpoint does not understand JSON-LD expansion/compaction.
+An exclusive registration can be made on the **Farmer** context broker to always receive **live** information from the
+IoT Agent. The `mode` is set to `"exclusive"`, and since the IoT Agent is only accepting **GET** requests the
+`"operations` attribute is set to `"retrieveOps"` only. A fixed `contextSourceInfo` can be used if the endpoint does not
+understand JSON-LD expansion/compaction.
 
 ```bash
 curl -X POST \
@@ -877,36 +905,37 @@ curl -G -X GET \
 
 ```json
 {
-  "id": "urn:ngsi-ld:Animal:cow001",
-  "type": "Animal",
-  "location": {
-    "type": "GeoProperty",
-    "value": {
-      "type": "Point",
-      "coordinates": [13.404, 52.47]
+    "id": "urn:ngsi-ld:Animal:cow001",
+    "type": "Animal",
+    "location": {
+        "type": "GeoProperty",
+        "value": {
+            "type": "Point",
+            "coordinates": [13.404, 52.47]
+        },
+        "observedAt": "2024-02-02T15:00:00.000Z",
+        "providedBy": {
+            "type": "Relationship",
+            "object": "urn:ngsi-ld:Device:cow001"
+        }
     },
-    "observedAt": "2024-02-02T15:00:00.000Z",
-    "providedBy": {
-      "type": "Relationship",
-      "object": "urn:ngsi-ld:Device:cow001"
+    "heartRate": {
+        "type": "Property",
+        "value": 10.4,
+        "unitCode": "5K",
+        "observedAt": "2024-02-02T15:00:00.000Z",
+        "providedBy": {
+            "type": "Relationship",
+            "object": "urn:ngsi-ld:Device:cow001"
+        }
     }
-  },
-  "heartRate": {
-    "type": "Property",
-    "value": 10.4,
-    "unitCode": "5K",
-    "observedAt": "2024-02-02T15:00:00.000Z",
-    "providedBy": {
-      "type": "Relationship",
-      "object": "urn:ngsi-ld:Device:cow001"
-    }
-  }
 }
 ```
 
 #### 1️⃣6️⃣ Request:
 
-Note that an attempt by the Farmer to directly update the `location` or `heartRate` attributes will **fail** with **409 - Conflict** as an exclusive registration prohibits this:
+Note that an attempt by the Farmer to directly update the `location` or `heartRate` attributes will **fail** with
+**409 - Conflict** as an exclusive registration prohibits this:
 
 ```bash
 curl -L -X PATCH \
@@ -924,21 +953,27 @@ curl -L -X PATCH \
 
 ```json
 {
-  "registrationId": "urn:ngsi-ld:ContextSourceRegistration:c92c69e4-a72d-11ef-add6-0242ac12010a",
-  "title": "Operation not supported",
-  "detail": "A matching exclusive registration forbids the Operation",
-  "attributes": ["heartRate"]
+    "registrationId": "urn:ngsi-ld:ContextSourceRegistration:c92c69e4-a72d-11ef-add6-0242ac12010a",
+    "title": "Operation not supported",
+    "detail": "A matching exclusive registration forbids the Operation",
+    "attributes": ["heartRate"]
 }
 ```
 
 ## Auxiliary registration
 
-`auxiliary` registrations are a weaker form of redirection, in that they only fire if the local broker does not hold the information itself. As such `auxiliary` registrations only fire on **GET** requests.
+`auxiliary` registrations are a weaker form of redirection, in that they only fire if the local broker does not hold the
+information itself. As such `auxiliary` registrations only fire on **GET** requests.
 
-Imagine for example a system where you need to obtain temperature readings from a series
-of fields. In some cases you already have a temperature gauge in a field and you want to use your own data. In other cases you will need to rely on secondary data received from elsewhere - for example forecasted data from another provider. In this case, you don't care if a general area weather forecast is more recent than your own data (since you will have to pay for access), so you would prefer to receive your older local data if you have it.
+Imagine for example a system where you need to obtain temperature readings from a series of fields. In some cases you
+already have a temperature gauge in a field and you want to use your own data. In other cases you will need to rely on
+secondary data received from elsewhere - for example forecasted data from another provider. In this case, you don't care
+if a general area weather forecast is more recent than your own data (since you will have to pay for access), so you
+would prefer to receive your older local data if you have it.
 
-`auxiliary` registrations form a proxy for the local data within the context broker - they differ from `redirection` registrations in that there can only ever be a single source for the registered attributes, whereas in theory multiple `redirection` registrations could be in place.
+`auxiliary` registrations form a proxy for the local data within the context broker - they differ from `redirection`
+registrations in that there can only ever be a single source for the registered attributes, whereas in theory multiple
+`redirection` registrations could be in place.
 
 | Request | Action at **Context Broker** (Primary)                                                          | Action at **Context Source** (Weather)                                      |
 | ------- | ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
@@ -948,7 +983,8 @@ of fields. In some cases you already have a temperature gauge in a field and you
 
 #### 1️⃣7️⃣ Request:
 
-To find the **AgriParcel** `temperature` data currently available to the **farmer**, make a request to the `/entities` endpoint and supply the `type` parameter.
+To find the **AgriParcel** `temperature` data currently available to the **farmer**, make a request to the `/entities`
+endpoint and supply the `type` parameter.
 
 ```bash
 curl -G -X GET \
@@ -960,26 +996,28 @@ curl -G -X GET \
 
 #### Response:
 
-Initially only one AgriParcel is returned, since it is the only one which the **Farmer** context broker has a `temperature` attribute stored locally.
+Initially only one AgriParcel is returned, since it is the only one which the **Farmer** context broker has a
+`temperature` attribute stored locally.
 
 ```json
 [
-  {
-    "id": "urn:ngsi-ld:AgriParcel:001",
-    "type": "AgriParcel",
-    "temperature": {
-      "type": "Property",
-      "value": 15.4,
-      "unitCode": "CEL",
-      "observedAt": "2024-01-01T15:00:00.000Z"
+    {
+        "id": "urn:ngsi-ld:AgriParcel:001",
+        "type": "AgriParcel",
+        "temperature": {
+            "type": "Property",
+            "value": 15.4,
+            "unitCode": "CEL",
+            "observedAt": "2024-01-01T15:00:00.000Z"
+        }
     }
-  }
 ]
 ```
 
 #### 1️⃣8️⃣ Request:
 
-Make the same request directly to the **Weather** context broker to obtain the information known to the Weather forecaster:
+Make the same request directly to the **Weather** context broker to obtain the information known to the Weather
+forecaster:
 
 ```bash
 curl -G -X GET \
@@ -991,40 +1029,41 @@ curl -G -X GET \
 
 #### Response:
 
-The weather forecast context broker has more information and its values have a more recent `observedAt`. Obviously this information is valuable, and therefore the weather forecaster wants to charge for access.
+The weather forecast context broker has more information and its values have a more recent `observedAt`. Obviously this
+information is valuable, and therefore the weather forecaster wants to charge for access.
 
 ```json
 [
-  {
-    "id": "urn:ngsi-ld:AgriParcel:001",
-    "type": "AgriParcel",
-    "temperature": {
-      "type": "Property",
-      "value": 10.4,
-      "unitCode": "CEL",
-      "observedAt": "2024-02-02T15:00:00.000Z"
+    {
+        "id": "urn:ngsi-ld:AgriParcel:001",
+        "type": "AgriParcel",
+        "temperature": {
+            "type": "Property",
+            "value": 10.4,
+            "unitCode": "CEL",
+            "observedAt": "2024-02-02T15:00:00.000Z"
+        }
+    },
+    {
+        "id": "urn:ngsi-ld:AgriParcel:002",
+        "type": "AgriParcel",
+        "temperature": {
+            "type": "Property",
+            "value": 10.4,
+            "unitCode": "CEL",
+            "observedAt": "2024-02-02T15:00:00.000Z"
+        }
+    },
+    {
+        "id": "urn:ngsi-ld:AgriParcel:003",
+        "type": "AgriParcel",
+        "temperature": {
+            "type": "Property",
+            "value": 10.4,
+            "unitCode": "CEL",
+            "observedAt": "2024-02-02T15:00:00.000Z"
+        }
     }
-  },
-  {
-    "id": "urn:ngsi-ld:AgriParcel:002",
-    "type": "AgriParcel",
-    "temperature": {
-      "type": "Property",
-      "value": 10.4,
-      "unitCode": "CEL",
-      "observedAt": "2024-02-02T15:00:00.000Z"
-    }
-  },
-  {
-    "id": "urn:ngsi-ld:AgriParcel:003",
-    "type": "AgriParcel",
-    "temperature": {
-      "type": "Property",
-      "value": 10.4,
-      "unitCode": "CEL",
-      "observedAt": "2024-02-02T15:00:00.000Z"
-    }
-  }
 ]
 ```
 
@@ -1032,7 +1071,9 @@ The weather forecast context broker has more information and its values have a m
 
 #### 1️⃣9️⃣ Request:
 
-An auxiliary registration can be made on the **Farmer** context broker to only receive **live** information from the weather forecaster if it does not hold information locally. The `mode` is set to `"auxilary"`, and since the IoT Agent is only accepting **GET** requests the `"operations` attribute is set to `"retrieveOps"` only.
+An auxiliary registration can be made on the **Farmer** context broker to only receive **live** information from the
+weather forecaster if it does not hold information locally. The `mode` is set to `"auxilary"`, and since the IoT Agent
+is only accepting **GET** requests the `"operations` attribute is set to `"retrieveOps"` only.
 
 ```bash
 curl -X POST \
@@ -1075,39 +1116,40 @@ curl -G -X GET \
 
 #### Response:
 
-Now the response contains both local and remotely retrieved data, with a preference of returning the locally held values.
+Now the response contains both local and remotely retrieved data, with a preference of returning the locally held
+values.
 
 ```json
 [
-  {
-    "id": "urn:ngsi-ld:AgriParcel:001",
-    "type": "AgriParcel",
-    "temperature": {
-      "type": "Property",
-      "value": 15.4,
-      "unitCode": "CEL",
-      "observedAt": "2024-01-01T15:00:00.000Z"
+    {
+        "id": "urn:ngsi-ld:AgriParcel:001",
+        "type": "AgriParcel",
+        "temperature": {
+            "type": "Property",
+            "value": 15.4,
+            "unitCode": "CEL",
+            "observedAt": "2024-01-01T15:00:00.000Z"
+        }
+    },
+    {
+        "id": "urn:ngsi-ld:AgriParcel:002",
+        "type": "AgriParcel",
+        "temperature": {
+            "type": "Property",
+            "value": 10.4,
+            "unitCode": "CEL",
+            "observedAt": "2024-02-02T15:00:00.000Z"
+        }
+    },
+    {
+        "id": "urn:ngsi-ld:AgriParcel:003",
+        "type": "AgriParcel",
+        "temperature": {
+            "type": "Property",
+            "value": 10.4,
+            "unitCode": "CEL",
+            "observedAt": "2024-02-02T15:00:00.000Z"
+        }
     }
-  },
-  {
-    "id": "urn:ngsi-ld:AgriParcel:002",
-    "type": "AgriParcel",
-    "temperature": {
-      "type": "Property",
-      "value": 10.4,
-      "unitCode": "CEL",
-      "observedAt": "2024-02-02T15:00:00.000Z"
-    }
-  },
-  {
-    "id": "urn:ngsi-ld:AgriParcel:003",
-    "type": "AgriParcel",
-    "temperature": {
-      "type": "Property",
-      "value": 10.4,
-      "unitCode": "CEL",
-      "observedAt": "2024-02-02T15:00:00.000Z"
-    }
-  }
 ]
 ```

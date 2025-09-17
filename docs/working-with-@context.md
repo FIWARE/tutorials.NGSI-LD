@@ -524,10 +524,7 @@ be displayed.
             "type": "GeoProperty",
             "value": {
                 "type": "Point",
-                "coordinates": [
-                    13.3505,
-                    52.5144
-                ]
+                "coordinates": [13.3505, 52.5144]
             }
         },
         "https://schema.org/name": {
@@ -560,10 +557,7 @@ be displayed.
             "type": "GeoProperty",
             "value": {
                 "type": "Point",
-                "coordinates": [
-                    13.3698,
-                    52.5163
-                ]
+                "coordinates": [13.3698, 52.5163]
             }
         },
         "https://schema.org/name": {
@@ -851,8 +845,8 @@ It should also be noted that the sub-attributes of the `addresse` have also not 
 ### Filter context data by comparing the values of an attribute in an Array
 
 Within the standard `Building` model, the `category` attribute refers to an array of strings. This example returns all
-`Building` entities with a `category` attribute which contains either `barn` or `22farm_auxiliary` strings. Filtering can be
-done using the `q` parameter, comma separating the acceptable values.
+`Building` entities with a `category` attribute which contains either `barn` or `22farm_auxiliary` strings. Filtering
+can be done using the `q` parameter, comma separating the acceptable values.
 
 #### 9️⃣ Request:
 

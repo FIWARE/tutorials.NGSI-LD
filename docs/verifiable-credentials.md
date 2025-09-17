@@ -1,21 +1,18 @@
-
 [![FIWARE Security](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/security.svg)](https://github.com/FIWARE/catalogue/blob/master/security/README.md)
 [![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/) <br/>
 
-**Description:** This tutorial introduces the concept of Verifiable Credentials and Distributed Identifiers, and how to apply them to Data Spaces.
-The tutorial explains how issuers generate credentials for their
-recipients and how the holder of a credential can in turn issue a
-verifiable presentation supporting their claims. These practical examples
+**Description:** This tutorial introduces the concept of Verifiable Credentials and Distributed Identifiers, and how to
+apply them to Data Spaces. The tutorial explains how issuers generate credentials for their recipients and how the
+holder of a credential can in turn issue a verifiable presentation supporting their claims. These practical examples
 will help to explain the roles of the various components of a data space connector as defined in a later tutorial.
 
-The tutorial demonstrates examples of interactions using a GUI, as well [cUrl](https://ec.haxx.se/)
-commands used to generate credentials using a REST API
-
+The tutorial demonstrates examples of interactions using a GUI, as well [cUrl](https://ec.haxx.se/) commands used to
+generate credentials using a REST API
 
 # Verifiable Credentials
 
-> **Reagan:** “But the importance of this treaty transcends numbers. We have listened to the wisdom in an old Russian maxim.
-> And I'm sure you're familiar with it, Mr. General Secretary, though my pronunciation may give you difficulty.
+> **Reagan:** “But the importance of this treaty transcends numbers. We have listened to the wisdom in an old Russian
+> maxim. And I'm sure you're familiar with it, Mr. General Secretary, though my pronunciation may give you difficulty.
 > The maxim is: доверяй, но проверяй - trust, but verify.”
 >
 > **Gorbachev:** “You repeat that at every meeting.“
@@ -24,122 +21,128 @@ commands used to generate credentials using a REST API
 >
 > ― Remarks on Signing the Intermediate-Range Nuclear Forces Treaty
 
-
 ## What are Verifiable Credentials?
 
-Verifiable credentials are the digital equivalent of something like a membership card or a drivers
-license. They are a representation of some sort of ownership or rights that a user claims to hold.
-Verifiable credentials follow an international W3C standard and are cryptographically secure, so they
-can be checked much like in the real world.
+Verifiable credentials are the digital equivalent of something like a membership card or a drivers license. They are a
+representation of some sort of ownership or rights that a user claims to hold. Verifiable credentials follow an
+international W3C standard and are cryptographically secure, so they can be checked much like in the real world.
 
-The idea behind verifiable credentials is that they can be issued and verfied by anyone - that is that there is no centralised owner of all of the information. This contrasts with the standard OAuth2
-Authorization Code Grant flow which relies on a user logging in somewhere to prove who they are.
+The idea behind verifiable credentials is that they can be issued and verfied by anyone - that is that there is no
+centralised owner of all of the information. This contrasts with the standard OAuth2 Authorization Code Grant flow which
+relies on a user logging in somewhere to prove who they are.
 
-For example in the physical world, when a tourist enters new a country, they typcially need to pass through border control, where they are asked to provide a valid identity document or passport. The border guard needs to check both that the passport is real, and that the passport actually belongs to the tourist himself. Other requirements may also need to be met, maybe a specific visa or vaccination certificate is required.
+For example in the physical world, when a tourist enters new a country, they typcially need to pass through border
+control, where they are asked to provide a valid identity document or passport. The border guard needs to check both
+that the passport is real, and that the passport actually belongs to the tourist himself. Other requirements may also
+need to be met, maybe a specific visa or vaccination certificate is required.
 
-Now, the tourist's passport has been provided by their own national government, so the border guard,
-as well as checking that the photo matches the recipient,  is implicitly checking that a document provided by a third party is real, without necessarily directly contacting the country concerned.
+Now, the tourist's passport has been provided by their own national government, so the border guard, as well as checking
+that the photo matches the recipient, is implicitly checking that a document provided by a third party is real, without
+necessarily directly contacting the country concerned.
 
-With Verifiable credentials, a check for the validity of the document can be made based on the some sort of agreed cryptographic proof, the decoded document holds the claimed rights and also connects directly to both the subject of the credential (similar to the passport photograph) and the identity of the issuer  (similar to the origin country of origin the passport itself). In both cases this identity needs to resolve to a unique ID, where the ID has been pre-generated by the owner.
-
+With Verifiable credentials, a check for the validity of the document can be made based on the some sort of agreed
+cryptographic proof, the decoded document holds the claimed rights and also connects directly to both the subject of the
+credential (similar to the passport photograph) and the identity of the issuer (similar to the origin country of origin
+the passport itself). In both cases this identity needs to resolve to a unique ID, where the ID has been pre-generated
+by the owner.
 
 ## What are Decentralised Identifiers?
 
-[Decentralised Identifiers](https://www.w3.org/TR/did-1.0/) are a mechanism to create verifiable, persistent identifiers without the need to defer to a central authority. A digital identifier consists of a URN made up of several sections,
-each separated by a colon. They start with the namespace `did` , followed by a decentralised identifier method (such as `web` or `ethr`,  `key`). The method defines how the rest of the identifier can be decoded and resolved.  For example the term [`did:web`](https://w3c-ccg.github.io/did-method-web/)  refers to a method for creating decentralized identifiers that are hosted on a publicly accessible web domain, `did:ethr` is used by [Etherium-based identities](https://github.com/uport-project/ethr-did-registry) and a [`did:key`](https://w3c-ccg.github.io/did-key-spec/) holds an encoded public key. the remaining sections of the URN will resolve to allow a verifier to check if the identity has been used correctly.
+[Decentralised Identifiers](https://www.w3.org/TR/did-1.0/) are a mechanism to create verifiable, persistent identifiers
+without the need to defer to a central authority. A digital identifier consists of a URN made up of several sections,
+each separated by a colon. They start with the namespace `did` , followed by a decentralised identifier method (such as
+`web` or `ethr`, `key`). The method defines how the rest of the identifier can be decoded and resolved. For example the
+term [`did:web`](https://w3c-ccg.github.io/did-method-web/) refers to a method for creating decentralized identifiers
+that are hosted on a publicly accessible web domain, `did:ethr` is used by
+[Etherium-based identities](https://github.com/uport-project/ethr-did-registry) and a
+[`did:key`](https://w3c-ccg.github.io/did-key-spec/) holds an encoded public key. the remaining sections of the URN will
+resolve to allow a verifier to check if the identity has been used correctly.
 
 For example `did:web:fiware.github.io:tutorials.Step-by-Step:alice` is referring to a document found at
 [`https://fiware.github.io/tutorials.Step-by-Step/alice/did.json`](https://fiware.github.io/tutorials.Step-by-Step/alice/did.json)
 
 ```json
 {
-  "@context": [
-    "https://www.w3.org/ns/did/v1",
-    "https://w3id.org/security/suites/jws-2020/v1"
-  ],
-  "id": "did:web:fiware.github.io:tutorials.Step-by-Step:alice",
-  "verificationMethod": [
-    {
-      "id": "did:fiware.github.io:tutorials.Step-by-Step:alice#owner",
-      "type": "JsonWebKey2020",
-      "controller": "did:web:fiware.github.io:tutorials.Step-by-Step:alice",
-      "publicKeyJwk": {
-        "kty": "EC",
-        "crv": "secp256k1",
-        "x": "Nd3DeQ7G/1pTeYM6viWK6plbSD9E7cA9C2ONG9qG3CQ=",
-        "y": "LuMt0dFWni1/fs/VqfjNOHAZT3PWGxKU8kUlLffGtjM="
-      }
-    }
-  ],
-  "authentication": [
-    "did:web:fiware.github.io:tutorials.Step-by-Step:alice#owner"
-  ],
-  "assertionMethod": [
-    "did:web:fiware.github.io:tutorials.Step-by-Step:alice#owner"
-  ]
+    "@context": ["https://www.w3.org/ns/did/v1", "https://w3id.org/security/suites/jws-2020/v1"],
+    "id": "did:web:fiware.github.io:tutorials.Step-by-Step:alice",
+    "verificationMethod": [
+        {
+            "id": "did:fiware.github.io:tutorials.Step-by-Step:alice#owner",
+            "type": "JsonWebKey2020",
+            "controller": "did:web:fiware.github.io:tutorials.Step-by-Step:alice",
+            "publicKeyJwk": {
+                "kty": "EC",
+                "crv": "secp256k1",
+                "x": "Nd3DeQ7G/1pTeYM6viWK6plbSD9E7cA9C2ONG9qG3CQ=",
+                "y": "LuMt0dFWni1/fs/VqfjNOHAZT3PWGxKU8kUlLffGtjM="
+            }
+        }
+    ],
+    "authentication": ["did:web:fiware.github.io:tutorials.Step-by-Step:alice#owner"],
+    "assertionMethod": ["did:web:fiware.github.io:tutorials.Step-by-Step:alice#owner"]
 }
 ```
 
-
-Which in turn is a JSON-LD document which holds a list of verification methods which can be used to valid the `id`. In this case `JsonWebKey2020` refers to a [JSON Web Signature](https://w3c-ccg.github.io/lds-jws2020/)
+Which in turn is a JSON-LD document which holds a list of verification methods which can be used to valid the `id`. In
+this case `JsonWebKey2020` refers to a [JSON Web Signature](https://w3c-ccg.github.io/lds-jws2020/)
 
 ## Architecture
 
-For the purpose of this tutorial, we will take the demo Farm Management Information System (FMIS)
-from the previous tutorial, and alter access to the vet's context broker. Remember that within our
-data space we effectively have three context brokers owned by the Farmer, a Vet and a Contract labourer
-respectively.
+For the purpose of this tutorial, we will take the demo Farm Management Information System (FMIS) from the previous
+tutorial, and alter access to the vet's context broker. Remember that within our data space we effectively have three
+context brokers owned by the Farmer, a Vet and a Contract labourer respectively.
 
-- The default tenant which holds **Building** data and is used for collating data from all systems
-- The `farmer` tenant which holds **Animal**, **Device** and **AgriParcel** information
-- The `contractor` tenant holds **Animal** data about animals needing additional care.
-- The `vet` tenant which holds **Animal** data about new-born animals
-
+-   The default tenant which holds **Building** data and is used for collating data from all systems
+-   The `farmer` tenant which holds **Animal**, **Device** and **AgriParcel** information
+-   The `contractor` tenant holds **Animal** data about animals needing additional care.
+-   The `vet` tenant which holds **Animal** data about new-born animals
 
 Within the data space, the **Vet** wishes to restrict access to her data to legitimate users only:
 
--  Those who have bought access to her data, who are accredited users of **Vets Mart**
--  Animal welfare officers who are legally alloweed access who are accredited by the national **Government**
+-   Those who have bought access to her data, who are accredited users of **Vets Mart**
+-   Animal welfare officers who are legally alloweed access who are accredited by the national **Government**
 
-This tutorial will not complete the enforcement of access rules, but will show how accredited users would be
-able to demonstrate that they are legitimately from those organisations and hold a specific role.
+This tutorial will not complete the enforcement of access rules, but will show how accredited users would be able to
+demonstrate that they are legitimately from those organisations and hold a specific role.
 
 Therefore the overall architecture will consist of the following elements:
 
-- The [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will send and receive requests
-  using
-  [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json).
-  This is split into the following systems, each running on their own tenant:
-  - The default tenant
-  - The `farmer` tenant
-  - The `contractor` tenant
-  - The `vet` tenant
-- The FIWARE [IoT Agent for UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/) which will receive
-  southbound requests using
-  [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
-  and convert them to
-  [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
-  commands for the devices
-- The underlying [MongoDB](https://www.mongodb.com/) database :
-  - Used by the **Orion Context Broker** to hold context data information such as data entities, subscriptions and
-    registrations
-  - Used by the **IoT Agent** to hold device information such as device URLs and Keys
-- An HTTP **Web-Server** which offers static `@context` files defining the context entities within the system.
-- The **Tutorial Application** does the following:
-  - Acts as set of dummy [agricultural IoT devices](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)
-    using the
+-   The [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will send and receive requests
+    using
+    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json).
+    This is split into the following systems, each running on their own tenant:
+    -   The default tenant
+    -   The `farmer` tenant
+    -   The `contractor` tenant
+    -   The `vet` tenant
+-   The FIWARE [IoT Agent for UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/) which will receive
+    southbound requests using
+    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
+    and convert them to
     [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
-    protocol running over HTTP.
-  - Displays a running Farm Management Information System (FMIS)
+    commands for the devices
+-   The underlying [MongoDB](https://www.mongodb.com/) database :
+    -   Used by the **Orion Context Broker** to hold context data information such as data entities, subscriptions and
+        registrations
+    -   Used by the **IoT Agent** to hold device information such as device URLs and Keys
+-   An HTTP **Web-Server** which offers static `@context` files defining the context entities within the system.
+-   The **Tutorial Application** does the following:
+    -   Acts as set of dummy [agricultural IoT devices](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)
+        using the
+        [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
+        protocol running over HTTP.
+    -   Displays a running Farm Management Information System (FMIS)
 
-In addition, our **Vet** will be protected via a dummy data space connector, the data space connector is spoofing the role of a
-[VC Verifier ](https://github.com/FIWARE/VCVerifier). it in turn connects to some other FIWARE Data Space components:
+In addition, our **Vet** will be protected via a dummy data space connector, the data space connector is spoofing the
+role of a [VC Verifier ](https://github.com/FIWARE/VCVerifier). it in turn connects to some other FIWARE Data Space
+components:
 
-- A FIWARE [Credentials Configuration Service](https://github.com/FIWARE/credentials-config-service) to hold the location of services it should trust
-- A FIWARE [Trusted Issuers List](https://github.com/FIWARE/trusted-issuers-list/) which returns the list of trusted roles for each issuer's credentials
+-   A FIWARE [Credentials Configuration Service](https://github.com/FIWARE/credentials-config-service) to hold the
+    location of services it should trust
+-   A FIWARE [Trusted Issuers List](https://github.com/FIWARE/trusted-issuers-list/) which returns the list of trusted
+    roles for each issuer's credentials
 
 ![](https://fiware.github.io/tutorials.Verifiable-Credentials/img/architecture.png)
-
 
 Since all interactions between the elements are initiated by HTTP requests, the entities can be containerized and run
 from exposed ports.
@@ -147,8 +150,8 @@ from exposed ports.
 ## Start Up
 
 All services can be initialised from the command-line by running the
-[services](https://github.com/FIWARE/tutorials.Verifiable-Credentials/blob/NGSI-LD/services) Bash script provided within the
-repository. Please clone the repository and create the necessary images by running the commands as shown:
+[services](https://github.com/FIWARE/tutorials.Verifiable-Credentials/blob/NGSI-LD/services) Bash script provided within
+the repository. Please clone the repository and create the necessary images by running the commands as shown:
 
 ```bash
 git clone https://github.com/FIWARE/tutorials.Verifiable-Credentials.git
@@ -166,61 +169,56 @@ git checkout NGSI-LD
 > ./services stop
 > ```
 
-
-
 ## Verifiable Credentials
 
-Unencoded in plain text, a verifiable credential, could be a claim to be anything. A verifiable credential will typically be a snippet of JSON-LD,
-with the `type: VerifiableCredential` - in the example below, the **Animal Welfare** department wants to issue a **Data Access Claim** to **Alice**. The details of
-the role for **Data Access** are the claim. Since **Animal Welfare** is creating the credential, they are the issuer, and **Alice** is the subject. The issuer
-signs the credential with their private key.
+Unencoded in plain text, a verifiable credential, could be a claim to be anything. A verifiable credential will
+typically be a snippet of JSON-LD, with the `type: VerifiableCredential` - in the example below, the **Animal Welfare**
+department wants to issue a **Data Access Claim** to **Alice**. The details of the role for **Data Access** are the
+claim. Since **Animal Welfare** is creating the credential, they are the issuer, and **Alice** is the subject. The
+issuer signs the credential with their private key.
 
 The private key used for signing the credential should not be shared, but for this tutorial,
-`0b6366519a40eb4f384f7f84cf8bb716683ad1af8adbe60e59fe24ba042e396a` is used for all users throughout
-the requests,
-since the associated public key is the one that has been stored on the public web as a [decentralised identifier](https://fiware.github.io//tutorials.Step-by-Step/alice/did.json). The necessary information
+`0b6366519a40eb4f384f7f84cf8bb716683ad1af8adbe60e59fe24ba042e396a` is used for all users throughout the requests, since
+the associated public key is the one that has been stored on the public web as a
+[decentralised identifier](https://fiware.github.io//tutorials.Step-by-Step/alice/did.json). The necessary information
 can be generated using a script as shown.
 
-
 ```javascript
-import crypto from 'crypto';
-import elliptic from 'elliptic';
+import crypto from "crypto";
+import elliptic from "elliptic";
 
 // Request a 32 byte key
 const size = parseInt(process.argv.slice(2)[0]) || 32;
 const randomString = crypto.randomBytes(size).toString("hex");
 const key = randomString;
 
-console.log(`Key (hex): ${key}`)  // 0b6366519a40eb4f384 etc.
+console.log(`Key (hex): ${key}`); // 0b6366519a40eb4f384 etc.
 
 // Calculate the `secp256k1` curve and build the public key
-const ec = new elliptic.ec('secp256k1');
-const prv = ec.keyFromPrivate(key, 'hex');
+const ec = new elliptic.ec("secp256k1");
+const prv = ec.keyFromPrivate(key, "hex");
 const pub = prv.getPublic();
-console.log(`Public (hex): ${prv.getPublic('hex')}`)
-console.log(`x (hex): ${pub.x.toBuffer().toString('hex')}`)
-console.log(`y (hex): ${pub.y.toBuffer().toString('hex')}`)
-console.log(`x (base64): ${pub.x.toBuffer().toString('base64')}`)
-console.log(`y (base64): ${pub.y.toBuffer().toString('base64')}`)
-console.log(`-- kty: EC, crv: secp256k1`)
+console.log(`Public (hex): ${prv.getPublic("hex")}`);
+console.log(`x (hex): ${pub.x.toBuffer().toString("hex")}`);
+console.log(`y (hex): ${pub.y.toBuffer().toString("hex")}`);
+console.log(`x (base64): ${pub.x.toBuffer().toString("base64")}`);
+console.log(`y (base64): ${pub.y.toBuffer().toString("base64")}`);
+console.log(`-- kty: EC, crv: secp256k1`);
 ```
-
-
 
 ### Generating a Verifiable Credential
 
-Since **Alice** works for the **Animal Welfare** department, she needs to have a verfiable credential to prove she
-works there to access the **Vet's** context broker.
+Since **Alice** works for the **Animal Welfare** department, she needs to have a verfiable credential to prove she works
+there to access the **Vet's** context broker.
 
-The **Animal Welfare** department `did:web:fiware.github.io:tutorials.Step-by-Step:animal-welfare` therefore issues **Alice**
-`did:web:fiware.github.io:tutorials.Step-by-Step:alice` a verifiable with an **Access Claim**.
-This can be signed using a private key. Credentials using the fixed private key
-`0b6366519a40eb4f384f7f84cf8bb716683ad1af8adbe60e59fe24ba042e396a` can be generated from the
-tutorial application at [http://localhost:3000/credentials](http://localhost:3000/credentials)
+The **Animal Welfare** department `did:web:fiware.github.io:tutorials.Step-by-Step:animal-welfare` therefore issues
+**Alice** `did:web:fiware.github.io:tutorials.Step-by-Step:alice` a verifiable with an **Access Claim**. This can be
+signed using a private key. Credentials using the fixed private key
+`0b6366519a40eb4f384f7f84cf8bb716683ad1af8adbe60e59fe24ba042e396a` can be generated from the tutorial application at
+[http://localhost:3000/credentials](http://localhost:3000/credentials)
 
-The three-letter claims `iss`, `nbf`, `exp`, `sub` come from [RFC 7519](https://www.rfc-editor.org/rfc/rfc7519), and can include
-`nbf` - not before and `exp` - expiry date to limit a validity of a claim.
-
+The three-letter claims `iss`, `nbf`, `exp`, `sub` come from [RFC 7519](https://www.rfc-editor.org/rfc/rfc7519), and can
+include `nbf` - not before and `exp` - expiry date to limit a validity of a claim.
 
 ![](https://fiware.github.io/tutorials.Verifiable-Credentials/img/create-claim.png)
 
@@ -260,7 +258,6 @@ curl -L 'localhost:3000/vc/generate' \
 
 The response is a JWT token which is handed to **Alice** - this the equivalent of receiving an **Employee Badge**
 
-
 ```json
 {
     "jwt": "eyJhbGciOiJFUzI1NksiLCJ0eXAiOiJKV1QifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi8vZml3YXJlLmdpdGh1Yi5pby90dXRvcmlhbHMuU3RlcC1ieS1TdGVwL2NyZWRlbnRpYWxzLmpzb25sZCJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiT3BlcmF0b3JDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImZpcnN0TmFtZSI6IkFsaWNlIiwibGFzdE5hbWUiOiJVc2VyIiwiZU1haWwiOiJhbGljZUB0ZXN0LmNvbSIsInJvbGVzIjpbIk9QRVJBVE9SIl19fSwic3ViIjoiZGlkOndlYjpmaXdhcmUuZ2l0aHViLmlvOnR1dG9yaWFscy5TdGVwLWJ5LVN0ZXA6YWxpY2UiLCJuYmYiOjE3NTQwNjAyNDMsImlzcyI6ImRpZDp3ZWI6Zml3YXJlLmdpdGh1Yi5pbzp0dXRvcmlhbHMuU3RlcC1ieS1TdGVwOmFuaW1hbC13ZWxmYXJlIn0.YEoJtrpuR-bxDk-Y8yV0FPcCjtHkczq17vt4_iUV2D-kSbkAFjqkcAj5Vph48O4OeESI8GxoRZRH_yP-oat5hg"
@@ -269,9 +266,10 @@ The response is a JWT token which is handed to **Alice** - this the equivalent o
 
 ### Generating Verifiable Presentation
 
-When going to the **Vet**, **Alice** is challenged if she really does work for **Animal Welfare**, she needs to present one or more credential in a Verifiable Presentation.
-Each credential takes the form of a JWT token. In this case the issuer `iss` is **Alice** herself, and she is also the subject matter `sub`.
-Usually these presentations have an `exp` in the near future to stop potential man-in-the-middle attacks.
+When going to the **Vet**, **Alice** is challenged if she really does work for **Animal Welfare**, she needs to present
+one or more credential in a Verifiable Presentation. Each credential takes the form of a JWT token. In this case the
+issuer `iss` is **Alice** herself, and she is also the subject matter `sub`. Usually these presentations have an `exp`
+in the near future to stop potential man-in-the-middle attacks.
 
 ![](https://fiware.github.io/tutorials.Verifiable-Credentials/img/create-presentation.png)
 
@@ -308,10 +306,10 @@ The response is yet another JWT token.
 }
 ```
 
-
 ### Verifying a Verifiable Presentation
 
-On receiving a Verifiable Presentation, the **Vet** must first check that this really is a presentation from **Alice** about **Alice**, and that it holds a Verifiable Presentation which in turn holds one or more claims.
+On receiving a Verifiable Presentation, the **Vet** must first check that this really is a presentation from **Alice**
+about **Alice**, and that it holds a Verifiable Presentation which in turn holds one or more claims.
 
 #### 3️⃣ Request:
 
@@ -325,20 +323,18 @@ curl -L 'localhost:3000/vp/verify' \
 
 #### Response:
 
-The verifier checks that the signed JWT ending `...JDDA` matches with the public key found at [`https://fiware.github.io/tutorials.Step-by-Step/alice/did.json`](https://fiware.github.io/tutorials.Step-by-Step/alice/did.json),
-in other words, that the presentation really came from **Alice** - the Verfiable Presentation holds one claim - another JWT ending `-oat5hg`
+The verifier checks that the signed JWT ending `...JDDA` matches with the public key found at
+[`https://fiware.github.io/tutorials.Step-by-Step/alice/did.json`](https://fiware.github.io/tutorials.Step-by-Step/alice/did.json),
+in other words, that the presentation really came from **Alice** - the Verfiable Presentation holds one claim - another
+JWT ending `-oat5hg`
 
 ```json
 {
     "verified": true,
     "payload": {
         "vp": {
-            "@context": [
-                "https://www.w3.org/2018/credentials/v1"
-            ],
-            "type": [
-                "VerifiablePresentation"
-            ],
+            "@context": ["https://www.w3.org/2018/credentials/v1"],
+            "type": ["VerifiablePresentation"],
             "verifiableCredential": [
                 "eyJhbGciOiJFUzI1NksiLCJ0eXAiOiJKV1QifQ.eyJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi8vZml3YXJlLmdpdGh1Yi5pby90dXRvcmlhbHMuU3RlcC1ieS1TdGVwL2NyZWRlbnRpYWxzLmpzb25sZCJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiT3BlcmF0b3JDcmVkZW50aWFsIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImZpcnN0TmFtZSI6IkFsaWNlIiwibGFzdE5hbWUiOiJVc2VyIiwiZU1haWwiOiJhbGljZUB0ZXN0LmNvbSIsInJvbGVzIjpbIk9QRVJBVE9SIl19fSwic3ViIjoiZGlkOndlYjpmaXdhcmUuZ2l0aHViLmlvOnR1dG9yaWFscy5TdGVwLWJ5LVN0ZXA6YWxpY2UiLCJuYmYiOjE3NTQwNjAyNDMsImlzcyI6ImRpZDp3ZWI6Zml3YXJlLmdpdGh1Yi5pbzp0dXRvcmlhbHMuU3RlcC1ieS1TdGVwOmFuaW1hbC13ZWxmYXJlIn0.YEoJtrpuR-bxDk-Y8yV0FPcCjtHkczq17vt4_iUV2D-kSbkAFjqkcAj5Vph48O4OeESI8GxoRZRH_yP-oat5hg"
             ]
@@ -347,10 +343,7 @@ in other words, that the presentation really came from **Alice** - the Verfiable
     },
     "didResolutionResult": {
         "didDocument": {
-            "@context": [
-                "https://www.w3.org/ns/did/v1",
-                "https://w3id.org/security/suites/jws-2020/v1"
-            ],
+            "@context": ["https://www.w3.org/ns/did/v1", "https://w3id.org/security/suites/jws-2020/v1"],
             "id": "did:web:fiware.github.io:tutorials.Step-by-Step:alice",
             "verificationMethod": [
                 {
@@ -365,12 +358,8 @@ in other words, that the presentation really came from **Alice** - the Verfiable
                     }
                 }
             ],
-            "authentication": [
-                "did:web:fiware.github.io:tutorials.Step-by-Step:alice#owner"
-            ],
-            "assertionMethod": [
-                "did:web:fiware.github.io:tutorials.Step-by-Step:alice#owner"
-            ]
+            "authentication": ["did:web:fiware.github.io:tutorials.Step-by-Step:alice#owner"],
+            "assertionMethod": ["did:web:fiware.github.io:tutorials.Step-by-Step:alice#owner"]
         },
         "didDocumentMetadata": {},
         "didResolutionMetadata": {
@@ -398,18 +387,13 @@ in other words, that the presentation really came from **Alice** - the Verfiable
                     "firstName": "Alice",
                     "lastName": "User",
                     "eMail": "alice@test.com",
-                    "roles": [
-                        "OPERATOR"
-                    ],
+                    "roles": ["OPERATOR"],
                     "id": "did:web:fiware.github.io:tutorials.Step-by-Step:alice"
                 },
                 "issuer": {
                     "id": "did:web:fiware.github.io:tutorials.Step-by-Step:animal-welfare"
                 },
-                "type": [
-                    "VerifiableCredential",
-                    "OperatorCredential"
-                ],
+                "type": ["VerifiableCredential", "OperatorCredential"],
                 "@context": [
                     "https://www.w3.org/2018/credentials/v1",
                     "https://fiware.github.io/tutorials.Step-by-Step/credentials.jsonld"
@@ -422,12 +406,8 @@ in other words, that the presentation really came from **Alice** - the Verfiable
             }
         ],
         "holder": "did:web:fiware.github.io:tutorials.Step-by-Step:alice",
-        "type": [
-            "VerifiablePresentation"
-        ],
-        "@context": [
-            "https://www.w3.org/2018/credentials/v1"
-        ],
+        "type": ["VerifiablePresentation"],
+        "@context": ["https://www.w3.org/2018/credentials/v1"],
         "proof": {
             "type": "JwtProof2020",
             "jwt": "eyJhbGciOiJFUzI1NksiLCJ0eXAiOiJKV1QifQ.eyJ2cCI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVQcmVzZW50YXRpb24iXSwidmVyaWZpYWJsZUNyZWRlbnRpYWwiOlsiZXlKaGJHY2lPaUpGVXpJMU5rc2lMQ0owZVhBaU9pSktWMVFpZlEuZXlKMll5STZleUpBWTI5dWRHVjRkQ0k2V3lKb2RIUndjem92TDNkM2R5NTNNeTV2Y21jdk1qQXhPQzlqY21Wa1pXNTBhV0ZzY3k5Mk1TSXNJbWgwZEhCek9pOHZabWwzWVhKbExtZHBkR2gxWWk1cGJ5OTBkWFJ2Y21saGJITXVVM1JsY0MxaWVTMVRkR1Z3TDJOeVpXUmxiblJwWVd4ekxtcHpiMjVzWkNKZExDSjBlWEJsSWpwYklsWmxjbWxtYVdGaWJHVkRjbVZrWlc1MGFXRnNJaXdpVDNCbGNtRjBiM0pEY21Wa1pXNTBhV0ZzSWwwc0ltTnlaV1JsYm5ScFlXeFRkV0pxWldOMElqcDdJbVpwY25OMFRtRnRaU0k2SWtGc2FXTmxJaXdpYkdGemRFNWhiV1VpT2lKVmMyVnlJaXdpWlUxaGFXd2lPaUpoYkdsalpVQjBaWE4wTG1OdmJTSXNJbkp2YkdWeklqcGJJazlRUlZKQlZFOVNJbDE5ZlN3aWMzVmlJam9pWkdsa09uZGxZanBtYVhkaGNtVXVaMmwwYUhWaUxtbHZPblIxZEc5eWFXRnNjeTVUZEdWd0xXSjVMVk4wWlhBNllXeHBZMlVpTENKdVltWWlPakUzTlRRd05qQXlORE1zSW1semN5STZJbVJwWkRwM1pXSTZabWwzWVhKbExtZHBkR2gxWWk1cGJ6cDBkWFJ2Y21saGJITXVVM1JsY0MxaWVTMVRkR1Z3T21GdWFXMWhiQzEzWld4bVlYSmxJbjAuWUVvSnRycHVSLWJ4RGstWTh5VjBGUGNDanRIa2N6cTE3dnQ0X2lVVjJELWtTYmtBRmpxa2NBajVWcGg0OE80T2VFU0k4R3hvUlpSSF95UC1vYXQ1aGciXX0sImlzcyI6ImRpZDp3ZWI6Zml3YXJlLmdpdGh1Yi5pbzp0dXRvcmlhbHMuU3RlcC1ieS1TdGVwOmFsaWNlIn0.6_wuCNurZV5zawDKsPfJEEqWcmTpoTMG7r58HxAKJUkQB2bkRza2C7UoWOFu7DgHqDx9moSrQqrQ0n1Yp9JDDA"
@@ -438,9 +418,10 @@ in other words, that the presentation really came from **Alice** - the Verfiable
 
 ### Verifying a Verifiable Credential
 
-The JWT ending `-oat5hg` is Verfiable Credential which can also be decoded and verified. In this case we can see that we have a
-credential which was issued and signed by **Animal Welfare** - `did:web:fiware.github.io:tutorials.Step-by-Step:animal-welfare`
-and the subject was `did:web:fiware.github.io:tutorials.Step-by-Step:alice`
+The JWT ending `-oat5hg` is Verfiable Credential which can also be decoded and verified. In this case we can see that we
+have a credential which was issued and signed by **Animal Welfare** -
+`did:web:fiware.github.io:tutorials.Step-by-Step:animal-welfare` and the subject was
+`did:web:fiware.github.io:tutorials.Step-by-Step:alice`
 
 #### 4️⃣ Request:
 
@@ -464,17 +445,12 @@ curl -L 'localhost:3000/vc/verify' \
                 "https://www.w3.org/2018/credentials/v1",
                 "https://fiware.github.io/tutorials.Step-by-Step/credentials.jsonld"
             ],
-            "type": [
-                "VerifiableCredential",
-                "OperatorCredential"
-            ],
+            "type": ["VerifiableCredential", "OperatorCredential"],
             "credentialSubject": {
                 "firstName": "Alice",
                 "lastName": "User",
                 "eMail": "alice@test.com",
-                "roles": [
-                    "OPERATOR"
-                ]
+                "roles": ["OPERATOR"]
             }
         },
         "sub": "did:web:fiware.github.io:tutorials.Step-by-Step:alice",
@@ -483,10 +459,7 @@ curl -L 'localhost:3000/vc/verify' \
     },
     "didResolutionResult": {
         "didDocument": {
-            "@context": [
-                "https://www.w3.org/ns/did/v1",
-                "https://w3id.org/security/suites/jws-2020/v1"
-            ],
+            "@context": ["https://www.w3.org/ns/did/v1", "https://w3id.org/security/suites/jws-2020/v1"],
             "id": "did:web:fiware.github.io:tutorials.Step-by-Step:animal-welfare",
             "verificationMethod": [
                 {
@@ -501,12 +474,8 @@ curl -L 'localhost:3000/vc/verify' \
                     }
                 }
             ],
-            "authentication": [
-                "did:web:fiware.github.io:tutorials.Step-by-Step:animal-welfare#owner"
-            ],
-            "assertionMethod": [
-                "did:web:fiware.github.io:tutorials.Step-by-Step:animal-welfare#owner"
-            ]
+            "authentication": ["did:web:fiware.github.io:tutorials.Step-by-Step:animal-welfare#owner"],
+            "assertionMethod": ["did:web:fiware.github.io:tutorials.Step-by-Step:animal-welfare#owner"]
         },
         "didDocumentMetadata": {},
         "didResolutionMetadata": {
@@ -532,18 +501,13 @@ curl -L 'localhost:3000/vc/verify' \
             "firstName": "Alice",
             "lastName": "User",
             "eMail": "alice@test.com",
-            "roles": [
-                "OPERATOR"
-            ],
+            "roles": ["OPERATOR"],
             "id": "did:web:fiware.github.io:tutorials.Step-by-Step:alice"
         },
         "issuer": {
             "id": "did:web:fiware.github.io:tutorials.Step-by-Step:animal-welfare"
         },
-        "type": [
-            "VerifiableCredential",
-            "OperatorCredential"
-        ],
+        "type": ["VerifiableCredential", "OperatorCredential"],
         "@context": [
             "https://www.w3.org/2018/credentials/v1",
             "https://fiware.github.io/tutorials.Step-by-Step/credentials.jsonld"
@@ -557,10 +521,11 @@ curl -L 'localhost:3000/vc/verify' \
 }
 ```
 
-
 ## Using Verifiable Credentials within a Data Space
 
-Now that Alice has been given a Verifiable credential, she can use it to claim the role of Operator within the Data Space and gain Access to the Vetenary Records. A First attempt to access the records without holding a token results in an error, indicating that the verifier is present on port `1030`
+Now that Alice has been given a Verifiable credential, she can use it to claim the role of Operator within the Data
+Space and gain Access to the Vetenary Records. A First attempt to access the records without holding a token results in
+an error, indicating that the verifier is present on port `1030`
 
 ### Accessing the Vetenary Records without a Verifiable Credential
 
@@ -583,10 +548,11 @@ The response is a **401 - Unauthorized** error code with the following response
 }
 ```
 
-
 ### Accessing the Vetenary Records with an invalid Verifiable Credential
 
-The Verifiable Credential is added as a Bearer token to the Authorization header. The bearer token is a JWT which is then decoded and verified - if the content of the Bearer token does not match the claimed issuer, then the token is rejected.
+The Verifiable Credential is added as a Bearer token to the Authorization header. The bearer token is a JWT which is
+then decoded and verified - if the content of the Bearer token does not match the claimed issuer, then the token is
+rejected.
 
 #### 6️⃣ Request:
 
@@ -611,7 +577,8 @@ curl -L 'localhost:1030/ngsi-ld/v1/entities?local=true' \
 
 In the case of a rejected credentials The response is a **401 - Unauthorized** error code with the following response.
 
-Note that a real Credential Verifier would not only check that all the claimed issuers of credentials had really signed each verifiable credential, but also ensure that the `exp` and `nbf` are also in range.
+Note that a real Credential Verifier would not only check that all the claimed issuers of credentials had really signed
+each verifiable credential, but also ensure that the `exp` and `nbf` are also in range.
 
 ### Accessing the Vetenary Records with a valid Verifiable Credential
 
@@ -654,20 +621,24 @@ curl -L 'localhost:1030/ngsi-ld/v1/entities?local=true' \
 ```
 
 The response contains a series of **Animal** records, however checking the output within the
-[Verifiable Presentation Monitor](http://localhost:3000/vp/monitor) at `http://localhost:3000/vp/monitor`, you will find the
-following output:
+[Verifiable Presentation Monitor](http://localhost:3000/vp/monitor) at `http://localhost:3000/vp/monitor`, you will find
+the following output:
 
 ```
 OperatorCredential issued by did:web:fiware.github.io:tutorials.Step-by-Step:animal-welfare was NOT TRUSTED
 ```
 
-This is because in reality, a further check is required. Not only must the Verifiable Credential be signed by the issuer, but the issuer must be a valid issuer of credentials within the data space. The way that a verifier checks this, is that it must contact a trusted issuers list. The location of this list is defined within the configuration service associated to the Verifiable Credentials verifier.
+This is because in reality, a further check is required. Not only must the Verifiable Credential be signed by the
+issuer, but the issuer must be a valid issuer of credentials within the data space. The way that a verifier checks this,
+is that it must contact a trusted issuers list. The location of this list is defined within the configuration service
+associated to the Verifiable Credentials verifier.
 
 ## Trusting issuers of Verifiable Credentials
 
 ### Checking for trusted issuers
 
-The configuration service is running on port 8081, a listing of valid issuers for the vet can be found by making a service request.
+The configuration service is running on port 8081, a listing of valid issuers for the vet can be found by making a
+service request.
 
 #### 8️⃣ Request:
 
@@ -686,9 +657,7 @@ curl -L 'localhost:8081/service/vet'
             {
                 "type": "VerifiableCredential",
                 "trustedParticipantsLists": [],
-                "trustedIssuersLists": [
-                    "http://trusted-issuers-list:8080"
-                ],
+                "trustedIssuersLists": ["http://trusted-issuers-list:8080"],
                 "holderVerification": {
                     "enabled": false,
                     "claim": "subject"
@@ -699,11 +668,14 @@ curl -L 'localhost:8081/service/vet'
 }
 ```
 
-The response indicates that VerifiableCredentials can be checked against the trusted issuers list found at `http://trusted-issuers-list:8080`
+The response indicates that VerifiableCredentials can be checked against the trusted issuers list found at
+`http://trusted-issuers-list:8080`
 
 ### Reading a trusted issuers list
 
-The trusted issuers list is usually maintained by the operator of the data space. It holds information about who is a valid user, and what sort of actions that issuer is allowed to generate, A trusted issuers list can be found running on port 8080 - initially there are no valid issuers available.
+The trusted issuers list is usually maintained by the operator of the data space. It holds information about who is a
+valid user, and what sort of actions that issuer is allowed to generate, A trusted issuers list can be found running on
+port 8080 - initially there are no valid issuers available.
 
 #### 9️⃣ Request:
 
@@ -723,10 +695,11 @@ curl -L 'localhost:8080/v4/issuers'
 }
 ```
 
-
 ### Adding a trusted issuer to the trusted issuers list
 
-To Add a trusted issuer, make a **POST** request to the `/issuer` endpoint. You can see here that the  issuer is `did:web:fiware.github.io:tutorials.Step-by-Step:animal-welfare` and that organisation is allowed to Create **OperatorCredentials** with two separate roles - `OPERATOR` and `VISITOR`
+To Add a trusted issuer, make a **POST** request to the `/issuer` endpoint. You can see here that the issuer is
+`did:web:fiware.github.io:tutorials.Step-by-Step:animal-welfare` and that organisation is allowed to Create
+**OperatorCredentials** with two separate roles - `OPERATOR` and `VISITOR`
 
 #### 1️⃣0️⃣ Request:
 
@@ -756,11 +729,10 @@ curl -L 'localhost:8080/issuer' \
 }'
 ```
 
-
 ### Reading from the trusted issuers list
 
-
-This trusted issuers list is able to retrieve issuer rights in two different formats. Initially we shall retrieve plain-text issuer information by making a **GET** request to the
+This trusted issuers list is able to retrieve issuer rights in two different formats. Initially we shall retrieve
+plain-text issuer information by making a **GET** request to the
 `/issuer/did:web:fiware.github.io:tutorials.Step-by-Step:animal-welfare` endpoint
 
 #### 1️⃣1️⃣ Request:
@@ -768,7 +740,6 @@ This trusted issuers list is able to retrieve issuer rights in two different for
 ```bash
 curl -L 'localhost:8080/issuer/did:web:fiware.github.io:tutorials.Step-by-Step:animal-welfare'
 ```
-
 
 #### Response:
 
@@ -783,10 +754,7 @@ The response can be seen below
             "claims": [
                 {
                     "name": "roles",
-                    "allowedValues": [
-                        "OPERATOR",
-                        "VISITOR"
-                    ]
+                    "allowedValues": ["OPERATOR", "VISITOR"]
                 }
             ]
         }
@@ -794,22 +762,18 @@ The response can be seen below
 }
 ```
 
-
-#### 1️⃣2️⃣  Request:
+#### 1️⃣2️⃣ Request:
 
 The trusted issuers list is able to retrieve issuer data in [EBSI compatible](https://hub.ebsi.eu/#/) format
-
 
 ```bash
 curl -L 'localhost:8080/v4/issuers/did:web:fiware.github.io:tutorials.Step-by-Step:animal-welfare'
 ```
 
-
 #### Response:
 
-The response can be seen below, where the `hash` and `body` are the sha256 hash of the payload
-body, and a base64 encoded string respectively.
-
+The response can be seen below, where the `hash` and `body` are the sha256 hash of the payload body, and a base64
+encoded string respectively.
 
 ```json
 {
@@ -823,8 +787,6 @@ body, and a base64 encoded string respectively.
     ]
 }
 ```
-
-
 
 ### Accessing the Vetenary Records with a valid Verifiable Credential
 
@@ -867,8 +829,8 @@ curl -L 'localhost:1030/ngsi-ld/v1/entities?local=true' \
 ```
 
 The response contains a series of **Animal** records, and checking the output within the
-[Verifiable Presentation Monitor](http://localhost:3000/vp/monitor) at `http://localhost:3000/vp/monitor`, you will find the
-following output:
+[Verifiable Presentation Monitor](http://localhost:3000/vp/monitor) at `http://localhost:3000/vp/monitor`, you will find
+the following output:
 
 ```text
 The following claims were made [{"name":"roles","allowedValues":["VISITOR","OPERATOR"]}]
@@ -884,11 +846,9 @@ The following claims were made [{"name":"roles","allowedValues":["VISITOR","OPER
 }
 ```
 
-
-As you can see the `role:OPERATOR` is indeed a valid setting for `did:web:fiware.github.io:tutorials.Step-by-Step:animal-welfare` to create. Matching these values
-would allow a real data space connector to permit or deny access using their PEP.
-
-
+As you can see the `role:OPERATOR` is indeed a valid setting for
+`did:web:fiware.github.io:tutorials.Step-by-Step:animal-welfare` to create. Matching these values would allow a real
+data space connector to permit or deny access using their PEP.
 
 # Next Steps
 

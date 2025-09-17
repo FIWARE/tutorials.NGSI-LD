@@ -279,8 +279,8 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
 }'
 ```
 
-New entities can be added by making a POST request to the `/ngsi-ld/v1/entities` endpoint. Notice that because
-`name` is a Property that has no sub-attributes, it does not require a `value` element.
+New entities can be added by making a POST request to the `/ngsi-ld/v1/entities` endpoint. Notice that because `name` is
+a Property that has no sub-attributes, it does not require a `value` element.
 
 As usual, the request will fail if the entity already exists in the context.
 
@@ -406,11 +406,7 @@ The request will fail if any of the attributes already exist in the context. The
 been successful and the reason for failure (if any has occurred).
 
 ```json
-[
-        "urn:ngsi-ld:TemperatureSensor:002",
-        "urn:ngsi-ld:TemperatureSensor:003",
-        "urn:ngsi-ld:TemperatureSensor:004"
-]
+["urn:ngsi-ld:TemperatureSensor:002", "urn:ngsi-ld:TemperatureSensor:003", "urn:ngsi-ld:TemperatureSensor:004"]
 ```
 
 ### Batch Create/Overwrite New Data Entities
@@ -563,9 +559,9 @@ The sensor `urn:ngsi-ld:TemperatureSensor:001` is reading at 25°C. The response
 }
 ```
 
-Because `format=concise` was used this is response includes the metadata such as `unitCode` but not
-`"type": "Property"` Context data can be retrieved by making a GET request to the `/ngsi-ld/v1/entities/<entity-id>`
-endpoint and selecting the `attrs` using a comma separated list.
+Because `format=concise` was used this is response includes the metadata such as `unitCode` but not `"type": "Property"`
+Context data can be retrieved by making a GET request to the `/ngsi-ld/v1/entities/<entity-id>` endpoint and selecting
+the `attrs` using a comma separated list.
 
 ### Read a Data Entity (concise)
 
@@ -909,7 +905,7 @@ The response details the selected attributes from the selected entities is retur
                     "unitCode": "5K"
                 },
                 "phenologicalCondition": {
-                    "vocab":  "femaleAdult"
+                    "vocab": "femaleAdult"
                 },
                 "reproductiveCondition": {
                     "vocab": "inCalf"
