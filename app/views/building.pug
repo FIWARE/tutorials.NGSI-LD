@@ -4,34 +4,35 @@ block content
   h1= title
 
   div.row
-    div.col
-      div(class="card m-2")
-        div.card-body
-          div.container
-            div.row
-               - if (building.hasStockPrice)
-                dt.col-lg-3 Stocks: 
+    - if (building.hasStockPrice)
+      div.col
+        div(class="card m-2")
+          div.card-body
+            div.container
+              div.row
+             
+                dt.col-lg-3 Action: 
                 dd.col-lg-9
                   ul
-                    each item in building.hasStockPrice
+                    each item in building.hasStockPrice.object
                       li
                         a(class="link-underline link-underline-opacity-0" href=`/app/soil/${item}`) #{item}
  
-  div.col-lg
-    div(class="card m-2")
-      div.card-body
-        dl.row
-          - if (building.location)
-            dt.col-lg-3 Location: 
-            dd.col-lg-9 #{building.location.coordinates[1]}&deg;N, #{building.location.coordinates[0]}&deg;E
+  - if (building.location)
+    div.col-lg
+      div(class="card m-2")
+        div.card-body
+          dl.row
+              dt.col-lg-3 Location: 
+              dd.col-lg-9 #{building.location.value.coordinates[1]}&deg;N, #{building.location.value.coordinates[0]}&deg;E
 
-  //- div.col-lg
-  //-   div(class="card m-2")
-  //-     div.card-body
-  //-       dl.row
-  //-         - if (building.population)
-  //-           dt.col-lg-3 Population: 
-  //-           dd.col-lg-9 #{building.population}
+  - if (building.population)
+    div.col-lg
+      div(class="card m-2")
+        div.card-body
+          dl.row
+            dt.col-lg-3 Population: 
+            dd.col-lg-9 #{building.population.value}
            
   
   div.row

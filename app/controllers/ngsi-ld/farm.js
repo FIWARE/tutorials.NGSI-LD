@@ -24,10 +24,10 @@ async function displayFarm(req, res) {
         monitor('NGSI', 'readEntity ' + req.params.id);
         const building = await ngsiLD.readEntity(
             req.params.id,
-            { options: 'keyValues', local: req.query.local },
+            { options: 'normalized', local: req.query.local },
             ngsiLD.setHeaders(null, LinkHeader)
         );
-        return res.render('building', { title: building.name, building });
+        return res.render('building', { title: building.name.value, building });
     } catch (error) {
         // If no farm has been found, display an error screen
         console.log(error);

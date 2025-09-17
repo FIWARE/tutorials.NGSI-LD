@@ -19,7 +19,7 @@ block content
                 dd.col-lg-9 #{soil.description}
             div.row
               - if (soil.price)
-                dt.col-lg-3 Price: 
+                dt.col-lg-3 Prix: 
                 dd.col-lg-9
                   code #{soil.price} CFA
 
@@ -28,7 +28,7 @@ block content
 
   div()
     div(style="float: left;")
-      h2 Historical Prices
+      h2 Prix Historique
       canvas(id="barChart" width="800px" height="400px")
     div(style="clear: both;")
 
@@ -60,7 +60,7 @@ block content
         "data": {
             "labels": sumMotionData.labels,
             "datasets": [{
-                "label": "Prices",
+                "label": "CFA",
                 "data": sumMotionData.data,
                 "backgroundColor": sumMotionData.color
             }]

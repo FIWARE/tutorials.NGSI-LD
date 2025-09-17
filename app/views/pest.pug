@@ -9,11 +9,36 @@ block content
         div.card-body
           div.container
             div.row
-               - if (pest.hasStockPrice)
-                dt.col-lg-3 Stocks: 
+              - if (pest.category)
+                dt.col-lg-3 Categorie: 
+                dd.col-lg-9
+                  code #{pest.category.vocab} / #{pest.subCategory.vocab} 
+              - if (pest.categorie)
+                dt.col-lg-3 Categorie: 
+                dd.col-lg-9
+                  code #{pest.categorie.vocab} / #{pest.sousCategorie.vocab} 
+            div.row
+              - if (pest.unitOfMeasure)
+                dt.col-lg-3 Unite: 
+                dd.col-lg-9
+                  code #{pest.unitOfMeasure}
+              - if (pest.uniteDeMeasure)
+                dt.col-lg-3 Unite: 
+                dd.col-lg-9
+                  code #{pest.uniteDeMeasure} 
+            div.row
+              - if (pest.hasStockPrice)
+                dt.col-lg-3 Actions: 
                 dd.col-lg-9
                   ul
                     each item in pest.hasStockPrice
+                      li
+                        a(class="link-underline link-underline-opacity-0" href=`/app/soil/${item}`) #{item}
+              - if (pest.aPrixActione)
+                dt.col-lg-3 Actions: 
+                dd.col-lg-9
+                  ul
+                    each item in pest.aPrixActione
                       li
                         a(class="link-underline link-underline-opacity-0" href=`/app/soil/${item}`) #{item}
  

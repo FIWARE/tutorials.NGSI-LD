@@ -39,7 +39,7 @@ async function displayStockAdvice(req, res) {
             )) || null;
 
         if (cities2 === null) {
-            return res.render('agri-device', { title: `Prices for "${text}"`, stocks: [] });
+            return res.render('agri-device', { title: `Prix pour "${text}"`, stocks: [] });
         }
 
         const stockIds = [];
@@ -62,7 +62,7 @@ async function displayStockAdvice(req, res) {
 
         console.log(stocks);
 
-        return res.render('agri-device', { title: `Prices for "${text}"`, stocks });
+        return res.render('agri-device', { title: `Prix pour "${text}"`, stocks });
     } catch (error) {
         const errorDetail = error.error | error | {};
         debug(error);
