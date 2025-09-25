@@ -15,7 +15,7 @@ block content
         div.card-body
           div.container
             div.row
-              - if (animal.species == 'dairy cattle')
+              - if (animal.species.value == 'dairy cattle')
                 div.col-lg-3
                   img.img-thumbnail(src=`/img/cow-${imgId}.jpg` width="256px" height="256px") 
               div.col-lg-9

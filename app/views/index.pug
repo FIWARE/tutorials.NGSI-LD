@@ -105,8 +105,21 @@ block content
             ul.list-unstyled
               each animal in cows
                 li
-                  img(class="pe-2" src='/img/cow.svg' width="32" height="32")
-                  a(class="link-underline link-underline-opacity-0" href=`app/animal/${animal.id}`)  #{animal.name}
+                  -  if (animal.phenologicalCondition.vocab.includes('Adult'))
+                    img(class="pe-2" src='/img/cow.svg' width="32" height="32")
+                    a(class="link-underline link-underline-opacity-0" href=`app/animal/${animal.id}`) 
+                  
+                      |  #{animal.name}
+                      - if (animal.phenologicalCondition.vocab === 'maleAdult')
+                        | &nbsp;the Bull
+                  - else
+                    img(class="ps-1 pe-1" src='/img/cow.svg' width="24" height="24" style="margin:4px")
+                    a(class="link-underline link-underline-opacity-0" href=`app/animal/${animal.id}`) 
+                      | #{animal.name} 
+
+
+
+
     div.col
       div.card
         div.card-body
