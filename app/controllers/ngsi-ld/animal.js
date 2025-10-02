@@ -15,7 +15,7 @@ async function getAnimals(req, res) {
     const animals = await ngsiLD.listEntities(
         {
             type: 'Animal',
-            format: 'normalized',
+            format: 'simplified',
             limit: ENTITY_LIMIT
         },
         headers
