@@ -84,3 +84,9 @@ Using WSL Ubuntu-22.04 to run the NGSI-LD SMART FARM Tutorials.
 
 -   Setup Postman and import postman a tutorial file (ex. tutorials.NGSI-LD\tutorials.Getting-Started\FIWARE Working
     with @context.postman_collection.json)
+
+  ## When trying to run any of the ./services produces "cannot execute: required file not found"
+
+This may be caused by a character encoding problem in the services script if e.g. the repository has been cloned on Windows, while the script is being run in a Linux/WSL terminal. 
+
+Running the "dos2linux" command may work, but a more solid solution in this case is to clone the repository directly in the Linux/WSL terminal.
