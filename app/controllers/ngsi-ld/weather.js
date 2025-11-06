@@ -20,7 +20,7 @@ async function displayWeather(req, res) {
         );
         return res.render('weather', { title: weather.name, weather });
     } catch (error) {
-        const errorDetail = error.error;
+        const errorDetail = error.error || error;
         debug(errorDetail);
         // If no weather has been found, display an error screen
         return res.render('error', {

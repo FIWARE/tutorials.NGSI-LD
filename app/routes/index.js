@@ -137,9 +137,10 @@ router.get('/', async function (req, res) {
             ngsi: 'ngsi-ld'
         });
     } catch (e) {
-        debug(e.error);
+        const errorDetail = e.error || e;
+        debug(errorDetail);
         return res.render('index', {
-            errors: [e.error],
+            errors: [errorDetail],
             buildings: [],
             pigs: [],
             cows: [],

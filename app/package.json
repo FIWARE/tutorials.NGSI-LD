@@ -68,6 +68,7 @@
   "scripts": {
     "pre-commit": "lint-staged",
     "start": "node ./bin/www",
+    "no_devices": "DEBUG=tutorial.* DUMMY_OFF=false npm start",
     "lint": "eslint . --cache --fix",
     "prettier": "prettier --parser flow --config ./.prettierrc.json --write **/**/*.js  **/*.js *.js",
     "test": "eslint ."
