@@ -2,6 +2,7 @@
 
 const debug = require('debug')('devices:ultralight');
 const Emitter = require('../../lib/emitter');
+const _ = require('lodash');
 
 const DEVICE_API_KEY = process.env.DUMMY_DEVICES_API_KEY || '1234';
 
@@ -56,6 +57,29 @@ class UltralightMeasure {
   constructor(headers) {
     this.headers = headers;
     this.headers['Content-Type'] = 'text/plain';
+  }
+
+  format(state) {
+    const keyValuePairs = state.split('|');
+    const obj = {};
+    for (let i = 0; i < keyValuePairs.length; i = i + 2) {
+      obj[keyValuePairs[i]] = keyValuePairs[i + 1];
+    }
+    const keys = (obj.hide || '').split(',');
+    delete obj.hide;
+    _.forEach(keys, function (key) {
+      delete obj[key];
+    });
+
+    let payload = '';
+
+    _.forEach(obj, function (value, key) {
+      if (!keys.includes(key)) {
+        payload += `${key}|${value}|`;
+      }
+    });
+    payload = payload.substring(0, payload.length - 1);
+    return payload;
   }
 
   // measures sent over HTTP are POST requests with params

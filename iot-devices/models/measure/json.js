@@ -2,6 +2,7 @@
 
 const debug = require('debug')('devices:json');
 const Emitter = require('../../lib/emitter');
+const _ = require('lodash');
 
 const DEVICE_API_KEY = process.env.DUMMY_DEVICES_API_KEY || '1234';
 
@@ -52,30 +53,35 @@ function hashCode(str) {
 //
 // At the moment the API key and timestamp are unused by the simulator.
 
-function ultralightToJSON(state) {
-  const keyValuePairs = state.split('|');
-  const obj = {};
-  for (let i = 0; i < keyValuePairs.length; i = i + 2) {
-    obj[keyValuePairs[i]] = keyValuePairs[i + 1];
-  }
-  return JSON.stringify(obj);
-}
-
 class JSONMeasure {
   constructor(headers) {
     this.headers = headers;
     this.headers['Content-Type'] = 'application/json';
   }
 
+  format(state) {
+    const keyValuePairs = state.split('|');
+    const obj = {};
+    for (let i = 0; i < keyValuePairs.length; i = i + 2) {
+      obj[keyValuePairs[i]] = keyValuePairs[i + 1];
+    }
+    const keys = (obj.hide || '').split(',');
+    delete obj.hide;
+    _.forEach(keys, function (key) {
+      delete obj[key];
+    });
+    return JSON.stringify(obj);
+  }
+
   // measures sent over HTTP are POST requests with params
   sendAsHTTP(deviceId, state) {
     const key = getAPIKey(deviceId);
     const debugText = 'POST ' + IOT_AGENT_URL + '?i=' + deviceId + '&k=' + key;
-    Emitter.emit('http', debugText + '  ' + ultralightToJSON(state));
+    Emitter.emit('http', debugText + '  ' + state);
     return fetch(`${IOT_AGENT_URL}?i=${deviceId}&k=${key}`, {
       method: 'POST',
       headers: this.headers,
-      body: JSON.stringify(ultralightToJSON(state)),
+      body: state,
     }).catch((e) => {
       debug(debugText + ' ' + e.code);
     });
@@ -84,7 +90,7 @@ class JSONMeasure {
   // measures sent over MQTT are posted as topics (animal collars, temperature sensor, filling sensor etc.)
   sendAsMQTT(deviceId, state) {
     const topic = '/' + getAPIKey(deviceId) + '/' + deviceId + '/attrs';
-    MQTT_CLIENT.publish(topic, ultralightToJSON(state));
+    MQTT_CLIENT.publish(topic, state);
   }
 }
 

@@ -63,6 +63,10 @@ class XMLMeasure {
     this.headers['Content-Type'] = 'application/xml';
   }
 
+  format(state) {
+    return state;
+  }
+
   // measures sent over HTTP are POST requests with params
   sendAsHTTP(deviceId, state) {
     const payload = ultralightToXML(DEVICE_API_KEY, deviceId, state);

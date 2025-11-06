@@ -79,4 +79,7 @@ module.exports = {
       Measure.sendAsMQTT(deviceId, state);
     }
   },
+  format(state) {
+    return Measure.format(state);
+  },
 };
