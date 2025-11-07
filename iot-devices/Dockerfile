@@ -129,6 +129,7 @@ ENV NODE_ENV=production
 # Ports used by application
 EXPOSE ${DUMMY_DEVICES_PORT:-3001}
 CMD ["./bin/devices"]
+VOLUME ["/data"]
 HEALTHCHECK  --interval=30s --timeout=3s --start-period=10s \
   CMD ["/nodejs/bin/node", "./bin/healthcheck"]
 

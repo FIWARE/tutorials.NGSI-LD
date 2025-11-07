@@ -59,17 +59,19 @@ class JSONMeasure {
     this.headers['Content-Type'] = 'application/json';
   }
 
-  format(state) {
+  format(state, hide = true) {
     const keyValuePairs = state.split('|');
     const obj = {};
     for (let i = 0; i < keyValuePairs.length; i = i + 2) {
       obj[keyValuePairs[i]] = keyValuePairs[i + 1];
     }
-    const keys = (obj.hide || '').split(',');
-    delete obj.hide;
-    _.forEach(keys, function (key) {
-      delete obj[key];
-    });
+    if (hide) {
+      const keys = (obj.hide || '').split(',');
+      delete obj.hide;
+      _.forEach(keys, function (key) {
+        delete obj[key];
+      });
+    }
     return JSON.stringify(obj);
   }
 

@@ -9,6 +9,7 @@ const _ = require('lodash');
 const debug = require('debug')('devices:devices');
 const Northbound = require('../controllers/iot/northbound');
 const Emitter = require('../lib/emitter');
+const Writer = require('../lib/writer');
 
 // A series of constants used by our set of devices
 
@@ -18,8 +19,8 @@ const WATER_ON = 's|ON';
 const HUMIDITY_WET = 'h|80';
 const TRACTOR_IDLE = 'd|IDLE';
 
-const PIG_IDLE = 'd|AT_REST';
-const COW_IDLE = 'd|AT_REST';
+const PIG_IDLE = 'o|0|hide|o,x|d|AT_REST';
+const COW_IDLE = 'o|0|hide|o,x|d|AT_REST';
 const PIG_STATE = [
   'AT_REST',
   'FORAGING',
@@ -319,7 +320,6 @@ function fireAnimalCollars() {
 
 function sendAnimalCollarReadings() {
   const deviceIds = myCache.keys();
-
   _.forEach(deviceIds, (deviceId) => {
     getDeviceState(deviceId).then((state) => {
       const isSensor = true;
@@ -347,6 +347,9 @@ function sendAnimalCollarReadings() {
             }
           }
           state.s = getStatusCode(state.d);
+          if (state.o) {
+            state.o++;
+          }
           setDeviceState(deviceId, toUltraLight(state), isSensor);
           break;
         case 'cow':
@@ -375,6 +378,9 @@ function sendAnimalCollarReadings() {
             }
           }
           state.s = getStatusCode(state.d);
+          if (state.o) {
+            state.o++;
+          }
           setDeviceState(deviceId, toUltraLight(state), isSensor);
           break;
         default:
@@ -542,7 +548,7 @@ function setDeviceState(deviceId, state, isSensor = true, force = false) {
   if (isSensor && (state !== previousState || force)) {
     Northbound.sendMeasure(deviceId, payload);
   }
-
+  Writer.write(deviceId, state);
   Emitter.emit(deviceId, payload);
 }
 

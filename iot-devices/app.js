@@ -10,6 +10,7 @@ const MyCache = require('./lib/cache');
 /* global MQTT_CLIENT */
 const DEVICE_TRANSPORT = process.env.DUMMY_DEVICES_TRANSPORT || 'HTTP';
 const DEVICE_PAYLOAD = process.env.DUMMY_DEVICES_PAYLOAD || 'ultralight';
+const HISTORY_LOG = process.env.HISTORY_LOG;
 
 // The motion sensor offers no commands, hence it does not need an endpoint.
 
@@ -35,6 +36,10 @@ global.MQTT_CLIENT = mqtt.connect(mqttBrokerUrl);
 const iotRouter = express.Router();
 
 debug(`Devices use a ${DEVICE_PAYLOAD} payload`);
+
+if (HISTORY_LOG) {
+  debug(`Logging measures to ${HISTORY_LOG}`);
+}
 // If the Ultralight Dummy Devices are configured to use the HTTP transport, then
 // listen to the command endpoints using HTTP
 if (DEVICE_TRANSPORT === 'HTTP') {
