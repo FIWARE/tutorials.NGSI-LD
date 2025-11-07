@@ -340,7 +340,7 @@ function sendAnimalCollarReadings() {
               state.d = PIG_STATE[getRandom() % 6];
             }
           } else {
-            randomWalk(state, deviceId, 13.356, 52.515);
+            randomWalk(state, deviceId, 13.35073,52.51839);
             if (getRandom() > 7) {
               state.d =
                 getRandom() > 3 ? PIG_STATE[getRandom() % 6] : 'AT_REST';
@@ -371,7 +371,7 @@ function sendAnimalCollarReadings() {
               state.d = COW_STATE[getRandom() % 6];
             }
           } else {
-            randomWalk(state, deviceId, 13.41, 52.471);
+            randomWalk(state, deviceId, 13.34973,52.51139);
             if (getRandom() > 8) {
               state.d =
                 getRandom() > 7 ? COW_STATE[getRandom() % 6] : 'GRAZING';
