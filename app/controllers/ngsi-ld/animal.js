@@ -20,12 +20,13 @@ async function getAnimals(req, res) {
         },
         headers
     );
+    if(animals && animals.features){
+        animals.features.forEach((animal) => {
+            animal.properties.id = animal.id;
+        });
+        delete animals['@context'];
+    }
 
-    animals.features.forEach((animal) => {
-        animal.properties.id = animal.id;
-    });
-
-    delete animals['@context'];
     return res.send(animals);
 }
 

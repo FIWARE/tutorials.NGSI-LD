@@ -272,12 +272,12 @@ function sendTractorReadings() {
 function addAndTrim(value, add, weather) {
   let newValue;
   if (weather === 'sunny') {
-    newValue = add ? parseFloat(value) + 0.003 : parseFloat(value) - 0.003;
+    newValue = add ? parseFloat(value) + 0.0007 : parseFloat(value) - 0.0007;
   } else {
-    newValue = add ? parseFloat(value) + 0.001 : parseFloat(value) - 0.001;
+    newValue = add ? parseFloat(value) + 0.0003 : parseFloat(value) - 0.0003;
   }
 
-  return Math.round(newValue * 1000) / 1000;
+  return Math.round(newValue * 10000) / 10000;
 }
 
 function randomWalk(state, deviceId, lng, lat) {
