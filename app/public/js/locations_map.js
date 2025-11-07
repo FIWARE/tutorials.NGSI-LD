@@ -20,7 +20,7 @@ function addLayer(source) {
         type: 'symbol',
         source,
         layout: {
-            'icon-image': ['case', isCow, 'cow', isPig, 'pig', 'none'],
+            'icon-image': ['case', isCow, 'cow', isPig, 'pig', 'cow'],
             'icon-size': 0.15,
             'icon-overlap': 'always'
         },
