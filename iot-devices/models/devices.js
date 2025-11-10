@@ -387,7 +387,8 @@ function sendAnimalCollarReadings() {
             state.near = await NgsiLd.findNeighbour(
               coords[0],
               coords[1],
-              'Animal'
+              'Animal',
+              state.near
             );
           }
           setDeviceState(deviceId, toUltraLight(state), isSensor);

@@ -52,20 +52,24 @@ function listEntities(opts, headers = {}) {
     });
 }
 
-exports.findNeighbour = async function (lat, lng, type) {
+exports.findNeighbour = async function (lat, lng, type, previous) {
   const headers = setHeaders(null, LinkHeader);
-  const entities = await listEntities(
-    {
-      type,
-      pick: 'id',
-      limit: 2,
-      geometry: 'Point',
-      coordinates: `[${lat},${lng}]`,
-      georel: 'near;maxDistance==8000',
-    },
-    headers
-  );
-  return entities[1].id;
+  try {
+    const entities = await listEntities(
+      {
+        type,
+        pick: 'id',
+        limit: 2,
+        geometry: 'Point',
+        coordinates: `[${lat},${lng}]`,
+        georel: 'near;maxDistance==8000',
+      },
+      headers
+    );
+    return entities[1].id;
+  } catch (error) {
+    return previous;
+  }
 };
 
 exports.findTargetInField = async function (type, locatedAt) {
