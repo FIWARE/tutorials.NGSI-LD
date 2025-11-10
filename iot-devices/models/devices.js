@@ -384,12 +384,12 @@ function sendAnimalCollarReadings() {
           if (state.o) {
             state.o++;
             const coords = state.gps.split(',');
-            state.near = await NgsiLd.findNeighbour(
+            /*state.near = await NgsiLd.findNeighbour(
               coords[0],
               coords[1],
               'Animal',
               state.near
-            );
+            );*/
           }
           setDeviceState(deviceId, toUltraLight(state), isSensor);
           break;
