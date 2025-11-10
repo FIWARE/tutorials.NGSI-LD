@@ -10,6 +10,7 @@ const debug = require('debug')('devices:devices');
 const Northbound = require('../controllers/iot/northbound');
 const Emitter = require('../lib/emitter');
 const Writer = require('../lib/writer');
+const NgsiLd = require('../lib/ngsi-ld')
 
 // A series of constants used by our set of devices
 
@@ -321,7 +322,7 @@ function fireAnimalCollars() {
 function sendAnimalCollarReadings() {
   const deviceIds = myCache.keys();
   _.forEach(deviceIds, (deviceId) => {
-    getDeviceState(deviceId).then((state) => {
+    getDeviceState(deviceId).then( async (state) => {
       const isSensor = true;
       let targetRate;
 
@@ -380,6 +381,8 @@ function sendAnimalCollarReadings() {
           state.s = getStatusCode(state.d);
           if (state.o) {
             state.o++;
+            const coords = state.gps.split(',')
+            state.near = await NgsiLd.findNeighbour(coords[0], coords[1], 'Animal')
           }
           setDeviceState(deviceId, toUltraLight(state), isSensor);
           break;
