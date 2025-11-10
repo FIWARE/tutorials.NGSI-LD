@@ -10,7 +10,7 @@ const debug = require('debug')('devices:devices');
 const Northbound = require('../controllers/iot/northbound');
 const Emitter = require('../lib/emitter');
 const Writer = require('../lib/writer');
-const NgsiLd = require('../lib/ngsi-ld')
+const NgsiLd = require('../lib/ngsi-ld');
 
 // A series of constants used by our set of devices
 
@@ -315,14 +315,16 @@ function fireAnimalCollars() {
   myCache.get('barn').then((state) => {
     if (state === 'door-open') {
       sendAnimalCollarReadings();
+      return true;
     }
+    return false;
   });
 }
 
 function sendAnimalCollarReadings() {
   const deviceIds = myCache.keys();
   _.forEach(deviceIds, (deviceId) => {
-    getDeviceState(deviceId).then( async (state) => {
+    getDeviceState(deviceId).then(async (state) => {
       const isSensor = true;
       let targetRate;
 
@@ -341,7 +343,7 @@ function sendAnimalCollarReadings() {
               state.d = PIG_STATE[getRandom() % 6];
             }
           } else {
-            randomWalk(state, deviceId, 13.35073,52.51839);
+            randomWalk(state, deviceId, 13.35073, 52.51839);
             if (getRandom() > 7) {
               state.d =
                 getRandom() > 3 ? PIG_STATE[getRandom() % 6] : 'AT_REST';
@@ -372,7 +374,7 @@ function sendAnimalCollarReadings() {
               state.d = COW_STATE[getRandom() % 6];
             }
           } else {
-            randomWalk(state, deviceId, 13.34973,52.51139);
+            randomWalk(state, deviceId, 13.34973, 52.51139);
             if (getRandom() > 8) {
               state.d =
                 getRandom() > 7 ? COW_STATE[getRandom() % 6] : 'GRAZING';
@@ -381,8 +383,12 @@ function sendAnimalCollarReadings() {
           state.s = getStatusCode(state.d);
           if (state.o) {
             state.o++;
-            const coords = state.gps.split(',')
-            state.near = await NgsiLd.findNeighbour(coords[0], coords[1], 'Animal')
+            const coords = state.gps.split(',');
+            state.near = await NgsiLd.findNeighbour(
+              coords[0],
+              coords[1],
+              'Animal'
+            );
           }
           setDeviceState(deviceId, toUltraLight(state), isSensor);
           break;
@@ -402,7 +408,9 @@ function fireDevices(deviceType) {
           sendDeviceReading(deviceType, deviceId);
         }
       });
+      return true;
     }
+    return false;
   });
 }
 

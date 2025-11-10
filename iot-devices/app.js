@@ -57,8 +57,8 @@ iotRouter.get('/status', (req, res) => {
 });
 
 iotRouter.get('/devices/:type', (req, res) => {
-  IoTDevices.fireDevices(req.params.type);
-  res.status(204).send();
+  const result = IoTDevices.fireDevices(req.params.type);
+  res.status(result ? 204 : 401).send();
 });
 
 iotRouter.put('/devices/tractor', (req, res) => {
@@ -72,8 +72,8 @@ iotRouter.put('/devices', (req, res) => {
 });
 
 iotRouter.get('/animals', (req, res) => {
-  IoTDevices.fireAnimalCollars();
-  res.status(204).send();
+  const result = IoTDevices.fireAnimalCollars();
+  res.status(result ? 204 : 401).send();
 });
 
 iotRouter.put('/barndoor', (req, res) => {
