@@ -42,3 +42,4 @@ Dockerfile
 !app/Dockerfile
 !forwarder/Dockerfile
 !iot-devices/Dockerfile
+iot-devices/init.sh
