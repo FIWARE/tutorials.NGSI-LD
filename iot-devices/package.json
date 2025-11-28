@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node ./bin/devices",
-    "local": "HISTORY_LOG=append.csv PIG_COUNT=0 COW_COUNT=4 DEBUG=devices.* npm start",
+    "local": "HISTORY_LOG=append.csv PIG_COUNT=0 COW_COUNT=40 DEBUG=devices.* npm start",
     "lint": "eslint . --cache --fix",
     "prettier": "prettier --parser flow --single-quote --write **/**/*.js  **/*.js *.js"
   },

@@ -1,4 +1,3 @@
-const debug = require('debug')('devices:writer');
 const JSONMeasure = require('../models/measure/json');
 const fs = require('fs');
 
@@ -8,7 +7,7 @@ const stream = HISTORY_LOG
   ? fs.createWriteStream(HISTORY_LOG, { flags: 'a' })
   : null;
 
-exports.write = function (deviceId, state, offset) {
+exports.write = function (deviceId, state) {
   if (!stream) {
     console.log(HISTORY_LOG);
     return;
@@ -16,10 +15,15 @@ exports.write = function (deviceId, state, offset) {
   if (!deviceId.startsWith('cow')) {
     return;
   }
+
+  if (state.d === 'MOUNTING') {
+    console.log('MOUNT');
+  }
+
   const data = JSON.parse(json.format(state, false));
   const animal = `urn:ngsi-ld:Animal:${deviceId}`;
   const device = `urn:ngsi-ld:Device:${deviceId}`;
-  const line = `${animal},Device,${data.bpm},Point,${data.gps},${device},${data.d},${data.o}`;
+  const line = `${animal},${data.bpm},${data.gps},${device},${data.d},${data.o}`;
 
   stream.write(line + '\n');
 };

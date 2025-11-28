@@ -71,11 +71,11 @@ if (process.env.DUMMY_DEVICES_USER && process.env.DUMMY_DEVICES_PASSWORD) {
 module.exports = {
   sendMeasure(deviceId, state) {
     if (DEVICE_TRANSPORT === 'HTTP') {
-      debug('sendHTTPMeasure: ' + deviceId);
+      //debug('sendHTTPMeasure: ' + deviceId);
       Measure.sendAsHTTP(deviceId, state);
     }
     if (DEVICE_TRANSPORT === 'MQTT') {
-      debug('sendMQTTMeasure: ' + deviceId);
+      //debug('sendMQTTMeasure: ' + deviceId);
       Measure.sendAsMQTT(deviceId, state);
     }
   },

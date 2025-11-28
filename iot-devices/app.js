@@ -5,6 +5,7 @@ const debug = require('debug')('devices:iot-device');
 const mqtt = require('mqtt');
 const logger = require('morgan');
 const IoTDevices = require('./models/devices');
+const Animals = require('./models/animals');
 const MyCache = require('./lib/cache');
 
 /* global MQTT_CLIENT */
@@ -72,7 +73,7 @@ iotRouter.put('/devices', (req, res) => {
 });
 
 iotRouter.get('/animals', (req, res) => {
-  const result = IoTDevices.fireAnimalCollars();
+  const result = Animals.fireAnimalCollars();
   res.status(result === false ? 401 : 204).send();
 });
 
