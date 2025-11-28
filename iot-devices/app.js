@@ -73,7 +73,7 @@ iotRouter.put('/devices', (req, res) => {
 
 iotRouter.get('/animals', (req, res) => {
   const result = IoTDevices.fireAnimalCollars();
-  res.status(result ? 204 : 401).send();
+  res.status(result === false ? 401 : 204).send();
 });
 
 iotRouter.put('/barndoor', (req, res) => {

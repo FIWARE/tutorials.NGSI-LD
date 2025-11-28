@@ -20,9 +20,19 @@ const WATER_ON = 's|ON';
 const HUMIDITY_WET = 'h|80';
 const TRACTOR_IDLE = 'd|IDLE';
 
+const ANIMAL_STATUS = Object.freeze({
+  ILL: 'ill',
+  IN_CALF: 'calf',
+  LAME: 'lame',
+  HUNGRY: 'hungry',
+  THIRSTY: 'thirsty',
+  HEAT: 'heat',
+  LONELY: 'lonely',
+});
+
 const PIG_IDLE = 'o|0|hide|o,x|d|AT_REST';
 const COW_IDLE = 'o|0|hide|o,x|d|AT_REST';
-const PIG_STATE = [
+const PIG_ACTIVITY = [
   'AT_REST',
   'FORAGING',
   'FORAGING',
@@ -30,7 +40,7 @@ const PIG_STATE = [
   'DRINKING',
   'WALLOWING',
 ];
-const COW_STATE = [
+const COW_ACTIVITY = [
   'AT_REST',
   'AT_REST',
   'GRAZING',
@@ -60,15 +70,10 @@ const VALID_COMMANDS = {
   filling: ['add', 'remove', 'refill'],
 };
 
-const lameAnimalIds = process.env.LAME_ANIMAL
-  ? process.env.LAME_ANIMAL.split(',').map((ctx) => ctx.trim())
-  : [];
-const lactatingAnimalIds = process.env.LACTATING_ANIMAL
-  ? process.env.LACTATING_ANIMAL.split(',').map((ctx) => ctx.trim())
-  : [];
 const numberOfPigs = process.env.PIG_COUNT || 5;
 const numberOfCows = process.env.COW_COUNT || 5;
 const numberOfSoilSensors = process.env.SOIL_SENSOR_COUNT || 5;
+const numberOfFields = process.env.FIELD_COUNT || 8;
 
 function getStatusCode(status) {
   let code = 0;
@@ -223,6 +228,23 @@ myCache.init().then(() => {
   myCache.set('filling003', FILLING_STATION_FULL);
   myCache.set('filling004', FILLING_STATION_EMPTY);
 
+  for (let i = 1; i <= numberOfFields; i++) {
+    myCache.set('field' + i.toString().padStart(3, '0'), '');
+  }
+
+  myCache.set('trough021', '');
+  myCache.set('trough031', '');
+  myCache.set('trough032', '');
+  myCache.set('trough041', '');
+  myCache.set('trough042', '');
+  myCache.set('trough051', '');
+  myCache.set('trough052', '');
+  myCache.set('trough053', '');
+  myCache.set('trough061', '');
+  myCache.set('trough062', '');
+  myCache.set('trough063', '');
+  myCache.set('trough071', '');
+
   myCache.set('barn', 'door-locked');
   myCache.set('weather', 'cloudy');
 });
@@ -281,13 +303,49 @@ function addAndTrim(value, add, weather) {
   return Math.round(newValue * 10000) / 10000;
 }
 
+async function directedWalk(state, deviceId) {
+  let moveFactor = 8;
+
+  const location = state.gps.split(',');
+  let y = parseFloat(location[0]);
+  let x = parseFloat(location[1]);
+
+  const weather = await myCache.get('weather');
+  const target = await getDeviceState(state.ta);
+  const targetLocation = target.gps.split(',');
+  const ty = parseFloat(targetLocation[0]);
+  const tx = parseFloat(targetLocation[1]);
+
+
+  const offset1 =  Math.abs( 0 +  parseFloat(location[1]) - tx +  parseFloat(location[0]) - ty);
+
+  if (tx > x) {
+    x = addAndTrim(x, true, weather);
+  }
+  if (tx < x) {
+    x = addAndTrim(x, false, weather);
+  }
+  if (ty > y) {
+    y = addAndTrim(y, true, weather);
+  }
+  if (ty < y) {
+    y = addAndTrim(y, false, weather);
+  }
+
+   const offset2 =  Math.abs(0+ x - tx + y - ty);
+
+  console.log(offset1 *1000, offset2 * 1000,(offset2 >=  offset1) )
+
+  return { gps: y + ',' + x, complete: (offset2 >=  offset1)};
+}
+
 function randomWalk(state, deviceId, lng, lat) {
   let moveFactor = 6;
   const weather = myCache.get('weather');
 
-  if (weather === 'raining' || lameAnimalIds.includes(deviceId)) {
+  if (weather === 'raining' || state.o.includes(ANIMAL_STATUS.ILL)) {
     moveFactor = 8;
-  } else if (lactatingAnimalIds.includes(deviceId)) {
+  } else if (state.o.includes(ANIMAL_STATUS.IN_CALF)) {
     moveFactor = 7;
   }
 
@@ -312,91 +370,201 @@ function randomWalk(state, deviceId, lng, lat) {
 }
 
 function fireAnimalCollars() {
-  myCache.get('barn').then((state) => {
+   myCache.get('barn').then((state) => {
     if (state === 'door-open') {
-      sendAnimalCollarReadings();
-      return true;
+      getAllAnimalData().then((animals) => {
+        return sendAnimalCollarReadings(animals);
+      })
+      .then(() => {  
+        return true;
+      });
     }
     return false;
   });
 }
 
-function sendAnimalCollarReadings() {
+function selectTarget(id, type, animals) {
+  let field;
+  let targetList;
+
+  _.forEach(animals.targets, function (value, key) {
+    let targets = value.split(',');
+    if (targets.includes(id)) {
+      targetList = targets
+        .filter((e) => e !== id)
+        .filter((e) => e.startsWith(type));
+    }
+  });
+  const target = targetList[Math.floor(Math.random() * targetList.length)];
+  return target;
+}
+
+async function getAllAnimalData() {
+  let state;
   const deviceIds = myCache.keys();
-  _.forEach(deviceIds, (deviceId) => {
-    getDeviceState(deviceId).then(async (state) => {
-      const isSensor = true;
-      let targetRate;
+  const animals = {
+    cow: [],
+    pig: [],
+    trough: [],
+    targets: {},
+  };
+  for (const deviceId of deviceIds) {
+    switch (deviceId.replace(/\d/g, '')) {
+      case 'pig':
+        state = await getDeviceState(deviceId);
+        animals.pig.push({ id: deviceId, state });
+        break;
+      case 'cow':
+        state = await getDeviceState(deviceId);
+        animals.cow.push({ id: deviceId, state });
+        break;
+      case 'trough':
+        state = await getDeviceState(deviceId);
+        animals.trough.push({ id: deviceId, state });
+        break;
+      case 'field':
+        const targets = await getDeviceState(deviceId, true);
+        animals.targets[deviceId] = targets;
+        break;
+      default:
+        break;
+    }
+  }
+  return animals;
+}
 
-      switch (deviceId.replace(/\d/g, '')) {
-        case 'pig':
-          targetRate =
-            PIG_HEART_RATE + 2 * OFFSET_RATE[state.d] + (getRandom() % 4);
+function sendAnimalCollarReadings(animals) {
+  _.forEach(animals.cow, (cow) => {
+    let state = cow.state;
 
-          if (targetRate > state.bpm) {
-            state.bpm++;
-          } else if (targetRate < state.bpm) {
-            state.bpm--;
-          }
-          if (state.d === 'AT_REST') {
-            if (getRandom() * getRandom() > 63) {
-              state.d = PIG_STATE[getRandom() % 6];
-            }
-          } else {
-            randomWalk(state, deviceId, 13.35073, 52.51839);
-            if (getRandom() > 7) {
-              state.d =
-                getRandom() > 3 ? PIG_STATE[getRandom() % 6] : 'AT_REST';
-            }
-          }
-          state.s = getStatusCode(state.d);
-          if (state.o) {
-            state.o++;
-          }
-          setDeviceState(deviceId, toUltraLight(state), isSensor);
-          break;
-        case 'cow':
-          targetRate =
-            COW_HEART_RATE + 2 * OFFSET_RATE[state.d] + (getRandom() % 4);
-          if (lactatingAnimalIds.includes(deviceId)) {
-            targetRate =
-              ABNORMAL_COW_HEART_RATE +
-              2 * OFFSET_RATE[state.d] +
-              (getRandom() % 4);
-          }
-          if (targetRate > state.bpm) {
-            state.bpm++;
-          } else if (targetRate < state.bpm) {
-            state.bpm--;
-          }
-          if (state.d === 'AT_REST') {
-            if (getRandom() * getRandom() > 80) {
-              state.d = COW_STATE[getRandom() % 6];
-            }
-          } else {
-            randomWalk(state, deviceId, 13.34973, 52.51139);
-            if (getRandom() > 8) {
-              state.d =
-                getRandom() > 7 ? COW_STATE[getRandom() % 6] : 'GRAZING';
-            }
-          }
-          state.s = getStatusCode(state.d);
-          if (state.o) {
-            state.o++;
-            const coords = state.gps.split(',');
-            /*state.near = await NgsiLd.findNeighbour(
-              coords[0],
-              coords[1],
-              'Animal',
-              state.near
-            );*/
-          }
-          setDeviceState(deviceId, toUltraLight(state), isSensor);
-          break;
-        default:
-          break;
+    let animalStatus = !!state.st ? state.st.split(',') : [];
+    const isLonely = animalStatus.includes(ANIMAL_STATUS.LONELY);
+    const isThirsty = animalStatus.includes(ANIMAL_STATUS.THIRSTY);
+    const isHungry = !(isLonely || isThirsty);
+    let targetRate =
+      COW_HEART_RATE + 2 * OFFSET_RATE[cow.state.d] + (getRandom() % 4);
+    if (animalStatus.includes(ANIMAL_STATUS.ILL)) {
+      targetRate =
+        ABNORMAL_COW_HEART_RATE + 2 * OFFSET_RATE[state.d] + (getRandom() % 4);
+    }
+    if (targetRate > state.bpm) {
+      state.bpm++;
+    } else if (targetRate < state.bpm) {
+      state.bpm--;
+    }
+    if (isHungry) {
+      if (state.d === 'AT_REST') {
+        if (getRandom() * getRandom() > 80) {
+          state.d = COW_ACTIVITY[getRandom() % 6];
+        }
+      } else {
+        randomWalk(state, cow.id, 13.34973, 52.51139);
+        if (getRandom() > 8) {
+          state.d = getRandom() > 7 ? COW_ACTIVITY[getRandom() % 6] : 'GRAZING';
+        }
       }
-    });
+
+      if (state.o) {
+        if (state.o % 31 === 0) {
+          if (getRandom() > 8) {
+            animalStatus = animalStatus.filter(
+              (e) => e !== ANIMAL_STATUS.HUNGRY
+            );
+            animalStatus.push(ANIMAL_STATUS.THIRSTY);
+            const hide = state.hide.split(',') || [];
+            if (!hide.includes('ta')) {
+              hide.push('ta');
+              state.hide = hide.join(',');
+            }
+            state.ta = selectTarget(cow.id, 'trough', animals);
+          } else if (getRandom() > 3) {
+            animalStatus = animalStatus.filter(
+              (e) => e !== ANIMAL_STATUS.HUNGRY
+            );
+            animalStatus.push(ANIMAL_STATUS.LONELY);
+            const hide = state.hide.split(',') || [];
+            if (!hide.includes('ta')) {
+              hide.push('ta');
+              state.hide = hide.join(',');
+            }
+            state.ta = selectTarget(cow.id, 'cow', animals);
+          }
+          state.st = animalStatus.join(',');
+        }
+      }
+
+      state.s = getStatusCode(state.d);
+      if (state.o) {
+        state.o++;
+      }
+      setDeviceState(cow.id, toUltraLight(cow.state), true);
+    } else if (isLonely) {
+      debug(`${cow.id} lonely`);
+
+      directedWalk(state, cow.id).then((result) => {
+        state.gps = result.gps;
+        state.s = getStatusCode(state.d);
+        if (result.complete) {
+           debug(`${cow.id} not lonely`);
+          animalStatus = animalStatus.filter(
+            (e) => e !== ANIMAL_STATUS.LONELY
+          );
+          animalStatus.push(ANIMAL_STATUS.HUNGRY);
+          state.st = animalStatus.join(',');
+        }
+
+        if (state.o) {
+          state.o++;
+        }
+        setDeviceState(cow.id, toUltraLight(cow.state), true);
+      });
+    } else if (isThirsty) {
+      debug(`${cow.id} thirsty`);
+      directedWalk(state, cow.id).then((result) => {
+        state.gps = result.gps;
+        state.s = getStatusCode(state.d);
+        if (result.complete) {
+          debug(`${cow.id} not thirsty`);
+          animalStatus = animalStatus.filter(
+            (e) => e !== ANIMAL_STATUS.THIRSTY
+          );
+          animalStatus.push(ANIMAL_STATUS.HUNGRY);
+          state.st = animalStatus.join(',');
+        }
+
+        if (state.o) {
+          state.o++;
+        }
+        setDeviceState(cow.id, toUltraLight(cow.state), true);
+      });
+    }
+  });
+
+  _.forEach(animals.pig, (pig) => {
+    let targetRate =
+      PIG_HEART_RATE + 2 * OFFSET_RATE[pig.state.d] + (getRandom() % 4);
+
+    if (targetRate > pig.state.bpm) {
+      pig.state.bpm++;
+    } else if (targetRate < pig.state.bpm) {
+      pig.state.bpm--;
+    }
+    if (pig.state.d === 'AT_REST') {
+      if (getRandom() * getRandom() > 63) {
+        pig.state.d = PIG_ACTIVITY[getRandom() % 6];
+      }
+    } else {
+      randomWalk(pig.state, pig.id, 13.35073, 52.51839);
+      if (getRandom() > 7) {
+        pig.state.d =
+          getRandom() > 3 ? PIG_ACTIVITY[getRandom() % 6] : 'AT_REST';
+      }
+    }
+    pig.state.s = getStatusCode(pig.state.d);
+    if (pig.state.o) {
+      pig.state.o++;
+    }
+    setDeviceState(pig.id, toUltraLight(pig.state), true);
   });
 }
 
@@ -536,12 +704,17 @@ function sendDeviceReading(deviceType, deviceId) {
 // e.g. s|ON|gps|1000 becomes
 // { s: 'ON', l: '1000'}
 //
-function getDeviceState(deviceId) {
-  return myCache.get(deviceId).then((ultraLight) => {
+function getDeviceState(deviceId, force = false) {
+  return myCache.get(deviceId).then((data) => {
+    if (force) {
+      return data;
+    }
     const obj = {};
-    const keyValuePairs = ultraLight.split('|');
-    for (let i = 0; i < keyValuePairs.length; i = i + 2) {
-      obj[keyValuePairs[i]] = keyValuePairs[i + 1];
+    if (!!data){
+      const keyValuePairs = data.split('|');
+      for (let i = 0; i < keyValuePairs.length; i = i + 2) {
+        obj[keyValuePairs[i]] = keyValuePairs[i + 1];
+      }
     }
     return obj;
   });
