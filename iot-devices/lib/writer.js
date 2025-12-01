@@ -9,15 +9,10 @@ const stream = HISTORY_LOG
 
 exports.write = function (deviceId, state) {
   if (!stream) {
-    console.log(HISTORY_LOG);
     return;
   }
   if (!deviceId.startsWith('cow')) {
     return;
-  }
-
-  if (state.d === 'MOUNTING') {
-    console.log('MOUNT');
   }
 
   const data = JSON.parse(json.format(state, false));
