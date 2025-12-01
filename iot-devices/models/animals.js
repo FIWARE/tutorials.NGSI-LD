@@ -236,9 +236,12 @@ function randomWalk(state, deviceId, lng, lat) {
   let moveFactor = 6;
   const weather = myCache.get('weather');
 
-  if (weather === 'raining' || state.o.includes(ANIMAL_STATUS.ILL)) {
+  if (
+    weather === 'raining' ||
+    (state.st && state.st.includes(ANIMAL_STATUS.ILL))
+  ) {
     moveFactor = 8;
-  } else if (state.o.includes(ANIMAL_STATUS.IN_CALF)) {
+  } else if (state.st && state.st.includes(ANIMAL_STATUS.IN_CALF)) {
     moveFactor = 7;
   }
 
