@@ -278,8 +278,6 @@ function selectTarget(id, type, animals) {
 }
 
 async function getAllAnimalData() {
-  let state;
-  let targets;
   const deviceIds = myCache.keys();
   const animals = {
     cow: [],
@@ -287,28 +285,35 @@ async function getAllAnimalData() {
     trough: [],
     targets: {},
   };
-  for (const deviceId of deviceIds) {
-    switch (deviceId.replace(/\d/g, '')) {
+
+  const promises = deviceIds.map((id) => {
+    switch (id.replace(/\d/g, '')) {
       case 'pig':
-        state = await getDeviceState(deviceId);
-        animals.pig.push({ id: deviceId, state });
-        break;
+        return getDeviceState(id).then((state) => {
+          animals.pig.push({ id, state });
+        });
+
       case 'cow':
-        state = await getDeviceState(deviceId);
-        animals.cow.push({ id: deviceId, state });
-        break;
+        return getDeviceState(id).then((state) => {
+          animals.cow.push({ id, state });
+        });
+
       case 'trough':
-        state = await getDeviceState(deviceId);
-        animals.trough.push({ id: deviceId, state });
-        break;
+        return getDeviceState(id).then((state) => {
+          animals.trough.push({ id, state });
+        });
+
       case 'field':
-        targets = await getDeviceState(deviceId, true);
-        animals.targets[deviceId] = targets;
-        break;
+        return getDeviceState(id, true).then((targets) => {
+          animals.targets[id] = targets;
+        });
+
       default:
-        break;
+        return Promise.resolve();
     }
-  }
+  });
+
+  await Promise.all(promises);
   return animals;
 }
 
@@ -333,7 +338,7 @@ function sendAnimalCollarReadings(animals) {
       state.bpm--;
     }
     if (state.d === 'MOUNTING') {
-      state.d === 'AT_REST';
+      state.d = 'AT_REST';
     }
     if (isHungry) {
       if (state.d === 'AT_REST') {
@@ -369,6 +374,8 @@ function sendAnimalCollarReadings(animals) {
               animalStatus.push(ANIMAL_STATUS.THIRSTY);
               state.ta = selectTarget(cow.id, 'trough', animals);
             }
+
+            // eslint-disable-next-line  no-dupe-else-if
           } else if (getRandom() > 3) {
             debug(`${cow.id} thirsty`);
             animalStatus = animalStatus.filter(
@@ -394,6 +401,7 @@ function sendAnimalCollarReadings(animals) {
     } else if (isLonely) {
       directedWalk(state, cow.id, 'lonely').then((result) => {
         state.gps = result.gps;
+        state.d = 'GRAZING';
         state.s = getStatusCode(state.d);
         if (result.complete) {
           debug(`${cow.id} not lonely`);
@@ -412,6 +420,7 @@ function sendAnimalCollarReadings(animals) {
     } else if (isThirsty) {
       directedWalk(state, cow.id, 'thirsty').then((result) => {
         state.gps = result.gps;
+        state.d = 'GRAZING';
         state.s = getStatusCode(state.d);
         if (result.complete) {
           debug(`${cow.id} not thirsty`);
@@ -420,7 +429,7 @@ function sendAnimalCollarReadings(animals) {
           );
           animalStatus.push(ANIMAL_STATUS.HUNGRY);
           state.st = animalStatus.join(',');
-          state.d === 'DRINKING';
+          state.d = 'DRINKING';
           state.s = getStatusCode(state.d);
         }
 
