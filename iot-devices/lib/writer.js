@@ -16,9 +16,7 @@ exports.write = function (deviceId, state) {
   }
 
   const data = JSON.parse(json.format(state, false));
-  const animal = `urn:ngsi-ld:Animal:${deviceId}`;
-  const device = `urn:ngsi-ld:Device:${deviceId}`;
-  const line = `${animal},${data.bpm},${data.gps},${device},${data.d},${data.o}`;
-
+  let line = `${data.o},${deviceId},${data.bpm},${data.gps},${data.d},`;
+  line = line + `${data.accel_x},${data.accel_y},${data.bmp},${data.body_temp},${data.step_count},${data.by}`;
   stream.write(line + '\n');
 };

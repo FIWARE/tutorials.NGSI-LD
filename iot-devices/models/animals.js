@@ -14,6 +14,15 @@ const numberOfPigs = process.env.PIG_COUNT || 5;
 const numberOfCows = process.env.COW_COUNT || 5;
 const numberOfFields = process.env.FIELD_COUNT || 8;
 
+const COW_HEART_RATE = 50;
+const COW_BODY_TEMPERATURE = 38.6;
+const COW_AVERAGE_STEPS = 10;
+const COW_ACCEL_X = 0.133;
+const COW_ACCEL_Y = 0.4;
+
+const ABNORMAL_COW_HEART_RATE = 68;
+const PIG_HEART_RATE = 60;
+
 const ANIMAL_STATUS = Object.freeze({
   ILL: 'ill',
   IN_CALF: 'calf',
@@ -23,6 +32,99 @@ const ANIMAL_STATUS = Object.freeze({
   HEAT: 'heat',
   LONELY: 'lonely',
 });
+
+
+function generateRange(mean, sd) {
+  function createListOfNNumbersBetweenAAndB(n, a, b) {
+    const listOfN = Array(...new Array(n));
+    return listOfN.map(() => Math.random() * (b - a) + a);
+  }
+
+  function computeMeanSdAndItervalRangeMinMax(list) {
+    const sum = list.reduce((a, b) => a + b, 0);
+    const mean = sum / list.length;
+    const sumMinusMean = list.reduce((a, b) => a + (b - mean) * (b - mean), 0);
+
+    return {
+      mean: mean,
+      sd: Math.sqrt(sumMinusMean / (list.length - 1)),
+      range: [Math.min(...list), Math.max(...list)],
+    };
+  }
+
+  function transfomListToExactMeanAndSd(list, mean, sd) {
+    const current = computeMeanSdAndItervalRangeMinMax(list);
+    return list.map((n) => (sd * (n - current.mean)) / current.sd + mean);
+  }
+
+  const ARRAY_SIZE = 100;
+  const MIN = 1;
+  const MAX = 10;
+  let list = createListOfNNumbersBetweenAAndB(ARRAY_SIZE, MIN, MAX);
+  let newList = transfomListToExactMeanAndSd(list, mean, sd);
+
+  return newList;
+}
+
+const STATUS = {
+  AT_REST: {
+    code: 0,
+    heartRates: generateRange(COW_HEART_RATE, 2).map((n) => (parseFloat((n).toFixed(2)))),
+    temperatures: generateRange(COW_BODY_TEMPERATURE, 1).map((n) => (parseFloat((n).toFixed(2)))),
+    steps:  generateRange(COW_AVERAGE_STEPS, 4).map((n) => (Math.floor(n * 1000))),
+    x:  generateRange(COW_ACCEL_X, 1).map((n) => (parseFloat((n).toFixed(4)))),
+    y:  generateRange(COW_ACCEL_Y, 1).map((n) => (parseFloat((n).toFixed(4))))
+  },
+  FORAGING: {
+    code: 3,
+    heartRates: [],
+    temperatures: [],
+    steps: [],
+    x:  [],
+    y:  []
+  },
+  DRINKING: {
+    code: 5,
+    heartRates: generateRange(COW_HEART_RATE + 0.5, 0.4).map((n) => (parseFloat((n).toFixed(2)))),
+    temperatures: generateRange(COW_BODY_TEMPERATURE + 0.2, 0.2).map((n) => (parseFloat((n).toFixed(2)))),
+    steps:  generateRange(COW_AVERAGE_STEPS - 2, 1).map((n) => (Math.floor(n * 1000))),
+    x:  generateRange(COW_ACCEL_X, 0.8),
+    y:  generateRange(COW_ACCEL_Y, 1.2)
+  },
+  WALLOWING: {
+    code: 5,
+    heartRates: [],
+    temperatures: [],
+    steps: [],
+    x:  [],
+    y:  []
+  },
+  GRAZING: {
+    code: 6,
+    heartRates: generateRange(COW_HEART_RATE - 1, 3).map((n) => (parseFloat((n).toFixed(2)))),
+    temperatures: generateRange(COW_BODY_TEMPERATURE -0.1, 1).map((n) => (parseFloat((n).toFixed(2)))),
+    steps:  generateRange(COW_AVERAGE_STEPS, 3).map((n) => (Math.floor(n * 1000))),
+    x:  generateRange(COW_ACCEL_X, .1),
+    y:  generateRange(COW_ACCEL_Y, 2)
+  },
+  MOVING: {
+    code: 7,
+    heartRates: generateRange(COW_HEART_RATE + 10, 2).map((n) => (parseFloat((n).toFixed(2)))),
+    temperatures: generateRange(COW_BODY_TEMPERATURE + 0.2, 2).map((n) => (parseFloat((n).toFixed(2)))),
+    steps:  generateRange(COW_AVERAGE_STEPS + 2, 4).map((n) => (Math.floor(n * 1000))),
+    x:  generateRange(COW_ACCEL_X, 2),
+    y:  generateRange(COW_ACCEL_Y, 2)
+  },
+  MOUNTING: {
+    code: 9,
+    heartRates: generateRange(COW_HEART_RATE + 3, 0.5).map((n) => (parseFloat((n).toFixed(2)))),
+    temperatures: generateRange(COW_BODY_TEMPERATURE, 1).map((n) => (parseFloat((n).toFixed(2)))),
+    steps:  generateRange(COW_AVERAGE_STEPS, 4).map((n) => (Math.floor(n * 1000))),
+    x:  generateRange(COW_ACCEL_X, 1.1),
+    y:  generateRange(COW_ACCEL_Y, 0.6)
+  },
+};
+
 
 const PIG_ACTIVITY = [
   'AT_REST',
@@ -48,9 +150,6 @@ const OFFSET_RATE = {
   WALLOWING: 5,
 };
 
-const COW_HEART_RATE = 50;
-const ABNORMAL_COW_HEART_RATE = 68;
-const PIG_HEART_RATE = 60;
 
 myCache.init().then(() => {
   for (let i = 1; i <= numberOfPigs; i++) {
@@ -159,39 +258,21 @@ function setDeviceState(deviceId, state, isSensor = true, force = false) {
 }
 
 function getStatusCode(status) {
-  let code = 0;
-  switch (status) {
-    case 'AT_REST':
-    case 'IDLE':
-    case 'OFF':
-      code = 0;
-      break;
-    case 'ON':
-      code = 1;
-      break;
-    case 'FORAGING':
-      code = 3;
-      break;
-    case 'DRINKING':
-      code = 5;
-      break;
-    case 'WALLOWING':
-      code = 5;
-      break;
-    case 'GRAZING':
-      code = 6;
-      break;
-    case 'MOVING':
-      code = 7;
-      break;
-    case 'SOWING':
-      code = 8;
-      break;
-    case 'MOUNTING':
-      code = 9;
-      break;
-  }
-  return code;
+  return STATUS[status].code;
+}
+
+function getRandomFromArray(array){
+   console.log(array)
+  const randomElement = array[Math.floor(Math.random() * array.length)];
+  return randomElement;
+}
+
+function setRawReadings(state, desc) {
+  state.accel_x = getRandomFromArray(STATUS[desc].x).toFixed(4);
+  state.accel_y = getRandomFromArray(STATUS[desc].y).toFixed(4);
+  state.bmp = getRandomFromArray(STATUS[desc].heartRates);
+  state.body_temp = getRandomFromArray(STATUS[desc].temperatures);
+  state.step_count = getRandomFromArray(STATUS[desc].steps);
 }
 
 async function directedWalk(state, deviceId, goal) {
@@ -211,8 +292,9 @@ async function directedWalk(state, deviceId, goal) {
   const ty = parseFloat(targetLocation[0]);
   const tx = parseFloat(targetLocation[1]);
 
-  const offset1 = Math.abs(
-    0 + parseFloat(location[1]) - tx + parseFloat(location[0]) - ty
+  const offset1 = (
+    Math.abs(0 + parseFloat(location[1]) - tx) +
+    Math.abs(0 + parseFloat(location[0]) - ty)
   ).toFixed(4);
 
   if (tx > x) {
@@ -228,8 +310,10 @@ async function directedWalk(state, deviceId, goal) {
     y = addAndTrim(y, false, weather);
   }
 
-  const offset2 = Math.abs(0 + x - tx + y - ty).toFixed(4);
-  return { gps: y + ',' + x, complete: offset2 >= offset1 };
+  const offset2 = (Math.abs(0 + x - tx) + Math.abs(0 + y - ty)).toFixed(4);
+
+  const onHeat = target.st && target.st.includes(ANIMAL_STATUS.HEAT);
+  return { gps: y + ',' + x, complete: offset2 >= offset1, onHeat };
 }
 
 function randomWalk(state, deviceId, lng, lat) {
@@ -278,6 +362,33 @@ function selectTarget(id, type, animals) {
   });
   const target = targetList[Math.floor(Math.random() * targetList.length)];
   return target;
+}
+
+function findNeighbour(id, state, animals) {
+  const location = state.gps.split(',');
+  const y = parseFloat(location[0]);
+  const x = parseFloat(location[1]);
+
+  let nearest = undefined;
+  let distance = Infinity;
+  _.forEach(animals, function (animal) {
+    if (animal.id !== id) {
+      const animalLocation = animal.state.gps.split(',');
+      const ty = parseFloat(animalLocation[0]);
+      const tx = parseFloat(animalLocation[1]);
+
+      const animalDistance = (
+        Math.abs(0 + x - tx) + Math.abs(0 + y - ty)
+      ).toFixed(4);
+
+      if (distance > animalDistance) {
+        nearest = animal.id;
+        distance = animalDistance;
+      }
+    }
+  });
+
+  return nearest;
 }
 
 async function getAllAnimalData() {
@@ -398,8 +509,11 @@ function sendAnimalCollarReadings(animals) {
 
       state.s = getStatusCode(state.d);
       if (state.o) {
+        setRawReadings(state, state.d); 
         state.o++;
       }
+
+      state.by = findNeighbour(cow.id, state, animals.cow);
       setDeviceState(cow.id, toUltraLight(cow.state), true);
     } else if (isLonely) {
       directedWalk(state, cow.id, 'lonely').then((result) => {
@@ -411,13 +525,20 @@ function sendAnimalCollarReadings(animals) {
           animalStatus = animalStatus.filter((e) => e !== ANIMAL_STATUS.LONELY);
           animalStatus.push(ANIMAL_STATUS.HUNGRY);
           state.st = animalStatus.join(',');
-          state.d = 'MOUNTING';
+
+          state.d = 'AT_REST';
+          if (result.onHeat || getRandom() > 3) {
+            state.d = 'MOUNTING';
+          }
+
           state.s = getStatusCode(state.d);
         }
         if (state.o) {
+          setRawReadings(state, state.d); 
           state.o++;
         }
 
+        state.by = findNeighbour(cow.id, state, animals.cow);
         setDeviceState(cow.id, toUltraLight(cow.state), true);
       });
     } else if (isThirsty) {
@@ -437,6 +558,7 @@ function sendAnimalCollarReadings(animals) {
         }
 
         if (state.o) {
+          setRawReadings(state, state.d); 
           state.o++;
         }
         setDeviceState(cow.id, toUltraLight(cow.state), true);
