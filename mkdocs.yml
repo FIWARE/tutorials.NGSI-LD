@@ -9,8 +9,8 @@ theme: readthedocs
 markdown_extensions:
   - fenced_code
 extra_css:
-  - 'https://www.fiware.org/style/fiware_readthedocs.css'
-  - 'https://www.fiware.org/style/fiware_readthedocs_neutral.css'
+  - 'https://fiware.github.io/catalogue/style/fiware_readthedocs.css'
+  - 'https://fiware.github.io/catalogue/style/fiware_readthedocs_neutral.css'
   - 'https://fiware.github.io/catalogue/ngsi-ld.css'
 nav:
   - Home: index.md
