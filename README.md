@@ -153,7 +153,8 @@ functionality similar to a Linux distribution on Windows.
 ### Security: Identity Management
 
 &nbsp; 401. [Managing Users and Organizations](https://github.com/FIWARE/tutorials.Identity-Management/tree/NGSI-LD)
-<br/> &nbsp; 402. [Roles and Permissions](https://github.com/FIWARE/tutorials.Roles-Permissions/tree/NGSI-LD)
+<br/> &nbsp; 402. [Roles and Permissions](https://github.com/FIWARE/tutorials.Roles-Permissions/tree/NGSI-LD) <br/> 
+&nbsp; 403. [Verifiable Credentials](https://github.com/FIWARE/tutorials.Verifiable-Credentials/tree/NGSI-LD)
 
 ### Processing, Analysis and Visualization
 
