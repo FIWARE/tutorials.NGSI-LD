@@ -28,3 +28,9 @@ This application provides sends information about devices on the farm.
 - PUT `/temperature/:id` - amend the target temperature of a device
 
 To run the application in debug mode add `DEBUG=devices:*`
+
+---
+
+## License
+
+[MIT](LICENSE) © 2020-2026 FIWARE Foundation e.V.
