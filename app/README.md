@@ -1,114 +1,84 @@
-This is a simple Node.js express application which offers an NGSI proxy interface to four context providers.
+# FIWARE NGSI-LD Step-by-Step Tutorials Web App
 
-# NGSI-LD `/ngsi-ld/v1/entities/` Endpoints
+[![Documentation](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/documentation.svg)](https://fiware-tutorials.rtfd.io)
+[![Docker](https://img.shields.io/docker/pulls/fiware/tutorials.ngsi-ld.svg)](https://hub.docker.com/r/fiware/tutorials.ngsi-ld/)
+[![Support badge](https://img.shields.io/badge/tag-fiware-orange.svg?logo=stackoverflow)](https://stackoverflow.com/questions/tagged/fiware)
+[![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://cim.etsi.org/NGSI-LD/official/front-page.html)
+[![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/)
 
-Supported NGSI-LD context provider endpoints
+This is a Node.js Express application that serves as the main web interface for the FIWARE NGSI-LD Step-by-Step
+tutorials. It acts as a multi-purpose component, functioning as a Context Provider, a User Interface, and a secure proxy
+to other FIWARE components.
 
--   `/random/temperature/ngsi-ld/v1/entities/`
--   `/random/relativeHumidity/ngsi-ld/v1/entities/`
--   `/random/tweets/ngsi-ld/v1/entities/`
--   `/random/weatherConditions/ngsi-ld/v1/entities/`
--   `/static/temperature/ngsi-ld/v1/entities/`
--   `/static/relativeHumidity/ngsi-ld/v1/entities/`
--   `/static/tweets/ngsi-ld/v1/entities/`
--   `/static/weatherConditions/ngsi-ld/v1/entities/`
--   `/catfacts/tweets/ngsi-ld/v1/entities/`
--   `/twitter/tweets/ngsi-ld/v1/entities/`
--   `/weather/temperature/ngsi-ld/v1/entities/`
--   `/weather/relativeHumidity/ngsi-ld/v1/entities/`
--   `/weather/weatherConditions/ngsi-ld/v1/entities/`
+## Features
 
-The following dynamic NGSI-LD endpoints are supported
+*   **Context Provider**: Exposes multiple NGSI-LD endpoints to provide context data (static, random, or proxied from external APIs like Twitter and OpenWeatherMap).
+*   **Web Interface**: Renders web pages using Pug templates to visualize data and interact with the system.
+*   **Data Persistence**: Connects to MongoDB for storing session data and application state.
+*   **History Visualization**: Fetches and aggregates historical data for visualization.
+*   **NGSI-LD Proxy**: Interactions with a Context Broker (e.g., Orion-LD, Scorpio Stellio).
+*   **Device Control**: Provides an interface to send commands to dummy IoT devices via the Context Broker.
 
--   `/random/<type>/<mapping>/ngsi-ld/v1/entities/:id`. returns random data values of `"type": "<type>"` - e.g.
-    `/random/text/quote/ngsi-ld/v1/entities/:id` will return random lorem ipsum
+## Endpoints
 
--   `/static/<type>/<mapping>/ngsi-ld/v1/entities/:id` returns static data values of `"type": "<type>"` - e.g.
-    `/static/text/quote/ngsi-ld/v1/entities/:id` will return "I never could get the hang of thursdays"
+### NGSI-LD Context Provider Endpoints
 
--   `/twitter/<type>/<mapping><queryString>/<attr>/ngsi-ld/v1/entities/:id` Work in progress
+The application provides context data under `/ngsi-ld/v1/entities/`:
 
--   `/weather/<type>/<mapping>/<queryString>/<attr>/ngsi-ld/v1/entities/:id` Retrieves the Weather data for the
-    `queryString` location and maps the data from the given `attr` to the entity response.
+-   **Random Data**: `/random/<type>/...`
+-   **Static Data**: `/static/<type>/...`
+-   **Twitter Data**: `/catfacts/...`, `/twitter/...`
+-   **Weather Data**: `/weather/...`
 
-    For Example `/weather/number/berlin%2cde/wind_speed/ngsi-ld/v1/entities/:id` will read the `wind_speed` value from
-    Berlin. and `/weather/number/cairo%2ceg/temp/ngsi-ld/v1/entities/:id` will read the `temp` value from Cairo.
+### Health Checks
 
-## Mappings
+-   `/health`: General application health check.
+-   `/random/health`, `/static/health`: Check availability of random/static context providers.
+-   `/twitter/health`: Check connectivity to Twitter API.
+-   `/weather/health`: Check connectivity to OpenWeatherMap API.
 
-NGSI attribute names should follow Data Model Guidelines (e.g. `camelCasing`) Data returned from third-party APIs will
-not enforce the same guidelines. It is therefore necessary to invoke a mapping to be able to know which values to
-retieve.
+## Environment Variables
 
-The mapping path element is assumes that mappings are defined in the path as follows:
+The application is configured using the following environment variables:
 
--   `temperature`
-    -   `temperature` NGSI attribute maps to `temperature` attribute on the API data
--   `temperature:temp`
-    -   `temperature` NGSI attribute maps to `temp` attribute on the API data
--   `temperature:temp,windSpeed:wind_speed`
-    -   `temperature` NGSI attribute maps to `temp` attribute on the API data
-    -   `windSpeed` NGSI attribute maps to `wind_speed` attribute on the API data
+### Core Configuration
 
-For the full guidelines see the
-[FIWARE Data Models](https://fiware-datamodels.readthedocs.io/en/latest/guidelines/index.html)
+-   `WEB_APP_PORT` - Port the application listens on. Default: `3000`.
+-   `NODE_ENV` - Environment mode (e.g., `production`, `development`).
+-   `DEBUG` - Debug logging namespace. Recommended: `tutorial:*`.
+-   `SESSION_SECRET` - Secret used for signing session cookies.
+-   `SESSION_OFF` - If set to `true`, disables session management. Default: `false`.
 
-## Health Check Endpoints
+### Database Connectivity
 
-The following health check endpoints are supported:
+-   `MONGO_URL` - Connection string for MongoDB. Default: `mongodb://localhost:27017`.
 
--   `/random/health` A non-error response shows that an NGSI proxy is available on the network and returning values.
-    Each Request will return some random dummy data.
+### FIWARE Component Connectivity
 
--   `/static/health` A non-error response shows that an NGSI proxy is available on the network and returning values.
-    Each Request will return the same data.
+-   `CONTEXT_BROKER` - URL of the Context Broker. Default: `http://localhost:1026/ngsi-ld/v1`.
+-   `DEVICE_BROKER` - URL for device commands, usually same as Context Broker. Default: same as `CONTEXT_BROKER`.
+-   `NGSI_LD_TENANT` - Tenant for NGSI-LD requests. Default: `openiot`.
+-   `IOTA_JSON_LD_CONTEXT` - JSON-LD Context URL for device commands. Default: `http://localhost:3000/data-models/ngsi-context.jsonld`.
 
--   `/catfacts/health` A non-error response shows that an NGSI proxy is available on the network and returning values.
-    Each Request will return the same data.
+### IoT Device Connectivity
 
--   `/twitter/health` A non-error response shows that an NGSI proxy for the Twitter API is available on the network and
-    returning values.
+Variables to configure the connection to the Dummy IoT Devices service:
 
-    If the proxy is correctly configured to connect to the Twitter API, a series of Tweets will be returned.
+-   `DUMMY_DEVICES_PORT` - Port where the Dummy Devices service is running. Default: `3001`.
+-   `DUMMY_DEVICES` - Full URL of the Dummy Devices service. Default: `http://localhost:${DUMMY_DEVICES_PORT}`.
+-   `MOVE_TRACTOR` - Interval (in ms) to auto-move tractors (simulation). Default: `10000`.
+-   `DUMMY_OFF` - If `true`, disables dummy device updates/interaction from this app. Default: `false`.
 
-    The Twitter API uses OAuth2:
-
-    -   To get Consumer Key & Consumer Secret for the Twitter API, you have to create an app in Twitter via
-        [https://developer.twitter.com/](https://developer.twitter.com/). Then you'll be taken to a page containing
-        Consumer Key & Consumer Secret.
-    -   For more information see: [https://developer.twitter.com/](https://developer.twitter.com/)
-
--   `/weather/health` A non-error response shows that an NGSI proxy for the Weather API is available on the network and
-    returning values.
-
-    If the proxy is correctly configured to connect to the Open Weather Map API, the current weather in Berlin will be
-    returned.
-
-    Most of the Weather API features require an API key.
-
-    -   Sign up for a key at [`https://openweathermap.org/api`](https://openweathermap.org/api)
-    -   For more information see: [`https://openweathermap.org/appid`](https://openweathermap.org/appid)
-
-## Keys and Secrets
-
-All Keys and Secrets must be passed in using Environment variables. The following variables **must** be provided
-
--   `OPENWEATHERMAP_KEY_ID=<ADD_YOUR_KEY_ID>`
--   `TWITTER_CONSUMER_KEY=<ADD_YOUR_CONSUMER_KEY>`
--   `TWITTER_CONSUMER_SECRET=<ADD_YOUR_CONSUMER_SECRET>`
-
----
 
 ## License
 
-MIT © 2020-2026 FIWARE Foundation e.V.
+[MIT](LICENSE) © 2020-2026 FIWARE Foundation e.V.
 
 See the LICENSE file in the root of this project for license details.
 
 The Program includes additional icons downloaded from www.flaticon.com which were obtained under license:
 
 -   Smashicons - [https://www.flaticon.com/authors/smashicons](https://www.flaticon.com/authors/smashicons) - CC 3.0 BY
--   Those Icons - [https://www.flaticon.com/authors/those-icons](https://www.flaticon.com/authors/those-icons) - CC 3.0
-    BY
+-   Those Icons - [https://www.flaticon.com/authors/those-icons](https://www.flaticon.com/authors/those-icons) - CC 3.0 BY
 -   Freepik - [http://www.freepik.com/](http://www.freepik.com/) - CC 3.0 BY
 -   Bootstrap - [https://github.com/twbs/icons](https://github.com/twbs/icons) - MIT
