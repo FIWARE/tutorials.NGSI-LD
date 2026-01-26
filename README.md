@@ -1,6 +1,6 @@
 # Smart Farm Tutorials[<img src="https://img.shields.io/badge/NGSI-LD-d6604d.svg" width="90"  align="left" />](https://cim.etsi.org/NGSI-LD/official/front-page.html) [<img src="docs/img/logo.png" align="left" width="162">](https://www.fiware.org/) <br/>
 
-[![Documentation](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/documentation.svg)](https://ngsi-ld-tutorials.rtfd.io)
+[![Documentation](https://fiware.github.io/catalogue/badges/chapters/documentation.svg)](https://ngsi-ld-tutorials.rtfd.io)
 [![License: MIT](https://img.shields.io/github/license/fiware/tutorials.Step-by-Step.svg)](https://opensource.org/licenses/MIT)
 [![Support badge](https://img.shields.io/badge/tag-fiware-orange.svg?logo=stackoverflow)](https://stackoverflow.com/questions/tagged/fiware)
 [![Docker badge](https://img.shields.io/badge/quay.io-fiware%2Ftutorials.ngsi--ld-grey?logo=red%20hat&labelColor=EE0000)](https://quay.io/repository/fiware/tutorials.ngsi-ld)
