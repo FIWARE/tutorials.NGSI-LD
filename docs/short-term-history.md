@@ -148,7 +148,7 @@ mintaka:
         - DATASOURCES_DEFAULT_HOST=timescale-db
         - DATASOURCES_DEFAULT_USERNAME=orion
         - DATASOURCES_DEFAULT_PASSWORD=orion
-        - DATASOURCES_DEFAULT_DATABSE=orion
+        - DATASOURCES_DEFAULT_DATABASE=orion
         - DATASOURCES_DEFAULT_MAXIMUM_POOL_SIZE=2
     expose:
         - "8080"

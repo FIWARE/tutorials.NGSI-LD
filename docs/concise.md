@@ -44,14 +44,14 @@ such as `"type": "Property"` throughout the payload to ensure that machines can 
         "https://fiware.github.io/tutorials.Step-by-Step/example.jsonld",
         "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ],
-    "id": "urn:nsgi-ld:Beatle:John_Lennon",
+    "id": "urn:ngsi-ld:Beatle:John_Lennon",
     "type": "Beatle",
     "age": { "type": "Property", "value": 40, "unitCode": "ANN" },
     "name": { "type": "Property", "value": "John Lennon" },
     "born": { "type": "Property", "value": "1940-10-09" },
     "spouse": {
         "type": "Relationship",
-        "object": "urn:nsgi-ld:Person:Cynthia_Lennon"
+        "object": "urn:ngsi-ld:Person:Cynthia_Lennon"
     },
     "location": {
         "type": "GeoProperty",
@@ -80,10 +80,10 @@ shorter and to the point, and not all information is returned by the request - s
         "https://fiware.github.io/tutorials.Step-by-Step/example.jsonld",
         "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ],
-    "id": "urn:nsgi-ld:Beatle:John_Lennon",
+    "id": "urn:ngsi-ld:Beatle:John_Lennon",
     "name": "John Lennon",
     "born": "1940-10-09",
-    "spouse": "urn:nsgi-ld:Person:Cynthia_Lennon",
+    "spouse": "urn:ngsi-ld:Person:Cynthia_Lennon",
     "age": 40,
     "location": {
         "type": "Point",
@@ -122,11 +122,11 @@ representation, where redundant "type" members are omitted and the following rul
         "https://fiware.github.io/tutorials.Step-by-Step/example.jsonld",
         "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
     ],
-    "id": "urn:nsgi-ld:Beatle:John_Lennon",
+    "id": "urn:ngsi-ld:Beatle:John_Lennon",
     "name": "John Lennon",
     "born": "1940-10-09",
     "spouse": {
-        "object": "urn:nsgi-ld:Person:Cynthia_Lennon"
+        "object": "urn:ngsi-ld:Person:Cynthia_Lennon"
     },
     "age": { "value": 40, "unitCode": "ANN" },
     "location": {
