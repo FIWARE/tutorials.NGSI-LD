@@ -73,7 +73,7 @@ Using WSL Ubuntu-22.04 to run the NGSI-LD SMART FARM Tutorials.
 -   To install WSL on Windows follow the instructions [here](https://learn.microsoft.com/en-us/windows/wsl/install)
 -   Install the terminal Ubuntu-22.04.3 LTS from Microsoft Store
 -   Open command prompt and set the default WSL to the newly installed Ubuntu-22.04.3 LTS - list all wls to ensure
-    Ubuntu-22.04 is part of the list ` wsl.exe -l ` - Set Ubuntu-22.04 to default ` wsl.exe --set-default Ubuntu-22.04 `
+    Ubuntu-22.04 is part of the list `wsl.exe -l` - Set Ubuntu-22.04 to default `wsl.exe --set-default Ubuntu-22.04`
 -   Ensure docker desktop is running, open Settings > General, enable WSL 2 based engine
 -   Open start menu, search for Ubuntu-22.04.3 LTS, and run it.
 -   Install Docker on the terminal following the instructions
@@ -85,8 +85,10 @@ Using WSL Ubuntu-22.04 to run the NGSI-LD SMART FARM Tutorials.
 -   Setup Postman and import postman a tutorial file (ex. tutorials.NGSI-LD\tutorials.Getting-Started\FIWARE Working
     with @context.postman_collection.json)
 
-  ## When trying to run any of the ./services produces "cannot execute: required file not found"
+## When trying to run any of the ./services produces "cannot execute: required file not found"
 
-This may be caused by a character encoding problem in the services script if e.g. the repository has been cloned on Windows, while the script is being run in a Linux/WSL terminal. 
+This may be caused by a character encoding problem in the services script if e.g. the repository has been cloned on
+Windows, while the script is being run in a Linux/WSL terminal.
 
-Running the "dos2linux" command may work, but a more solid solution in this case is to clone the repository directly in the Linux/WSL terminal.
+Running the "dos2linux" command may work, but a more solid solution in this case is to clone the repository directly in
+the Linux/WSL terminal.

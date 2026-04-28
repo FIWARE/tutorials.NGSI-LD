@@ -77,8 +77,8 @@ seen on the JSON device monitor web page found at: `http://localhost:3000/device
 
 This application will make use of two FIWARE components - the
 [Orion-LD Context Broker](https://fiware-orion.readthedocs.io/en/latest/)and the
-[IoT Agent for JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/). Usage of any NGSI-LD Context
-Broker is sufficient for an application to qualify as _“Powered by FIWARE”_.
+[IoT Agent for JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/). Usage of any NGSI-LD Context Broker is
+sufficient for an application to qualify as _“Powered by FIWARE”_.
 
 Currently, the Orion-LD Context Broker relies on open source [MongoDB](https://www.mongodb.com/) technology to keep
 persistence of the context data it holds. To request context data from external sources, a simple **Context Provider
@@ -93,8 +93,8 @@ Therefore, the architecture will consist of four elements:
     southbound requests using
     [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
     and convert them to
-    [JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
-    commands for the devices.
+    [JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual) commands
+    for the devices.
 -   The underlying [MongoDB](https://www.mongodb.com/) database:
     -   Used by the Orion Context Broker to hold context data information such as data entities, subscriptions and
         registrations.
