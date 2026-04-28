@@ -181,7 +181,7 @@ Robots, IoT Sensors or other suppliers of context data such as social media. It 
 from the context broker to alter the state of real-world objects themselves.
 
 &nbsp; 201. [Introduction to IoT Sensors](iot-sensors.md)<br/> &nbsp; 202.
-[Provisioning the Ultralight IoT Agent](iot-agent.md)<br/> &nbsp; 203.
+[Provisioning the JSON IoT Agent](iot-agent.md)<br/> &nbsp; 203.
 [Provisioning the JSON IoT Agent](iot-agent-json.md)<br/>
 
 <h3 style="box-shadow: 0px 4px 0px 0px #233c68;">Core Context Management: History Management</h3>

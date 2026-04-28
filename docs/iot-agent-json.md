@@ -25,25 +25,25 @@ As defined previously, an IoT Agent is a component that lets a group of devices 
 a Context Broker using their own native protocols. Every IoT Agent is defined for a single payload format, although they
 may be able to use multiple disparate transports for that payload.
 
-We have already encountered the Ultralight IoT Agent, which communicates using a simple bar (`|`) separated list of
+We have already encountered the JSON IoT Agent, which communicates using a simple bar (`|`) separated list of
 key-value pairs. This payload is a simple, terse but relatively obscure communication mechanism - by far the commonest
 messaging payload used on the Internet is the so-called JavaScript Object Notation or JSON which will be familiar to any
 software developer.
 
-JSON is slightly more verbose than Ultralight, but the cost of sending larger messages is offset by the familiarity of
+JSON is slightly more verbose than JSON, but the cost of sending larger messages is offset by the familiarity of
 the syntax. A separate
 [IoT Agent for JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
 has been created specifically to cope with messages sent in this format, since a large number of common devices are able
 to be programmed to send messages in JSON and many software libraries exist to parse the data.
 
-There is no practical difference between communicating using a JSON payload and communicating using the Ultralight plain
+There is no practical difference between communicating using a JSON payload and communicating using the JSON plain
 text payload - provided that the basis of that communication - in other words the fundamental protocol defining how the
 messages are passed between the components remains the same. Obviously the parsing of JSON payloads within the IoT
 Agent - the conversion of messages from JSON to NGSI and vice-versa will be unique to the JSON IoT Agent.
 
 A direct comparison of the two IoT Agents can be seen below:
 
-| IoT Agent for Ultralight                                            | IoT Agent for JSON                                                  | Protocol's Area of Concern |
+| IoT Agent for JSON                                            | IoT Agent for JSON                                                  | Protocol's Area of Concern |
 | ------------------------------------------------------------------- | ------------------------------------------------------------------- | -------------------------- |
 | Sample Measure `c\1`                                                | Sample Measure `{"count": "1"}`                                     | Message Payload            |
 | Sample Command `Robot1@turn\left`                                   | Sample Command `{"Robot1": {"turn": "left"}}`                       | Message Payload            |
@@ -252,9 +252,7 @@ iot-agent:
         - IOTA_TIMESTAMP=true
         - IOTA_CB_NGSI_VERSION=ld
         - IOTA_AUTOCAST=true
-        - IOTA_MONGO_HOST=mongo-db
-        - IOTA_MONGO_PORT=27017
-        - IOTA_MONGO_DB=iotagentjson
+        - IOTA_MONGO_URI=mongodb://mongo-db:${MONGO_DB_PORT}/iotagentjson
         - IOTA_HTTP_PORT=7896
         - IOTA_PROVIDER_URL=http://iot-agent:4041
         - IOTA_DEFAULT_RESOURCE=/iot/json
@@ -282,9 +280,7 @@ The `iot-agent` container is driven by environment variables as shown:
 | IOTA_TIMESTAMP       | `true`                               | Whether to supply timestamp information with each measurement received from attached devices                                                          |
 | IOTA_CB_NGSI_VERSION | `LD`                                 | Whether to supply use NGSI-LD when sending updates for active attributes                                                                              |
 | IOTA_AUTOCAST        | `true`                               | Ensure JSON number values are read as numbers not strings                                                                                             |
-| IOTA_MONGO_HOST      | `context-db`                         | The hostname of mongoDB - used for holding device information                                                                                         |
-| IOTA_MONGO_PORT      | `27017`                              | The port mongoDB is listening on                                                                                                                      |
-| IOTA_MONGO_DB        | `iotagentul`                         | The name of the database used in mongoDB                                                                                                              |
+| IOTA_MONGO_URI         | `mongodb://mongo-db:27017/iotagentjson` | The URI of mongoDB - used for holding device information                                                                        |
 | IOTA_HTTP_PORT       | `7896`                               | The port where the IoT Agent listens for IoT device traffic over HTTP                                                                                 |
 | IOTA_PROVIDER_URL    | `http://iot-agent:4041`              | URL passed to the Context Broker when commands are registered, used as a forwarding URL location when the Context Broker issues a command to a device |
 | IOTA_JSON_LD_CONTEXT | `http://context/user-context.jsonld` | The location of the `@context` file used to define the device data models                                                                             |
@@ -461,7 +457,7 @@ curl -iX POST 'http://localhost:4041/iot/services' \
                     "name": "category", "type": "VocabProperty", "value": "sensor"
                 },
                 {
-                    "name": "supportedProtocol", "type": "Property", "value": "ul20"
+                    "name": "supportedProtocol", "type": "Property", "value": "json"
                 }
             ]
         }
@@ -470,7 +466,7 @@ curl -iX POST 'http://localhost:4041/iot/services' \
 ```
 
 In the example the IoT Agent is informed that the `/iot/json` endpoint will be used and that devices will authenticate
-themselves by including the token `4jggokgpepnvsb2uv4s40d59ov`. For an UltraLight IoT Agent this means devices will be
+themselves by including the token `4jggokgpepnvsb2uv4s40d59ov`. For an JSON IoT Agent this means devices will be
 sending GET or POST requests to:
 
 ```text
@@ -698,7 +694,7 @@ curl -L -X GET \
         },
         "supportedProtocol": {
             "type": "Property",
-            "value": "ul20",
+            "value": "json",
             "observedAt": "2020-09-17T09:41:56.755Z"
         }
     }
@@ -712,7 +708,7 @@ copied directly from the received measure.
 ### Provisioning an Actuator
 
 Provisioning an actuator is similar to provisioning a sensor. This time an `endpoint` attribute holds the location where
-the IoT Agent needs to send the UltraLight command and the `commands` array includes a list of each command that can be
+the IoT Agent needs to send the JSON command and the `commands` array includes a list of each command that can be
 invoked. The example below provisions water with the `deviceId=water001`. The endpoint is
 `http://iot-sensors:3001/iot/water001` and it can accept the `on` command. The `transport=HTTP` attribute defines the
 communications protocol to be used.
@@ -732,7 +728,7 @@ curl -L -X POST \
       "entity_name": "urn:ngsi-ld:Device:water001",
       "entity_type": "Device",
       "apikey": "4jggokgpepnvsb2uv4s40d59ov",
-      "protocol": "PDI-IoTA-JSON",
+      "protocol": "IoTA-JSON",
       "transport": "HTTP",
       "endpoint": "http://iot-sensors:3001/iot/water001",
       "commands": [
@@ -844,7 +840,7 @@ curl -L -X POST \
       "entity_name": "urn:ngsi-ld:Device:filling001",
       "entity_type": "FillingLevelSensor",
       "apikey": "4jggokgpepnvsb2uv4s40d59ov",
-      "protocol": "PDI-IoTA-JSON",
+      "protocol": "IoTA-JSON",
       "transport": "HTTP",
       "endpoint": "http://iot-sensors:3001/iot/filling001",
       "commands": [
@@ -901,7 +897,7 @@ curl -L -X POST \
       "entity_name": "urn:ngsi-ld:Device:tractor001",
       "entity_type": "Tractor",
       "apikey": "4jggokgpepnvsb2uv4s40d59ov",
-      "protocol": "PDI-IoTA-JSON",
+      "protocol": "IoTA-JSON",
       "transport": "HTTP",
       "endpoint": "http://iot-sensors:3001/iot/tractor001",
       "commands": [
@@ -1241,7 +1237,7 @@ curl -iX POST 'http://localhost:4041/iot/devices' \
       "entity_name": "urn:ngsi-ld:Device:water002",
       "entity_type": "Device",
       "apikey": "4jggokgpepnvsb2uv4s40d59ov",
-      "protocol": "PDI-IoTA-JSON",
+      "protocol": "IoTA-JSON",
       "transport": "HTTP",
       "endpoint": "http://iot-sensors:3001/iot/water002",
       "commands": [
@@ -1313,7 +1309,7 @@ The response includes all the commands and attributes mappings associated with t
             "value": "urn:ngsi-ld:Building:barn002"
         }
     ],
-    "protocol": "PDI-IoTA-JSON",
+    "protocol": "IoTA-JSON",
     "explicitAttrs": false
 }
 ```
@@ -1364,7 +1360,7 @@ The response includes all the commands and attributes mappings associated with a
                   "value": "urn:ngsi-ld:Store:002"
               }
           ],
-          "protocol": "PDI-IoTA-JSON"
+          "protocol": "IoTA-JSON"
       },
       etc...
     ]

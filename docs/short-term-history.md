@@ -53,7 +53,7 @@ satisfy a subscription.
 For the purpose of this tutorial, a series of dummy animal collar IoT devices have been created, which will be attached
 to the context broker. Details of the architecture and protocol used can be found in the
 [IoT Sensors tutorial](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD). The state of each device can be
-seen on the UltraLight device monitor web page found at: `http://localhost:3000/device/monitor`.
+seen on the JSON device monitor web page found at: `http://localhost:3000/device/monitor`.
 
 ![FIWARE Monitor](https://fiware.github.io/tutorials.Time-Series-Data/img/farm-devices.png)
 
@@ -62,16 +62,16 @@ seen on the UltraLight device monitor web page found at: `http://localhost:3000/
 This application builds on the components and dummy IoT devices created in
 [the IoT tutorials](https://github.com/FIWARE/tutorials.IoT-Agent/tree/NGSI-LD). It will use two FIWARE components: the
 [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) and the
-[IoT Agent for Ultralight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/). In addition, the optional temporal
+[IoT Agent for JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/). In addition, the optional temporal
 interface is serviced using an add-on called **Mintaka**.
 
 Therefore the overall architecture will consist of the following elements:
 
 -   The [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests using
     [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json).
--   The FIWARE [IoT Agent for UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/) which will receive
+-   The FIWARE [IoT Agent for JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/) which will receive
     northbound device measures requests using
-    [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
+    [JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
     syntax and convert them to
     [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json).
 -   The underlying [MongoDB](https://www.mongodb.com/) database :
@@ -83,7 +83,7 @@ Therefore the overall architecture will consist of the following elements:
 -   The **Tutorial Application** does the following:
     -   Acts as set of dummy [agricultural IoT devices](https://github.com/FIWARE/tutorials.IoT-Sensors/tree/NGSI-LD)
         using the
-        [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
+        [JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
         protocol running over HTTP.
 -   An HTTP **Web-Server** which offers static `@context` files defining the context entities within the system.
 
@@ -965,7 +965,7 @@ attribute has also been added to the model:
         "observedAt": "2021-09-16T15:24:15.781Z"
     },
     "supportedProtocol": {
-        "value": "ul20",
+        "value": "json",
         "type": "Property",
         "observedAt": "2021-09-16T15:24:15.781Z"
     },
