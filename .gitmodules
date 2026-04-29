@@ -78,3 +78,7 @@
 	path = tutorials.Verifiable-Credentials
 	url = https://github.com/FIWARE/tutorials.Verifiable-Credentials
 	branch = NGSI-LD
+[submodule "tutorials.Context-Providers"]
+	path = tutorials.Context-Providers
+	url = https://github.com/FIWARE/tutorials.Context-Providers
+	branch = NGSI-LD
