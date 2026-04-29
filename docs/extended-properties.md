@@ -690,8 +690,8 @@ curl -G -X GET \
 The User's `@context` is a mechanism for mapping URNs and defining the Entities held within the system It is therefore
 possible to retrieve _the same data_ using a different set of short names for the attributes, and in the case of a
 **VocabProperty**, different short names for the values of the attributes themselves. This is particularly useful when
-dealing with distributed data, federations and data spaces as the end user may not have full control of data held
-within another participant's context broker.
+dealing with distributed data, federations and data spaces as the end user may not have full control of data held within
+another participant's context broker.
 
 When the **Building** entities were created, we used an `@context` file called `ngsi-context.jsonld`. Within the
 `ngsi-context.jsonld` file, we have already mapped many terms as shown:

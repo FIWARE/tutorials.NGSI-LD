@@ -295,7 +295,8 @@ git checkout NGSI-LD
 ## Offering NGSI-v2 Entities as part of an NGSI-LD Data Space
 
 This tutorial starts up both the NGSI-LD Smart Farm (on port `1027`) and NGSI-v2 Smart Supermarket (on port `1027`) and
-thenoffers the NGSI-v2 entities into the building finder to the Smart Farm FMIS System as part of a federated data space.
+thenoffers the NGSI-v2 entities into the building finder to the Smart Farm FMIS System as part of a federated data
+space.
 
 ### Reading NGSI-v2 Data directly
 

@@ -216,8 +216,9 @@ git checkout NGSI-LD
 
 ## Redirection Registration
 
-Before adding the registration, goto `http://localhost:3000/` to display and interact with the FMIS System data. Initially,
-only the Building data from the previous tutorial is available, since this has been loaded onto the default tenant.
+Before adding the registration, goto `http://localhost:3000/` to display and interact with the FMIS System data.
+Initially, only the Building data from the previous tutorial is available, since this has been loaded onto the default
+tenant.
 
 ### Reading Animal data
 
@@ -621,9 +622,9 @@ broker**
 ```
 
 Furthermore, additional **Animal** entities only found within the **Vet's Context Broker** are now also visible within
-the tutorial application `http://localhost:3000/` - this is the response from the FMIS System (which holds no animals locally)
-plus the response from the Farmer, plus the response from the Vet. The result is a listing which includes all the
-animals on the farm, plus all the animals which are requiring vetenary care.
+the tutorial application `http://localhost:3000/` - this is the response from the FMIS System (which holds no animals
+locally) plus the response from the Farmer, plus the response from the Vet. The result is a listing which includes all
+the animals on the farm, plus all the animals which are requiring vetenary care.
 
 It is still possible to retrieve the locally held data in the **Farmer's Context Broker** without invoking the
 registration, through adding the `local=true` parameter

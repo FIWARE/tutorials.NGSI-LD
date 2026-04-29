@@ -23,8 +23,8 @@ exists in the real world.
 <h3>Entities within a Farm Management Information System (FMIS)</h3>
 
 To illustrate entity relationships within an FMIS System based on NGSI-LD, we will need to create a series of entities.
-For this simplified FMIS System, we will only need a small number of entities. The relationship between our entities is defined
-as shown:
+For this simplified FMIS System, we will only need a small number of entities. The relationship between our entities is
+defined as shown:
 
 ![](https://fiware.github.io/tutorials.Entity-Relationships/img/ngsi-ld-entities.png)
 
@@ -71,10 +71,10 @@ be reduced and so on.
 
 ## Architecture
 
-The demo FMIS System application will send and receive NGSI-LD calls to a compliant context broker. Since the standardized
-NGSI-LD interface is available across multiple context brokers, so we only need to pick one - for example the
-[Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/). The application will therefore only make use of
-one FIWARE component.
+The demo FMIS System application will send and receive NGSI-LD calls to a compliant context broker. Since the
+standardized NGSI-LD interface is available across multiple context brokers, so we only need to pick one - for example
+the [Orion Context Broker](https://fiware-orion.readthedocs.io/en/latest/). The application will therefore only make use
+of one FIWARE component.
 
 Currently, the Orion Context Broker relies on open source [MongoDB](https://www.mongodb.com/) technology to keep
 persistence of the context data it holds.
@@ -490,8 +490,8 @@ NGSILD-Results-Count: 2
 
 ### Creating many-to-many Relationships
 
-Bridge Tables are often used to relate many-to-many relationships. For example, every spraying activity within the FMIS System
-will need to associate a farmworker, a product to apply, and a location to apply the treatment (known as a
+Bridge Tables are often used to relate many-to-many relationships. For example, every spraying activity within the FMIS
+System will need to associate a farmworker, a product to apply, and a location to apply the treatment (known as a
 **PartField**).
 
 In order to hold the context information to "direct a worker to spray a herbicide onto a field" we will need to create a
