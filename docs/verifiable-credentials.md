@@ -149,7 +149,7 @@ from exposed ports.
 
 ## Start Up
 
-All services can be initialised from the command-line by running the
+All services can be initialized from the command-line by running the
 [services](https://github.com/FIWARE/tutorials.Verifiable-Credentials/blob/NGSI-LD/services) Bash script provided within
 the repository. Please clone the repository and create the necessary images by running the commands as shown:
 

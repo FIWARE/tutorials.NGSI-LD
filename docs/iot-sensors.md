@@ -55,7 +55,7 @@ within this tutorial:
 
 As you can see, the **Irrigation System** is an example of a pure actuator, as it only reacts to the given commands.
 Meanwhile, the **Soil Sensor** is an example of a pure sensor, since it will only report on the state of the world as it
-sees it. Some devices such as an **FMIS** are able to both respond to commands and report on state in a meaningful way.
+sees it. Some devices such as an **FMIS System** are able to both respond to commands and report on state in a meaningful way.
 
 The state information held within each device, as it will eventually be seen within the Context Broker is defined in the
 diagram below:
@@ -96,7 +96,7 @@ in real life. This in turn could alter the readings of other sensors nearby.
 
 ### Push Command using HTTP POST
 
-Setting up the southbound communication between an IoT Agent and IoT devices is known as provisioning. This ensures that
+Setting up the southbound communication between an IoT Agent and IoT devices is known as provisioning. This ensuress that
 the IoT Agent holds sufficient information to be able to contact each IoT device. In other words it knows where to send
 commands and which commands are supported. In order to send a command to a device, the IoT Agent sends a POST request to
 the endpoint supplied by the device. The body of the POST request holds the command.
@@ -359,7 +359,7 @@ An **FMIS System** on the dashboard of a tractor is an example of a combined act
 
 ### Activate a Tractor
 
-This example shows how a real IoT Agent would send an JSON command to a **Tractor** FMIS to move it from an idle to an
+This example shows how a real IoT Agent would send an JSON command to a **Tractor** FMIS System to move it from an idle to an
 active state. The unit with the **Tractor** itself has already supplied an endpoint `/iot/tractor001` where it is
 listening for commands.
 
@@ -388,7 +388,7 @@ monitor page.
 
 ### Deactivate a Tractor
 
-This example shows how a real IoT Agent would send an JSON command to a **Tractor** FMIS to return the vehicle to an
+This example shows how a real IoT Agent would send an JSON command to a **Tractor** FMIS System to return the vehicle to an
 idle state. The **Tractor** has already supplied an endpoint `/iot/tractor001` where it is listening for commands.
 
 #### 4 Request:
@@ -432,7 +432,7 @@ urn:ngsi-ld:Device:tractor001@start| start OK
 ## Filling Station Commands
 
 The **Filling Station** is an electronic device which can be sent a command to request that feed is added or removed
-from the silo. It can also report on its load level. In reality such a device would be connected to the FMIS to request
+from the silo. It can also report on its load level. In reality such a device would be connected to the FMIS System to request
 that a worker fills the silo when it gets too low, but in this case we are treating the device as both a sensor and
 actuator.
 

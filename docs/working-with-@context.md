@@ -25,7 +25,7 @@ data entities which will be offered in our simple Smart Farm Management System. 
 agreed set of unique IDs (URNs or URLs) for all the data entities and every single attribute within those entities so
 that other external applications will be able to programmatically understand the data held within our broker.
 
-For example, the attribute `address` is within our smart application is defined as follows:
+For example, the attribute `address` is within our smart application is defined as follows::
 
 ```json
 "@context": {
@@ -81,7 +81,7 @@ third parties as **JSON-LD**.
 
 This tutorial is a simple introduction to the rules and restrictions behind **NGSI-LD** and will create some **NGSI-LD**
 entities and then extract the data in different formats. The two main data formats are _normalized_ and
-_key-value-pairs_. Data returned in the _normalised_ format respects the **NGSI-LD** rules and may be used directly by
+_key-value-pairs_. Data returned in the _normalized_ format respects the **NGSI-LD** rules and may be used directly by
 another context broker (or any other component offering an **NGSI-LD** interface). Data returned in the
 _key-value-pairs_ format is by definition not **NGSI-LD**.
 
@@ -199,7 +199,7 @@ Relationships
 
 ## Start Up
 
-All services can be initialised from the command-line by running the
+All services can be initialized from the command-line by running the
 [services](https://github.com/FIWARE/tutorials.Getting-Started/blob/NGSI-LD/services) Bash script provided within the
 repository. Please clone the repository and create the necessary images by running the commands as shown:
 

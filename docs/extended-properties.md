@@ -66,10 +66,10 @@ For example. Looking at the core `@context`, the GeoProperty attribute `coordina
 }
 ```
 
-This ensure that the ordering of the values in its array (longitude, latitude) is always maintained.
+This ensures that the ordering of the values in its array (longitude, latitude) is always maintained.
 
 All ordinary NGSI-LD **Properties** (and **GeoProperties**) have a `value`, which is the equivalent of a JSON-LD
-`@value` - this mean that the `value` of a Property is just the data that is associated with a particular property.
+`@value` - this means that the `value` of a Property is just the data that is associated with a particular property.
 
 However, there are recent updates to the NGSI-LD specification which have introduced various extensions or subclasses to
 this principle, allowing the creation of NGSI-LD properties which directly conform to JSON-LD keywords other than
@@ -85,7 +85,7 @@ output NGSI-LD remains fully valid JSON-LD.
 
 <h3>Entities within a Farm Management Information System (FMIS)</h3>
 
-To illustrate some extended NGSI-LD properties within an FMIS system based on NGSI-LD, we will alter the previously
+To illustrate some extended NGSI-LD properties within an FMIS System based on NGSI-LD, we will alter the previously
 defined **Building** Entity type. As a reminder this has been defined as follows
 
 -   A building, such as a barn, is a real world bricks and mortar construct. **Building** entities would have properties
@@ -106,10 +106,10 @@ Taking the first attribute, the Property `name` could be localized into multiple
 -   **大きな赤い納屋** in Japanese
 
 Similarly, even if all participants in a data space can agree for a common URI for the definition of the enumerations of
-all the different building types within `category`, internally within their own systems, they may be requied to display
+all the different building types within `category`, internally within their own systems, they may be required to display
 these enumerations with their own localised values.
 
-For example if the FMIS follows the URIs defined by openstreetmap.org. A building designated as A _"barn"_ would
+For example if the FMIS System follows the URIs defined by openstreetmap.org. A building designated as A _"barn"_ would
 actually be defined by the URI: `https://wiki.openstreetmap.org/wiki/Tag:building%3Dbarn`. A JSON-LD `@context` could be
 used to shorten this as required.
 
@@ -135,8 +135,8 @@ could be used:
 }
 ```
 
-The definition and redefinition of enumerations is not necessarily just a language localisation issue. It is possible
-that an FMIS may wish to use a separate code list of values for regulatory reasons. For example, the names of
+The definition and redefinition of enumerations is not necessarily just a language localization issue. It is possible
+that an FMIS System may wish to use a separate code list of values for regulatory reasons. For example, the names of
 ingredients within a pesticide, could be regulated by law and the required name could differ based on the market in
 which the product is sold (e.g. `Water`, `H₂O`, `Hydrogen Hydroxide`, `Oxygen Dihydride`, `Hydric Acid`)
 
@@ -227,8 +227,8 @@ ld-context:
             $$2}'|  grep -q -e "200") || exit 1
 ```
 
-All containers reside on the same network - the Scorpop Context Broker is listening on Port `9090` internally and `1026`
-externally and PostGres is listening on the default port `5432` and the httpd web server is offering `@context` files on
+All containers reside on the same network - the Scorpio Context Broker is listening on Port `9090` internally and `1026`
+externally and Postgres is listening on the default port `5432` and the httpd web server is offering `@context` files on
 port `80`. All containers are also exposing ports externally - this is purely for the tutorial access - so that cUrl or
 Postman can access them without being part of the same network. The command-line initialization should be
 self-explanatory.
@@ -237,7 +237,7 @@ self-explanatory.
 
 ## Start Up
 
-All services can be initialised from the command-line by running the
+All services can be initialized from the command-line by running the
 [services](https://github.com/FIWARE/tutorials.Extended-Properties/blob/NGSI-LD/services) Bash script provided within
 the repository. Please clone the repository and create the necessary images by running the commands as shown:
 
@@ -398,10 +398,10 @@ curl -iX POST 'http://localhost:1026/ngsi-ld/v1/entities/' \
 }'
 ```
 
-### Reading multilingual data in normalised format
+### Reading multilingual data in normalized format
 
 This example retrieves a **LanguageProperty** in normalized format. If we want to get `name` of a specific entity
-(`urn:ngsi-ld:Building:farm001`) in normalised format and without any reference to the language that we want to obtain
+(`urn:ngsi-ld:Building:farm001`) in normalized format and without any reference to the language that we want to obtain
 the data. We should execute the following command:
 
 #### 3️⃣ Request:
@@ -584,7 +584,7 @@ curl -G -X GET \
 
 #### Response:
 
-Since _French_ is not a supported language, and not default alternative is present (as indicated by the `@none`
+Since _French_ is not a supported language, and no default alternative is present (as indicated by the `@none`
 attribute), another value in the set is returned, in this case the string in **English** as shown by the `"@lang": "en"`
 sub-property. Once again the **Language Property** is returned as an ordinary **Property** and only the value of the
 _English_ string is returned.
@@ -690,7 +690,7 @@ curl -G -X GET \
 The User's `@context` is a mechanism for mapping URNs and defining the Entities held within the system It is therefore
 possible to retrieve _the same data_ using a different set of short names for the attributes, and in the case of a
 **VocabProperty**, different short names for the values of the attributes themselves. This is particularly useful when
-dealing with distributed data, federations and data spaces as the end user many not have full control of data held
+dealing with distributed data, federations and data spaces as the end user may not have full control of data held
 within another participant's context broker.
 
 When the **Building** entities were created, we used an `@context` file called `ngsi-context.jsonld`. Within the

@@ -155,7 +155,7 @@ a prerequisite for joining the data space. However due to the backend systems us
 
 When joining a data space, a participant must abide by the rules that govern that data space. One of the first decisions
 a common data space must make is to defined the nature of the data space itself. There are three primary approaches to
-this, which can broadly be defined as follows:
+this, which can broadly be defined as follows::
 
 -   An **Integrated** data space requires that every participant uses exactly the same payloads and infrastructure - for
     example _"Use Scorpio 4.1.15 only"_ . This could be a requirement for a lottery ticketing system where every
@@ -270,7 +270,7 @@ Lepus is driven by the environment variables as shown:
 
 ## Start Up
 
-All services can be initialised from the command-line by running the
+All services can be initialized from the command-line by running the
 [services](https://github.com/FIWARE/tutorials.Linked-Data/blob/NGSI-LD/services) Bash script provided within the
 repository. Please clone the repository and create the necessary images by running the commands as shown:
 
@@ -295,7 +295,7 @@ git checkout NGSI-LD
 ## Offering NGSI-v2 Entities as part of an NGSI-LD Data Space
 
 This tutorial starts up both the NGSI-LD Smart Farm (on port `1027`) and NGSI-v2 Smart Supermarket (on port `1027`) and
-thenoffers the NGSI-v2 entities into the building finder to the Smart Farm FMIS as part of a federated data space.
+thenoffers the NGSI-v2 entities into the building finder to the Smart Farm FMIS System as part of a federated data space.
 
 ### Reading NGSI-v2 Data directly
 
@@ -557,7 +557,7 @@ The registration is structured as follows:
 -   The `endpoint` holds the location of the adaptor which is in front of the NGSI-v2 context broker
 
 Once a registration is in place, it is possible to read information about the NGSI-v2 Stores by querying the NGSI-LD
-FMIS system:
+FMIS System:
 
 #### 6️⃣ Request:
 
@@ -570,7 +570,7 @@ curl -X GET \
 #### Response:
 
 Because of `Prefer: ngsi-ld=1.6` had been set in the registration, the retrieved entity does not a **VocabProperty** and
-`objectType` has been quietly dropped from the response. This ensures backwards compatibility to context brokers
+`objectType` has been quietly dropped from the response. This ensuress backwards compatibility to context brokers
 conformant to an earlier version of the NGSI-LD specification - in this case version 1.6.
 
 ```json
@@ -646,7 +646,7 @@ brokers.
 ]
 ```
 
-This can be checked using the FMIS system itself on `localhost:3000` where both farm buildings and supermarket stores
+This can be checked using the FMIS System itself on `localhost:3000` where both farm buildings and supermarket stores
 can be accessed:
 
 ![](https://fiware.github.io//tutorials.Linked-Data/img/buildings.png)

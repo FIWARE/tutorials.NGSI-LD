@@ -194,7 +194,7 @@ has been described in a [previous tutorial](https://github.com/FIWARE/tutorials.
 
 ## Start Up
 
-All services can be initialised from the command-line by running the
+All services can be initialized from the command-line by running the
 [services](https://github.com/FIWARE/tutorials.Context-Providers/blob/NGSI-LD/services) Bash script provided within the
 repository. Please clone the repository and create the necessary images by running the commands as shown:
 
@@ -216,7 +216,7 @@ git checkout NGSI-LD
 
 ## Redirection Registration
 
-Before adding the registration, goto `http://localhost:3000/` to display and interact with the FMIS data. Initially,
+Before adding the registration, goto `http://localhost:3000/` to display and interact with the FMIS System data. Initially,
 only the Building data from the previous tutorial is available, since this has been loaded onto the default tenant.
 
 ### Reading Animal data
@@ -295,7 +295,7 @@ curl -G -X GET \
 
 #### Response:
 
-Since no registrations have been created yet, the equivalent request on the **FMIS system context broker** initially
+Since no registrations have been created yet, the equivalent request on the **FMIS System context broker** initially
 returns no data
 
 ```json
@@ -355,9 +355,9 @@ curl -X POST \
 
 `"mode":"redirect"` prevents the **FMIS context broker** from holding any `type=Animal` data whatsoever. All
 `type=Animal` requests are forwarded elsewhere. `operations": "redirectionOps"` is a short-hand for all NGSI-LD
-endpoints - any CRUD operations will now affect the farmer sub-system (i.e. the farmer tenant), not the FMIS system
+endpoints - any CRUD operations will now affect the farmer sub-system (i.e. the farmer tenant), not the FMIS System
 (i.e. the default tenant). Effectively this registration has ceded the control of `type=Animal` to the farmer's
-subsystem. After creating the registration, resending the `type=Animal` request on the FMIS system (the default tenant)
+subsystem. After creating the registration, resending the `type=Animal` request on the FMIS System (the default tenant)
 now returns all the animals from the farmer subsystem:
 
 #### 4️⃣ Request:
@@ -621,7 +621,7 @@ broker**
 ```
 
 Furthermore, additional **Animal** entities only found within the **Vet's Context Broker** are now also visible within
-the tutorial application `http://localhost:3000/` - this is the response from the FMIS (which holds no animals locally)
+the tutorial application `http://localhost:3000/` - this is the response from the FMIS System (which holds no animals locally)
 plus the response from the Farmer, plus the response from the Vet. The result is a listing which includes all the
 animals on the farm, plus all the animals which are requiring vetenary care.
 
