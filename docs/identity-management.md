@@ -8,9 +8,9 @@
     </p>
 </blockquote>
 
-**Description:** This tutorial is an introduction to [Keycloak](https://www.keycloak.org/) — an open-source Identity and Access
-Management solution which introduces **Identity Management** into FIWARE services. The tutorial explains how to create
-users and groups in preparation to assign roles and permissions to them in a later tutorial.
+**Description:** This tutorial is an introduction to [Keycloak](https://www.keycloak.org/) — an open-source Identity and
+Access Management solution which introduces **Identity Management** into FIWARE services. The tutorial explains how to
+create users and groups in preparation to assign roles and permissions to them in a later tutorial.
 
 The tutorial demonstrates examples of interactions using the **Keycloak** Admin Console GUI, as well as
 [cUrl](https://ec.haxx.se/) commands used to access the **Keycloak** Admin REST API.
@@ -56,6 +56,15 @@ The following common objects are found within the **Keycloak** Identity Manageme
     user gains all the permissions associated with their own roles plus the roles inherited from their groups.
 -   **Client** — An application or service able to request authentication. In later tutorials the NGSI-LD context broker
     proxy is registered as a client of the `farm-management` realm.
+
+Additionally, further non-human application objects can be secured within an application:
+
+-   **IoTAgent** — a proxy between IoT Sensors and the Context Broker.
+-   **PEPProxy** — a middleware for use between generic enablers challenging the rights of a user.
+
+The relationship between the objects can be seen below:
+
+![](https://fiware.github.io/tutorials.Identity-Management/img/entities-ld.png)
 
 # Prerequisites
 

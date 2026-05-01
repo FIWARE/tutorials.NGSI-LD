@@ -69,7 +69,7 @@ tutorial:
 
 <h3>Video : Introduction to Wilma PEP Proxy</h3>
 
-[![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=8tGbUI18udM 'Introduction')
+[![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=8tGbUI18udM "Introduction")
 
 Click on the image above to see an introductory video.
 
@@ -90,7 +90,8 @@ keep persistence of the information they hold. We will also be using the dummy I
 
 Therefore, the overall architecture will consist of the following elements:
 
--   The FIWARE [Orion-LD Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests using
+-   The FIWARE [Orion-LD Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests
+    using
     [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/NGSI-LD/NGSI-LD/raw/master/spec/updated/full_api.json).
 -   The FIWARE [IoT Agent for UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/) which will receive
     southbound requests using [NGSI-v2](https://fiware.github.io/specifications/OpenAPI/ngsiv2) and convert them to
@@ -104,8 +105,8 @@ Therefore, the overall architecture will consist of the following elements:
 -   FIWARE [Wilma](https://fiware-pep-proxy.rtfd.io/) is a PEP Proxy securing access to the **Orion** and/or **IoT
     Agent** microservices.
 -   The underlying [MongoDB](https://www.mongodb.com/) database :
-    -   Used by the **Orion-LD Context Broker** to hold context data information such as data entities, subscriptions and
-        registrations.
+    -   Used by the **Orion-LD Context Broker** to hold context data information such as data entities, subscriptions
+        and registrations.
     -   Used by the **IoT Agent** to hold device information such as device URLs and Keys.
 -   A [MySQL](https://www.mysql.com/) database :
     -   Used to persist user identities, applications, roles and permissions.
@@ -247,8 +248,8 @@ curl -iX POST \
 
 > [!TIP]
 >
-> Use [jq](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq) to format the
-> JSON responses in this tutorial. Pipe the result by appending `| jq '.'`
+> Use [jq](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq) to format the JSON
+> responses in this tutorial. Pipe the result by appending `| jq '.'`
 
 The response header returns an `X-Subject-token` which identifies who has logged on the application. This token is
 required in all subsequent requests to gain access:
@@ -324,7 +325,7 @@ either the Keyrock GUI or by using the REST API.
 
 <h3>Video : Wilma PEP Proxy Configuration</h3>
 
-[![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=b4sYU78skrw 'PEP Proxy Configuration')
+[![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=b4sYU78skrw "PEP Proxy Configuration")
 
 Click on the image above to see a video about configuring the Wilma PEP Proxy using the **Keyrock** GUI.
 
@@ -598,9 +599,9 @@ orion-proxy:
     depends_on:
         - keyrock
     ports:
-        - '1027:1027'
+        - "1027:1027"
     expose:
-        - '1027'
+        - "1027"
     environment:
         - PEP_PROXY_APP_HOST=orion
         - PEP_PROXY_APP_PORT=1026
@@ -666,21 +667,21 @@ tutorial-app:
             aliases:
                 - tutorial
     expose:
-        - '3000'
-        - '3001'
+        - "3000"
+        - "3001"
     ports:
-        - '3000:3000'
-        - '3001:3001'
+        - "3000:3000"
+        - "3001:3001"
     environment:
-        - 'WEB_APP_PORT=3000'
-        - 'SECURE_ENDPOINTS=true'
-        - 'CONTEXT_BROKER=http://orion-proxy:1027/v2'
-        - 'KEYROCK_URL=http://localhost'
-        - 'KEYROCK_IP_ADDRESS=http://172.18.1.5'
-        - 'KEYROCK_PORT=3005'
-        - 'KEYROCK_CLIENT_ID=tutorial-dckr-site-0000-xpresswebapp'
-        - 'KEYROCK_CLIENT_SECRET=tutorial-dckr-site-0000-clientsecret'
-        - 'CALLBACK_URL=http://localhost:3000/login'
+        - "WEB_APP_PORT=3000"
+        - "SECURE_ENDPOINTS=true"
+        - "CONTEXT_BROKER=http://orion-proxy:1027/v2"
+        - "KEYROCK_URL=http://localhost"
+        - "KEYROCK_IP_ADDRESS=http://172.18.1.5"
+        - "KEYROCK_PORT=3005"
+        - "KEYROCK_CLIENT_ID=tutorial-dckr-site-0000-xpresswebapp"
+        - "KEYROCK_CLIENT_SECRET=tutorial-dckr-site-0000-clientsecret"
+        - "CALLBACK_URL=http://localhost:3000/login"
 ```
 
 All of the `tutorial` container settings have been described in previous tutorials. One important change is necessary
@@ -708,7 +709,7 @@ To start the system with a PEP Proxy protecting access to **Orion**, run the fol
 
 <h3>Video : Securing A REST API</h3>
 
-[![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=coxFQEY0_So 'Securing a REST API')
+[![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=coxFQEY0_So "Securing a REST API")
 
 Click on the image above to see a video about securing a REST API using the Wilma PEP Proxy.
 

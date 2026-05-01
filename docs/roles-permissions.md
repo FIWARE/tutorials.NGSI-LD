@@ -9,10 +9,9 @@
     </p>
 </blockquote>
 
-**Description:** This tutorial explains how to register a client application within Keycloak and how to define and assign roles and
-permissions using the Keycloak Authorization Services. It takes the users and groups created in the
-[previous tutorial](identity-management.md) and ensures that only
-legitimate users have access to NGSI-LD resources.
+**Description:** This tutorial explains how to register a client application within Keycloak and how to define and
+assign roles and permissions using the Keycloak Authorization Services. It takes the users and groups created in the
+[previous tutorial](identity-management.md) and ensures that only legitimate users have access to NGSI-LD resources.
 
 The tutorial demonstrates examples of interactions using the **Keycloak** Admin Console GUI, as well as
 [cUrl](https://ec.haxx.se/) commands used to access the **Keycloak** Admin REST API.
@@ -66,10 +65,9 @@ On Windows, install WSL2 and apply pending updates before starting.
 
 # Architecture
 
-The architecture for this tutorial is identical to the
-[Identity Management](identity-management.md) tutorial: Keycloak backed by
-PostgreSQL. The `realm-config/farm-management-realm.json` file for this tutorial additionally defines realm roles and a
-pre-registered `ngsi-ld-farm` client with Authorization Services enabled.
+The architecture for this tutorial is identical to the [Identity Management](identity-management.md) tutorial: Keycloak
+backed by PostgreSQL. The `realm-config/farm-management-realm.json` file for this tutorial additionally defines realm
+roles and a pre-registered `ngsi-ld-farm` client with Authorization Services enabled.
 
 # Start Up
 
