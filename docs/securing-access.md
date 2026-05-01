@@ -202,7 +202,7 @@ git checkout NGSI-LD
 ./services create
 ```
 
-> [!NOTE]
+> **Note :**
 >
 > The initial creation of Docker images can take up to three minutes
 
@@ -214,7 +214,7 @@ repository:
 ./services start
 ```
 
-> [!NOTE]
+> **Note :**
 >
 > If you want to clean up and start over again you can do so with the following command:
 >
@@ -338,7 +338,7 @@ curl -iX POST \
 
 #### Response
 
-> [!TIP]
+> **Tip :**
 >
 > Use [jq](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq) to format the JSON
 > responses in this tutorial. Pipe the result by appending `| jq '.'`
@@ -496,7 +496,7 @@ The user must then authorize the request:
 
 The response displays the user on the top right of the screen, details of the token are also flashed onto the screen.
 
-> [!NOTE]
+> **Note :**
 >
 > Unless you deliberately log out of **Keyrock** > `http://localhost:3005`, the existing **Keyrock** session which has
 > already permitted access will be used for subsequent authorization requests, so the **Keyrock** login screen will not
@@ -548,7 +548,7 @@ The user must then authorize the request:
 
 The response displays the user on the top right of the screen, details of the token are also flashed onto the screen.
 
-> [!NOTE]
+> **Note :**
 >
 > Unless you deliberately log out of **Keyrock** > `http://localhost:3005`, the existing **Keyrock** session which has
 > already permitted access will be used for subsequent authorization request.

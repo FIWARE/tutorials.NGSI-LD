@@ -282,7 +282,7 @@ git checkout NGSI-LD
 ./services orion|scorpio|stellio
 ```
 
-> [!NOTE]
+> **Note :**
 >
 > If you want to clean up and start over again you can do so with the following command:
 >

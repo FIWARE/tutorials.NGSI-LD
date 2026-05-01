@@ -167,7 +167,7 @@ The `start-dev` command starts Keycloak in development mode. The `--import-realm
 realm JSON files found in the `/opt/keycloak/data/import/` directory at startup. The `realm-config/` directory of this
 tutorial contains `farm-management-realm.json`, which defines the `farm-management` realm and its initial groups.
 
-> [!NOTE]
+> **Note :**
 >
 > In a production environment, Keycloak should be started with the `start` command (not `start-dev`), TLS should be
 > configured, and secrets should be managed through a vault or Docker Secrets rather than plain-text environment
@@ -213,7 +213,7 @@ git checkout NGSI-LD
 ./services create
 ```
 
-> [!NOTE]
+> **Note :**
 >
 > The initial creation of Docker images can take up to three minutes
 
@@ -225,7 +225,7 @@ the repository:
 ./services start
 ```
 
-> [!NOTE]
+> **Note :**
 >
 > If you want to clean up and start over again, run the following command:
 >
