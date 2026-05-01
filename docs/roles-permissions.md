@@ -49,6 +49,10 @@ In the context of a farm management system backed by NGSI-LD, authorization gove
 | **Policy**                 | A rule that evaluates whether a subject (user, group, or role) may access a resource                        |
 | **Permission**             | The binding of a resource and scope to one or more policies                                                 |
 
+The relationship between these objects is shown below:
+
+![](https://fiware.github.io/tutorials.Roles-Permissions/img/entities-ld.png)
+
 The relationship is: a **Permission** = Resource + Scope + Policy. A user gains access when at least one policy
 evaluates to `PERMIT` for the resource and scope they are requesting.
 
@@ -104,6 +108,12 @@ All accounts use the password `test`.
 
 ### Obtain an Admin Token
 
+#### GUI
+
+The Keycloak Admin Console can be accessed at `http://localhost:3005`. Log in as `admin` with the password `1234`.
+
+![](https://fiware.github.io/tutorials.Roles-Permissions/img/keycloak-log-in.png)
+
 #### 1️⃣ Request:
 
 ```console
@@ -139,6 +149,8 @@ CRUD operations for client management.
 #### GUI
 
 Clients are managed at **Realm: farm-management → Clients**.
+
+![](https://fiware.github.io/tutorials.Roles-Permissions/img/keycloak-clients.png)
 
 ### Create a Client
 
@@ -253,6 +265,8 @@ inherited by group membership. The following roles are pre-created by the realm 
 
 Roles are managed at **Realm: farm-management → Realm roles**.
 
+![](https://fiware.github.io/tutorials.Roles-Permissions/img/keycloak-roles.png)
+
 ### Create a Role
 
 #### 7️⃣ Request:
@@ -338,6 +352,12 @@ curl -iX DELETE \
 Keycloak's **Authorization Services** provides a rich framework for fine-grained access control. This section covers the
 four Authorization Services objects — Scopes, Resources, Policies and Permissions — and shows how they are configured
 for the farm management use case.
+
+#### GUI
+
+Authorization Services are configured at **Clients → ngsi-ld-farm → Authorization**.
+
+![](https://fiware.github.io/tutorials.Roles-Permissions/img/keycloak-authorization.png)
 
 All Authorization Services calls target the `/admin/realms/{realm}/clients/{client-uuid}/authz/resource-server/` prefix.
 Replace `{{client-uuid}}` with the UUID returned by the client lookup in Request 3️⃣.
@@ -442,6 +462,8 @@ The `decisionStrategy` of `AFFIRMATIVE` means access is granted if at least one 
 
 Keycloak provides a Policy Evaluator for testing authorization decisions before deploying a PEP Proxy. The GUI evaluator
 is found at **Clients → ngsi-ld-farm → Authorization → Evaluate**.
+
+![](https://fiware.github.io/tutorials.Roles-Permissions/img/keycloak-evaluate.png)
 
 Via the REST API, send a UMA ticket request to obtain an RPT (Requesting Party Token) which encodes the granted
 permissions:
