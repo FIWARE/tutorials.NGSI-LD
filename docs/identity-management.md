@@ -263,6 +263,8 @@ The Admin Console at `http://localhost:3005` is the primary GUI for Keycloak adm
 
 To work within the `farm-management` realm, select it from the realm drop-down in the top-left corner.
 
+![](https://fiware.github.io/tutorials.Identity-Management/img/keycloak-log-in.png)
+
 ### Obtain an Admin Token
 
 The following request logs into the master realm using the admin credentials and returns a JWT access token. This token
@@ -393,6 +395,8 @@ Navigate to: **Realm: farm-management → Users → Add user**
 
 Enter the username, email, first and last name, then enable the account. After saving, go to the **Credentials** tab and
 set a password with **Temporary** set to `Off`.
+
+![](https://fiware.github.io/tutorials.Identity-Management/img/keycloak-users.png)
 
 #### REST API
 
@@ -556,6 +560,8 @@ The `farm-management` realm is pre-configured with the following groups, created
 #### GUI
 
 Groups are managed in the Admin Console at **Realm: farm-management → Groups → Create group**.
+
+![](https://fiware.github.io/tutorials.Identity-Management/img/keycloak-groups.png)
 
 #### REST API
 
