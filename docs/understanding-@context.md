@@ -18,9 +18,9 @@ The tutorial is mainly concerned with online and command-line tooling.
 
 # Understanding `@context`
 
-> “Wisdom is intelligence in context.”
+> "The discovery of agriculture was the first big step toward a civilized life."
 >
-> ― Raheel Farooq, Kalam
+> — Arthur Keith
 
 Creating an interoperable system of readable links for computers requires the use of a well-defined data format
 ([JSON-LD](http://json-ld.org/)) and assignation of unique IDs

@@ -27,9 +27,9 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 
 # Persisting and Querying Time Series Data (CrateDB)
 
-> "Forever is composed of nows."
+> "To everything there is a season, and a time to every purpose under the heaven."
 >
-> — Emily Dickinson
+> — Ecclesiastes
 
 FIWARE [QuantumLeap](https://smartsdk.github.io/ngsi-timeseries-api/) is a time-based data-persistence generic enabler
 created specifically to persist and query time-series database (currently CrateDB and TimescaleDB). The component can

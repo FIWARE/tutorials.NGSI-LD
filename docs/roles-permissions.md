@@ -1,1392 +1,578 @@
 [![FIWARE Security](https://fiware.github.io/catalogue/badges/chapters/security.svg)](https://github.com/FIWARE/catalogue/blob/master/security/README.md)
+[![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://cim.etsi.org/NGSI-LD/official/front-page.html)
 
 <blockquote style="border-left-color:#002e67;background-color:#ededee;color:#002e67">
     <p><b>Background:</b>
         This tutorial does not use the <b>NGSI-LD</b> interface directly.
-        it covers background information about Identity Management, which
+        it covers background information about Roles and Permissions, which
         is then used in subsequent chapters.
     </p>
 </blockquote>
 
-**Description:** The tutorial explains how to create applications, and how to assign roles and permissions to them. It
-takes the users and organizations created in the [previous tutorial](identity-management.md) and ensures that only
-legitimate users will have access to resources.
+**Description:** This tutorial explains how to register a client application within Keycloak and how to define and assign roles and
+permissions using the Keycloak Authorization Services. It takes the users and groups created in the
+[previous tutorial](identity-management.md) and ensures that only
+legitimate users have access to NGSI-LD resources.
 
-The tutorial demonstrates examples of interactions using the **Keyrock** GUI, as well [cUrl](https://ec.haxx.se/)
-commands used to access the **Keyrock** REST API -
-[Postman documentation](https://fiware.github.io/tutorials.Roles-Permissions/) is also available.
+The tutorial demonstrates examples of interactions using the **Keycloak** Admin Console GUI, as well as
+[cUrl](https://ec.haxx.se/) commands used to access the **Keycloak** Admin REST API.
 
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/2febc0452a8977734480)
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/475141e9c20a4666579d)
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?repo=FIWARE/tutorials.Roles-Permissions&ref=NGSI-LD)
 
 <hr class="security"/>
 
 # What is Authorization?
 
-> "No matter what he does, every person on earth plays a central role in the history of the world. And normally he
-> doesn't know it"
+> "The master's eye fattens the horse."
 >
-> — Paulo Coelho (The Alchemist)
+> — Xenophon
 
-Authorization is the function of specifying access rights/privileges to resources related to information security. More
-formally, "to authorize" is to define an access policy. With identity management controlled via the FIWARE **Keyrock**
-Generic Enabler, User access is granted based on permissions assigned to a role.
+Authorization is the process of determining whether an authenticated user has permission to perform a specific action on
+a specific resource. Having established _who_ a user is (authentication), the system must now determine _what_ that user
+is allowed to do (authorization).
 
-Every application secured by the **Keyrock** generic enabler can define a set of permissions - i.e. a set of things that
-can be done within the application. For example within the application, the ability to send a command to unlock a Smart
-Door could be secured behind a `Unlock Door` permission. Similarly, the ability to send a command to ring the alarm bell
-could be secured behind a `Ring Bell` permission, and the ability to alter prices could be secured behind a
-`Price Change` permission.
+In the context of a farm management system backed by NGSI-LD, authorization governs questions such as:
 
-These permissions are grouped together in a series of roles - for example `Unlock Door` and `Ring Bell` could both be
-assigned to the Security role, meaning that Users who are subsequently given that role would gain both permissions.
+-   May a livestock worker send a command to a water sprinkler?
+-   May an external agronomist read soil sensor data?
+-   May a tractor operator update a tractor entity's attributes?
 
-Permissions can overlap and be assigned to multiple roles - maybe `Ring Bell` is also assigned to the management role
-along with `Price Change` and `Order Stock`.
+<h3>Standard Concepts of Authorization in Keycloak</h3>
 
-In turn users or organizations will be assigned to one of more roles - each user will gain the sum of all the
-permissions for each role they have. For example if Alice is assigned to both management and security roles, she will
-gain all four permissions `Unlock Door`, `Ring Bell`, `Price Change` and `Order Stock`.
+| Concept                    | Description                                                                                                 |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Realm Role**             | A named permission bucket at the realm level, assignable to users or groups                                 |
+| **Client**                 | A registered application that may request authentication tokens from the realm                              |
+| **Authorization Services** | A Keycloak feature that defines fine-grained access control via Resources, Scopes, Policies and Permissions |
+| **Resource**               | A protected asset — in this tutorial each NGSI-LD API endpoint is a resource                                |
+| **Scope**                  | An action that can be performed on a resource — mapped to HTTP methods (GET, POST, PATCH, DELETE)           |
+| **Policy**                 | A rule that evaluates whether a subject (user, group, or role) may access a resource                        |
+| **Permission**             | The binding of a resource and scope to one or more policies                                                 |
 
-The concept of a role is unknown to a user - they only know the list of permissions they have been granted, not how the
-permissions are split up within the application.
+The relationship is: a **Permission** = Resource + Scope + Policy. A user gains access when at least one policy
+evaluates to `PERMIT` for the resource and scope they are requesting.
 
-In summary, permissions are all the possible actions that can be done to resources within an application, whereas roles
-are groups of actions which can be done by a type of user of that application.
+# Prerequisites
 
-<h3>Standard Concepts of Identity Management</h3>
+## Docker
 
-The following common objects are found with the **Keyrock** Identity Management database:
+Follow the [Docker installation instructions](https://docs.docker.com/install/) for your platform. Ensure Docker version
+24.0 or higher and Docker Compose version 2.24 or higher are installed.
 
--   **User** - Any signed-up user able to identify themselves with an eMail and password. Users can be assigned rights
-    individually or as a group.
--   **Application** - Any securable FIWARE application consisting of a series of microservices.
--   **Organization** - A group of users who can be assigned a series of rights. Altering the rights of the organization
-    effects the access of all users of that organization.
--   **OrganizationRole** - Users can either be members or admins of an organization - Admins are able to add and remove
-    users from their organization, members merely gain the roles and permissions of an organization. This allows each
-    organization to be responsible for their members and removes the need for a super-admin to administer all rights.
--   **Role** - A role is a descriptive bucket for a set of permissions. A role can be assigned to either a single user
-    or an organization. A signed-in user gains all the permissions from all of their own roles plus all the roles
-    associated to their organization.
--   **Permission** - An ability to do something on a resource within the system.
+## WSL
 
-Additionally, two further non-human application objects can be secured within a FIWARE application:
+On Windows, install WSL2 and apply pending updates before starting.
 
--   **IoTAgent** - a proxy between IoT Sensors and the Context Broker.
--   **PEPProxy** - a middleware for use between generic enablers challenging the rights of a user.
+# Architecture
 
-The relationship between the objects can be seen below - the entities marked in red are used directly within this
-tutorial:
+The architecture for this tutorial is identical to the
+[Identity Management](identity-management.md) tutorial: Keycloak backed by
+PostgreSQL. The `realm-config/farm-management-realm.json` file for this tutorial additionally defines realm roles and a
+pre-registered `ngsi-ld-farm` client with Authorization Services enabled.
 
-![](https://fiware.github.io/tutorials.Roles-Permissions/img/entities.png)
+# Start Up
 
----
-
-## Architecture
-
-This introduction will only make use of one FIWARE component - the
-[Keyrock](https://fiware-idm.readthedocs.io/en/latest/) Identity Management Generic Enabler. Usage of **Keyrock** alone
-is insufficient for an application to qualify as _“Powered by FIWARE”_. Additionally, will be persisting user data in a
-**MySQL** database.
-
-The overall architecture will consist of the following elements:
-
--   One **FIWARE Generic Enabler**:
-
-    -   FIWARE [Keyrock](https://fiware-idm.readthedocs.io/en/latest/) offer a complement Identity Management System
-        including:
-        -   An authentication system for Applications and Users.
-        -   A site graphical frontend for Identity Management Administration.
-        -   An equivalent REST API for Identity Management via HTTP requests.
-
--   One [MySQL](https://www.mysql.com/) database:
-    -   Used to persist user identities, applications, roles and permissions.
-
-Since all interactions between the elements are initiated by HTTP requests, the entities can be containerized and run
-from exposed ports.
-
-![](https://fiware.github.io/tutorials.Roles-Permissions/img/architecture.png)
-
-The specific architecture of each section of the tutorial is discussed below.
-
-<h3>Keyrock Configuration</h3>
-
-```yaml
-keyrock:
-    image: quay.io/fiware/idm
-    container_name: fiware-keyrock
-    hostname: keyrock
-    depends_on:
-        - mysql-db
-    ports:
-        - "3005:3005"
-        - "3443:3443"
-    environment:
-        - DEBUG=idm:*
-        - DATABASE_HOST=mysql-db
-        - IDM_DB_PASS_FILE=/run/secrets/my_secret_data
-        - IDM_DB_USER=root
-        - IDM_HOST=http://localhost:3005
-        - IDM_PORT=3005
-        - IDM_HTTPS_ENABLED=true
-        - IDM_HTTPS_PORT=3443
-        - IDM_ADMIN_USER=alice
-        - IDM_ADMIN_EMAIL=alice-the-admin@test.com
-        - IDM_ADMIN_PASS=test
-    secrets:
-        - my_secret_data
-```
-
-The `keyrock` container is a web application server listening on two ports:
-
--   Port `3005` has been exposed for HTTP traffic, so we can display the web page and interact with the REST API.
--   Port `3443` has been exposed for secure HTTPS traffic for the site and REST API.
-
-> **Note** HTTPS should be used throughout for any secured application, but to do this properly, **Keyrock** requires a
-> trusted SSL certificate - the default certificate is self-certified and available for testing purposes. The
-> certificates can be overridden by attaching a volume to replace the files under `/opt/fiware-idm/certs`.
->
-> In a production environment, all access should occur over HTTPS, to avoid sending any sensitive information using
-> plain-text. Alternatively HTTP can be used within a private network behind a configured HTTPS Reverse Proxy.
->
-> The port `3005` offering the HTTP protocol is being exposed for demonstration purposes only and to simplify the
-> interactions within this tutorial - you may also use HTTPS on port `3443` with certain caveats.
->
-> If you want to use HTTPS to access the REST API when you are using Postman, ensure that SSL certificate verification
-> is OFF. If you want to use HTTPS to access the web front-end, please accept any security warnings issued.
-
-The `keyrock` container is driven by environment variables as shown:
-
-| Key               | Value                   | Description                                                                                                                  |
-| ----------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| IDM_DB_PASS       | `idm`                   | Password of the attached MySQL Database - secured by **Docker Secrets** (see below)                                          |
-| IDM_DB_USER       | `root`                  | Username of the default MySQL user - left in plain-text                                                                      |
-| IDM_HOST          | `http://localhost:3005` | Hostname of the **Keyrock** App Server - used in activation eMails when signing up users                                     |
-| IDM_PORT          | `3005`                  | Port used by the **Keyrock** App Server for HTTP traffic - this has been altered from the default 3000 port to avoid clashes |
-| IDM_HTTPS_ENABLED | `true`                  | Whether to offer HTTPS Support - this will use the self-signed certs unless overridden                                       |
-| IDM_HTTPS_PORT    | `3443`                  | Port used by the **Keyrock** App Server for HTTP traffic this has been altered from the default 443                          |
-
-> **Note** that this example has secured the MySQL password using **Docker Secrets** By using `IDM_DB_PASS` with the
-> `_FILE` suffix and referring to a secrets file location. This avoids exposing the password as an `ENV` variable in
-> plain-text - either in the `Dockerfile` Image or as an injected variable which could be read using `docker inspect`.
->
-> The following list of variables (where used) should be set via secrets with the `_FILE` suffix in a Production System:
->
-> -   `IDM_SESSION_SECRET`
-> -   `IDM_ENCRYPTION_KEY`
-> -   `IDM_DB_PASS`
-> -   `IDM_DB_USER`
-> -   `IDM_ADMIN_ID`
-> -   `IDM_ADMIN_USER`
-> -   `IDM_ADMIN_EMAIL`
-> -   `IDM_ADMIN_PASS`
-> -   `IDM_EX_AUTH_DB_USER`
-> -   `IDM_EX_AUTH_DB_PASS`
-
-<h3>MySQL Configuration</h3>
-
-```yaml
-mysql-db:
-    image: mysql:5.7
-    hostname: mysql-db
-    container_name: db-mysql
-    expose:
-        - "3306"
-    ports:
-        - "3306:3306"
-    networks:
-        - default
-    environment:
-        - "MYSQL_ROOT_PASSWORD_FILE=/run/secrets/my_secret_data"
-        - "MYSQL_ROOT_HOST=172.18.1.5"
-    volumes:
-        - mysql-db:/var/lib/mysql
-    secrets:
-        - my_secret_data
-```
-
-The `mysql-db` container is listening on a single port:
-
--   Port `3306` is the default port for a MySQL server. It has been exposed so you can also run other database tools to
-    display data if you wish.
-
-The `mysql-db` container is driven by environment variables as shown:
-
-| Key                 | Value. | Description                                                                                                                                                                                           |
-| ------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| MYSQL_ROOT_PASSWORD | `123`  | specifies a password that is set for the MySQL `root` account - secured by **Docker Secrets** (see below)                                                                                             |
-| MYSQL_ROOT_HOST     | `root` | By default, MySQL creates the `root'@'localhost` account. This account can only be connected to from inside the container. Setting this environment variable allows root connections from other hosts |
-
-## Start Up
-
-To start the installation, do the following:
-
-```bash
-#!/bin/bash
+```console
 git clone https://github.com/FIWARE/tutorials.Roles-Permissions.git
 cd tutorials.Roles-Permissions
 git checkout NGSI-LD
 
 ./services create
-```
-
-> **Note** The initial creation of Docker images can take up to three minutes
-
-Thereafter, all services can be initialized from the command-line by running the
-[services](https://github.com/FIWARE/tutorials.Roles-Permissions/blob/NGSI-v2/services) Bash script provided within the
-repository:
-
-```bash
 ./services start
 ```
 
-> **Note:** If you want to clean up and start over again you can do so with the following command:
->
-> ```
-> ./services stop
-> ```
-
 <h3>Dramatis Personae</h3>
 
-The following people at `test.com` legitimately have accounts within the Application:
+The following users have accounts within the application, provisioned by the `import_users` script:
 
--   Alice, she will be the Administrator of the **Keyrock** Application.
--   Bob, the Regional Manager of the supermarket chain - he has several store managers under him:
-    -   Manager1.
-    -   Manager2.
--   Charlie, the Head of Security of the supermarket chain - he has several store detectives under him:
-    -   Detective1.
-    -   Detective2.
+| User  | Role                   | Group                  |
+| ----- | ---------------------- | ---------------------- |
+| alice | System Administrator   | (none — realm admin)   |
+| bob   | `farm-manager`         | `farm-management`      |
+| carol | `livestock-supervisor` | `livestock-team`       |
+| dave  | `crop-supervisor`      | `crop-team`            |
+| eve   | `equipment-supervisor` | `equipment-team`       |
+| frank | `field-worker`         | `livestock-team`       |
+| grace | `field-worker`         | `livestock-team`       |
+| harry | `field-worker`         | `crop-team`            |
+| ivy   | `field-worker`         | `equipment-team`       |
+| jenny | `read-only-consultant` | `external-consultants` |
+| ken   | `read-only-consultant` | `external-consultants` |
 
-The following people at `example.com` have signed up for accounts, but have no reason to be granted access:
+All accounts use the password `test`.
 
--   Eve - Eve the Eavesdropper.
--   Mallory - Mallory the malicious attacker.
--   Rob - Rob the Robber.
+## Logging In via REST API
 
-| Name       | eMail                       | Password | UUID                                   |
-| ---------- | --------------------------- | -------- | -------------------------------------- |
-| alice      | `alice-the-admin@test.com`  | `test`   | `aaaaaaaa-good-0000-0000-000000000000` |
-| bob        | `bob-the-manager@test.com`  | `test`   | `bbbbbbbb-good-0000-0000-000000000000` |
-| charlie    | `charlie-security@test.com` | `test`   | `cccccccc-good-0000-0000-000000000000` |
-| manager1   | `manager1@test.com`         | `test`   | `manager1-good-0000-0000-000000000000` |
-| manager2   | `manager2@test.com`         | `test`   | `manager2-good-0000-0000-000000000000` |
-| detective1 | `detective1@test.com`       | `test`   | `secure01-good-0000-0000-000000000000` |
-| detective2 | `detective2@test.com`       | `test`   | `secure02-good-0000-0000-000000000000` |
-| eve        | `eve@example.com`           | `test`   | `eeeeeeee-evil-0000-0000-000000000000` |
-| mallory    | `mallory@example.com`       | `test`   | `mmmmmmmm-evil-0000-0000-000000000000` |
-| rob        | `rob@example.com`           | `test`   | `rrrrrrrr-evil-0000-0000-000000000000` |
+### Obtain an Admin Token
 
-Two organizations have also been set up by Alice:
+#### 1️⃣ Request:
 
-| Name       | Description                         | UUID                                   |
-| ---------- | ----------------------------------- | -------------------------------------- |
-| Security   | Security Group for Store Detectives | `security-team-0000-0000-000000000000` |
-| Management | Management Group for Store Managers | `managers-team-0000-0000-000000000000` |
-
-To save time, the data creating users and organizations from the [previous tutorial](identity-management.md) has been
-downloaded and is automatically persisted to the MySQL database on start-up, so the assigned UUIDs do not change, and
-the data does not need to be entered again.
-
-To refresh your memory about how to create users and organizations, you can log in at `http://localhost:3005/idm` using
-the account `alice-the-admin@test.com` with a password of `test`.
-
-![](https://fiware.github.io/tutorials.Roles-Permissions/img/log-in.png)
-
-and look at the organizations list.
-
-### Reading directly from the Keyrock MySQL Database
-
-All Identify Management records and relationships are held within the attached MySQL database. This can be accessed by
-entering the running Docker container as shown:
-
-```bash
-docker exec -it db-mysql bash
-```
-
-```bash
-mysql -u <user> -p<password> idm
-```
-
-Where `<user>` and `<password>` match the values defined in the `docker-compose` file for `MYSQL_ROOT_PASSWORD` and
-`MYSQL_ROOT_USER`. The default values for the tutorial are usually `root` and `secret`.
-
-SQL commands can then be entered from the command-line. e.g.:
-
-```SQL
-select id, username, email, password from user;
-```
-
-The **Keyrock** MySQL database deals with all aspects of application security including storing users, password etc;
-defining access rights and dealing with OAuth2 authorization protocols. The complete database relationship diagram can
-be found [here](https://fiware.github.io/tutorials.Roles-Permissions/img/keyrock-db.png).
-
-### UUIDs within Keyrock
-
-All IDs and tokens within **Keyrock** are subject to change. The following values will need to be amended when querying
-for records. Record IDs use Universally Unique Identifiers - UUIDs.
-
-| Key                    | Description                                                                    | Sample Value                                              |
-| ---------------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------- |
-| `keyrock`              | URL for the location of the **Keyrock** service                                | `localhost:3005` for HTTP, `localhost:3443` for HTTPS     |
-| `X-Auth-token`         | Token received in the Header when logging in as a user                         | `aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa` = I am Alice       |
-| `X-Subject-token`      | Token to pass when asking about a subject, alternatively repeat the user token | `bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb` = Asking about Bob |
-| `user-id`              | ID of an existing user, found with the `user` table                            | `bbbbbbbb-good-0000-0000-000000000000` - Bob's User ID    |
-| `application-id`       | ID of an existing application, found with the `oauth_client` table             | `c978218d-ad63-4427-b12b-542b81299cfb`                    |
-| `role-id`              | ID of an existing role, found with the `role` table                            | `d28baa00-839e-4b45-a6b2-1cec563942ee`                    |
-| `permission-id`        | ID of an existing permission, found with the `permission` table                | `6b6cd19c-9398-4834-9ba1-1616c57139c0`                    |
-| `organization-id`      | ID of an existing organization, found with the `organization` table            | `e424ed98-c966-46e3-b161-a165fd31bc01`                    |
-| `organization-role-id` | type of role a user has within an organization either `owner` or `member`      | `member`                                                  |
-| `iot-agent-id`         | ID of an existing IoT Agent, found with the `iot` table                        | `iot_sensor_f3d0245b-3330-4e64-a513-81bf4b0dae64`         |
-| `pep-proxy-id`         | ID of an existing PEP Proxy, found with the `pep_proxy` table                  | `iot_sensor_f3d0245b-3330-4e64-a513-81bf4b0dae64`         |
-
-Tokens are designed to expire after a set period. If the `X-Auth-token` value you are using has expired, log-in again to
-obtain a new token. For this tutorial, a long-lasting set of tokens has been created for each user and persisted into
-the database, so there is usually no need to refresh tokens.
-
-## Logging In via REST API calls
-
-Enter a username and password to enter the application. The default super-user has the values `alice-the-admin@test.com`
-and `test`. The URL `https://localhost:3443/v1/auth/tokens` should also work in a secure system.
-
-### Create Token with Password
-
-The following example logs in using the Admin Super-User:
-
-#### 1 Request:
-
-```bash
+```console
 curl -iX POST \
-  'http://localhost:3005/v1/auth/tokens' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "name": "alice-the-admin@test.com",
-  "password": "test"
-}'
+  'http://localhost:3005/realms/master/protocol/openid-connect/token' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  --data-urlencode 'grant_type=password' \
+  --data-urlencode 'client_id=admin-cli' \
+  --data-urlencode 'username=admin' \
+  --data-urlencode 'password=1234'
 ```
 
 #### Response:
 
-> **Tip:** Use [jq](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq) to format the
-> JSON responses in this tutorial. Pipe the result by appending
->
-> ```
-> | jq '.'
-> ```
+```json
+{
+    "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJhZ...",
+    "expires_in": 60,
+    "token_type": "Bearer"
+}
+```
 
-```text
+Store the `access_token` value as `{{token}}`.
+
+# Managing Clients
+
+In Keycloak, a **Client** is the registration of an application that will request authentication tokens from the realm.
+The NGSI-LD farm management proxy (`ngsi-ld-farm`) is pre-registered in the realm import. This section demonstrates the
+CRUD operations for client management.
+
+## Client CRUD Actions
+
+#### GUI
+
+Clients are managed at **Realm: farm-management → Clients**.
+
+### Create a Client
+
+#### 2️⃣ Request:
+
+```console
+curl -iX POST \
+  'http://localhost:3005/admin/realms/farm-management/clients' \
+  -H 'Authorization: Bearer {{token}}' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "clientId": "ngsi-ld-farm",
+    "name": "NGSI-LD Farm Management Application",
+    "enabled": true,
+    "publicClient": false,
+    "secret": "1234",
+    "serviceAccountsEnabled": true,
+    "authorizationServicesEnabled": true,
+    "redirectUris": ["http://localhost:3000/*"],
+    "webOrigins": ["+"]
+  }'
+```
+
+#### Response:
+
+```
 HTTP/1.1 201 Created
-X-Subject-Token: d848eb12-889f-433b-9811-6a4fbf0b86ca
-Content-Type: application/json; charset=utf-8
-Content-Length: 138
-ETag: W/"8a-TVwlWNKBsa7cskJw55uE/wZl6L8"
-Date: Mon, 30 Jul 2018 12:07:54 GMT
-Connection: keep-alive
+Location: http://localhost:3005/admin/realms/farm-management/clients/{{client-uuid}}
 ```
 
-```json
-{
-    "token": {
-        "methods": ["password"],
-        "expires_at": "2018-07-30T13:02:37.116Z"
-    },
-    "idm_authorization_config": {
-        "level": "basic",
-        "authzforce": false
-    }
-}
-```
+### Read Client Details
 
-### Get Token Info
+#### 3️⃣ Request:
 
-You can use the long-lasting `X-Auth-token=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa` to pretend to be Alice throughout this
-tutorial.
-
-The presence of a (time-limited) token is sufficient to find out more information about the user. To find information
-about Bob, use the long-lasting token `X-Subject-token=bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb`.
-
-This request indicates that _the user authorized with the token `{{X-Auth-token}}` (i.e. Alice) is enquiring about the
-user holding the token `{{X-Subject-token}}` (i.e. Bob)_.
-
-#### 2 Request:
-
-```bash
-curl -iX GET \
-  'http://localhost:3005/v1/auth/tokens' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' \
-  -H 'X-Subject-token: bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb'
+```console
+curl -X GET \
+  'http://localhost:3005/admin/realms/farm-management/clients?clientId=ngsi-ld-farm' \
+  -H 'Authorization: Bearer {{token}}'
 ```
 
 #### Response:
 
-The response will return the details of the associated user. As you can see Bob holds a long-lasting token until 2026.
-
 ```json
-{
-    "access_token": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
-    "expires": "2026-07-30T12:38:13.000Z",
-    "valid": true,
-    "User": {
-        "scope": [],
-        "id": "bbbbbbbb-good-0000-0000-000000000000",
-        "username": "bob",
-        "email": "bob-the-manager@test.com",
-        "date_password": "2018-07-30T11:41:14.000Z",
+[
+    {
+        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "clientId": "ngsi-ld-farm",
+        "name": "NGSI-LD Farm Management Application",
         "enabled": true,
-        "admin": false
+        "serviceAccountsEnabled": true,
+        "authorizationServicesEnabled": true
     }
-}
+]
 ```
 
-## Managing Applications
+### List all Clients
 
-Any FIWARE application can be broken down into a collection of microservices. These microservices connect together to
-read and alter the state of the real world. Security can be added to these services by restricting actions on these
-resources down to users how have appropriate permissions. It is therefore necessary to define an application to offer a
-set of permissible actions and to hold a list of permitted users (or groups of users i.e. an Organization).
+#### 4️⃣ Request:
 
-Applications are therefore a conceptual bucket holding who can do what on which resource.
-
-## Video : Creating Applications with the Keyrock GUI
-
-[![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=pjsl0eHpFww&t=470 "Creating Applications")
-
-Click on the image above to watch a video demonstrating how to create applications using the **Keyrock** GUI.
-
-## Application CRUD Actions
-
-The standard CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DELETE) under the
-`/v1/applications` endpoint.
-
-### Create an Application
-
-Once logged in, a user is presented with a home-screen.
-
-![](https://fiware.github.io/tutorials.Roles-Permissions/img/apps-and-orgs.png)
-
-From the homepage of the GUI, a new application can be created by clicking the **Register** button.
-
-![](https://fiware.github.io/tutorials.Roles-Permissions/img/create-app.png)
-
-To create a new application via the REST API, send a POST request to the `/v1/applications` endpoint containing details
-of the application such as `name` and `description`, along with OAuth information fields such as the `url` of the
-webservice to be protected, and `redirect_uri` (where a user will be challenged for their credentials). The
-`grant_types` are chosen from the available list of OAuth2 grant flows which are discussed in a
-[subsequent tutorial](https://fiware.github.io/tutorials.Securing-Access) The headers include the `X-Auth-token` from a
-previously logged-in user will automatically be granted a provider role over the application.
-
-#### 3 Request:
-
-In the example below, Alice (who holds `X-Auth-token=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`) is creating a new
-application which accepts three different grant types.
-
-```bash
-curl -iX POST \
-  'http://localhost:3005/v1/applications' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' \
-  -d '{
-  "application": {
-    "name": "Tutorial Application",
-    "description": "FIWARE Application protected by OAuth2 and Keyrock",
-    "redirect_uri": "http://tutorial/login",
-    "url": "http://tutorial",
-    "grant_type": [
-      "authorization_code",
-      "implicit",
-      "password"
-    ],
-    "token_types": ["permanent"]
-  }
-}'
-```
-
-#### Response:
-
-The response includes a Client ID and Secret which can be used to secure the application.
-
-```json
-{
-    "application": {
-        "id": "6632bb2e-c8e5-418f-ba5b-c269d8a53dd2",
-        "secret": "d4128d06-1cba-4c33-9a3d-ff2de51940b5",
-        "image": "default",
-        "jwt_secret": null,
-        "name": "Tutorial Application",
-        "description": "FIWARE Application protected by OAuth2 and Keyrock",
-        "redirect_uri": "http://tutorial/login",
-        "url": "http://tutorial",
-        "grant_type": "password,authorization_code,implicit",
-        "token_types": "permanent,bearer",
-        "response_type": "code,token",
-        "scope": null
-    }
-}
-```
-
-Copy the Application Client ID to be used for all other application requests - in the case above the ID is
-`6632bb2e-c8e5-418f-ba5b-c269d8a53dd2`.
-
-### Read Application Details
-
-Making a GET request to a resource under the `/v1/applications/{{application-id}}` endpoint will return the application
-listed under that ID. The `X-Auth-token` must be supplied in the headers.
-
-![](https://fiware.github.io/tutorials.Roles-Permissions/img/app-with-oauth.png)
-
-#### 4 Request:
-
-```bash
+```console
 curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}' \
+  'http://localhost:3005/admin/realms/farm-management/clients' \
+  -H 'Authorization: Bearer {{token}}'
+```
+
+### Update a Client
+
+#### 5️⃣ Request:
+
+```console
+curl -iX PUT \
+  'http://localhost:3005/admin/realms/farm-management/clients/{{client-uuid}}' \
+  -H 'Authorization: Bearer {{token}}' \
   -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-```json
-{
-    "application": {
-        "id": "6632bb2e-c8e5-418f-ba5b-c269d8a53dd2",
-        "name": "Tutorial Application",
-        "description": "FIWARE Application protected by OAuth2 and Keyrock",
-        "secret": "d4128d06-1cba-4c33-9a3d-ff2de51940b5",
-        "url": "http://tutorial",
-        "redirect_uri": "http://tutorial/login",
-        "redirect_sign_out_uri": null,
-        "image": "default",
-        "grant_type": "password,authorization_code,implicit",
-        "response_type": "code,token",
-        "token_types": "permanent,bearer",
-        "jwt_secret": null,
-        "client_type": null,
-        "scope": null,
-        "extra": null,
-        "urls": {
-            "permissions_url": "/v1/applications/6632bb2e-c8e5-418f-ba5b-c269d8a53dd2/permissions",
-            "roles_url": "/v1/applications/6632bb2e-c8e5-418f-ba5b-c269d8a53dd2/roles",
-            "users_url": "/v1/applications/6632bb2e-c8e5-418f-ba5b-c269d8a53dd2/users",
-            "pep_proxies_url": "/v1/applications/6632bb2e-c8e5-418f-ba5b-c269d8a53dd2/pep_proxies",
-            "iot_agents_url": "/v1/applications/6632bb2e-c8e5-418f-ba5b-c269d8a53dd2/iot_agents",
-            "trusted_applications_url": "/v1/applications/6632bb2e-c8e5-418f-ba5b-c269d8a53dd2/trusted_applications"
-        }
-    }
-}
-```
-
-### List all Applications
-
-Users will only be permitted to return applications they are associated with. Listing applications can be done by making
-a GET request to the `/v1/applications` endpoint and supplying the `X-Auth-token` Header.
-
-#### 5 Request:
-
-```bash
-curl -X GET \
-  'http://localhost:3005/v1/applications' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-```json
-{
-    "applications": [
-        {
-            "id": "6632bb2e-c8e5-418f-ba5b-c269d8a53dd2",
-            "name": "Tutorial Application",
-            "description": "FIWARE Application protected by OAuth2 and Keyrock",
-            "image": "default",
-            "url": "http://tutorial",
-            "redirect_uri": "http://tutorial/login",
-            "redirect_sign_out_uri": null,
-            "grant_type": "password,authorization_code,implicit",
-            "response_type": "code,token",
-            "token_types": "permanent,bearer",
-            "jwt_secret": null,
-            "client_type": null,
-            "urls": {
-                "permissions_url": "/v1/applications/6632bb2e-c8e5-418f-ba5b-c269d8a53dd2/permissions",
-                "roles_url": "/v1/applications/6632bb2e-c8e5-418f-ba5b-c269d8a53dd2/roles",
-                "users_url": "/v1/applications/6632bb2e-c8e5-418f-ba5b-c269d8a53dd2/users",
-                "pep_proxies_url": "/v1/applications/6632bb2e-c8e5-418f-ba5b-c269d8a53dd2/pep_proxies",
-                "iot_agents_url": "/v1/applications/6632bb2e-c8e5-418f-ba5b-c269d8a53dd2/iot_agents",
-                "trusted_applications_url": "/v1/applications/6632bb2e-c8e5-418f-ba5b-c269d8a53dd2/trusted_applications"
-            }
-        }
-    ]
-}
-```
-
-### Update an Application
-
-Within the GUI, users can be updated by selecting an application and clicking on `edit`. This can also be done from the
-command-line by making PATCH request to `/v1/applications/{{applications-id}}` endpoint when the applications ID is
-known. The `X-Auth-token` header must also be set, since a User can only edit applications he is associated with.
-
-#### 6 Request:
-
-```bash
-curl -X PATCH \
-  'http://localhost:3005/v1/applications/{{application-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
   -d '{
-  "application": {
-    "name": "Tutorial New Name",
-    "description": "This is a new description",
-    "redirect_uri": "http://tutorial/login",
-    "grant_type": [
-      "authorization_code",
-      "password"
-    ]
-  }
-}'
+    "clientId": "ngsi-ld-farm",
+    "name": "NGSI-LD Farm Management Application (updated)",
+    "enabled": true,
+    "publicClient": false,
+    "serviceAccountsEnabled": true,
+    "authorizationServicesEnabled": true
+  }'
 ```
 
-#### Response:
+### Delete a Client
 
-The response lists the fields which have been updated, note that the `redirect_uri` defined above had already been set:
+#### 6️⃣ Request:
 
-```json
-{
-    "values_updated": {
-        "name": "Tutorial New Name",
-        "description": "This is a new description",
-        "grant_type": "password,authorization_code",
-        "response_type": "code",
-        "token_types": "permanent,bearer,bearer",
-        "scope": ""
-    }
-}
-```
-
-### Delete an Application
-
-Within the GUI, users can delete an application by selecting an application and clicking on `edit`, then scrolling to
-the bottom of the page and selecting **Remove Application**. This can also be done from the command-line by sending a
-DELETE request to the `/v1/applications/{{applications-id}}` endpoint. The `X-Auth-token` header must also be set.
-
-#### 7 Request:
-
-```bash
+```console
 curl -iX DELETE \
-  'http://localhost:3005/v1/applications/{{applications-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+  'http://localhost:3005/admin/realms/farm-management/clients/{{client-uuid}}' \
+  -H 'Authorization: Bearer {{token}}'
 ```
 
-## Permission CRUD Actions
+# Managing Realm Roles
 
-An application permission is an allowable action on a resource within that application. Each resource is defined by a
-URL (e.g. `/price-change`) and the action is any HTTP verb (e.g. GET):
+**Realm roles** are named permission buckets defined at the realm level. They can be assigned to individual users or
+inherited by group membership. The following roles are pre-created by the realm import:
 
--   The combination will be used to ensure only permitted users are able to access the `/price-change` resource.
-
-Further, advanced permission rules can be described using XACML - this is the subject of another tutorial.
-
-It should be emphasized that permissions are always found bound to an application - abstract permissions do not exist on
-their own. The standard permission CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DELETE)
-under the `/v1/applications/{{application-id}}/permissions` endpoint:
-
--   As you can see the `<application-id>` itself is integral to the URL.
-
-Permissions are usually defined once and set-up when the application is created. If the design of your use-case means
-that you find you need to alter the permissions regularly, then the definition has probably been defined incorrectly or
-in the wrong layer - complex access control rules should be pushed down into the XACML definitions or moved into the
-business logic of the application - they should not be dealt with within **Keyrock**.
-
-### Create a Permission
-
-Within the GUI, a permission can be added to an application by selecting the application, clicking on **Manage Roles**
-and then pressing the plus next to the Permissions label.
-
-![](https://fiware.github.io/tutorials.Roles-Permissions/img/create-permission.png)
-
-Just fill out the wizard and click save.
-
-To create a new permission via the REST API, send a POST request to the `/applications/{{application-id}}/permissions`
-endpoint containing the `action` and `resource` along with the `X-Auth-token` header from a previously logged-in user.
-
-#### 8 Request:
-
-```bash
-curl -iX POST \
-  'http://localhost:3005/v1/applications/{{application-id}}/permissions' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
-  -d '{
-  "permission": {
-    "name": "Access Price Changes",
-    "action": "GET",
-    "resource": "/price-change"
-  }
-}'
-```
-
-#### Response:
-
-The response returns the details of the newly created permission.
-
-```json
-{
-    "permission": {
-        "id": "8052b95b-3ff6-481c-b779-893b6c3f1488",
-        "is_internal": false,
-        "name": "Access Price Changes",
-        "action": "GET",
-        "resource": "/price-change",
-        "is_regex": false,
-        "oauth_client_id": "6632bb2e-c8e5-418f-ba5b-c269d8a53dd2"
-    }
-}
-```
-
-### Read Permission Details
-
-The `/applications/{{application-id}}/permissions/{{permission-id}}` endpoint will return the permission listed under
-that ID. The `X-Auth-token` must be supplied in the headers.
-
-#### 9 Request:
-
-```bash
-curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/permissions/{{permission-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-The response returns the details of the requested permission.
-
-```json
-{
-    "permission": {
-        "id": "8052b95b-3ff6-481c-b779-893b6c3f1488",
-        "name": "Access Price Changes",
-        "description": null,
-        "is_internal": false,
-        "action": "GET",
-        "resource": "/price-change",
-        "is_regex": 0,
-        "xml": null,
-        "oauth_client_id": "6632bb2e-c8e5-418f-ba5b-c269d8a53dd2"
-    }
-}
-```
-
-### List Permissions
-
-Listing the permissions with an application can be done by making a GET request to the
-`/v1/applications/{{application-id}}/permissions` endpoint.
-
-#### 10 Request:
-
-```bash
-curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/permissions' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-The complete list of permissions includes any custom permissions created previously plus all the standard permissions
-which are available by default.
-
-```json
-{
-    "permissions": [
-        {
-            "id": "8052b95b-3ff6-481c-b779-893b6c3f1488",
-            "name": "Access Price Changes",
-            "description": null,
-            "action": "GET",
-            "resource": "/price-change",
-            "xml": null
-        },
-
-        ...etc
-
-        {
-            "id": "2",
-            "name": "Manage the application",
-            "description": null,
-            "action": null,
-            "resource": null,
-            "xml": null
-        },
-        {
-            "id": "1",
-            "name": "Get and assign all internal application roles",
-            "description": null,
-            "action": null,
-            "resource": null,
-            "xml": null
-        }
-    ]
-}
-```
-
-### Update a Permission
-
-To amend the details of an existing permission, a PATCH request is send to the
-`/applications/{{application-id}}/permissions/{{permission-id}}` endpoint.
-
-#### 11 Request:
-
-```bash
-curl -X PATCH \
-  'http://localhost:3005/v1/applications/{{application-id}}/permissions/{{permission-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
-  -d '{
-  "permission": {
-    "name": "Access Price Changes 1",
-    "action": "GET",
-    "resource": "/price-change"
-  }
-}'
-```
-
-#### Response:
-
-The response contains a list of the fields which have been amended.
-
-```json
-{
-    "values_updated": {
-        "name": "Access Price Changes 1"
-    }
-}
-```
-
-### Delete a Permission
-
-Deleting a permission from an application automatically removes that permission from any associated roles.
-
-#### 12 Request:
-
-```bash
-curl -X DELETE \
-  'http://localhost:3005/v1/applications/{{application_id}}/permissions/{{permission_id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
+| Role                   | Description                                                  |
+| ---------------------- | ------------------------------------------------------------ |
+| `farm-manager`         | Full read/write access to all farm context data and commands |
+| `livestock-supervisor` | Read/write on Animal, Water and FillingLevelSensor entities  |
+| `crop-supervisor`      | Read/write on Field, SoilSensor and WeatherObserved entities |
+| `equipment-supervisor` | Read/write on Tractor entities                               |
+| `field-worker`         | Write measurements, read own-domain entities                 |
+| `read-only-consultant` | Read-only across all entity types                            |
 
 ## Role CRUD Actions
 
-A permission is an allowable action on a resource, as noted above. A role consists of a group of permissions, in other
-words a series of permitted actions over a group of resources. Roles are usually given a description with a broad scope
-so that they can be assigned to a wide range of users or organizations for example a _Reader_ role could be able to
-access but not update a series of devices.
+#### GUI
 
-There are two predefined roles with **Keyrock** :
-
--   a _Purchaser_ who can:
-    -   Get and assign all public application roles.
--   a _Provider_ who can:
-    -   Get and assign only public owned roles.
-    -   Get and assign all public application roles.
-    -   Manage authorizations.
-    -   Manage roles.
-    -   Manage the application.
-    -   Get and assign all internal application roles.
-
-Using our Supermarket Store Example, Alice the admin would be assigned the _Provider_ role, she could then create any
-additional application-specific roles needed (such as _Management_ or _Security_).
-
-Once again, roles are always directly bound to an application - abstract roles do not exist on their own. The standard
-CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DELETE) under the
-`/v1/applications/{{application-id}}/roles` endpoint.
+Roles are managed at **Realm: farm-management → Realm roles**.
 
 ### Create a Role
 
-Within the GUI, a role can be added to an application by selecting the application, clicking on **Manage Roles** and
-then pressing the plus next to the Role label.
+#### 7️⃣ Request:
 
-![](https://fiware.github.io/tutorials.Roles-Permissions/img/create-role.png)
-
-Just fill out the wizard and click save.
-
-To create a new role via the REST API, send a POST request to the `/applications/{{application-id}}/roles` endpoint
-containing the `name` of the new role, with the `X-Auth-token` header from a previously logged-in user.
-
-#### 13 Request:
-
-```bash
-curl -X POST \
-  'http://localhost:3005/v1/applications/{{application-id}}/roles' \
+```console
+curl -iX POST \
+  'http://localhost:3005/admin/realms/farm-management/roles' \
+  -H 'Authorization: Bearer {{token}}' \
   -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
   -d '{
-  "role": {
-    "name": "Management"
-  }
-}'
+    "name": "drone-operator",
+    "description": "Operate autonomous survey drones over crop fields"
+  }'
 ```
 
 #### Response:
 
-The details of the created role are returned:
-
-```json
-{
-    "role": {
-        "id": "9d66bf12-8f6a-4455-9697-eb5560b1d2cd",
-        "is_internal": false,
-        "name": "Management",
-        "oauth_client_id": "6632bb2e-c8e5-418f-ba5b-c269d8a53dd2"
-    }
-}
+```
+HTTP/1.1 201 Created
+Location: http://localhost:3005/admin/realms/farm-management/roles/drone-operator
 ```
 
 ### Read Role Details
 
-The `/applications/{{application-id}}/roles/{{role-id}}` endpoint will return the role listed under that ID. The
-`X-Auth-token` must be supplied in the headers.
+#### 8️⃣ Request:
 
-#### 14 Request:
-
-```bash
+```console
 curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/roles/{{role-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+  'http://localhost:3005/admin/realms/farm-management/roles/farm-manager' \
+  -H 'Authorization: Bearer {{token}}'
 ```
 
 #### Response:
 
-The response returns the details of the requested role.
-
 ```json
 {
-    "role": {
-        "id": "9d66bf12-8f6a-4455-9697-eb5560b1d2cd",
-        "name": "Management",
-        "is_internal": false,
-        "oauth_client_id": "6632bb2e-c8e5-418f-ba5b-c269d8a53dd2"
-    }
+    "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "name": "farm-manager",
+    "description": "Full read/write access to all farm context data and commands",
+    "composite": false,
+    "clientRole": false,
+    "containerId": "farm-management"
 }
 ```
 
-### List Roles
+### List all Roles
 
-Listing all the roles offered by an application can be done by making a GET request to the
-`/v1/applications/{{application-id}}/roles` endpoint.
+#### 9️⃣ Request:
 
-#### 15 Request:
-
-```bash
+```console
 curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/roles' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-A summary of all roles associated with the application is returned containing both standard roles and custom roles.
-
-```json
-{
-    "roles": [
-        {
-            "id": "purchaser",
-            "name": "Purchaser"
-        },
-        {
-            "id": "provider",
-            "name": "Provider"
-        },
-        {
-            "id": "9d66bf12-8f6a-4455-9697-eb5560b1d2cd",
-            "name": "Management"
-        }
-    ]
-}
+  'http://localhost:3005/admin/realms/farm-management/roles' \
+  -H 'Authorization: Bearer {{token}}'
 ```
 
 ### Update a Role
 
-It is possible to amend the name of a role using a PATCH request is sent to the
-`/applications/{{application-id}}/roles/{{role-id}}` endpoint.
+#### 1️⃣0️⃣ Request:
 
-#### 16 Request:
-
-```bash
-curl -iX PATCH \
-  'http://localhost:3005/v1/applications/{{application-id}}/roles/{{role-id}}' \
+```console
+curl -iX PUT \
+  'http://localhost:3005/admin/realms/farm-management/roles-by-id/{{role-id}}' \
+  -H 'Authorization: Bearer {{token}}' \
   -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
   -d '{
-  "role": {
-    "name": "Management Team"
-  }
-}'
-```
-
-#### Response:
-
-The response contains a list of the fields which have been amended.
-
-```json
-{
-    "values_updated": {
-        "name": "Management Team"
-    }
-}
+    "name": "drone-operator",
+    "description": "Operate autonomous survey drones and read telemetry data"
+  }'
 ```
 
 ### Delete a Role
 
-Application roles can also be deleted - this will also remove the role from any users.
+#### 1️⃣1️⃣ Request:
 
-#### 17 Request:
-
-```bash
+```console
 curl -iX DELETE \
-  'http://localhost:3005/v1/applications/{{application-id}}/roles/{{role-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+  'http://localhost:3005/admin/realms/farm-management/roles-by-id/{{role-id}}' \
+  -H 'Authorization: Bearer {{token}}'
 ```
 
-## Assigning Permissions to each Role
+# Authorization Services
 
-Having created a set of application permissions, and a series of application roles, the next step is to assign the
-relevant permissions to each role - in other words defining _Who can do What_.
+Keycloak's **Authorization Services** provides a rich framework for fine-grained access control. This section covers the
+four Authorization Services objects — Scopes, Resources, Policies and Permissions — and shows how they are configured
+for the farm management use case.
 
-### Add a Permission to a Role
+All Authorization Services calls target the `/admin/realms/{realm}/clients/{client-uuid}/authz/resource-server/` prefix.
+Replace `{{client-uuid}}` with the UUID returned by the client lookup in Request 3️⃣.
 
-Within the GUI, select the role and check permissions from the list before saving.
+## Creating Scopes
 
-![](https://fiware.github.io/tutorials.Roles-Permissions/img/add-permission-to-role.png)
+**Scopes** represent the actions that can be performed on a protected resource. For NGSI-LD, scopes map to HTTP methods.
 
-To add a permission using the REST API makes a PUT request as shown, including the `<application-id>`, `<role-id>` and
-`<permission-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
+#### 1️⃣2️⃣ Request:
 
-#### 18 Request:
-
-```bash
-curl -iX PUT \
-  'http://localhost:3005/v1/applications/{{application-id}}/roles/{{role-id}}/permissions/{{permission-id}}' \
+```console
+curl -iX POST \
+  'http://localhost:3005/admin/realms/farm-management/clients/{{client-uuid}}/authz/resource-server/scope' \
+  -H 'Authorization: Bearer {{token}}' \
   -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+  -d '{"name": "GET", "displayName": "HTTP GET"}'
+```
+
+Repeat for `POST`, `PATCH`, and `DELETE`.
+
+## Creating Resources
+
+**Resources** represent the protected endpoints. Each resource specifies the URIs it covers and which scopes are
+applicable.
+
+#### 1️⃣3️⃣ Request:
+
+```console
+curl -iX POST \
+  'http://localhost:3005/admin/realms/farm-management/clients/{{client-uuid}}/authz/resource-server/resource' \
+  -H 'Authorization: Bearer {{token}}' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Entity Collection",
+    "displayName": "NGSI-LD Entity Collection endpoint",
+    "uris": ["/ngsi-ld/v1/entities", "/ngsi-ld/v1/entities/*"],
+    "scopes": [{"name": "GET"}, {"name": "POST"}, {"name": "PATCH"}, {"name": "DELETE"}]
+  }'
+```
+
+## Creating Policies
+
+**Policies** define the conditions under which access is granted. A role-based policy grants access when the requesting
+user holds a specified realm role.
+
+#### 1️⃣4️⃣ Request:
+
+```console
+curl -iX POST \
+  'http://localhost:3005/admin/realms/farm-management/clients/{{client-uuid}}/authz/resource-server/policy/role' \
+  -H 'Authorization: Bearer {{token}}' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Farm Manager Policy",
+    "description": "Grants access to users holding the farm-manager realm role",
+    "roles": [{"id": "{{farm-manager-role-id}}", "required": false}]
+  }'
+```
+
+A group-based policy grants access to all members of a specified group:
+
+#### 1️⃣5️⃣ Request:
+
+```console
+curl -iX POST \
+  'http://localhost:3005/admin/realms/farm-management/clients/{{client-uuid}}/authz/resource-server/policy/group' \
+  -H 'Authorization: Bearer {{token}}' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Livestock Team Policy",
+    "description": "Grants access to all members of the livestock-team group",
+    "groups": [{"id": "{{livestock-team-group-id}}", "extendChildren": false}]
+  }'
+```
+
+## Creating Permissions
+
+A **Permission** binds a resource and one or more scopes to one or more policies. A scope-based permission specifies
+which actions (scopes) on which resource are governed by which policy.
+
+#### 1️⃣6️⃣ Request:
+
+```console
+curl -iX POST \
+  'http://localhost:3005/admin/realms/farm-management/clients/{{client-uuid}}/authz/resource-server/permission/scope' \
+  -H 'Authorization: Bearer {{token}}' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Farm Managers can write all entities",
+    "type": "scope",
+    "decisionStrategy": "AFFIRMATIVE",
+    "resources": ["{{entity-collection-resource-id}}"],
+    "scopes": ["POST", "PATCH", "DELETE"],
+    "policies": ["{{farm-manager-policy-id}}"]
+  }'
+```
+
+The `decisionStrategy` of `AFFIRMATIVE` means access is granted if at least one of the listed policies evaluates to
+`PERMIT`. Use `UNANIMOUS` to require all policies to permit.
+
+## Evaluating Permissions
+
+Keycloak provides a Policy Evaluator for testing authorization decisions before deploying a PEP Proxy. The GUI evaluator
+is found at **Clients → ngsi-ld-farm → Authorization → Evaluate**.
+
+Via the REST API, send a UMA ticket request to obtain an RPT (Requesting Party Token) which encodes the granted
+permissions:
+
+#### 1️⃣7️⃣ Request:
+
+```console
+curl -X POST \
+  'http://localhost:3005/realms/farm-management/protocol/openid-connect/token' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  --data-urlencode 'grant_type=urn:ietf:params:oauth:grant-type:uma-ticket' \
+  --data-urlencode 'client_id=ngsi-ld-farm' \
+  --data-urlencode 'client_secret=1234' \
+  --data-urlencode 'audience=ngsi-ld-farm' \
+  --data-urlencode 'permission=Entity Collection#POST'
 ```
 
 #### Response:
 
-The response returns the permissions for the role.
+A `200` response with an RPT confirms the permission is granted. A `403` with `access_denied` confirms it is denied.
 
 ```json
 {
-    "role_permission_assignments": {
-        "role_id": "9d66bf12-8f6a-4455-9697-eb5560b1d2cd",
-        "permission_id": "8052b95b-3ff6-481c-b779-893b6c3f1488"
-    }
+    "upgraded": false,
+    "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6...",
+    "expires_in": 300,
+    "token_type": "Bearer"
 }
 ```
 
-### List Permissions of a Role
+# Authorizing Application Access
 
-A full list of all permissions assigned to an application role can be retrieved by making a GET request to the
-`/v1/applications/{{application-id}}/roles/{{role-id}}/permissions` endpoint.
+## Authorizing Groups
 
-#### 19 Request:
+Assigning a realm role to a group means all current and future members of that group inherit the role automatically.
 
-```bash
+### Assign a Role to a Group
+
+First, retrieve the role representation, then POST it to the group's role-mappings endpoint.
+
+#### 1️⃣8️⃣ Request:
+
+```console
+ROLE=$(curl -s 'http://localhost:3005/admin/realms/farm-management/roles/livestock-supervisor' \
+  -H 'Authorization: Bearer {{token}}')
+
+curl -iX POST \
+  'http://localhost:3005/admin/realms/farm-management/groups/{{livestock-team-group-id}}/role-mappings/realm' \
+  -H 'Authorization: Bearer {{token}}' \
+  -H 'Content-Type: application/json' \
+  -d "[${ROLE}]"
+```
+
+### List Roles of a Group
+
+#### 1️⃣9️⃣ Request:
+
+```console
 curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/roles/{{role-id}}/permissions' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+  'http://localhost:3005/admin/realms/farm-management/groups/{{group-id}}/role-mappings/realm' \
+  -H 'Authorization: Bearer {{token}}'
 ```
 
 #### Response:
 
 ```json
-{
-    "role_permission_assignments": [
-        {
-            "id": "8052b95b-3ff6-481c-b779-893b6c3f1488",
-            "is_internal": false,
-            "name": "Access Price Changes 1",
-            "description": null,
-            "action": "GET",
-            "resource": "/price-change",
-            "xml": null
-        }
-    ]
-}
-```
-
-### Remove a Permission from a Role
-
-To remove a permission using the REST API makes a DELETE request as shown, including the `<application-id>`, `<role-id>`
-and `<permission-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
-
-#### 20 Request:
-
-```bash
-curl -X DELETE \
-  'http://localhost:3005/v1/applications/{{application_id}}/roles/{{role_id}}/permissions/{{permission_id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-## Authorizing Application Access
-
-In the end, a user logs into an application, identifies himself and then is granted a list of permissions that the user
-is able to do. However, it should be emphasized that it is the application, not the user that holds and offers the
-permissions, and the user is merely associated with an aggregated list of permissions via the role(s) they have been
-granted.
-
-The application can grant roles to either Users or Organizations - the latter should always be preferred, as it allows
-the owners of the organization to add new users - delegating the responsibility for user maintenance to a wider group.
-
-For example, imagine the supermarket gains another store detective. Alice has already created role called Security and
-assigned it to the Security team. Charlie is the owner of the Security team organization, and is able to add the new
-`detective3` user to his team. `detective3` can then inherit all the rights of his team without further input from
-Alice.
-
-Granting roles to individual Users should be restricted to special cases - some roles may be very specialized an only
-contain one member so there is no need to create an organization. This reduced the administrative burden when setting up
-the application, but any further changes (such as removing access rights when someone leaves) will need to be done by
-Alice herself - no delegation is possible.
-
-## Authorizing Organizations
-
-A role cannot be granted to an organization unless the role has already been defined within the application itself. The
-organization must also have be created as was demonstrated in the previous tutorial.
-
-### Grant a Role to an Organization
-
-To grant an organization access to an application, click on the application to get to the details page and scroll to the
-bottom of the page, click the **Authorize** button and select the relevant organization.
-
-![](https://fiware.github.io/tutorials.Roles-Permissions/img/add-role-to-org.png)
-
-A Role can be granted to either `members` or `owners` of an Organization. Using the REST API, the role can be granted
-making a PUT request as shown, including the `<application-id>`, `<organzation-id>` and `<role-id>` in the URL path and
-identifying themselves using an `X-Auth-Token` in the header.
-
-#### 21 Request:
-
-This example adds the role to all members of the organization:
-
-```bash
-curl -X PUT \
-  'http://localhost:3005/v1/applications/{{application-id}}/organizations/{{organization-id}}/roles/{{role-id}}/organization_roles/member' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-The response lists the role assignment as shown:
-
-```json
-{
-    "role_organization_assignments": {
-        "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c",
-        "organization_id": "security-team-0000-0000-000000000000",
-        "oauth_client_id": "3782c5e3-88f9-481a-9b3c-2f2d6f604482",
-        "role_organization": "member"
+[
+    {
+        "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+        "name": "livestock-supervisor",
+        "description": "Read/write on Animal, Water and FillingLevelSensor entities",
+        "composite": false,
+        "clientRole": false
     }
-}
+]
 ```
 
-### List Granted Organization Roles
+### Revoke a Role from a Group
 
-A full list of roles granted to an organization can be retrieved by making a GET request to the
-`/v1/applications/{{application-id}}/organizations/{{organization-id}}/roles` endpoint.
+#### 2️⃣0️⃣ Request:
 
-#### 22 Request:
-
-```bash
-curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/organizations/{{organization-id}}/roles' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-The response shows all roles assigned to the organization.
-
-```json
-{
-    "role_organization_assignments": [
-        {
-            "organization_id": "security-team-0000-0000-000000000000",
-            "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c"
-        }
-    ]
-}
-```
-
-### Revoke a Role from an Organization
-
-To revoke a role using the REST API make a DELETE request as shown, including the `<application-id>`,
-`<organization-id>` and `<role-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
-
-The following example revokes a role to `members` of the organization.
-
-#### 23 Request:
-
-```bash
+```console
 curl -iX DELETE \
-  'http://localhost:3005/v1/applications/{{application-id}}/organizations/{{organization-id}}/roles/{{role-id}}/organization_roles/member' \
+  'http://localhost:3005/admin/realms/farm-management/groups/{{group-id}}/role-mappings/realm' \
+  -H 'Authorization: Bearer {{token}}' \
   -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+  -d "[${ROLE}]"
 ```
 
-## Authorizing Individual User Accounts
+## Authorizing Individual Users
 
-A defined role cannot be granted to a user unless the role has already been associated to an application.
+### Assign a Role to a User
 
-### Grant a Role to a User
+#### 2️⃣1️⃣ Request:
 
-Granting User access via the GUI can be done in the same manner as for organizations.
+```console
+ROLE=$(curl -s 'http://localhost:3005/admin/realms/farm-management/roles/farm-manager' \
+  -H 'Authorization: Bearer {{token}}')
 
-Using the REST API, the role can be granted making a PUT request as shown, including the `<application-id>`, `<role-id>`
-and `<user-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
-
-#### 24 Request:
-
-```bash
-curl -iX PUT \
-  'http://localhost:3005/v1/applications/{{application-id}}/users/{{user-id}}/roles/{{role-id}}' \
+curl -iX POST \
+  'http://localhost:3005/admin/realms/farm-management/users/{{user-id}}/role-mappings/realm' \
+  -H 'Authorization: Bearer {{token}}' \
   -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+  -d "[${ROLE}]"
 ```
 
-#### Response:
+### List Roles of a User
 
-```json
-{
-    "role_user_assignments": {
-        "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c",
-        "user_id": "bbbbbbbb-good-0000-0000-000000000000",
-        "oauth_client_id": "3782c5e3-88f9-481a-9b3c-2f2d6f604482"
-    }
-}
-```
+#### 2️⃣2️⃣ Request:
 
-### List Granted User Roles
-
-To list the roles granted to an Individual user, make a GET request to the
-`v1/applications/{{application-id}}/users/{{user-id}}/roles` endpoint.
-
-#### 25 Request:
-
-```bash
+```console
 curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/users/{{user-id}}/roles' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-The response returns all roles assigned to the user.
-
-```json
-{
-    "role_user_assignments": [
-        {
-            "user_id": "bbbbbbbb-good-0000-0000-000000000000",
-            "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c"
-        }
-    ]
-}
+  'http://localhost:3005/admin/realms/farm-management/users/{{user-id}}/role-mappings/realm' \
+  -H 'Authorization: Bearer {{token}}'
 ```
 
 ### Revoke a Role from a User
 
-Similarly to organizations, to revoke a user role using the REST API makes a DELETE request as shown, including the
-`<application-id>`, `<user-id>` and `<role-id>` in the URL path and identifying themselves using an `X-Auth-Token` in
-the header.
+#### 2️⃣3️⃣ Request:
 
-#### 26 Request:
-
-```bash
-curl -X DELETE \
-  'http://localhost:3005/v1/applications/{{application-id}}/users/{{user-id}}/roles/{{role-id}}' \
+```console
+curl -iX DELETE \
+  'http://localhost:3005/admin/realms/farm-management/users/{{user-id}}/role-mappings/realm' \
+  -H 'Authorization: Bearer {{token}}' \
   -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+  -d "[${ROLE}]"
 ```
 
-## List Application Grantees
+# Next Steps
 
-By creating a series of roles and granting them to Users and Organizations, we have made an association between them.
-The REST API offers two convenience methods exist to list all the grantees of an application.
-
-### List Authorized Organizations
-
-To list all organizations which are authorized to use an application, make a GET request to the
-`/v1/applications/{{application-id}}/organizations` endpoint.
-
-#### 27 Request:
-
-```bash
-curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/organizations' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-The response returns all organizations which can access the application and the roles they have been assigned.
-Individual members are not listed.
-
-```json
-{
-    "role_organization_assignments": [
-        {
-            "organization_id": "security-team-0000-0000-000000000000",
-            "role_organization": "member",
-            "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c"
-        }
-    ]
-}
-```
-
-### List Authorized Users
-
-To list all individual users who are authorized to use an application, make a GET request to the
-`/v1/applications/{{application-id}}/users` endpoint.
-
-#### 28 Request:
-
-```bash
-curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/users' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-The response returns all individual users who can access the application and the roles they have been assigned. Note
-that users of an organization granted access are not listed.
-
-```json
-{
-    "role_user_assignments": [
-        {
-            "user_id": "aaaaaaaa-good-0000-0000-000000000000",
-            "role_id": "provider"
-        },
-        {
-            "user_id": "bbbbbbbb-good-0000-0000-000000000000",
-            "role_id": "64535f4d-04b6-4688-a9bb-81b8df7c4e2c"
-        }
-    ]
-}
-```
+Want to learn how to add more complexity to your application by adding advanced features? You can find out by reading
+the other [NGSI-LD tutorials](https://ngsi-ld-tutorials.rtfd.io).

@@ -18,7 +18,7 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 
 # NGSI-LD CRUD Operations
 
-> “Ninety-percent of everything is crud.”
+> “Ninety-percent of everything is crud.”.”
 >
 > ― Theodore Sturgeon, Venture Science Fiction Magazine
 

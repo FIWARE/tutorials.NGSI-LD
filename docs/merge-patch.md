@@ -14,7 +14,7 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 
 # Merge **PATCH** and Overwrite **PUT**
 
-> "Last night I dreamed about you. What happened in detail I can hardly remember, all I know is that we kept merging
+> "Last night I dreamed about you. What happened in detail I can hardly remember, all I know is that we kept mergingng
 > into one another. I was you, you were me. Finally you somehow caught fire"
 >
 > — Franz Kafka, Letters to Milena

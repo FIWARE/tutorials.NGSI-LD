@@ -19,9 +19,9 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 
 # Real-time Processing and Big Data Analysis
 
-> "Who controls the past controls the future: who controls the present controls the past."
+> "The farmer has to be an optimist or he wouldn't still be a farmer."
 >
-> — George Orwell. "1984"
+> — Will Rogers
 
 Smart solutions based on FIWARE are architecturally designed around microservices. They are therefore are designed to
 scale-up from simple applications (such as the Supermarket tutorial) through to city-wide installations base on a large

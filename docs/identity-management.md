@@ -8,13 +8,12 @@
     </p>
 </blockquote>
 
-**Description:** This tutorial is an introduction to [FIWARE Keyrock](https://fiware-idm.readthedocs.io/en/latest/) - a
-generic enabler which introduces **Identity Management** into FIWARE services. The tutorial explains how to create users
-and organizations in preparation to assign roles and permissions to them in a later tutorial.
+**Description:** This tutorial is an introduction to [Keycloak](https://www.keycloak.org/) — an open-source Identity and Access
+Management solution which introduces **Identity Management** into FIWARE services. The tutorial explains how to create
+users and groups in preparation to assign roles and permissions to them in a later tutorial.
 
-The tutorial demonstrates examples of interactions using the **Keyrock** GUI, as well [cUrl](https://ec.haxx.se/)
-commands used to access the **Keyrock** REST API -
-[Postman documentation](https://fiware.github.io/tutorials.Identity-Management/) is also available.
+The tutorial demonstrates examples of interactions using the **Keycloak** Admin Console GUI, as well as
+[cUrl](https://ec.haxx.se/) commands used to access the **Keycloak** Admin REST API.
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/5f9e1736f979b86ec94a)
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?repo=FIWARE/tutorials.Identity-Management&ref=NGSI-LD)
@@ -23,200 +22,181 @@ commands used to access the **Keyrock** REST API -
 
 # Identity Management
 
-> "If one meets a powerful person — ask them five questions: ‘What power have you got? Where did you get it from? In
-> whose interests do you exercise it? To whom are you accountable? And how can we get rid of you?’"
+> "A fence should be horse-high, pig-tight and bull-strong."
 >
-> — Anthony Wedgwood Benn (The Five Essential Questions of Democracy)
+> — Old Farmer's Proverb
 
 In computer security terminology, Identity management is the security and business discipline that "enables the right
-individuals to access the right resources at the right times and for the right reasons". It addresses the need to ensure
-appropriate access to resources across disparate systems.
+individuals to access the right resources at the right times and for the right reasons".<sup>[1](#footnote1)</sup> It
+addresses the need to ensure appropriate access to resources across disparate systems.
 
 The FIWARE framework consists of a series of separate components, and the security chapter aims to implement the common
-needs of these components regarding who (or what) gets to access which resources within the system, but before access to
-resources can be locked down, the identity of the person (or service) making the request needs to be known. The FIWARE
-**Keyrock** Generic Enabler sets up all the common characteristics of an Identity Management System out-of-the-box, so
-that other components are able to use standard authentication mechanisms to accept or reject requests based on industry
-standard protocols.
+needs of these components regarding who (or what) gets to access which resources within the system. Before access to
+resources can be locked down, the identity of the person (or service) making the request must be known.
+[Keycloak](https://www.keycloak.org/) is a production-grade open-source Identity and Access Management solution backed
+by Red Hat. It sets up all of the common characteristics of an Identity Management System out of the box, so that other
+components are able to use standard OpenID Connect and OAuth 2.0 mechanisms to accept or reject requests based on
+industry standard protocols.
 
 Identity Management therefore covers the issues of how to gain an identity within the system, the protection of that
-identity and the surrounding technologies such as passwords and network protocols.
+identity, and the surrounding technologies such as passwords, tokens and network protocols.
 
 <h3>Standard Concepts of Identity Management</h3>
 
-The following common objects are found with the **Keyrock** Identity Management database:
+The following common objects are found within the **Keycloak** Identity Management system:
 
--   **User** - Any signed-up user able to identify themselves with an eMail and password. Users can be assigned rights
-    individually or as a group.
--   **Application** - Any securable FIWARE application consisting of a series of microservices.
--   **Organization** - A group of users who can be assigned a series of rights. Altering the rights of the organization
-    effects the access of all users of that organization.
--   **OrganizationRole** - Users can either be members or admins of an organization - Admins are able to add and remove
-    users from their organization, members merely gain the roles and permissions of an organization. This allows each
-    organization to be responsible for their members and removes the need for a super-admin to administer all rights.
--   **Role** - A role is a descriptive bucket for a set of permissions. A role can be assigned to either a single user
-    or an organization. A signed-in user gains all the permissions from all of their own roles plus all the roles
-    associated to their organization.
--   **Permission** - An ability to do something on a resource within the system.
+-   **User** — Any registered user able to identify themselves with a username and password. Users can be assigned
+    rights individually or as part of a group.
+-   **Realm** — A security domain that manages a set of users, credentials, roles and groups. A realm is isolated from
+    other realms and only manages the resources it controls. For this tutorial the realm is `farm-management`.
+-   **Group** — A collection of users that can be assigned a set of roles. Altering the role assignments of a group
+    affects the access rights of all members of that group. This removes the need for a super-admin to administer all
+    rights individually.
+-   **Role** — A label for a set of permissions. A role can be assigned to either a single user or a group. A signed-in
+    user gains all the permissions associated with their own roles plus the roles inherited from their groups.
+-   **Client** — An application or service able to request authentication. In later tutorials the NGSI-LD context broker
+    proxy is registered as a client of the `farm-management` realm.
 
-Additionally, two further non-human application objects can be secured within a FIWARE application:
+# Prerequisites
 
--   **IoTAgent** - a proxy between IoT Sensors and the Context Broker.
--   **PEPProxy** - a middleware for use between generic enablers challenging the rights of a user.
+## Docker
 
-The relationship between the objects can be seen below - the entities marked in red are used directly within this
-tutorial:
+To keep things simple all components will be run using [Docker](https://www.docker.com). **Docker** is a container
+technology that allows different components to be isolated into their respective environments.
 
-![](https://fiware.github.io/tutorials.Identity-Management/img/entities.png)
+-   To install Docker on Windows follow the instructions [here](https://docs.docker.com/docker-for-windows/).
+-   To install Docker on Mac follow the instructions [here](https://docs.docker.com/docker-for-mac/).
+-   To install Docker on Linux follow the instructions [here](https://docs.docker.com/install/).
 
-<h3>Video : Introduction to Keyrock</h3>
+**Docker Compose** is a tool for defining and running multi-container Docker applications. A series of `*.yml` files are
+used to configure the required services for the application. This means all container services can be brought up with a
+single command. Docker Compose is installed by default as part of Docker Desktop. If you are running Linux, you can
+check the instructions [here](https://docs.docker.com/compose/install/).
 
-[![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=dHyVTan6bUY "Introduction")
+You can check your current **Docker** and **Docker Compose** versions using the following commands:
 
-Click on the image above to watch an introductory video.
+```console
+docker version
+docker compose version
+```
 
----
+Please ensure that you are using Docker version 24.0 or higher and Docker Compose version 2.24 or higher, and upgrade if
+necessary.
 
-## Architecture
+## WSL
 
-This introduction will only make use of one FIWARE component - the
-[Keyrock](https://fiware-idm.readthedocs.io/en/latest/) Identity Management Generic Enabler. Usage of **Keyrock** alone
-is insufficient for an application to qualify as _“Powered by FIWARE”_. Additionally, will be persisting user data in a
-**MySQL** database.
+The Windows Subsystem for Linux allows you to run a Linux binary executable natively on Windows. If you are on Windows
+and prefer to run tutorials via Linux, install WSL2 and apply any pending updates before starting.
 
-The overall architecture will consist of the following elements:
+# Architecture
 
--   One **FIWARE Generic Enabler**:
+This introduction makes use of one open-source component — [Keycloak](https://www.keycloak.org/). User data is persisted
+in a **PostgreSQL** database.
 
-    -   FIWARE [Keyrock](https://fiware-idm.readthedocs.io/en/latest/) offer a complement Identity Management System
-        including:
-        -   An OAuth2 authentication system for Applications and Users.
-        -   A site graphical frontend for Identity Management Administration.
-        -   An equivalent REST API for Identity Management via HTTP requests.
+The overall architecture consists of the following elements:
 
--   One [MySQL](https://www.mysql.com/) database:
-    -   Used to persist user identities, applications, roles and permissions.
+-   One **Identity and Access Management** component:
 
-Since all interactions between the services are initiated by HTTP requests, the services can be containerized and run
+    -   [Keycloak](https://www.keycloak.org/) provides a complete Identity Management System including:
+        -   An authentication and authorisation server for applications and users
+        -   An Admin Console GUI for Identity Management administration
+        -   A fully featured REST API for Identity Management via HTTP
+
+-   One [PostgreSQL](https://www.postgresql.org/) database:
+    -   Used to persist Keycloak realm data, users, groups, roles and sessions
+
+Since all interactions between the elements are initiated by HTTP requests, the entities can be containerized and run
 from exposed ports.
 
-![](https://fiware.github.io/tutorials.Identity-Management/img/architecture.png)
-
-The specific architecture of each section of the tutorial is discussed below.
-
-<h3>Keyrock Configuration</h3>
+<h3>Keycloak Configuration</h3>
 
 ```yaml
-keyrock:
-    image: quay.io/fiware/idm
-    container_name: fiware-keyrock
-    hostname: keyrock
+keycloak:
+    image: quay.io/keycloak/keycloak:24.0.1
+    container_name: fiware-keycloak
+    hostname: keycloak
     depends_on:
-        - mysql-db
+        postgres-keycloak:
+            condition: service_healthy
     ports:
-        - "3005:3005"
-        - "3443:3443"
+        - "3005:8080"
     environment:
-        - DATABASE_HOST=mysql-db
-        - IDM_DB_PASS_FILE=/run/secrets/my_secret_data
-        - IDM_DB_USER=root
-        - IDM_HOST=http://localhost:3005
-        - IDM_PORT=3005
-        - IDM_HTTPS_ENABLED=true
-        - IDM_HTTPS_PORT=3443
-        - IDM_ADMIN_USER=admin
-        - IDM_ADMIN_EMAIL=admin@test.com
-        - IDM_ADMIN_PASS=1234
-    secrets:
-        - my_secret_data
+        - KC_DB=postgres
+        - KC_DB_URL=jdbc:postgresql://postgres-keycloak/keycloak
+        - KC_DB_USERNAME=keycloak
+        - KC_DB_PASSWORD=password
+        - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+        - KC_BOOTSTRAP_ADMIN_PASSWORD=1234
+        - KC_HTTP_PORT=8080
+        - KC_HOSTNAME_STRICT=false
+        - KC_HTTP_ENABLED=true
+        - KC_HEALTH_ENABLED=true
+    command: start-dev --import-realm
+    volumes:
+        - ./realm-config:/opt/keycloak/data/import:ro
 ```
 
-The `idm` container is a web application server listening on two ports:
+The `keycloak` container is a web application listening on port `8080` internally. Port `3005` has been exposed on the
+host to allow browser and REST API access.
 
--   Port `3005` has been exposed for HTTP traffic, therefore we can display the web page and interact with the REST API.
--   Port `3443` has been exposed for secure HTTPS traffic for the site and REST API.
+The `keycloak` container is driven by environment variables as shown:
 
-> **Note** HTTPS should be used throughout for any secured application, but to do this properly, **Keyrock** requires a
-> trusted SSL certificate - the default certificate is self-certified and available for testing purposes. The
-> certificates can be overridden by attaching a volume to replace the files under `/opt/fiware-idm/certs`.
+| Key                           | Value                                          | Description                                                             |
+| ----------------------------- | ---------------------------------------------- | ----------------------------------------------------------------------- |
+| `KC_DB`                       | `postgres`                                     | Database type — Keycloak requires PostgreSQL in this configuration      |
+| `KC_DB_URL`                   | `jdbc:postgresql://postgres-keycloak/keycloak` | JDBC connection string for the PostgreSQL database                      |
+| `KC_DB_USERNAME`              | `keycloak`                                     | Database username                                                       |
+| `KC_DB_PASSWORD`              | `password`                                     | Database password — use Docker Secrets or a vault in production         |
+| `KC_BOOTSTRAP_ADMIN_USERNAME` | `admin`                                        | Initial admin username for the master realm                             |
+| `KC_BOOTSTRAP_ADMIN_PASSWORD` | `1234`                                         | Initial admin password — change immediately in any non-tutorial context |
+| `KC_HTTP_PORT`                | `8080`                                         | Internal HTTP port                                                      |
+| `KC_HOSTNAME_STRICT`          | `false`                                        | Disables strict hostname validation — suitable for tutorial use only    |
+| `KC_HTTP_ENABLED`             | `true`                                         | Enables plain HTTP — use HTTPS in production                            |
+| `KC_HEALTH_ENABLED`           | `true`                                         | Enables `/health/ready` endpoint used by the Docker health check        |
+
+The `start-dev` command starts Keycloak in development mode. The `--import-realm` flag causes Keycloak to import any
+realm JSON files found in the `/opt/keycloak/data/import/` directory at startup. The `realm-config/` directory of this
+tutorial contains `farm-management-realm.json`, which defines the `farm-management` realm and its initial groups.
+
+> [!NOTE]
 >
-> In a production environment, all access should occur over HTTPS, to avoid sending any sensitive information using
-> plain-text. Alternatively HTTP can be used within a private network behind a configured HTTPS Reverse Proxy.
->
-> The port `3005` offering the HTTP protocol is being exposed for demonstration purposes only and to simplify the
-> interactions within this tutorial - you may also use HTTPS on port `3443` with certain caveats.
->
-> If you want to use HTTPS to access the REST API when you are using Postman, ensure that SSL certificate verification
-> is OFF. If you want to use HTTPS to access the web front-end, please accept any security warnings issued.
+> In a production environment, Keycloak should be started with the `start` command (not `start-dev`), TLS should be
+> configured, and secrets should be managed through a vault or Docker Secrets rather than plain-text environment
+> variables.
 
-The `idm` container is driven by environment variables as shown:
-
-| Key               | Value                   | Description                                                                                                                  |
-| ----------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| IDM_DB_PASS       | `idm`                   | Password of the attached MySQL Database - secured by **Docker Secrets** (see below)                                          |
-| IDM_DB_USER       | `root`                  | Username of the default MySQL user - left in plain-text                                                                      |
-| IDM_HOST          | `http://localhost:3005` | Hostname of the **Keyrock** App Server - used in activation eMails when signing up users                                     |
-| IDM_PORT          | `3005`                  | Port used by the **Keyrock** App Server for HTTP traffic - this has been altered from the default 3000 port to avoid clashes |
-| IDM_HTTPS_ENABLED | `true`                  | Whether to offer HTTPS Support - this will use the self-signed certs unless overridden                                       |
-| IDM_HTTPS_PORT    | `3443`                  | Port used by the **Keyrock** App Server for HTTP traffic this has been altered from the default 443                          |
-
-> **Note** that this example has secured the MySQL password using **Docker Secrets** By using `IDM_DB_PASS` with the
-> `_FILE` suffix and referring to a secrets file location. This avoids exposing the password as an `ENV` variable in
-> plain-text - either in the `Dockerfile` Image or as an injected variable which could be read using `docker inspect`.
->
-> The following list of variables (where used) should be set via secrets with the `_FILE` suffix in a Production System:
->
-> -   `IDM_SESSION_SECRET`
-> -   `IDM_ENCRYPTION_KEY`
-> -   `IDM_DB_PASS`
-> -   `IDM_DB_USER`
-> -   `IDM_ADMIN_ID`
-> -   `IDM_ADMIN_USER`
-> -   `IDM_ADMIN_EMAIL`
-> -   `IDM_ADMIN_PASS`
-> -   `IDM_EX_AUTH_DB_USER`
-> -   `IDM_EX_AUTH_DB_PASS`
-
-<h3>MySQL Configuration</h3>
+<h3>PostgreSQL Configuration</h3>
 
 ```yaml
-mysql-db:
-    image: mysql:5.7
-    hostname: mysql-db
-    container_name: db-mysql
-    expose:
-        - "3306"
-    ports:
-        - "3306:3306"
-    networks:
-        - default
+postgres-keycloak:
+    image: postgres:15
+    container_name: db-postgres
+    hostname: postgres-keycloak
     environment:
-        - "MYSQL_ROOT_PASSWORD_FILE=/run/secrets/my_secret_data"
-        - "MYSQL_ROOT_HOST=172.18.1.5"
+        - POSTGRES_DB=keycloak
+        - POSTGRES_USER=keycloak
+        - POSTGRES_PASSWORD=password
     volumes:
-        - mysql-db:/var/lib/mysql
-    secrets:
-        - my_secret_data
+        - postgres-db:/var/lib/postgresql/data
+    healthcheck:
+        test: ["CMD", "pg_isready", "-U", "keycloak"]
+        interval: 5s
+        timeout: 5s
+        retries: 10
 ```
 
-The `mysql-db` container is listening on a single port:
+The `postgres-keycloak` container is listening on its default port `5432` (internal only — not exposed to the host).
 
--   Port `3306` is the default port for a MySQL server. It has been exposed, therefore you can also run other database
-    tools to display data if you wish.
+| Key                 | Value      | Description                                 |
+| ------------------- | ---------- | ------------------------------------------- |
+| `POSTGRES_DB`       | `keycloak` | Name of the database created on first start |
+| `POSTGRES_USER`     | `keycloak` | Database superuser username                 |
+| `POSTGRES_PASSWORD` | `password` | Database superuser password                 |
 
-The `mysql-db` container is driven by environment variables as shown:
-
-| Key                 | Value. | Description                                                                                                                                                                                           |
-| ------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| MYSQL_ROOT_PASSWORD | `123`. | specifies a password that is set for the MySQL `root` account - secured by **Docker Secrets** (see below)                                                                                             |
-| MYSQL_ROOT_HOST     | `root` | By default, MySQL creates the `root'@'localhost` account. This account can only be connected to from inside the container. Setting this environment variable allows root connections from other hosts |
-
-## Start Up
+# Start Up
 
 To start the installation, do the following:
 
-```bash
-#!/bin/bash
+```console
 git clone https://github.com/FIWARE/tutorials.Identity-Management.git
 cd tutorials.Identity-Management
 git checkout NGSI-LD
@@ -224,883 +204,527 @@ git checkout NGSI-LD
 ./services create
 ```
 
-> **Note** The initial creation of Docker images can take up to three minutes
+> [!NOTE]
+>
+> The initial creation of Docker images can take up to three minutes
 
 Thereafter, all services can be initialized from the command-line by running the
-[services](https://github.com/FIWARE/tutorials.Identity-Management/blob/master/services) Bash script provided within the
-repository:
+[services](https://github.com/FIWARE/tutorials.Identity-Management/blob/NGSI-LD/services) Bash script provided within
+the repository:
 
-```bash
+```console
 ./services start
 ```
 
-> **Note:** If you want to clean up and start over again you can do so with the following command:
+> [!NOTE]
 >
-> `./services stop`
+> If you want to clean up and start over again, run the following command:
+>
+> ```console
+> ./services stop
+> ```
 
-<h3>Reading directly from the Keyrock MySQL Database</h3>
+<h3>Reading the Keycloak Admin API</h3>
 
-All Identify Management records and relationships are held within the attached MySQL database. This can be accessed by
-entering the running Docker container as shown:
+All Identity Management records and relationships can be queried using the Keycloak Admin REST API. Once running, the
+API is accessible at `http://localhost:3005/admin/realms/`. The Admin Console GUI is available at
+`http://localhost:3005`.
 
-```bash
-docker exec -it db-mysql bash
-```
+All Admin API calls require an admin `Bearer` token in the `Authorization` header. This token is obtained from the
+`/realms/master/protocol/openid-connect/token` endpoint (see [Obtain an Admin Token](#obtain-an-admin-token) below).
 
-```bash
-mysql -u <user> -p<password> idm
-```
+<h3>UUIDs within Keycloak</h3>
 
-Where `<user>` and `<password>` match the values defined in the `docker-compose` file for `MYSQL_ROOT_PASSWORD` and
-`MYSQL_ROOT_USER`. The default values for the tutorial are usually `root` and `secret`.
+All IDs within **Keycloak** are UUIDs generated at creation time and immutable thereafter. The following placeholder
+values appear throughout this tutorial and must be replaced with the actual IDs returned by your running instance:
 
-SQL commands can then be entered from the command-line. e.g.:
+| Key            | Description                                              | Sample Value                            |
+| -------------- | -------------------------------------------------------- | --------------------------------------- |
+| `{{token}}`    | Admin Bearer token obtained from the master realm        | `eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVC...` |
+| `{{user-id}}`  | UUID of an existing user in the `farm-management` realm  | `96154659-cb3b-4d2d-afef-18d6aec0518e`  |
+| `{{group-id}}` | UUID of an existing group in the `farm-management` realm | `74f5299e-3247-468c-affb-957cda03f0c4`  |
 
-```SQL
-select id, username, email, password from user;
-```
+Tokens expire after a configurable period (default 5 minutes in Keycloak). Re-run Request 1️⃣ to obtain a fresh token if
+subsequent requests return `401 Unauthorized`.
 
-The **Keyrock** MySQL database deals with all aspects of application security including storing users, passwords etc.;
-defining access rights and dealing with OAuth2 authorization protocols. The complete database relationship diagram can
-be found [here](https://fiware.github.io/tutorials.Identity-Management/img/keyrock-db.png).
+## Logging In
 
-<h3>UUIDs within Keyrock</h3>
+The Admin Console at `http://localhost:3005` is the primary GUI for Keycloak administration. Log in with the username
+`admin` and password `1234` to access the master realm.
 
-All IDs and tokens within **Keyrock** are subject to change. The following values will need to be amended when querying
-for records. Record IDs use Universally Unique Identifiers - UUIDs.
+To work within the `farm-management` realm, select it from the realm drop-down in the top-left corner.
 
-| Key                    | Description                                                                                                                        | Sample Value                                            |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| `keyrock`              | URL for the location of the **Keyrock** service                                                                                    | `localhost:3005` for HTTP or `localhost:3443` for HTTPS |
-| `X-Auth-token`         | Token received in the Header when logging in as a user - in other words _"Who am I?"_                                              | `51f2e380-c959-4dee-a0af-380f730137c3`                  |
-| `X-Subject-token`      | Token added to requests to define _"Who do I want to inquire about?"_ - This can also be a repeat the `X-Auth-token` defined above | `51f2e380-c959-4dee-a0af-380f730137c3`                  |
-| `user-id`              | ID of an existing user, found with the `user` table                                                                                | `96154659-cb3b-4d2d-afef-18d6aec0518e`                  |
-| `organization-id`      | ID of an existing organization, found with the `organization` table                                                                | `e424ed98-c966-46e3-b161-a165fd31bc01`                  |
-| `organization-role-id` | type of role a user has within an organization either `owner` or `member`                                                          | `member`                                                |
+### Obtain an Admin Token
 
-Tokens are designed to expire after a set period. If the `X-Auth-token` value you are using has expired, log-in again to
-obtain a new token.
+The following request logs into the master realm using the admin credentials and returns a JWT access token. This token
+is required as a `Bearer` credential for all subsequent Admin API calls.
 
----
+#### 1️⃣ Request:
 
-## Authentication
-
-<h3>Video : Creating User Accounts with the Keyrock GUI</h3>
-
-[![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=dtKsjGbJ7Xc "Creating User Accounts")
-
-Click on the image above to watch a video demonstrating how to create users with the **Keyrock** GUI.
-
-## Logging in to Keyrock
-
-The Log-in Screen allows an existing user to identify themselves and obtain a token for further operations. It is the
-initial start-up screen of the **Keyrock** GUI - `http://localhost:3005/idm` (or `https://localhost:3443/idm` and accept
-the warnings).
-
-![](https://fiware.github.io/tutorials.Identity-Management/img/log-in.png)
-
-Enter a username and password to enter the **Keyrock** application. The default super-user has the values
-`admin@test.com` and `1234`.
-
-### Create Token with Password
-
-The following example logs in using the super-admin user - it is the equivalent of using the log-in screen of the GUI.
-The URL `https://localhost:3443/v1/auth/tokens` should also work in a secure system.
-
-#### 1 Request:
-
-```bash
+```console
 curl -iX POST \
-  'http://localhost:3005/v1/auth/tokens' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "name": "admin@test.com",
-  "password": "1234"
-}'
+  'http://localhost:3005/realms/master/protocol/openid-connect/token' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  --data-urlencode 'grant_type=password' \
+  --data-urlencode 'client_id=admin-cli' \
+  --data-urlencode 'username=admin' \
+  --data-urlencode 'password=1234'
 ```
 
 #### Response:
 
-> **Tip:** Use [jq](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq) to format the
-> JSON responses in this tutorial. Pipe the result by appending
->
-> ```
-> | jq '.'
-> ```
-
-The response header returns an `X-Subject-token` which identifies who has logged on the application. This token is
-required in all subsequent requests to gain access.
-
-```text
-HTTP/1.1 201 Created
-X-Subject-Token: d848eb12-889f-433b-9811-6a4fbf0b86ca
-Content-Type: application/json; charset=utf-8
-Content-Length: 138
-ETag: W/"8a-TVwlWNKBsa7cskJw55uE/wZl6L8"
-Date: Mon, 30 Jul 2018 12:07:54 GMT
-Connection: keep-alive
-```
+The response returns an `access_token` (a signed JWT), a `refresh_token`, and expiry information.
 
 ```json
 {
-    "token": {
-        "methods": ["password"],
-        "expires_at": "2018-07-30T13:02:37.116Z"
-    },
-    "idm_authorization_config": {
-        "level": "basic",
-        "authzforce": false
-    }
+    "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJhZ...",
+    "expires_in": 60,
+    "refresh_expires_in": 1800,
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJh...",
+    "token_type": "Bearer",
+    "not-before-policy": 0,
+    "session_state": "a2fb843b-4a60-4a7d-8c3d-3f96e12e9eba",
+    "scope": "profile email"
 }
 ```
 
-### Get User Information via a Token
+Store the `access_token` value as `{{token}}` for use in subsequent requests.
 
-Once a user has logged in, the presence of a (time-limited) token is sufficient to find out more information about the
-user.
+### Retrieve User Details from a Token
 
-`{{X-Auth-token}}` and `{{X-Subject-token}}` should be taken from the previous request, in the case of the response
-above, both variables should be set to `d848eb12-889f-433b-9811-6a4fbf0b86ca` - this indicates that _the user authorized
-with the token `{{X-Auth-token}}` is enquiring about the user holding the token `{{X-Subject-token}}`_ - in this case we
-only have one user within the **Keyrock** application, and that user is enquiring about himself.
+Once a token has been obtained, it can be decoded to inspect the identity of the authenticated user. The Keycloak
+UserInfo endpoint returns the claims from the token without requiring local JWT decoding.
 
-#### 2 Request:
+#### 2️⃣ Request:
 
-```bash
+```console
 curl -X GET \
-  'http://localhost:3005/v1/auth/tokens' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
-  -H 'X-Subject-token: {{X-Subject-token}}'
+  'http://localhost:3005/realms/farm-management/protocol/openid-connect/userinfo' \
+  -H 'Authorization: Bearer {{token}}'
 ```
 
 #### Response:
 
-The response will return the details of the associated user:
-
 ```json
 {
-    "access_token": "51f2e380-c959-4dee-a0af-380f730137c3",
-    "expires": "2018-07-30T13:02:37.000Z",
-    "valid": true,
-    "User": {
-        "id": "admin",
-        "username": "admin",
-        "email": "admin@test.com",
-        "date_password": "2018-07-30T09:55:38.000Z",
-        "enabled": true,
-        "admin": true
-    }
+    "sub": "3b3a5ad5-afd3-4baa-a538-25c7fe7cbf6a",
+    "email_verified": true,
+    "preferred_username": "alice",
+    "given_name": "Alice",
+    "family_name": "Administrator",
+    "email": "alice@fiware.farm"
 }
 ```
 
-### Refresh Token
+### Refresh a Token
 
-Tokens are time limited - it is no longer possible to gain access once a token has expired. However, it is possible to
-refresh a token for a newer one prior to expiry.
+Tokens have a limited lifespan. The `refresh_token` returned in Request 1️⃣ can be exchanged for a fresh access token
+without requiring the user to re-authenticate.
 
-Most applications use this endpoint to avoid timing out a user whilst they are interacting with the application.
+#### 3️⃣ Request:
 
-The `token` value, `d848eb12-889f-433b-9811-6a4fbf0b86ca` was acquired when the user logged on for the first time.
-
-#### 3 Request:
-
-```bash
+```console
 curl -iX POST \
-  'http://localhost:3005/v1/auth/tokens' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "token": "d848eb12-889f-433b-9811-6a4fbf0b86ca"
-}'
+  'http://localhost:3005/realms/master/protocol/openid-connect/token' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  --data-urlencode 'grant_type=refresh_token' \
+  --data-urlencode 'client_id=admin-cli' \
+  --data-urlencode 'refresh_token={{refresh_token}}'
 ```
 
 #### Response:
 
-A new token is returned in the `X-Subject-Token` header:
-
-```text
-HTTP/1.1 201 Created
-X-Subject-Token: a5b83d68-ebad-4514-9d3a-dd892f6e6174
-Content-Type: application/json; charset=utf-8
-Content-Length: 135
-ETag: W/"87-nPb+4XRSsW5Szsf2JJC6UYab4GM"
-Date: Mon, 30 Jul 2018 12:41:47 GMT
-Connection: keep-alive
-```
+A new `access_token` and `refresh_token` pair is returned with updated expiry times.
 
 ```json
 {
-    "token": {
-        "methods": ["token"],
-        "expires_at": "2018-07-30T13:13:20.567Z"
-    },
-    "idm_authorization_config": {
-        "level": "basic",
-        "authzforce": false
-    }
+    "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJhZ...",
+    "expires_in": 60,
+    "refresh_expires_in": 1800,
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJh...",
+    "token_type": "Bearer"
 }
 ```
 
-## Administrating User Accounts
+# Administrating User Accounts
 
-Users accounts are at the heart of any identity management system. The essential fields of every account hold a unique
-username and email address to identify the user, along with a password for authentication. The other optional fields add
-more information about the user such as a user website, description or avatar.
+User accounts are at the heart of any identity management system. Each account holds a unique username and email address
+to identify the user, along with a password for authentication.
 
-As the default super-admin user `admin@test.com` with a password of `1234`, we will set up a series of user accounts and
-assign them to relevant organizations within the system.
+As the default super-admin user `admin` with a password of `1234`, a series of user accounts will be set up and assigned
+to relevant groups within the system.
 
 <h3>Dramatis Personae</h3>
 
-The following people legitimately have accounts within the Application
+The following people legitimately have accounts within the farm management application:
 
--   Alice, she will be the Administrator of the **Keyrock** Application.
--   Bob, the Regional Manager of the supermarket chain - he has several store managers under him:
-    -   Manager1.
-    -   Manager2.
--   Charlie, the Head of Security of the supermarket chain - he has several store detectives under him:
-    -   Detective1.
-    -   Detective2.
+-   **Alice**, System Administrator — she manages all Keycloak configuration
+-   **Bob**, Farm Owner and General Manager — he has full access to all farm context data
+-   **Carol**, Livestock Manager — she supervises:
+    -   **Frank**, Livestock Field Worker
+    -   **Grace**, Livestock Field Worker
+-   **Dave**, Crop and Irrigation Manager — he supervises:
+    -   **Harry**, Irrigation Operator
+-   **Eve**, Equipment Manager — she supervises:
+    -   **Ivy**, Tractor Operator
+-   **Jenny**, External Veterinarian — read-only access to animal health data
+-   **Ken**, External Agronomist — read-only access to soil and crop data
+
+The following people have no legitimate access and should be denied:
+
+-   **Mallory**, Malicious actor
 
 ## User CRUD Actions
 
 #### GUI
 
-Users are able to sign up for themselves using the GUI. The only requirement is an email address and a password.
+Users can be created in the Keycloak Admin Console at `http://localhost:3005`.
 
-![](https://fiware.github.io/tutorials.Identity-Management/img/sign-up.png)
+Navigate to: **Realm: farm-management → Users → Add user**
 
-Once an account is created, the user has to response to an email to confirm their existence and activate their account.
-
-![](https://fiware.github.io/tutorials.Identity-Management/img/email.png)
+Enter the username, email, first and last name, then enable the account. After saving, go to the **Credentials** tab and
+set a password with **Temporary** set to `Off`.
 
 #### REST API
 
-The REST API is also able to create and amend users without their own interaction - this could be useful for bulk CRUD
-actions for example.
+The Admin REST API allows user creation and management without requiring GUI interaction — useful for automated
+provisioning and bulk operations.
 
-> **Note** - an eMail server must be configured to send out invites properly, otherwise the invitation may be deleted as
-> spam. For testing purposes, it is easier to update the users table directly: `update user set enabled = 1;`
-
-All the CRUD actions for Users require an `X-Auth-token` header from a previously logged in administrative user to be
-able to read or modify other user accounts. The standard CRUD actions are assigned to the appropriate HTTP verbs (POST,
-GET, PATCH and DELETE) under the `/v1/users` endpoint.
+All CRUD actions for Users require an `Authorization: Bearer {{token}}` header from a previously obtained admin token.
 
 ### Creating Users
 
-To create a new user, send a POST request to the `/v1/users` endpoint containing the `username`,`email` and `password`
-along with the `X-Auth-token` header from a previously logged in administrative user.
+To create a new user, send a POST request to the `/admin/realms/{realm}/users` endpoint.
 
-#### 4 Request:
+#### 4️⃣ Request:
 
-```bash
+```console
 curl -iX POST \
-  'http://localhost:3005/v1/users' \
+  'http://localhost:3005/admin/realms/farm-management/users' \
+  -H 'Authorization: Bearer {{token}}' \
   -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
   -d '{
-  "user": {
     "username": "alice",
-    "email": "alice@test.com",
-    "password": "test"
-  }
-}'
+    "firstName": "Alice",
+    "lastName": "Administrator",
+    "email": "alice@fiware.farm",
+    "enabled": true,
+    "credentials": [{"type": "password", "value": "test", "temporary": false}]
+  }'
 ```
 
 #### Response:
 
-The response returns the details of the created user:
+A `201 Created` response with no body is returned on success. The `Location` header contains the URL of the newly
+created user, from which the UUID can be extracted.
 
-```json
-{
-    "user": {
-        "id": "3b3a5ad5-afd3-4baa-a538-25c7fe7cbf6a",
-        "image": "default",
-        "gravatar": false,
-        "enabled": true,
-        "admin": false,
-        "starters_tour_ended": false,
-        "username": "alice",
-        "email": "alice@test.com",
-        "date_password": "2018-07-30T12:51:26.813Z"
-    }
-}
 ```
-
-To grant super-admin power to a newly created user account, the database can be altered directly:
-
-```sql
-update user set admin = 1 where username='alice';
-```
-
-Additional users can be added by making repeated POST requests.
-
-For example to create additional accounts for Bob, the Regional Manager, Charlie, the Head of Security and their direct
-reports:
-
-```bash
-curl -iX POST \
-  'http://localhost:3005/v1/users' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
-  -d '{
-  "user": {
-    "username": "bob",
-    "email": "bob-the-manager@test.com",
-    "password": "test"
-  }
-}'
-```
-
-```bash
-curl -iX POST \
-  'http://localhost:3005/v1/users' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
-  -d '{
-  "user": {
-    "username": "charlie",
-    "email": "charlie-security@test.com",
-    "password": "test"
-  }
-}'
-```
-
-```bash
-curl -iX POST \
-  'http://localhost:3005/v1/users' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
-  -d '{
-  "user": {
-    "username": "manager1",
-    "email": "manager1@test.com",
-    "password": "test"
-  }
-}'
-```
-
-```bash
-curl -iX POST \
-  'http://localhost:3005/v1/users' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
-  -d '{
-  "user": {
-    "username": "manager2",
-    "email": "manager2@test.com",
-    "password": "test"
-  }
-}'
-```
-
-```bash
-curl -iX POST \
-  'http://localhost:3005/v1/users' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
-  -d '{
-  "user": {
-    "username": "detective1",
-    "email": "detective1@test.com",
-    "password": "test"
-  }
-}'
-```
-
-```bash
-curl -iX POST \
-  'http://localhost:3005/v1/users' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
-  -d '{
-  "user": {
-    "username": "detective2",
-    "email": "detective2@test.com",
-    "password": "test"
-  }
-}'
+HTTP/1.1 201 Created
+Location: http://localhost:3005/admin/realms/farm-management/users/3b3a5ad5-afd3-4baa-a538-25c7fe7cbf6a
 ```
 
 ### Read Information About a User
 
-Making a GET request to a resource under the `/v1/users/{{user-id}}` endpoint will return the user listed under that ID.
-The `X-Auth-token` must be supplied in the headers.
+To read the details of a user, send a GET request to `/admin/realms/{realm}/users/{user-id}`.
 
-#### 5 Request:
+#### 5️⃣ Request:
 
-To request
-
-```bash
+```console
 curl -X GET \
-  'http://localhost:3005/v1/users/{{user-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+  'http://localhost:3005/admin/realms/farm-management/users/{{user-id}}' \
+  -H 'Authorization: Bearer {{token}}'
 ```
 
 #### Response:
 
-The response contains basic details of the account in question:
-
 ```json
 {
-    "user": {
-        "id": "96154659-cb3b-4d2d-afef-18d6aec0518e",
-        "username": "alice",
-        "email": "alice-the-admin@test.com",
-        "enabled": true,
-        "admin": false,
-        "image": "default",
-        "gravatar": false,
-        "date_password": "2018-07-30T09:56:37.000Z",
-        "description": null,
-        "website": null
-    }
+    "id": "3b3a5ad5-afd3-4baa-a538-25c7fe7cbf6a",
+    "createdTimestamp": 1690718400000,
+    "username": "alice",
+    "enabled": true,
+    "emailVerified": false,
+    "firstName": "Alice",
+    "lastName": "Administrator",
+    "email": "alice@fiware.farm"
 }
 ```
 
 ### List all Users
 
-Obtaining a complete list of all users is a super-admin permission requiring the `X-Auth-token` - most users will only
-be permitted to return users within their own organization. Listing users can be done by making a GET request to the
-`/v1/users` endpoint.
+To list all users within the `farm-management` realm, send a GET request to `/admin/realms/{realm}/users`.
 
-#### 6 Request:
+#### 6️⃣ Request:
 
-```bash
+```console
 curl -X GET \
-  'http://localhost:3005/v1/users' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+  'http://localhost:3005/admin/realms/farm-management/users' \
+  -H 'Authorization: Bearer {{token}}'
 ```
 
 #### Response:
 
-The response contains basic details of all accounts:
-
 ```json
-{
-    "users": [
-        {
-            "id": "06a2140f-ccc3-49e5-82a5-76bae48b38ba",
-            "username": "alice",
-            "email": "alice-the-admin@test.com",
-            "enabled": true,
-            "gravatar": false,
-            "date_password": "2018-07-30T11:41:14.000Z",
-            "description": null,
-            "website": null
-        },
-        {
-            "id": "27e6ae58-adc1-4aaf-a6a2-f207946ba57e",
-            "username": "bob",
-            "email": "bob-the-manager@test.com",
-            "enabled": true,
-            "gravatar": false,
-            "date_password": "2018-07-30T10:01:12.000Z",
-            "description": null,
-            "website": null
-        },
-        ...etc
-    ]
-}
+[
+    {
+        "id": "3b3a5ad5-afd3-4baa-a538-25c7fe7cbf6a",
+        "username": "alice",
+        "firstName": "Alice",
+        "lastName": "Administrator",
+        "email": "alice@fiware.farm",
+        "enabled": true
+    },
+    {
+        "id": "96154659-cb3b-4d2d-afef-18d6aec0518e",
+        "username": "bob",
+        "firstName": "Bob",
+        "lastName": "Farmer",
+        "email": "bob@fiware.farm",
+        "enabled": true
+    }
+]
 ```
 
 ### Update a User
 
-Within the GUI, users can be updated from the settings page. This can also be done from the command-line by making PATCH
-request to `/v1/users/<user-id>` endpoint when the user ID is known. The `X-Auth-token` header must also be set.
+To update an existing user, send a PUT request to `/admin/realms/{realm}/users/{user-id}` with the full updated
+representation.
 
-#### 7 Request:
+#### 7️⃣ Request:
 
-```bash
-curl -iX PATCH \
-  'http://localhost:3005/v1/users/{{user-id}}' \
+```console
+curl -iX PUT \
+  'http://localhost:3005/admin/realms/farm-management/users/{{user-id}}' \
+  -H 'Authorization: Bearer {{token}}' \
   -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
   -d '{
-  "user": {
-      "username": "alice",
-      "email": "alice-the-admin@test.com",
-      "enabled": true,
-      "gravatar": false,
-      "date_password": "2018-07-26T15:25:14.000Z",
-      "description": "Alice works for FIWARE",
-      "website": "http://www.fiware.org"
-  }
-}'
+    "username": "alice",
+    "firstName": "Alice",
+    "lastName": "Administrator",
+    "email": "alice.admin@fiware.farm",
+    "enabled": true
+  }'
 ```
 
 #### Response:
 
-The response lists the fields which have been updated:
-
-```json
-{
-    "values_updated": {
-        "description": "Alice works for FIWARE",
-        "website": "http://www.fiware.org"
-    }
-}
-```
+A `204 No Content` response indicates the update was applied successfully.
 
 ### Delete a User
 
-Within the GUI, users can delete their account from the settings page, selecting the **Cancel Account** Option, once
-again a super-admin user can do this from the command-line by sending a DELETE request to the `/v1/users/{{user-id}}`
-endpoint. The `X-Auth-token` header must also be set.
+To delete a user, send a DELETE request to `/admin/realms/{realm}/users/{user-id}`.
 
-#### 8 Request:
+#### 8️⃣ Request:
 
-```bash
+```console
 curl -iX DELETE \
-  'http://localhost:3005/v1/users/{{user-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+  'http://localhost:3005/admin/realms/farm-management/users/{{user-id}}' \
+  -H 'Authorization: Bearer {{token}}'
 ```
 
----
+#### Response:
 
-## Grouping User Accounts under Organizations
+A `204 No Content` response indicates the user was deleted.
 
-For any identity management system of a reasonable size, it is useful to be able to assign roles to groups of users,
-rather than setting them up individually. Since user administration is a time-consuming business, it is also necessary
-to be able to delegate the responsibility of managing these group of users down to other accounts with a lower level of
-access.
+# Grouping User Accounts under Groups
 
-Consider our supermarket chain for example, there could be a group of users (Managers) who can change the prices of
-products within the store, and another group of users (Store Detectives) who can lock and unlock door after closing
-time. Rather than give access to each individual account, it would be easier to assign the rights to an organization and
-then add users to the groups.
+In Keycloak, **Groups** are collections of users that can be assigned roles collectively. When a role is assigned to a
+group, all members of that group inherit that role. This allows a department head to manage team access without
+requiring a super-admin to adjust every individual user account.
 
-Furthermore, Alice, the **Keyrock** administrator does not need to explicitly add additional user accounts to each
-organization herself - she could delegate that right to an owner within each organization. For example Bob the Regional
-Manager would be made the owner of the _management_ organization and could add and remove addition manager accounts
-(such as `manager1` and `manager2`) to that organization whereas Charlie the Head of Security could be handed an
-ownership role in the _security_ organization and add additional store detectives to that organization.
+The `farm-management` realm is pre-configured with the following groups, created from the realm import file:
 
-Note that Bob does not have the rights to alter the membership list of the _security_ organization and Charlie does not
-have the rights to alter the membership list of the _management_ organization. Furthermore, neither Bob nor Charlie
-would be able to alter the permissions of the application themselves, merely add and remove existing user accounts to
-the organization they control.
+| Group Name             | Description                                 |
+| ---------------------- | ------------------------------------------- |
+| `farm-management`      | Farm owner and general management staff     |
+| `livestock-team`       | Livestock supervisors and field workers     |
+| `crop-team`            | Crop and irrigation supervisors and workers |
+| `equipment-team`       | Equipment and machinery supervisors         |
+| `external-consultants` | External specialists with read-only access  |
 
-Creating an application and setting-up the permissions is not covered here as it is the subject of the next tutorial.
-
-## Organization CRUD Actions
+## Group CRUD Actions
 
 #### GUI
 
-Once signed-in, users are able to create and update organizations for themselves.
-
-![](https://fiware.github.io/tutorials.Identity-Management/img/create-org.png)
+Groups are managed in the Admin Console at **Realm: farm-management → Groups → Create group**.
 
 #### REST API
 
-Alternatively, the standard CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DELETE) under
-the `/v1/organizations` endpoint.
+### Create a Group
 
-### Create an Organization
+#### 9️⃣ Request:
 
-To create a new organization, send a POST request to the `/v1/organizations` endpoint containing the `name` and
-`description` along with the `X-Auth-token` header from a previously logged-in user.
-
-#### 9 Request:
-
-```bash
+```console
 curl -iX POST \
-  'http://localhost:3005/v1/organizations' \
+  'http://localhost:3005/admin/realms/farm-management/groups' \
+  -H 'Authorization: Bearer {{token}}' \
   -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
-  -d '{
-  "organization": {
-    "name": "Security",
-    "description": "This group is for the store detectives"
-  }
-}'
+  -d '{"name": "drone-operators"}'
 ```
 
 #### Response:
 
-The Organization is created and the user who created it is automatically assigned as a user. The response returns UUID
-to identify the new organization.
-
-```json
-{
-    "organization": {
-        "id": "18deea43-e12a-4018-a45a-664c3158780d",
-        "image": "default",
-        "name": "Security",
-        "description": "This group is for the store detectives"
-    }
-}
+```
+HTTP/1.1 201 Created
+Location: http://localhost:3005/admin/realms/farm-management/groups/e424ed98-c966-46e3-b161-a165fd31bc01
 ```
 
-### Read Organization Details
+### Read Group Details
 
-Making a GET request to a resource under the `/v1/organizations/{{organization-id}}` endpoint will return the
-organization listed under that ID. The `X-Auth-token` must be supplied in the headers as only permitted organizations
-will be shown.
+#### 1️⃣0️⃣ Request:
 
-#### 10 Request:
-
-```bash
+```console
 curl -X GET \
-  'http://localhost:3005/v1/organizations/{{organization-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+  'http://localhost:3005/admin/realms/farm-management/groups/{{group-id}}' \
+  -H 'Authorization: Bearer {{token}}'
 ```
 
 #### Response:
 
-The response returns the details of the organization.
-
 ```json
 {
-    "organization": {
-        "id": "18deea43-e12a-4018-a45a-664c3158780d",
-        "name": "Security",
-        "description": "This group is for the store detectives",
-        "website": null,
-        "image": "default"
+    "id": "74f5299e-3247-468c-affb-957cda03f0c4",
+    "name": "livestock-team",
+    "path": "/livestock-team",
+    "subGroupCount": 0,
+    "access": {
+        "view": true,
+        "viewMembers": true,
+        "manageMembers": true,
+        "manage": true,
+        "manageMembership": true
     }
 }
 ```
 
-### List all Organizations
+### List all Groups
 
-Obtaining a complete list of all organizations is a super-admin permission requiring the `X-Auth-token` - most users
-will only be permitted to return users within their own organization. Listing users can be done by making a GET request
-to the `/v1/organizations` endpoint.
+#### 1️⃣1️⃣ Request:
 
-#### 11 Request:
-
-```bash
+```console
 curl -X GET \
-  'http://localhost:3005/v1/organizations' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+  'http://localhost:3005/admin/realms/farm-management/groups' \
+  -H 'Authorization: Bearer {{token}}'
 ```
 
 #### Response:
 
-The response returns the details of the visible organizations.
-
 ```json
-{
-    "organizations": [
-        {
-            "role": "owner",
-            "Organization": {
-                "id": "18deea43-e12a-4018-a45a-664c3158780d",
-                "name": "Security",
-                "description": "This group is for the store detectives",
-                "image": "default",
-                "website": null
-            }
-        },
-        {
-            "role": "owner",
-            "Organization": {
-                "id": "a45f9b5a-dd23-4d0f-a0d4-e97e2d7431a3",
-                "name": "Management",
-                "description": "This group is for the store manangers",
-                "image": "default",
-                "website": null
-            }
-        }
-    ]
-}
+[
+    { "id": "...", "name": "crop-team", "path": "/crop-team" },
+    { "id": "...", "name": "equipment-team", "path": "/equipment-team" },
+    { "id": "...", "name": "external-consultants", "path": "/external-consultants" },
+    { "id": "...", "name": "farm-management", "path": "/farm-management" },
+    { "id": "...", "name": "livestock-team", "path": "/livestock-team" }
+]
 ```
 
-### Update an Organization
+### Update a Group
 
-To amend the details of an existing organization, a PATCH request is send to the `/v1/organizations/{{organization-id}}`
-endpoint.
+#### 1️⃣2️⃣ Request:
 
-#### 12 Request:
-
-```bash
-curl -iX PATCH \
-  'http://localhost:3005/v1/organizations/{{organization-id}}' \
+```console
+curl -iX PUT \
+  'http://localhost:3005/admin/realms/farm-management/groups/{{group-id}}' \
+  -H 'Authorization: Bearer {{token}}' \
   -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
-  -d '{
-    "organization": {
-        "name": "FIWARE Security",
-        "description": "The FIWARE Foundation is the legal independent body promoting, augmenting open-source FIWARE technologies",
-        "website": "https://fiware.org"
-    }
-}'
+  -d '{"name": "livestock-and-dairy-team"}'
 ```
 
 #### Response:
 
-The response contains a list of the fields which have been amended.
+A `204 No Content` response indicates the group was updated.
 
-```json
-{
-    "values_updated": {
-        "name": "FIWARE Security",
-        "description": "The FIWARE Foundation is the legal independent body promoting, augmenting open-source FIWARE technologies",
-        "website": "https://fiware.org"
-    }
-}
-```
+### Delete a Group
 
-### Delete an Organization
+#### 1️⃣3️⃣ Request:
 
-#### 13 Request:
-
-```bash
+```console
 curl -iX DELETE \
-  'http://localhost:3005/v1/organizations/{{organization-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+  'http://localhost:3005/admin/realms/farm-management/groups/{{group-id}}' \
+  -H 'Authorization: Bearer {{token}}'
 ```
 
-## Administrating Users within an Organization
+#### Response:
 
-Users within an Organization are assigned to one of types - `owner` or `member`. The members of an organization inherit
-all the roles and permissions assigned to the organization itself. In addition, owners of an organization are able to
-add and remove other members and owners.
+A `204 No Content` response indicates the group was deleted. Members of the group are not deleted; they simply lose any
+roles that were assigned at the group level.
 
-### Add a User as a Member of an Organization
+## Users within a Group
 
-To add a user to an organization using the GUI, first click on the existing organization, then click on the **Manage**
-button:
+### Add a User as a Member of a Group
 
-![](https://fiware.github.io/tutorials.Identity-Management/img/add-user-to-org.png)
+To add a user to a group, send a PUT request to `/admin/realms/{realm}/users/{user-id}/groups/{group-id}`. Both the user
+ID and group ID must be known before this call can be made. Use the List users and List groups endpoints to retrieve
+them.
 
-To add a user as a member of an organization, an owner must make a PUT request as shown, including the
-`<organization-id>` and `<user-id>` in the URL path and identifying themselves using an `X-Auth-Token` in the header.
+#### 1️⃣4️⃣ Request:
 
-#### 14 Request:
-
-```bash
+```console
 curl -iX PUT \
-  'http://localhost:3005/v1/organizations/{{organization-id}}/users/{{user-id}}/organization_roles/member' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+  'http://localhost:3005/admin/realms/farm-management/users/{{user-id}}/groups/{{group-id}}' \
+  -H 'Authorization: Bearer {{token}}'
 ```
 
 #### Response:
 
-The response lists the user's current role within the organization (i.e. `member`):
+A `204 No Content` response indicates the user was added to the group.
 
-```json
-{
-    "user_organization_assignments": {
-        "role": "member",
-        "organization_id": "18deea43-e12a-4018-a45a-664c3158780d",
-        "user_id": "5e482345-2c48-410e-ae03-203d67a43cea"
-    }
-}
-```
+### List Users within a Group
 
-### Add a User as an Owner of an Organization
+#### 1️⃣5️⃣ Request:
 
-An owner can also create new owners by making a PUT request as shown, including the `<organization-id>` and `<user-id>`
-in the URL path and identifying themselves using an `X-Auth-Token` in the header.
-
-#### 15 Request:
-
-```bash
-curl -iX PUT \
-  'http://localhost:3005/v1/organizations/{{organization-id}}/users/{{user-id}}/organization_roles/owner' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-The response lists the user's current role within the organization (i.e. `owner`):
-
-```json
-{
-    "user_organization_assignments": {
-        "role": "owner",
-        "user_id": "5e482345-2c48-410e-ae03-203d67a43cea",
-        "organization_id": "18deea43-e12a-4018-a45a-664c3158780d"
-    }
-}
-```
-
-### List Users within an Organization
-
-To list the users of an organization using the GUI, just click on the existing organization:
-
-![](https://fiware.github.io/tutorials.Identity-Management/img/org-with-users.png)
-
-Listing users within an organization is an `owner` or super-admin permission requiring the `X-Auth-token` Listing users
-can be done by making a GET request to the `/v1/organizations/{{organization-id}}/users` endpoint.
-
-#### 16 Request:
-
-```bash
+```console
 curl -X GET \
-  'http://localhost:3005/v1/organizations/{{organization-id}}/users' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+  'http://localhost:3005/admin/realms/farm-management/groups/{{group-id}}/members' \
+  -H 'Authorization: Bearer {{token}}'
 ```
 
 #### Response:
 
-The response contains the users list.
-
 ```json
-{
-    "organization_users": [
-        {
-            "user_id": "admin",
-            "organization_id": "18deea43-e12a-4018-a45a-664c3158780d",
-            "role": "owner"
-        },
-        {
-            "user_id": "5e482345-2c48-410e-ae03-203d67a43cea",
-            "organization_id": "18deea43-e12a-4018-a45a-664c3158780d",
-            "role": "member"
-        }
-    ]
-}
-```
-
-### Read User Roles within an Organization
-
-To find the role of a user within an organization, send a GET request to the
-`/v1/organizations/{{organization-id}}/users/{{user-id}}/organization_roles` endpoint.
-
-#### 17 Request:
-
-```bash
-curl -X GET \
-  'http://localhost:3005/v1/organizations/{{organization-id}}/users/{{user-id}}/organization_roles' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-The response returns the role of the given `<user-id>`:
-
-```json
-{
-    "organization_user": {
-        "user_id": "5e482345-2c48-410e-ae03-203d67a43cea",
-        "organization_id": "18deea43-e12a-4018-a45a-664c3158780d",
-        "role": "member"
+[
+    {
+        "id": "7b2a1e8f-3c4d-5e6f-7a8b-9c0d1e2f3a4b",
+        "username": "carol",
+        "firstName": "Carol",
+        "lastName": "Livestock",
+        "email": "carol@fiware.farm",
+        "enabled": true
+    },
+    {
+        "id": "8c3b2f9e-4d5e-6f7a-8b9c-0d1e2f3a4b5c",
+        "username": "frank",
+        "firstName": "Frank",
+        "lastName": "Worker",
+        "email": "frank@fiware.farm",
+        "enabled": true
     }
-}
+]
 ```
 
-### Remove a User from an Organization
+### Remove a User from a Group
 
-Owners and Super-Admins can remove a user from and organization by making a delete request.
+#### 1️⃣6️⃣ Request:
 
-#### 18 Request:
-
-```bash
-curl -X DELETE \
-  'http://localhost:3005/v1/organizations/{{organization-id}}/users/{{user-id}}/organization_roles/member' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
+```console
+curl -iX DELETE \
+  'http://localhost:3005/admin/realms/farm-management/users/{{user-id}}/groups/{{group-id}}' \
+  -H 'Authorization: Bearer {{token}}'
 ```
+
+#### Response:
+
+A `204 No Content` response indicates the user was removed from the group. The user account itself is not deleted.
+
+# Next Steps
+
+Want to learn how to add more complexity to your application by adding advanced features? You can find out by reading
+the other [NGSI-LD tutorials](https://ngsi-ld-tutorials.rtfd.io).
+
+---
+
+<a name="footnote1"></a>
+
+1. Referring to the definition from the [OASIS](https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=idtrust)
+   standard.

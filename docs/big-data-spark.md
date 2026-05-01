@@ -19,9 +19,9 @@ The tutorial uses [cUrl](https://ec.haxx.se/) commands throughout, but is also a
 
 # Real-time Processing and Big Data Analysis
 
-> "You have to find what sparks a light in you so that you in your own way can illuminate the world."
+> "Don't judge each day by the harvest you reap but by the seeds that you plant."
 >
-> — Oprah Winfrey
+> — Robert Louis Stevenson
 
 Smart solutions based on FIWARE are architecturally designed around microservices. They are therefore are designed to
 scale-up from simple applications (such as the Supermarket tutorial) through to city-wide installations base on a large
