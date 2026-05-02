@@ -31,7 +31,9 @@ function clearSession(req) {
 function decodeJwtPayload(token) {
     try {
         const parts = token.split('.');
-        if (parts.length !== 3) return null;
+        if (parts.length !== 3) {
+            return null;
+        }
         return JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf8'));
     } catch (_) {
         return null;
@@ -105,7 +107,7 @@ function authCodeGrantCallback(req, res) {
         return res.redirect('/');
     }
 
-    tokenPromise
+    return tokenPromise
         .then(({ status, body }) => {
             if (status !== 200 || !body.access_token) {
                 throw new Error(body.error_description || 'Token exchange failed');
@@ -188,7 +190,7 @@ function refreshTokenGrant(req, res) {
         return res.redirect('/');
     }
 
-    keycloak
+    return keycloak
         .refreshAccessToken(req.session.refresh_token)
         .then(({ status, body }) => {
             if (status !== 200 || !body.access_token) {
@@ -306,7 +308,7 @@ function authorizeKeycloakAuthz(permission) {
             return next();
         }
 
-        keycloak
+        return keycloak
             .requestUmaTicket(req.session.access_token, permission)
             .then(({ status }) => {
                 res.locals.authorized = status === 200;

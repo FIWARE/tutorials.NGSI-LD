@@ -83,10 +83,6 @@ function get(url, accessToken) {
     });
 }
 
-function basicAuth() {
-    return 'Basic ' + Buffer.from(clientId + ':' + clientSecret).toString('base64');
-}
-
 // PKCE helpers
 
 function generateCodeVerifier() {
