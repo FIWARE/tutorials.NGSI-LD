@@ -12,7 +12,6 @@ const Security = require('../security');
 const CONTEXT_BROKER = process.env.CONTEXT_BROKER || 'http://localhost:1026/ngsi-ld/v1';
 const DEVICE_BROKER = process.env.DEVICE_BROKER || CONTEXT_BROKER;
 const NGSI_LD_TENANT = process.env.NGSI_LD_TENANT !== undefined ? process.env.NGSI_LD_TENANT : 'openiot';
-const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
 
 const port = process.env.WEB_APP_PORT || '3000';
 const devicesPort = process.env.DUMMY_DEVICES_PORT || 3001;
@@ -129,26 +128,16 @@ function sendCommand(req, res) {
         });
 }
 
-// Ringing the bell and unlocking the door are restricted actions, everything else
-// can be done by any user. This is a simple access control function to ensure
-// only users who are authorized can do certain things.
+// Tractor commands (start/stop) require equipment-supervisor; water commands (on/off) require livestock-supervisor.
+// All other actions require authentication only.
+const SUPERVISED_ACTIONS = new Set(['start', 'stop', 'on', 'off']);
+
 function accessControl(req, res, next) {
     debug('accessControl');
     const action = req.body.action;
-    if (action === 'ring') {
-        // LEVEL 2: BASIC AUTHORIZATION - Resources are accessible on a User/Verb/Resource basis
-        // LEVEL 3: ADVANCED AUTHORIZATION - Resources are accessible on XACML Rules
-        return AUTHZFORCE_ENABLED
-            ? Security.authorizeAdvancedXACML(req, res, next, '/bell/ring')
-            : Security.authorizeBasicPDP(req, res, next, '/bell/ring');
-    } else if (action === 'unlock') {
-        // LEVEL 2: BASIC AUTHORIZATION - Resources are accessible on a User/Verb/Resource basis
-        // LEVEL 3: ADVANCED AUTHORIZATION - Resources are accessible on XACML Rules
-        return AUTHZFORCE_ENABLED
-            ? Security.authorizeAdvancedXACML(req, res, next, '/door/unlock')
-            : Security.authorizeBasicPDP(req, res, next, '/door/unlock');
+    if (SUPERVISED_ACTIONS.has(action)) {
+        return Security.authorizeBasicPDP(req, res, next);
     }
-    // LEVEL 1: AUTHENTICATION ONLY - Every user is authorized, just ensure the user exists.
     return Security.authenticate(req, res, next);
 }
 

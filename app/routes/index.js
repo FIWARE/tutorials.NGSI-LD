@@ -31,7 +31,6 @@ const TRANSPORT = process.env.DUMMY_DEVICES_TRANSPORT || 'HTTP';
 const DEVICE_PAYLOAD = process.env.DUMMY_DEVICES_PAYLOAD || 'ultralight';
 const SECURE_ENDPOINTS = process.env.SECURE_ENDPOINTS || false;
 const ENTITY_LIMIT = process.env.ENTITY_LIMIT || 200;
-//const AUTHZFORCE_ENABLED = process.env.AUTHZFORCE_ENABLED || false;
 
 const NOTIFY_ATTRIBUTES = ['controlledAsset', 'type', 'filling', 'humidity', 'temperature'];
 
@@ -174,11 +173,9 @@ router.get('/device/monitor', function (req, res) {
 });
 
 // Access to IoT devices is secured by a Policy Decision Point (PDP).
-// LEVEL 1: AUTHENTICATION ONLY -  For most actions, any user is authorized, just ensure the user exists.
-// LEVEL 2: BASIC AUTHORIZATION -  Ringing the alarm bell and unlocking the Door are restricted to certain
-//                                 users.
-// LEVEL 3: XACML AUTHORIZATION -  Ringing the alarm bell and unlocking the Door are restricted via XACML
-//                                 rules to certain users at certain times of day.
+// LEVEL 1: AUTHENTICATION ONLY -  For most actions, any logged-in user is authorized.
+// LEVEL 2: BASIC AUTHORIZATION -  Tractor (start/stop) and water (on/off) commands require a
+//                                 supervisor role (equipment-supervisor or livestock-supervisor).
 router.post('/device/command', DeviceListener.accessControl, DeviceListener.sendCommand);
 
 // Retrieve Device History from STH-Comet
