@@ -1,0 +1,20 @@
+DEBUG=tutorial:* \
+WEB_APP_PORT=3000 \
+IOTA_HTTP_HOST=localhost \
+IOTA_HTTP_PORT=7896 \
+IOTA_DEFAULT_RESOURCE=/iot/json \
+DUMMY_DEVICES=http://localhost:3001 \
+DUMMY_DEVICES_PORT=3001 \
+DUMMY_DEVICES_TRANSPORT=HTTP \
+DUMMY_DEVICES_PAYLOAD=JSON \
+CONTEXT_BROKER=http://localhost:1026/ngsi-ld/v1 \
+MONGO_URL=mongodb://localhost:27017 \
+IOTA_JSON_LD_CONTEXT=http://context/ngsi-context.jsonld \
+NGSI_LD_TENANT=openiot \
+SECURE_ENDPOINTS=true \
+OIDC_ISSUER=http://localhost:3005/realms/farm-management \
+OIDC_CLIENT_ID=ngsi-ld-farm \
+OIDC_CLIENT_SECRET=1234 \
+OIDC_REDIRECT_URI=http://localhost:3000/login/callback \
+OIDC_SCOPE="openid profile email" \
+npm start

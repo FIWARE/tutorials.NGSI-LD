@@ -1,115 +1,123 @@
-const OAuth2 = require('../lib/oauth2').OAuth2;
 const debug = require('debug')('tutorial:security');
-const keyrockPort = process.env.KEYROCK_PORT || '3005';
-const keyrockUrl = (process.env.KEYROCK_URL || 'http://localhost') + ':' + keyrockPort;
-const keyrockIPAddress = (process.env.KEYROCK_IP_ADDRESS || 'http://127.0.0.1') + ':' + keyrockPort;
-const clientId = process.env.KEYROCK_CLIENT_ID || 'tutorial-dckr-site-0000-xpresswebapp';
-const clientSecret = process.env.KEYROCK_CLIENT_SECRET || 'tutorial-dkcr-site-0000-clientsecret';
+const keycloak = require('../lib/keycloak');
+
 const port = process.env.WEB_APP_PORT || '3000';
-const callbackURL = process.env.CALLBACK_URL || 'http://localhost:' + port + '/login';
 const SECURE_ENDPOINTS = process.env.SECURE_ENDPOINTS || false;
 
-// Creates oauth library object with the config data
-const oa = new OAuth2(
-    clientId,
-    clientSecret,
-    keyrockUrl,
-    keyrockIPAddress,
-    '/oauth2/authorize',
-    '/oauth2/token',
-    callbackURL
-);
+// ─── Session helpers ──────────────────────────────────────────────────────────
 
-function logAccessToken(req, accessToken, refreshToken, store = true) {
-    debug('<strong>Access Token</strong> received ' + accessToken);
-    req.flash('info', 'access_token: <code>' + accessToken + '</code>');
-    req.session.access_token = store ? accessToken : undefined;
-    if (refreshToken) {
-        req.flash('info', 'refresh_token:  <code>' + refreshToken + '</code>');
-        req.session.refresh_token = store ? refreshToken : undefined;
+function storeTokens(req, tokens) {
+    req.session.access_token = tokens.access_token;
+    req.session.refresh_token = tokens.refresh_token || undefined;
+    req.session.id_token = tokens.id_token || undefined;
+    if (tokens.access_token) {
+        req.session.claims = decodeJwtPayload(tokens.access_token);
     }
 }
 
-function logUser(req, user, message) {
-    debug('The user is ' + user.username);
-    req.flash('success', user.username + ' ' + message);
-    req.session.username = user.username;
+function clearSession(req) {
+    req.session.access_token = undefined;
+    req.session.refresh_token = undefined;
+    req.session.id_token = undefined;
+    req.session.claims = undefined;
+    req.session.pkce_verifier = undefined;
+    req.session.oauth_state = undefined;
+    req.session.username = undefined;
 }
 
-function getUserFromAccessToken(req, accessToken) {
-    debug('getUserFromAccessToken');
-    return new Promise(function (resolve, reject) {
-        // Using the access token asks the IDM for the user info
-        oa.get(keyrockIPAddress + '/user', accessToken)
-            .then((response) => {
-                const user = JSON.parse(response);
-                return resolve(user);
-            })
-            .catch((error) => {
-                debug(error);
-                req.flash('error', 'User not found');
-                return reject(error);
-            });
-    });
-}
-
-// Handles callback responses from Keyrock with the access code or token
-function logInCallback(req, res) {
-    if (req.query.token) {
-        // If we have received an access_token, this is an Implicit Grant
-        implicitGrantCallback(req, res);
-    } else if (req.query.code) {
-        // If no access_token is received, this is an authCode Grant
-        authCodeGrantCallback(req, res);
+// Decode a JWT payload without verifying the signature (verification is done
+// either via JWKS or via introspection; this is only used to read claims that
+// are already trusted because they came from a valid token exchange).
+function decodeJwtPayload(token) {
+    try {
+        const parts = token.split('.');
+        if (parts.length !== 3) return null;
+        return JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf8'));
+    } catch (_) {
+        return null;
     }
 }
 
-// Redirection to Keyrock for an Implicit Token Grant
-function implicitGrant(req, res) {
-    debug('implicitGrant');
-    const path = oa.getAuthorizeUrl('token');
-    return res.redirect(path);
-}
-// Response from Keyrock for an Implicit Token Grant
-function implicitGrantCallback(req, res) {
-    debug('implicitGrantCallback');
-    // With the implicit grant, an access token is included in the response
-    logAccessToken(req, req.query.token, null);
-
-    return getUserFromAccessToken(req, req.query.token)
-        .then((user) => {
-            logUser(req, user, 'logged in with <strong>Implicit Grant</strong>');
-            return res.redirect('/');
-        })
-        .catch((error) => {
-            debug(error);
-            req.flash('error', 'Access Denied');
-            return res.redirect('/');
-        });
+function getRoles(req) {
+    const claims = req.session.claims || decodeJwtPayload(req.session.access_token);
+    return (claims && claims.realm_access && claims.realm_access.roles) || [];
 }
 
-// Authorization Code Grant
+// ─── Grant flows ──────────────────────────────────────────────────────────────
 
-// Redirection to Keyrock for an Authorization Code Grant
+// Initiate PKCE Authorization Code flow — redirect to Keycloak login page
 function authCodeGrant(req, res) {
     debug('authCodeGrant');
-    const path = oa.getAuthorizeUrl('code');
-    return res.redirect(path);
+    const verifier = keycloak.generateCodeVerifier();
+    const challenge = keycloak.generateCodeChallenge(verifier);
+    const state = require('crypto').randomBytes(16).toString('hex');
+
+    req.session.pkce_verifier = verifier;
+    req.session.oauth_state = state;
+
+    const url = keycloak.getAuthorizeUrl(state, challenge);
+    debug('Redirecting to Keycloak: ' + url);
+    return res.redirect(url);
 }
-// Response from Keyrock for an Authorization Code Grant
+
+// Initiate Implicit flow — redirect to Keycloak login page
+function implicitGrant(req, res) {
+    debug('implicitGrant');
+    const state = require('crypto').randomBytes(16).toString('hex');
+    req.session.oauth_state = state;
+
+    const url = keycloak.getImplicitAuthorizeUrl(state);
+    debug('Redirecting to Keycloak (Implicit): ' + url);
+    return res.redirect(url);
+}
+
+// Handle the callback from Keycloak after user authentication
 function authCodeGrantCallback(req, res) {
     debug('authCodeGrantCallback');
-    // With the authcode grant, a code is included in the response
-    // We need to make a second request to obtain an access token
-    debug('Auth Code received ' + req.query.code);
-    return oa
-        .getOAuthAccessToken(req.query.code)
-        .then((results) => {
-            logAccessToken(req, results.access_token, results.refresh_token);
-            return getUserFromAccessToken(req, results.access_token);
+    const params = req.method === 'POST' ? req.body : req.query;
+
+    if (params.error) {
+        debug('Auth error: ' + params.error_description);
+        req.flash('error', 'Access Denied: ' + (params.error_description || params.error));
+        return res.redirect('/');
+    }
+
+    if (params.state !== req.session.oauth_state) {
+        debug('Invalid OAuth state: expected ' + req.session.oauth_state + ' but got ' + params.state);
+        req.flash('error', 'Invalid OAuth state — possible CSRF');
+        return res.redirect('/');
+    }
+
+    const code = params.code;
+    const accessToken = params.access_token;
+    const verifier = req.session.pkce_verifier;
+
+    let tokenPromise;
+
+    if (accessToken) {
+        // If we have an access_token directly, this is an Implicit or Hybrid Grant
+        tokenPromise = Promise.resolve({ status: 200, body: params });
+    } else if (code && verifier) {
+        // If we have a code and a verifier, this is an Authorization Code + PKCE Grant
+        tokenPromise = keycloak.exchangeCode(code, verifier);
+    } else {
+        req.flash('error', 'Missing authorization code or tokens');
+        return res.redirect('/');
+    }
+
+    tokenPromise
+        .then(({ status, body }) => {
+            if (status !== 200 || !body.access_token) {
+                throw new Error(body.error_description || 'Token exchange failed');
+            }
+            storeTokens(req, body);
+            return keycloak.getUserInfo(body.access_token);
         })
-        .then((user) => {
-            logUser(req, user, 'logged in with <strong>Authorization Code</strong>');
+        .then(({ body: user }) => {
+            const username = user.preferred_username || user.sub;
+            debug('User logged in: ' + username);
+            req.session.username = username;
+            req.flash('success', username + ' logged in');
             return res.redirect('/');
         })
         .catch((error) => {
@@ -119,14 +127,19 @@ function authCodeGrantCallback(req, res) {
         });
 }
 
-// This function offers the Client credentials flow
-// It is just the application logging in on its own without a user
+// Client Credentials grant — application logs in without a user
 function clientCredentialGrant(req, res) {
     debug('clientCredentialGrant');
 
-    oa.getOAuthClientCredentials()
-        .then((results) => {
-            logAccessToken(req, results.access_token, results.refresh_token, false);
+    keycloak
+        .getClientCredentials()
+        .then(({ status, body }) => {
+            if (status !== 200 || !body.access_token) {
+                throw new Error(body.error_description || 'Client credentials failed');
+            }
+            storeTokens(req, body);
+            req.session.username = 'Application';
+            req.flash('info', 'access_token: <code>' + body.access_token + '</code>');
             req.flash('success', 'Application logged in with <strong>Client Credentials</strong>');
             return res.redirect('/');
         })
@@ -137,23 +150,26 @@ function clientCredentialGrant(req, res) {
         });
 }
 
-// This function offers the Password Authentication flow
-// It is just a user filling out the Username and password form.
+// User Credentials grant — user logs in with username and password
 function userCredentialGrant(req, res) {
     debug('userCredentialGrant');
-
     const email = req.body.email;
     const password = req.body.password;
 
-    // With the Password flow, an access token is returned in
-    // the response.
-    oa.getOAuthPasswordCredentials(email, password)
-        .then((results) => {
-            logAccessToken(req, results.access_token, results.refresh_token);
-            return getUserFromAccessToken(req, results.access_token);
+    keycloak
+        .getUserCredentials(email, password)
+        .then(({ status, body }) => {
+            if (status !== 200 || !body.access_token) {
+                throw new Error(body.error_description || 'Password grant failed');
+            }
+            storeTokens(req, body);
+            return keycloak.getUserInfo(body.access_token);
         })
-        .then((user) => {
-            logUser(req, user, 'logged in with <strong>Password</strong>');
+        .then(({ body: user }) => {
+            const username = user.preferred_username || user.sub;
+            debug('User logged in: ' + username);
+            req.session.username = username;
+            req.flash('success', username + ' logged in with <strong>Password</strong>');
             return res.redirect('/');
         })
         .catch((error) => {
@@ -163,8 +179,7 @@ function userCredentialGrant(req, res) {
         });
 }
 
-// This function offers the Password Authentication flow
-// It is just a user filling out the Username and password form.
+// Refresh Token grant — obtain new tokens without re-authentication
 function refreshTokenGrant(req, res) {
     debug('refreshTokenGrant');
 
@@ -173,117 +188,147 @@ function refreshTokenGrant(req, res) {
         return res.redirect('/');
     }
 
-    // With the Refresh Token flow, an access token is returned in
-    // the response.
-    return oa
-        .getOAuthRefreshToken(req.session.refresh_token)
-        .then((results) => {
-            logAccessToken(req, results.access_token, results.refresh_token);
-            return getUserFromAccessToken(req, results.access_token);
-        })
-        .then((user) => {
-            logUser(req, user, '<strong>refreshed token</strong>');
+    keycloak
+        .refreshAccessToken(req.session.refresh_token)
+        .then(({ status, body }) => {
+            if (status !== 200 || !body.access_token) {
+                throw new Error(body.error_description || 'Token refresh failed');
+            }
+            storeTokens(req, body);
+            const username = req.session.username || 'User';
+            req.flash('success', username + ' <strong>refreshed token</strong>');
+            req.flash('info', 'access_token: <code>' + body.access_token + '</code>');
             return res.redirect('/');
         })
         .catch((error) => {
             debug(error);
-            req.flash('error', 'Access Denied');
+            req.flash('error', 'Token refresh failed');
             return res.redirect('/');
         });
 }
 
-// Use of Keyrock as a PDP (Policy Decision Point)
-// LEVEL 1: AUTHENTICATION ONLY - Any user is authorized, just ensure the user exists.
+// Log out — redirect to Keycloak end-session endpoint
+function logOut(req, res) {
+    debug('logOut');
+    const idToken = req.session.id_token;
+    const username = req.session.username;
+    clearSession(req);
+    if (username) {
+        req.flash('success', username + ' logged out');
+    }
+    const postLogout = 'http://localhost:' + port + '/';
+    return res.redirect(keycloak.getLogoutUrl(idToken, postLogout));
+}
+
+// ─── PDP middleware ───────────────────────────────────────────────────────────
+
+// LEVEL 1: Authentication only — any valid (non-expired) token passes.
+// The JWT is decoded to populate req.session.claims; no network call needed
+// because the token was issued by our Keycloak and stored server-side.
 function authenticate(req, res, next) {
     debug('authenticate');
 
     if (!SECURE_ENDPOINTS) {
         res.locals.authorized = true;
-    } else {
-        res.locals.authorized = !!req.session.access_token;
-    }
-    return next();
-}
-
-// By Default always allow access if security is disabled.
-// If security is enabled and no session is found, always deny access.
-function bypassAuthorization(req, res) {
-    if (!SECURE_ENDPOINTS) {
-        res.locals.authorized = true;
-        return true;
-    } else if (!req.session.access_token) {
-        debug('No session found');
-        res.locals.authorized = false;
-        return true;
-    }
-    return false;
-}
-
-// Use of Keyrock as a PDP (Policy Decision Point)
-// LEVEL 2: BASIC AUTHORIZATION - Resources are accessible on a User/Verb/Resource basis
-function authorizeBasicPDP(req, res, next, resource = req.url) {
-    debug('authorizeBasicPDP');
-
-    if (bypassAuthorization(req, res)) {
         return next();
     }
 
-    // Using the access token asks the IDM for the user info
+    if (!req.session.access_token) {
+        res.locals.authorized = false;
+        return next();
+    }
 
-    const keyrockUserUrl =
-        keyrockIPAddress +
-        '/user' +
-        '?access_token=' +
-        req.session.access_token +
-        '&app_id=' +
-        clientId +
-        '&action=' +
-        req.method +
-        '&resource=' +
-        resource;
+    const claims = req.session.claims || decodeJwtPayload(req.session.access_token);
 
-    return oa
-        .get(keyrockUserUrl)
-        .then((response) => {
-            const user = JSON.parse(response);
-            res.locals.authorized = user.authorization_decision === 'Permit';
-            return next();
-        })
-        .catch((error) => {
-            debug(error);
-            res.locals.authorized = false;
-            return next();
-        });
-}
+    if (!claims) {
+        res.locals.authorized = false;
+        return next();
+    }
 
-// Use of Authzforce as a PDP (Policy Decision Point)
-// LEVEL 3: ADVANCED AUTHORIZATION - Resources are accessible via XACML Rules
-/* eslint-disable-next-line no-unused-vars */
-function authorizeAdvancedXACML(req, res, next, resource = req.url) {
-    // Not implemented
+    const now = Math.floor(Date.now() / 1000);
+    if (claims.exp && claims.exp < now) {
+        debug('Token expired');
+        res.locals.authorized = false;
+        return next();
+    }
+
+    res.locals.authorized = true;
     return next();
 }
 
-// Handles logout requests to remove access_token from the session cookie
-function logOut(req, res) {
-    debug('logOut');
-    req.flash('success', req.session.username + ' logged out');
-    req.session.access_token = undefined;
-    req.session.refresh_token = undefined;
-    req.session.username = undefined;
-    return res.redirect('/');
+// LEVEL 2: Role-based authorization — inspect realm_access.roles in the JWT.
+// No network call required; roles were encoded into the token by Keycloak.
+function authorizeBasicPDP(req, res, next) {
+    debug('authorizeBasicPDP');
+
+    if (!SECURE_ENDPOINTS) {
+        res.locals.authorized = true;
+        return next();
+    }
+
+    if (!req.session.access_token) {
+        res.locals.authorized = false;
+        return next();
+    }
+
+    const roles = getRoles(req);
+    const method = req.method.toUpperCase();
+
+    // farm-manager can do everything; read-only-consultant can only GET
+    if (roles.includes('farm-manager')) {
+        res.locals.authorized = true;
+    } else if (method === 'GET' || method === 'HEAD') {
+        res.locals.authorized = roles.length > 0;
+    } else {
+        // POST / PATCH / DELETE require a write-capable role
+        res.locals.authorized =
+            roles.includes('livestock-supervisor') ||
+            roles.includes('crop-supervisor') ||
+            roles.includes('equipment-supervisor');
+    }
+
+    return next();
+}
+
+// LEVEL 3: Keycloak Authorization Services (UMA 2.0 ticket exchange).
+// Calls Keycloak to evaluate a specific resource#scope permission.
+function authorizeKeycloakAuthz(permission) {
+    return function (req, res, next) {
+        debug('authorizeKeycloakAuthz: ' + permission);
+
+        if (!SECURE_ENDPOINTS) {
+            res.locals.authorized = true;
+            return next();
+        }
+
+        if (!req.session.access_token) {
+            res.locals.authorized = false;
+            return next();
+        }
+
+        keycloak
+            .requestUmaTicket(req.session.access_token, permission)
+            .then(({ status }) => {
+                res.locals.authorized = status === 200;
+                return next();
+            })
+            .catch((error) => {
+                debug(error);
+                res.locals.authorized = false;
+                return next();
+            });
+    };
 }
 
 module.exports = {
     authCodeGrant,
+    authCodeGrantCallback,
+    implicitGrant,
     clientCredentialGrant,
     userCredentialGrant,
-    implicitGrant,
     refreshTokenGrant,
     authenticate,
     authorizeBasicPDP,
-    authorizeAdvancedXACML,
-    logInCallback,
-    logOut,
-    oa
+    authorizeKeycloakAuthz,
+    logOut
 };

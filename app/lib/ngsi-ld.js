@@ -47,7 +47,9 @@ function createAttribute(entityId, body, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 201) {
-                throw new Error('', { cause: data.body });
+                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                error.cause = data.body;
+                throw error;
             }
             return data.body;
         });
@@ -63,7 +65,9 @@ function readAttribute(entityId, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 200) {
-                throw new Error('', { cause: data.body });
+                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                error.cause = data.body;
+                throw error;
             }
             return data.body;
         });
@@ -80,7 +84,9 @@ function updateAttribute(entityId, body, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 204) {
-                throw new Error('', { cause: data.body });
+                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                error.cause = data.body;
+                throw error;
             }
             return data.body;
         });
@@ -96,7 +102,9 @@ function deleteAttribute(entityId, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 204) {
-                throw new Error('', { cause: data.body });
+                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                error.cause = data.body;
+                throw error;
             }
             return data.body;
         });
@@ -113,7 +121,9 @@ function createEntity(entityId, type, body, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 201) {
-                throw new Error('', { cause: data.body });
+                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                error.cause = data.body;
+                throw error;
             }
             return data.body;
         });
@@ -130,7 +140,9 @@ function updateEntity(entityId, body, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 204) {
-                throw new Error('', { cause: data.body });
+                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                error.cause = data.body;
+                throw error;
             }
             return data.body;
         });
@@ -146,7 +158,9 @@ function deleteEntity(entityId, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 204) {
-                throw new Error('', { cause: data.body });
+                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                error.cause = data.body;
+                throw error;
             }
             return data.body;
         });
@@ -155,14 +169,21 @@ function deleteEntity(entityId, headers = {}) {
 // This is a promise to make an HTTP GET request to the
 // /ngsi-ld/v1/entities/<entity-id> end point
 function readEntity(entityId, opts, headers = {}) {
-    return fetch(`${BASE_PATH}/entities/${entityId}/?${new URLSearchParams(opts)}`, {
+    const params = { ...opts };
+    if (params.format) {
+        params.options = params.format === 'simplified' ? 'keyValues' : params.format;
+        delete params.format;
+    }
+    return fetch(`${BASE_PATH}/entities/${entityId}/?${new URLSearchParams(params)}`, {
         method: 'GET',
         headers
     })
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 200) {
-                throw new Error('', { cause: data.body });
+                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                error.cause = data.body;
+                throw error;
             }
             return data.body;
         });
@@ -171,14 +192,25 @@ function readEntity(entityId, opts, headers = {}) {
 // This is a promise to make an HTTP GET request to the
 // /ngsi-ld/v1/entities/ end point
 function listEntities(opts, headers = {}) {
-    return fetch(`${BASE_PATH}/entities/?${new URLSearchParams(opts)}`, {
+    const params = { ...opts };
+    if (params.format) {
+        params.options = params.format === 'simplified' ? 'keyValues' : params.format;
+        delete params.format;
+    }
+    if (params.pick) {
+        params.attrs = params.pick;
+        delete params.pick;
+    }
+    return fetch(`${BASE_PATH}/entities/?${new URLSearchParams(params)}`, {
         method: 'GET',
         headers
     })
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 200) {
-                throw new Error(data.body);
+                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                error.cause = data.body;
+                throw error;
             }
             return data.body;
         });
@@ -192,7 +224,9 @@ function readTemporalEntity(entityId, opts, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 200) {
-                throw new Error('', { cause: data.body });
+                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                error.cause = data.body;
+                throw error;
             }
             return data.body;
         });

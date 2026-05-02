@@ -150,13 +150,15 @@ router.get('/', async function (req, res) {
     }
 });
 
-// Logs users in and out using Keyrock.
-router.get('/login', Security.logInCallback);
-router.get('/clientCredentials', Security.clientCredentialGrant);
+// Keycloak OIDC flows
+router.get('/login', Security.authCodeGrant);
+router.get('/login/callback', Security.authCodeGrantCallback);
+router.post('/login/callback', Security.authCodeGrantCallback);
+router.get('/authCodeGrant', Security.authCodeGrant);
 router.get('/implicitGrant', Security.implicitGrant);
+router.get('/clientCredentials', Security.clientCredentialGrant);
 router.post('/userCredentials', Security.userCredentialGrant);
 router.post('/refreshToken', Security.refreshTokenGrant);
-router.get('/authCodeGrant', Security.authCodeGrant);
 router.get('/logout', Security.logOut);
 
 // Render the monitoring page
@@ -219,8 +221,8 @@ router.get('/vp/monitor', function (req, res) {
     res.render('trust', { title: 'Trust Monitor' });
 });
 
-// Viewing Store information is secured by Keyrock PDP.
-// LEVEL 1: AUTHENTICATION ONLY - Users must be logged in to view the store page.
+// Farm data routes secured by Keycloak PDP.
+// LEVEL 1: AUTHENTICATION ONLY - Users must be logged in to view farm data.
 
 router.get('/app/animals/locations.json', Animal.geojson);
 router.get('/app/animals', Security.authenticate, Animal.displayMap);

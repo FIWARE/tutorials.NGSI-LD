@@ -39,6 +39,8 @@
     "http-errors": "^2.0.0",
     "http-status-codes": "^2.1.4",
     "jsonld": "^8.3.3",
+    "jsonwebtoken": "^9.0.0",
+    "jwks-rsa": "^3.0.0",
     "lodash": "^4.17.21",
     "moment": "~2.29.1",
     "moment-timezone": "~0.5.25",

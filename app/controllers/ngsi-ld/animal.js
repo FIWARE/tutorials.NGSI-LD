@@ -20,7 +20,7 @@ async function getAnimals(req, res) {
         },
         headers
     );
-    if(animals && animals.features){
+    if (animals && animals.features) {
         animals.features.forEach((animal) => {
             animal.properties.id = animal.id;
         });

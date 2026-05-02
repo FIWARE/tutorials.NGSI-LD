@@ -4,7 +4,7 @@ const https = require('https');
 
 const http = require('http');
 
-const URL = require('url');
+const { URL } = require('url');
 
 exports.OAuth2 = function (
     clientId,
@@ -52,7 +52,7 @@ exports.OAuth2.prototype.buildAuthHeader = function () {
 
 exports.OAuth2.prototype._request = function (method, url, headers, postBody, accessToken, callback) {
     let httpLibrary = https;
-    const parsedUrl = URL.parse(url, true);
+    const parsedUrl = new URL(url);
     if (parsedUrl.protocol === 'https:' && !parsedUrl.port) {
         parsedUrl.port = 443;
     }
@@ -75,20 +75,13 @@ exports.OAuth2.prototype._request = function (method, url, headers, postBody, ac
 
     //realHeaders['Content-Length']= postBody ? Buffer.byteLength(postBody) : 0;
     if (accessToken && !('Authorization' in realHeaders)) {
-        if (!parsedUrl.query) {
-            parsedUrl.query = {};
-        }
-        parsedUrl.query[this._accessTokenName] = accessToken;
+        parsedUrl.searchParams.set(this._accessTokenName, accessToken);
     }
 
-    let queryStr = querystring.stringify(parsedUrl.query);
-    if (queryStr) {
-        queryStr = '?' + queryStr;
-    }
     const options = {
         host: parsedUrl.hostname,
         port: parsedUrl.port,
-        path: parsedUrl.pathname + queryStr,
+        path: parsedUrl.pathname + parsedUrl.search,
         method,
         headers: realHeaders
     };

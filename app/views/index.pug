@@ -20,25 +20,33 @@ block content
 
   - if (securityEnabled)
     - if (!session.username)
-      div(style='width:20em;line-height: 1.6;')
-        ul(style='list-style-type: none;')
-          li
-            a.button(href="authCodeGrant") Authorization Code
-          li
-            a.button(href="clientCredentials") Client Credentials
-          li
-            a.button(href="implicitGrant") Implicit Grant
-        form(action='userCredentials',method='post')
-          div
-            label(for='email') email: &nbsp;
-              input(id='email',type='text',value='',placeholder='@',name='email')
-          div
-            label(for='password') password: &nbsp;
-              input(id='password',type='password',value='',placeholder='',name='password')
-          div  
-            ul(style='list-style-type: none;')
-              li
-                input.button(type='submit',value='User Credentials')
+      div.card(style='width:20em;margin-bottom:1em;')
+        div.card-body
+          ul(style='list-style-type: none; padding-left: 0;')
+            li
+              a.button(href="authCodeGrant") Authorization Code
+            li
+              a.button(href="clientCredentials") Client Credentials
+            li
+              a.button(href="implicitGrant") Implicit Grant
+          hr
+          form(action='userCredentials',method='post')
+            div.mb-3
+              label.form-label(for='email') Email:
+              input.form-control.form-control-sm(id='email',type='text',value='',placeholder='@',name='email')
+            div.mb-3
+              label.form-label(for='password') Password:
+              input.form-control.form-control-sm(id='password',type='password',value='',placeholder='',name='password')
+            div  
+              input.btn.btn-primary.btn-sm(type='submit',value='User Credentials')
+  div
+    - if (session.username)
+      ul.list-inline
+        li.list-inline-item
+          a.btn.btn-secondary.btn-sm(href="logout") Log out
+        li.list-inline-item
+          form(action='refreshToken',method='post') 
+            input.btn.btn-primary.btn-sm(type='submit',value='Refresh Token')
   div.row
     div.col
       h3 Monitors
@@ -146,15 +154,7 @@ block content
                 li.list-inline-item
                   img(class="p-2" src='/img/corn.png' width="32" height="32")
                   a(class="link-underline link-underline-opacity-0" href=`app/agriparcel/${parcel.id}`)  #{parcel.name}
-  div
-    h3
-    - if (session.username)
-      ul.list-unstyled
-        li
-          a.button(href="logout") Log out
-        li
-          form(action='refreshToken',method='post') 
-            input.button(type='submit',value='Refresh Token')
+
 
   hr
   small
