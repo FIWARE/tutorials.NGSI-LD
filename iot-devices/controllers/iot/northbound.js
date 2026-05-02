@@ -24,7 +24,7 @@ function setAuthToken(header, callback) {
       process.env.DUMMY_DEVICES_PASSWORD
     )
     .then((results) => {
-      header['X-Auth-Token'] = results.access_token;
+      header.Authorization = `Bearer ${results.access_token}`;
       callback();
     })
     .catch((error) => {

@@ -110,7 +110,7 @@ function sendCommand(req, res) {
     if (req.session.access_token) {
         // If the system has been secured and we have logged in,
         // add the access token to the request to the PEP Proxy
-        options.headers['X-Auth-Token'] = req.session.access_token;
+        options.headers.Authorization = `Bearer ${req.session.access_token}`;
     }
 
     debug(JSON.stringify(options));

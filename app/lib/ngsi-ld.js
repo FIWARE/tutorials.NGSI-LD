@@ -25,7 +25,7 @@ function setHeaders(accessToken, link, contentType) {
     if (accessToken) {
         // If the system has been secured and we have logged in,
         // add the access token to the request to the PEP Proxy
-        headers['X-Auth-Token'] = accessToken;
+        headers.Authorization = `Bearer ${accessToken}`;
     }
     if (link) {
         headers.Link = link;
