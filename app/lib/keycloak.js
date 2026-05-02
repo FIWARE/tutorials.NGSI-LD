@@ -5,16 +5,17 @@ const { URL } = require('url');
 const querystring = require('querystring');
 
 const issuer = process.env.OIDC_ISSUER || 'http://keycloak:8080/realms/farm-management';
+const keycloakUrl = process.env.KEYCLOAK_URL || issuer;
 const clientId = process.env.OIDC_CLIENT_ID || 'ngsi-ld-farm';
 const clientSecret = process.env.OIDC_CLIENT_SECRET || '1234';
 const redirectUri = process.env.OIDC_REDIRECT_URI || 'http://localhost:3000/login/callback';
 const scope = process.env.OIDC_SCOPE || 'openid profile email';
 
 const tokenEndpoint = issuer + '/protocol/openid-connect/token';
-const authEndpoint = issuer + '/protocol/openid-connect/auth';
+const authEndpoint = keycloakUrl + '/protocol/openid-connect/auth';
 const userInfoEndpoint = issuer + '/protocol/openid-connect/userinfo';
 const introspectEndpoint = issuer + '/protocol/openid-connect/token/introspect';
-const endSessionEndpoint = issuer + '/protocol/openid-connect/logout';
+const endSessionEndpoint = keycloakUrl + '/protocol/openid-connect/logout';
 const jwksEndpoint = issuer + '/protocol/openid-connect/certs';
 
 function post(url, body, extraHeaders) {
