@@ -86,23 +86,47 @@ git checkout NGSI-LD
 
 <h3>Dramatis Personae</h3>
 
-The following users have accounts within the application, provisioned by the `import_users` script:
+The following people at `fiware.farm` legitimately have accounts within the Farm Management Information System:
 
-| User  | Role                   | Group                  |
-| ----- | ---------------------- | ---------------------- |
-| alice | System Administrator   | (none — realm admin)   |
-| bob   | `farm-manager`         | `farm-management`      |
-| carol | `livestock-supervisor` | `livestock-team`       |
-| dave  | `crop-supervisor`      | `crop-team`            |
-| eve   | `equipment-supervisor` | `equipment-team`       |
-| frank | `field-worker`         | `livestock-team`       |
-| grace | `field-worker`         | `livestock-team`       |
-| harry | `field-worker`         | `crop-team`            |
-| ivy   | `field-worker`         | `equipment-team`       |
-| jenny | `read-only-consultant` | `external-consultants` |
-| ken   | `read-only-consultant` | `external-consultants` |
+-   **Bob**, the Farm Manager - he has full control over the farm and all entities.
+-   **Carol**, a Livestock Supervisor - she manages animals and related sensors (water, filling levels).
+-   **Jenny**, a Read-Only Consultant - an external auditor who can view all farm data but cannot make changes.
+-   **Alice**, the System Administrator - she manages the Keycloak instance but does not have direct access to farm data
+    by default.
 
-All accounts use the password `test`.
+The following person at `fiware.farm` has signed up for an account but has no reason to be granted access:
+
+-   **Mallory**, the Malicious Attacker - she should be denied access to all farm resources.
+
+<h4>1. Defined Roles & Capabilities</h4>
+
+The following roles are defined within the `farm-management` realm:
+
+| Role                       | Description                          | Access Level                           |
+| :------------------------- | :----------------------------------- | :------------------------------------- |
+| **`farm-manager`**         | Full control over the farm.          | **Read & Write** (All Entities)        |
+| **`livestock-supervisor`** | Manages animals and related sensors. | **Read & Write** (Animal, Water, etc.) |
+| **`read-only-consultant`** | External auditor/viewer.             | **Read Only** (All Entities)           |
+| **`crop-supervisor`**      | Manages fields and weather data.     | Read & Write (Fields, Soil)            |
+| **`equipment-supervisor`** | Manages tractors and machinery.      | Read & Write (Tractors)                |
+| **`field-worker`**         | Worker on the ground.                | Read (Domain), Write (Measurements)    |
+
+<h4>2. User Assignments (Initial Setup)</h4>
+
+For the purpose of this tutorial, the following users have been provisioned with the credentials below (password is
+always `test`):
+
+| User        | Group                  | Assigned Role      | Effective Rights                              |
+| :---------- | :--------------------- | :----------------- | :-------------------------------------------- |
+| **Bob**     | `farm-management`      | **`farm-manager`** | **Full Read/Write** access to all entities.   |
+| **Carol**   | `livestock-team`       | _None (Directly)_  | **Access Denied** (No role mapping for group) |
+| **Jenny**   | `external-consultants` | _None (Directly)_  | **Access Denied** (No role mapping for group) |
+| **Alice**   | _None_                 | _None_             | **Access Denied** (No roles assigned)         |
+| **Mallory** | _None_                 | _None_             | **Access Denied** (No roles assigned)         |
+
+<blockquote style="border-left-color:#002e67;background-color:#ededee;color:#002e67">
+    <p><b>Note:</b> In the initial setup, <b>Bob</b> is the only user with functional access to the data because he is the only one explicitly assigned a role (<code>farm-manager</code>). For Carol or Jenny to have access, their respective groups would need to be mapped to the <code>livestock-supervisor</code> or <code>read-only-consultant</code> roles within Keycloak.</p>
+</blockquote>
 
 ## Logging In via REST API
 

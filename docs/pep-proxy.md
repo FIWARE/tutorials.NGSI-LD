@@ -1,13 +1,13 @@
 [![FIWARE Security](https://fiware.github.io/catalogue/badges/chapters/security.svg)](https://github.com/FIWARE/catalogue/blob/master/security/README.md)
 [![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.03.01_60/gs_cim009v010301p.pdf)
 
-**Description:** This tutorial uses a PEP Proxy combined with the Keyrock to secure access to endpoints exposed by
+**Description:** This tutorial uses a PEP Proxy combined with the Keycloak to secure access to endpoints exposed by
 FIWARE generic enablers. Users (or other actors) must log in and use a token to gain access to the services. The
 application code created in the [previous tutorial](securing-access.md) is expanded to authenticate users throughout a
-distributed system. The design of FIWARE Wilma - a PEP Proxy is discussed, and the parts of the Keyrock GUI and REST API
-relevant to authenticating other services are described in detail.
+distributed system. The design of FIWARE Wilma - a PEP Proxy is discussed, and the parts of the Keycloak GUI and REST
+API relevant to authenticating other services are described in detail.
 
-[cUrl](https://ec.haxx.se/) commands are used throughout to access the **Keyrock** and **Wilma** REST APIs -
+[cUrl](https://ec.haxx.se/) commands are used throughout to access the **Keycloak** and **Wilma** REST APIs -
 [Postman documentation](https://fiware.github.io/tutorials.PEP-Proxy/) for these calls is also available.
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/6b143a6b3ad8bcba69cf)
@@ -34,15 +34,15 @@ real location of the secured resource itself - the actual location of the secure
 user - it could be held in a private network behind the **PEP proxy** or found on a different machine altogether.
 
 FIWARE [Wilma](https://fiware-pep-proxy.rtfd.io/) is a simple implementation of a **PEP proxy** designed to work with
-the FIWARE [Keyrock](https://fiware-idm.readthedocs.io/en/latest/) Generic Enabler. Whenever a user tries to gain access
-to the resource behind the **PEP proxy**, the PEP will describe the user's attributes to the Policy Decision Point
-(PDP), request a security decision, and enforce the decision. (Permit or Deny). There is minimal disruption of access
-for authorized users - the response received is the same as if they had accessed the secured service directly.
+the FIWARE [Keycloak](https://fiware-idm.readthedocs.io/en/latest/) Generic Enabler. Whenever a user tries to gain
+access to the resource behind the **PEP proxy**, the PEP will describe the user's attributes to the Policy Decision
+Point (PDP), request a security decision, and enforce the decision. (Permit or Deny). There is minimal disruption of
+access for authorized users - the response received is the same as if they had accessed the secured service directly.
 Unauthorized users are simply returned a **401 - Unauthorized** response.
 
 <h3>Standard Concepts of Identity Management</h3>
 
-The following common objects are found with the **Keyrock** Identity Management database:
+The following common objects are found with the **Keycloak** Identity Management database:
 
 -   **User** - Any signed-up user able to identify themselves with an eMail and password. Users can be assigned rights
     individually or as a group.
@@ -77,16 +77,16 @@ Click on the image above to see an introductory video.
 
 This application protects access to the existing Stock Management and Sensors-based application by adding PEP Proxy
 instances around the services created in previous tutorials and uses data pre-populated into the **MySQL** database used
-by **Keyrock**. It will make use of four FIWARE components - the
+by **Keycloak**. It will make use of four FIWARE components - the
 [Orion-LD Context Broker](https://fiware-orion.readthedocs.io/en/latest/), the
 [IoT Agent for UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/), the
-[Keyrock](https://fiware-idm.readthedocs.io/en/latest/) Generic enabler and adds one or two instances
+[Keycloak](https://fiware-idm.readthedocs.io/en/latest/) Generic enabler and adds one or two instances
 [Wilma](https://fiware-pep-proxy.rtfd.io/) PEP Proxy dependent upon which interfaces are to be secured. Usage of the
 Orion Context Broker is sufficient for an application to qualify as _“Powered by FIWARE”_.
 
 Both the Orion-LD Context Broker and the IoT Agent rely on open source [MongoDB](https://www.mongodb.com/) technology to
 keep persistence of the information they hold. We will also be using the dummy IoT devices created in the
-[previous tutorial](iot-sensors.md). **Keyrock** uses its own [MySQL](https://www.mysql.com/) database.
+[previous tutorial](iot-sensors.md). **Keycloak** uses its own [MySQL](https://www.mysql.com/) database.
 
 Therefore, the overall architecture will consist of the following elements:
 
@@ -97,7 +97,7 @@ Therefore, the overall architecture will consist of the following elements:
     southbound requests using [NGSI-v2](https://fiware.github.io/specifications/OpenAPI/ngsiv2) and convert them to
     [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
     commands for the devices.
--   FIWARE [Keyrock](https://fiware-idm.readthedocs.io/en/latest/) offer a complement Identity Management System
+-   FIWARE [Keycloak](https://fiware-idm.readthedocs.io/en/latest/) offer a complement Identity Management System
     including:
     -   An OAuth2 authentication system for Applications and Users.
     -   A site graphical frontend for Identity Management Administration.
@@ -160,73 +160,76 @@ Where `<command>` will vary depending upon the exercise we wish to activate.
 
 <h3>Dramatis Personae</h3>
 
-The following people at `test.com` legitimately have accounts within the Application:
+The following people at `fiware.farm` legitimately have accounts within the Farm Management Information System:
 
--   Alice, she will be the Administrator of the **Keyrock** Application.
--   Bob, the Regional Manager of the supermarket chain - he has several store managers under him:
-    -   Manager1
-    -   Manager2
--   Charlie, the Head of Security of the supermarket chain - he has several store detectives under him:
-    -   Detective1
-    -   Detective2
+-   **Bob**, the Farm Manager - he has full control over the farm and all entities.
+-   **Carol**, a Livestock Supervisor - she manages animals and related sensors (water, filling levels).
+-   **Jenny**, a Read-Only Consultant - an external auditor who can view all farm data but cannot make changes.
+-   **Alice**, the System Administrator - she manages the Keycloak instance but does not have direct access to farm data
+    by default.
 
-| Name       | eMail                       | Password |
-| ---------- | --------------------------- | -------- |
-| alice      | `alice-the-admin@test.com`  | `test`   |
-| bob        | `bob-the-manager@test.com`  | `test`   |
-| charlie    | `charlie-security@test.com` | `test`   |
-| manager1   | `manager1@test.com`         | `test`   |
-| manager2   | `manager2@test.com`         | `test`   |
-| detective1 | `detective1@test.com`       | `test`   |
-| detective2 | `detective2@test.com`       | `test`   |
+The following person at `fiware.farm` has signed up for an account but has no reason to be granted access:
 
-The following people at `example.com` have signed up for accounts, but have no reason to be granted access:
+-   **Mallory**, the Malicious Attacker - she should be denied access to all farm resources.
 
--   Eve - Eve the Eavesdropper.
--   Mallory - Mallory the malicious attacker.
--   Rob - Rob the Robber.
+<h4>1. Defined Roles & Capabilities</h4>
 
-| Name    | eMail                 | Password |
-| ------- | --------------------- | -------- |
-| eve     | `eve@example.com`     | `test`   |
-| mallory | `mallory@example.com` | `test`   |
-| rob     | `rob@example.com`     | `test`   |
+The following roles are defined within the `farm-management` realm:
 
-Two organizations have also been set up by Alice:
+| Role                       | Description                          | Access Level                           |
+| :------------------------- | :----------------------------------- | :------------------------------------- |
+| **`farm-manager`**         | Full control over the farm.          | **Read & Write** (All Entities)        |
+| **`livestock-supervisor`** | Manages animals and related sensors. | **Read & Write** (Animal, Water, etc.) |
+| **`read-only-consultant`** | External auditor/viewer.             | **Read Only** (All Entities)           |
+| **`crop-supervisor`**      | Manages fields and weather data.     | Read & Write (Fields, Soil)            |
+| **`equipment-supervisor`** | Manages tractors and machinery.      | Read & Write (Tractors)                |
+| **`field-worker`**         | Worker on the ground.                | Read (Domain), Write (Measurements)    |
 
-| Name       | Description                         | UUID                                   |
-| ---------- | ----------------------------------- | -------------------------------------- |
-| Security   | Security Group for Store Detectives | `security-team-0000-0000-000000000000` |
-| Management | Management Group for Store Managers | `managers-team-0000-0000-000000000000` |
+<h4>2. User Assignments (Initial Setup)</h4>
 
-One application, with appropriate roles and permissions has also been created:
+For the purpose of this tutorial, the following users have been provisioned with the credentials below (password is
+always `test`):
 
-| Key           | Value                                  |
-| ------------- | -------------------------------------- |
-| Client ID     | `tutorial-dckr-site-0000-xpresswebapp` |
-| Client Secret | `tutorial-dckr-site-0000-clientsecret` |
-| URL           | `http://localhost:3000`                |
-| RedirectURL   | `http://localhost:3000/login`          |
+| User        | Group                  | Assigned Role      | Effective Rights                              |
+| :---------- | :--------------------- | :----------------- | :-------------------------------------------- |
+| **Bob**     | `farm-management`      | **`farm-manager`** | **Full Read/Write** access to all entities.   |
+| **Carol**   | `livestock-team`       | _None (Directly)_  | **Access Denied** (No role mapping for group) |
+| **Jenny**   | `external-consultants` | _None (Directly)_  | **Access Denied** (No role mapping for group) |
+| **Alice**   | _None_                 | _None_             | **Access Denied** (No roles assigned)         |
+| **Mallory** | _None_                 | _None_             | **Access Denied** (No roles assigned)         |
+
+<blockquote style="border-left-color:#002e67;background-color:#ededee;color:#002e67">
+    <p><b>Note:</b> In the initial setup, <b>Bob</b> is the only user with functional access to the data because he is the only one explicitly assigned a role (<code>farm-manager</code>). For Carol or Jenny to have access, their respective groups would need to be mapped to the <code>livestock-supervisor</code> or <code>read-only-consultant</code> roles within Keycloak.</p>
+</blockquote>
+
+One application (`ngsi-ld-farm`), with appropriate roles and permissions has also been created:
+
+| Key           | Value                         |
+| ------------- | ----------------------------- |
+| Client ID     | `ngsi-ld-farm`                |
+| Client Secret | `1234`                        |
+| URL           | `http://localhost:3000`       |
+| RedirectURL   | `http://localhost:3000/login` |
 
 To save time, the data creating users and organizations from the [previous tutorial](roles-permissions.md) has been
 downloaded and is automatically persisted to the MySQL database on start-up so the assigned UUIDs do not change and the
 data does not need to be entered again.
 
-The **Keyrock** MySQL database deals with all aspects of application security including storing users, password etc.;
+The **Keycloak** MySQL database deals with all aspects of application security including storing users, password etc.;
 defining access rights and dealing with OAuth2 authorization protocols. The complete database relationship diagram can
 be found [here](https://fiware.github.io/tutorials.Securing-Access/img/keyrock-db.png).
 
 To refresh your memory about how to create users and organizations and applications, you can log in at
-`http://localhost:3005/idm` using the account `alice-the-admin@test.com` with a password of `test`.
+`http://localhost:3005` using the account `alice@fiware.farm` with a password of `test`.
 
 ![](https://fiware.github.io/tutorials.PEP-Proxy/img/keyrock-log-in.png)
 
 and look around.
 
-## Logging In to Keyrock using the REST API
+## Logging In to Keycloak using the REST API
 
-Enter a username and password to enter the application. The default super-user has the values `alice-the-admin@test.com`
-and `test`. The URL `https://localhost:3443/v1/auth/tokens` should also work in a secure system.
+Enter a username and password to enter the application. The default super-user has the values `alice@fiware.farm` and
+`test`.
 
 ### Create Token with Password
 
@@ -239,7 +242,7 @@ curl -iX POST \
   'http://localhost:3005/v1/auth/tokens' \
   -H 'Content-Type: application/json' \
   -d '{
-  "name": "alice-the-admin@test.com",
+  "name": "alice@fiware.farm",
   "password": "test"
 }'
 ```
@@ -308,7 +311,7 @@ The response will return the details of the associated user:
     "User": {
         "id": "aaaaaaaa-good-0000-0000-000000000000",
         "username": "alice",
-        "email": "alice-the-admin@test.com",
+        "email": "alice@fiware.farm",
         "date_password": "2018-07-30T11:41:14.000Z",
         "enabled": true,
         "admin": true
@@ -320,14 +323,14 @@ The response will return the details of the associated user:
 
 User accounts have been created in a [previous tutorial](identity-management.md). Non-human actors such as a PEP Proxy
 can be set up in the same manner. The account for each PEP Proxy, IoT Agent or IoT Sensor will merely consist of a
-Username and password linked to an application within Keyrock. PEP Proxy and IoT Agents accounts can be created by using
-either the Keyrock GUI or by using the REST API.
+Username and password linked to an application within Keycloak. PEP Proxy and IoT Agents accounts can be created by
+using either the Keycloak GUI or by using the REST API.
 
 <h3>Video : Wilma PEP Proxy Configuration</h3>
 
 [![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=b4sYU78skrw "PEP Proxy Configuration")
 
-Click on the image above to see a video about configuring the Wilma PEP Proxy using the **Keyrock** GUI.
+Click on the image above to see a video about configuring the Wilma PEP Proxy using the **Keycloak** GUI.
 
 ## Managing PEP Proxies and IoT Agents - Start Up
 
@@ -337,7 +340,7 @@ To start the system run the following command:
 ./services orion
 ```
 
-This will start up **Keyrock** with a series of users. There are already two existing applications and an existing PEP
+This will start up **Keycloak** with a series of users. There are already two existing applications and an existing PEP
 Proxy Account associated with the application.
 
 ## PEP Proxy CRUD Actions
@@ -401,7 +404,7 @@ curl -X GET \
 {
     "pep_proxy": {
         "id": "pep_proxy_f84bcba2-3300-4f13-a4bb-7bdbd358b201",
-        "oauth_client_id": "tutorial-dckr-site-0000-xpresswebapp"
+        "oauth_client_id": "ngsi-ld-farm"
     }
 }
 ```
@@ -506,7 +509,7 @@ curl -X GET \
 {
     "iot": {
         "id": "iot_sensor_00000000-0000-0000-0000-000000000000",
-        "oauth_client_id": "tutorial-dckr-site-0000-xpresswebapp"
+        "oauth_client_id": "ngsi-ld-farm"
     }
 }
 ```
@@ -611,15 +614,15 @@ orion-proxy:
         - PEP_PROXY_AUTH_ENABLED=false
         - PEP_PROXY_IDM_SSL_ENABLED=false
         - PEP_PROXY_IDM_PORT=3005
-        - PEP_PROXY_APP_ID=tutorial-dckr-site-0000-xpresswebapp
+        - PEP_PROXY_APP_ID=ngsi-ld-farm
         - PEP_PROXY_USERNAME=pep_proxy_00000000-0000-0000-0000-000000000000
-        - PEP_PASSWORD=test
+        - PEP_PASSWORD=1234
         - PEP_PROXY_PDP=idm
         - PEP_PROXY_MAGIC_KEY=1234
 ```
 
 The `PEP_PROXY_APP_ID` and `PEP_PROXY_USERNAME` would usually be obtained by adding new entries to the application in
-**Keyrock**, however, in this tutorial, they have been predefined by populating the **MySQL** database with data on
+**Keycloak**, however, in this tutorial, they have been predefined by populating the **MySQL** database with data on
 start-up.
 
 The `orion-proxy` container is listening on a single port:
@@ -637,9 +640,9 @@ The `orion-proxy` container is listening on a single port:
 | PEP_PROXY_AUTH_ENABLED    | `false`                                          | Whether the PEP Proxy is checking for Authorization    |
 | PEP_PROXY_IDM_SSL_ENABLED | `false`                                          | Whether the Identity Manager is running under HTTPS    |
 | PEP_PROXY_IDM_PORT        | `3005`                                           | The Port for the Identity Manager instance             |
-| PEP_PROXY_APP_ID          | `tutorial-dckr-site-0000-xpresswebapp`           |                                                        |
+| PEP_PROXY_APP_ID          | `ngsi-ld-farm`                                   |                                                        |
 | PEP_PROXY_USERNAME        | `pep_proxy_00000000-0000-0000-0000-000000000000` | The Username for the PEP Proxy                         |
-| PEP_PASSWORD              | `test`                                           | The Password for the PEP Proxy                         |
+| PEP_PASSWORD              | `1234`                                           | The Password for the PEP Proxy                         |
 | PEP_PROXY_PDP             | `idm`                                            | The Type of service offering the Policy Decision Point |
 | PEP_PROXY_MAGIC_KEY       | `1234`                                           |                                                        |
 
@@ -648,7 +651,7 @@ Level 3 - _Advanced Authorization_.
 
 ## Securing Orion-LD - Application Configuration
 
-The tutorial application has already been registered in **Keyrock**, programmatically the tutorial application will be
+The tutorial application has already been registered in **Keycloak**, programmatically the tutorial application will be
 making requests to the **Wilma** PEP Proxy in front of the **Orion-LD Context Broker**. Every request must now include
 an additional `access_token` header.
 
@@ -676,11 +679,11 @@ tutorial-app:
         - "WEB_APP_PORT=3000"
         - "SECURE_ENDPOINTS=true"
         - "CONTEXT_BROKER=http://orion-proxy:1027/v2"
-        - "KEYROCK_URL=http://localhost"
-        - "KEYROCK_IP_ADDRESS=http://172.18.1.5"
-        - "KEYROCK_PORT=3005"
-        - "KEYROCK_CLIENT_ID=tutorial-dckr-site-0000-xpresswebapp"
-        - "KEYROCK_CLIENT_SECRET=tutorial-dckr-site-0000-clientsecret"
+        - "KEYCLOAK_URL=http://localhost"
+        - "KEYCLOAK_IP_ADDRESS=http://172.18.1.5"
+        - "KEYCLOAK_PORT=3005"
+        - "KEYCLOAK_CLIENT_ID=ngsi-ld-farm"
+        - "KEYCLOAK_CLIENT_SECRET=1234"
         - "CALLBACK_URL=http://localhost:3000/login"
 ```
 
@@ -689,15 +692,15 @@ however, rather than accessing **Orion** directly on the default port `1026` as 
 context broker traffic is now sent to `orion-proxy` on port `1027`. As a reminder, the relevant settings are detailed
 below:
 
-| Key                   | Value                                  | Description                                                                                    |
-| --------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| WEB_APP_PORT          | `3000`                                 | Port used by web-app which displays the login screen & etc.                                    |
-| KEYROCK_URL           | `http://localhost`                     | This is URL of the **Keyrock** Web frontend itself, used for redirection when forwarding users |
-| KEYROCK_IP_ADDRESS    | `http://172.18.1.5`                    | This is URL of the **Keyrock** OAuth Communications                                            |
-| KEYROCK_PORT          | `3005`                                 | This is the port that **Keyrock** is listening on.                                             |
-| KEYROCK_CLIENT_ID     | `tutorial-dckr-site-0000-xpresswebapp` | The Client ID defined by Keyrock for this application                                          |
-| KEYROCK_CLIENT_SECRET | `tutorial-dckr-site-0000-clientsecret` | The Client Secret defined by Keyrock for this application                                      |
-| CALLBACK_URL          | `http://localhost:3000/login`          | The callback URL used by Keyrock when a challenge has succeeded.                               |
+| Key                    | Value                         | Description                                                                                     |
+| ---------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------- |
+| WEB_APP_PORT           | `3000`                        | Port used by web-app which displays the login screen & etc.                                     |
+| KEYCLOAK_URL           | `http://localhost`            | This is URL of the **Keycloak** Web frontend itself, used for redirection when forwarding users |
+| KEYCLOAK_IP_ADDRESS    | `http://172.18.1.5`           | This is URL of the **Keycloak** OAuth Communications                                            |
+| KEYCLOAK_PORT          | `3005`                        | This is the port that **Keycloak** is listening on.                                             |
+| KEYCLOAK_CLIENT_ID     | `ngsi-ld-farm`                | The Client ID defined by Keycloak for this application                                          |
+| KEYCLOAK_CLIENT_SECRET | `1234`                        | The Client Secret defined by Keycloak for this application                                      |
+| CALLBACK_URL           | `http://localhost:3000/login` | The callback URL used by Keycloak when a challenge has succeeded.                               |
 
 <h2>Securing Orion-LD - Start up</h2>
 
@@ -736,7 +739,7 @@ The response is a **401 Unauthorized** error code, with the following explanatio
 Auth-token not found in request header
 ```
 
-### Keyrock - User Obtains an Access Token
+### Keycloak - User Obtains an Access Token
 
 #### 1️⃣3️⃣ Request:
 
@@ -749,7 +752,7 @@ curl -iX POST \
   -H 'Accept: application/json' \
   -H 'Authorization: Basic dHV0b3JpYWwtZGNrci1zaXRlLTAwMDAteHByZXNzd2ViYXBwOnR1dG9yaWFsLWRja3Itc2l0ZS0wMDAwLWNsaWVudHNlY3JldA==' \
   -H 'Content-Type: application/x-www-form-urlencoded' \
-  --data "username=alice-the-admin@test.com&password=test&grant_type=password"
+  --data "username=alice@fiware.farm&password=test&grant_type=password"
 ```
 
 #### Response:
