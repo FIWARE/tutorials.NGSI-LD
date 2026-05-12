@@ -30,6 +30,8 @@ pids
 *.seed
 *.pid.lock
 node_modules/
+forwarder/dist/
+forwarder/.claude/
 jspm_packages/
 .npm
 .eslintcache

@@ -71,8 +71,10 @@ WORKDIR /opt/forwarder
 RUN \
   # Ensure that Git is installed prior to running npm install
   apt-get install -y --no-install-recommends git && \
-  echo "INFO: npm install --production..." && \
-  npm install --only=prod --no-package-lock --no-optional && \
+  echo "INFO: npm install..." && \
+  npm install --no-package-lock --no-optional && \
+  npm run build && \
+  npm prune --omit=dev && \
   # Remove Git and clean apt cache
   apt-get clean && \
   apt-get remove -y git && \
@@ -82,7 +84,7 @@ USER node
 ENV NODE_ENV=development
 # Ports used by application
 EXPOSE ${PORT:-80}
-CMD ["node", "/opt/forwarder/bin/proxy"]
+CMD ["node", "/opt/forwarder/dist/bin/proxy.js"]
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s \
    CMD npm run healthcheck
 
@@ -127,7 +129,7 @@ USER nobody
 ENV NODE_ENV=production
 # Ports used by application
 EXPOSE ${PORT:-80}
-CMD ["./bin/proxy"]
+CMD ["./dist/bin/proxy.js"]
 HEALTHCHECK  --interval=30s --timeout=3s --start-period=10s \
-  CMD ["/nodejs/bin/node", "./bin/healthcheck"]
+  CMD ["/nodejs/bin/node", "./dist/bin/healthcheck.js"]
 

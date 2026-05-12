@@ -6,7 +6,7 @@
 [![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://cim.etsi.org/NGSI-LD/official/front-page.html)
 [![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/)
 
-Simple nodejs express application for use with the FIWARE Step-by-Step tutorials. This is a **Context Provider** that can
+Simple TypeScript express application for use with the FIWARE Step-by-Step tutorials. This is a **Context Provider** that can
 be used to proxy and amend requests to a Context Broker.
 
 This application provides various sources of context and demonstrates various aspects of FIWARE. Its main features include:
@@ -57,6 +57,23 @@ These variables configure headers to be added to proxied requests:
 
 -   `HEALTHCHECK_PATH` - Path for the healthcheck endpoint. Default: `/health`.
 -   `HEALTHCHECK_CODE` - HTTP Code expected for a healthy response. Default: `200`.
+
+## Building
+
+The application is written in TypeScript and must be compiled before running.
+
+
+```console
+npm install
+npm run build
+npm start
+```
+
+For debug output:
+
+```console
+DEBUG=broker:* npm start
+```
 
 ## How to build your own image
 
