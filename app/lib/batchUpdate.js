@@ -29,7 +29,7 @@ function sendAsHTTP(state, tenant, authHeader) {
         headers['NGSILD-Tenant'] = tenant;
     }
     if (authHeader) {
-        headers['Authorization'] = authHeader;
+        headers.Authorization = authHeader;
     }
 
     const body = Array.isArray(state) ? state : [state];
