@@ -42,6 +42,9 @@ const proxy = createProxyMiddleware<express.Request, express.Response>({
       if (acceptEncoding) {
         proxyReq.setHeader('accept-encoding', acceptEncoding);
       }
+      if (req.headers.authorization) {
+        proxyReq.setHeader('Authorization', req.headers.authorization);
+      }
     },
   },
 });
@@ -62,7 +65,6 @@ function initForwarder(config: unknown, text: string): void {
   });
 }
 
-// Fix 5: pure async/await — no Promise constructor, no mixed .then()/.catch(), camelCase name
 async function connect(): Promise<unknown> {
   let retry = 20;
   while (retry > 0) {

@@ -16,7 +16,6 @@ export function checkConnectivity(): Promise<Response> {
   return fetch(`http://${configServiceURL}/service`);
 }
 
-// Fix 2: early return after NOT_FOUND; Fix 4: no Promise constructor
 export async function getConfig(tenant: string | undefined): Promise<unknown> {
   log(`Retrieving config from http://${configServiceURL}/service/${tenant}`);
   const response = await fetch(`http://${configServiceURL}/service/${tenant}`);

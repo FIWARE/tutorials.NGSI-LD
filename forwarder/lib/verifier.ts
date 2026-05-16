@@ -52,7 +52,6 @@ export class Verifier {
     this.verify = this.verify.bind(this);
   }
 
-  // Fix 1: async/await eliminates floating inner Promise.all chains
   async verify(req: Request, res: Response, next: NextFunction): Promise<void> {
     if (!req.token) {
       deny(
@@ -85,7 +84,6 @@ export class Verifier {
       const invalidResults = credentialResults.filter(
         (result): result is Error => result instanceof Error,
       );
-      // Fix 3: replaced console.log with debug logger
       log(String(invalidResults.length));
 
       if (invalidResults.length > 0) {
