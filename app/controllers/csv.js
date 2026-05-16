@@ -264,10 +264,10 @@ function createEntitiesFromRows(rows) {
  * Create an array of promises to send data to the context broker.
  * Each insert represents a series of readings at a given timestamp
  */
-function createContextRequests(entities, tenant) {
+function createContextRequests(entities, tenant, authHeader) {
     const promises = [];
     entities.forEach((entitiesAtTimeStamp) => {
-        promises.push(BatchUpdate.sendAsHTTP(entitiesAtTimeStamp, tenant));
+        promises.push(BatchUpdate.sendAsHTTP(entitiesAtTimeStamp, tenant, authHeader));
     });
     return promises;
 }
@@ -300,7 +300,7 @@ const upload = (req, res) => {
                 batchEntities.push(chunk);
             }
 
-            return createContextRequests(batchEntities, req.get('NGSILD-Tenant'));
+            return createContextRequests(batchEntities, req.get('NGSILD-Tenant'), req.get('Authorization'));
         })
         .then(async (promises) => {
             const results = [];

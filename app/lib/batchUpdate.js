@@ -18,7 +18,7 @@ function is2xxSuccessful(status) {
 }
 
 // measures sent over HTTP are POST requests with params
-function sendAsHTTP(state, tenant) {
+function sendAsHTTP(state, tenant, authHeader) {
     const url = CONTEXT_BROKER_URL + '/entityOperations/upsert';
     const headers = {
         'Content-Type': 'application/json',
@@ -27,6 +27,9 @@ function sendAsHTTP(state, tenant) {
 
     if (tenant) {
         headers['NGSILD-Tenant'] = tenant;
+    }
+    if (authHeader) {
+        headers['Authorization'] = authHeader;
     }
 
     const body = Array.isArray(state) ? state : [state];
