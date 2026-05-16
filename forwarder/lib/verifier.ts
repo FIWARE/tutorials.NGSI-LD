@@ -121,7 +121,6 @@ export class Verifier {
   }
 }
 
-// Fix 4: removed Promise constructor anti-pattern
 async function verifyLocalCredential(
   jwt: string,
   type: string[],
@@ -152,7 +151,6 @@ function getTrustedIssuerHost(type: string[], config: unknown): string | null {
   return host;
 }
 
-// Fix 2: early return after NOT_FOUND; Fix 3: console.log → log(); Fix 4: no Promise constructor
 async function verifyTrustedIssuer(
   vc: LocalVC,
   trustedList: string | null,

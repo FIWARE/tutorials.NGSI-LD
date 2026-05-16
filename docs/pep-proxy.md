@@ -1,13 +1,13 @@
 [![FIWARE Security](https://fiware.github.io/catalogue/badges/chapters/security.svg)](https://github.com/FIWARE/catalogue/blob/master/security/README.md)
 [![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://www.etsi.org/deliver/etsi_gs/CIM/001_099/009/01.03.01_60/gs_cim009v010301p.pdf)
 
-**Description:** This tutorial uses a PEP Proxy combined with the Keycloak to secure access to endpoints exposed by
-FIWARE generic enablers. Users (or other actors) must log in and use a token to gain access to the services. The
-application code created in the [previous tutorial](securing-access.md) is expanded to authenticate users throughout a
-distributed system. The design of FIWARE Wilma - a PEP Proxy is discussed, and the parts of the Keycloak GUI and REST
-API relevant to authenticating other services are described in detail.
+**Description:** This tutorial uses [Apache APISIX](https://apisix.apache.org/) as an API Gateway Policy Enforcement
+Point (PEP) combined with **Keycloak** to secure access to endpoints exposed by FIWARE generic enablers. Users (or other
+actors) must log in and present a valid JWT to gain access to services. The application code created in the
+[previous tutorial](securing-access.md) is expanded to enforce Role-Based Access Control (RBAC) at the gateway level
+throughout a distributed system. The APISIX route configuration and Keycloak realm setup are described in detail.
 
-[cUrl](https://ec.haxx.se/) commands are used throughout to access the **Keycloak** and **Wilma** REST APIs -
+[cUrl](https://ec.haxx.se/) commands are used throughout to access the **Keycloak** and **APISIX** REST APIs -
 [Postman documentation](https://fiware.github.io/tutorials.PEP-Proxy/) for these calls is also available.
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/6b143a6b3ad8bcba69cf)
@@ -15,11 +15,11 @@ API relevant to authenticating other services are described in detail.
 
 <hr class="security"/>
 
-# Securing Microservices with a PEP Proxy
+# PEP Proxy
 
 > "Good fences make good neighbors."
 >
-> — Will Rogers
+> — Robert Frost
 
 The [previous tutorial](securing-access.md) demonstrated that it is possible to Permit or Deny access to resources based
 on an authenticated user identifying themselves within an application. It was simply a matter of the code following a
@@ -33,93 +33,118 @@ allow their request to succeed and pass through the **PEP proxy**. The **PEP pro
 real location of the secured resource itself - the actual location of the secured resource is unknown to the outside
 user - it could be held in a private network behind the **PEP proxy** or found on a different machine altogether.
 
-FIWARE [Wilma](https://fiware-pep-proxy.rtfd.io/) is a simple implementation of a **PEP proxy** designed to work with
-the FIWARE [Keycloak](https://fiware-idm.readthedocs.io/en/latest/) Generic Enabler. Whenever a user tries to gain
-access to the resource behind the **PEP proxy**, the PEP will describe the user's attributes to the Policy Decision
-Point (PDP), request a security decision, and enforce the decision. (Permit or Deny). There is minimal disruption of
-access for authorized users - the response received is the same as if they had accessed the secured service directly.
-Unauthorized users are simply returned a **401 - Unauthorized** response.
+[Apache APISIX](https://apisix.apache.org/) is a high-performance, cloud-native API Gateway. Combined with **Keycloak**,
+APISIX acts as a full Policy Enforcement Point (PEP): it validates JWTs using the `openid-connect` plugin and enforces
+Role-Based Access Control using the `authz-keycloak` plugin. Whenever a user tries to gain access to a resource behind
+the gateway, APISIX validates the token, evaluates the user's roles against the Keycloak authorization policy, and
+either permits or denies the request. Authorized users receive the same response as if they had accessed the secured
+service directly. Unauthorized users receive a **401 Unauthorized** or **403 Forbidden** response.
 
 <h3>Standard Concepts of Identity Management</h3>
 
 The following common objects are found with the **Keycloak** Identity Management database:
 
--   **User** - Any signed-up user able to identify themselves with an eMail and password. Users can be assigned rights
-    individually or as a group.
--   **Application** - Any securable FIWARE application consisting of a series of microservices.
+-   **User** - Any signed up user able to identify themselves with an eMail and password. Users can be assigned rights
+    individually or as a group
+-   **Application** - Any securable FIWARE application consisting of a series of microservices
 -   **Organization** - A group of users who can be assigned a series of rights. Altering the rights of the organization
-    effects the access of all users of that organization.
+    effects the access of all users of that organization
 -   **OrganizationRole** - Users can either be members or admins of an organization - Admins are able to add and remove
     users from their organization, members merely gain the roles and permissions of an organization. This allows each
-    organization to be responsible for their members and removes the need for a super-admin to administer all rights.
+    organization to be responsible for their members and removes the need for a super-admin to administer all rights
 -   **Role** - A role is a descriptive bucket for a set of permissions. A role can be assigned to either a single user
-    or an organization. A signed-in user gains all the permissions from all of their own roles plus all the roles
-    associated to their organization.
--   **Permission** - An ability to do something on a resource within the system.
+    or an organization. A signed-in user gains all the permissions from all of their own roles plus all of the roles
+    associated to their organization
+-   **Permission** - An ability to do something on a resource within the system
 
-Additionally, two further non-human application objects can be secured within a FIWARE application:
+Additionally two further non-human application objects can be secured within a FIWARE application:
 
--   **IoTAgent** - a proxy between IoT Sensors and the Context Broker.
--   **PEPProxy** - a middleware for use between generic enablers challenging the rights of a user.
+-   **IoTAgent** - a proxy between IoT Sensors and the Context Broker
+-   **Service Account** - a non-human client identity within Keycloak, used by the IoT Agent to authenticate with the
+    Context Broker via the `client_credentials` grant.
 
 The relationship between the objects can be seen below - the entities marked in red are used directly within this
 tutorial:
 
 ![](https://fiware.github.io/tutorials.PEP-Proxy/img/entities.png)
 
-<h3>Video : Introduction to Wilma PEP Proxy</h3>
+<h3>Video: Introduction to API Gateway Security</h3>
 
 [![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=8tGbUI18udM "Introduction")
 
-Click on the image above to see an introductory video.
+Click on the image above to see an introductory video about securing FIWARE microservices with an API Gateway
 
-# Architecture
+# Prerequisites
 
-This application protects access to the existing Stock Management and Sensors-based application by adding PEP Proxy
-instances around the services created in previous tutorials and uses data pre-populated into the **MySQL** database used
-by **Keycloak**. It will make use of four FIWARE components - the
-[Orion-LD Context Broker](https://fiware-orion.readthedocs.io/en/latest/), the
-[IoT Agent for UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/), the
-[Keycloak](https://fiware-idm.readthedocs.io/en/latest/) Generic enabler and adds one or two instances
-[Wilma](https://fiware-pep-proxy.rtfd.io/) PEP Proxy dependent upon which interfaces are to be secured. Usage of the
-Orion Context Broker is sufficient for an application to qualify as _“Powered by FIWARE”_.
+## Docker
+
+To keep things simple both components will be run using [Docker](https://www.docker.com). **Docker** is a container
+technology which allows to different components isolated into their respective environments.
+
+-   To install Docker on Windows follow the instructions [here](https://docs.docker.com/docker-for-windows/)
+-   To install Docker on Mac follow the instructions [here](https://docs.docker.com/docker-for-mac/)
+-   To install Docker on Linux follow the instructions [here](https://docs.docker.com/install/)
+
+**Docker Compose** is a tool for defining and running multi-container Docker applications. A
+[YAML file](https://raw.githubusercontent.com/Fiware/tutorials.Identity-Management/master/docker-compose.yml) is used
+configure the required services for the application. This means all container services can be brought up in a single
+command. Docker Compose is installed by default as part of Docker for Windows and Docker for Mac, however Linux users
+will need to follow the instructions found [here](https://docs.docker.com/compose/install/)
+
+## Cygwin
+
+We will start up our services using a simple bash script. Windows users should download [cygwin](http://www.cygwin.com/)
+to provide a command-line functionality similar to a Linux distribution on Windows.
+
+This application protects access to the existing Farm Management and Sensors-based application by placing
+[Apache APISIX](https://apisix.apache.org/) as an API Gateway in front of the services created in previous tutorials.
+User and realm data is pre-populated into the **PostgreSQL** database used by **Keycloak** on start-up. The tutorial
+makes use of four FIWARE components — the [Orion-LD Context Broker](https://fiware-orion.readthedocs.io/en/latest/), the
+[IoT Agent for JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/), [Keycloak](https://www.keycloak.org/) as
+the Identity and Access Management server, and [Apache APISIX](https://apisix.apache.org/) as the API Gateway / Policy
+Enforcement Point. Usage of the Orion-LD Context Broker is sufficient for an application to qualify as _"Powered by
+FIWARE"_.
 
 Both the Orion-LD Context Broker and the IoT Agent rely on open source [MongoDB](https://www.mongodb.com/) technology to
 keep persistence of the information they hold. We will also be using the dummy IoT devices created in the
-[previous tutorial](iot-sensors.md). **Keycloak** uses its own [MySQL](https://www.mysql.com/) database.
+[previous tutorial](iot-sensors.md). **Keycloak** uses its own [PostgreSQL](https://www.postgresql.org/) database.
 
-Therefore, the overall architecture will consist of the following elements:
+Therefore the overall architecture will consist of the following elements:
 
 -   The FIWARE [Orion-LD Context Broker](https://fiware-orion.readthedocs.io/en/latest/) which will receive requests
     using
-    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/gitlab/NGSI-LD/NGSI-LD/raw/master/spec/updated/full_api.json).
--   The FIWARE [IoT Agent for UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/) which will receive
-    southbound requests using [NGSI-v2](https://fiware.github.io/specifications/OpenAPI/ngsiv2) and convert them to
-    [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
-    commands for the devices.
--   FIWARE [Keycloak](https://fiware-idm.readthedocs.io/en/latest/) offer a complement Identity Management System
-    including:
-    -   An OAuth2 authentication system for Applications and Users.
-    -   A site graphical frontend for Identity Management Administration.
-    -   An equivalent REST API for Identity Management via HTTP requests.
--   FIWARE [Wilma](https://fiware-pep-proxy.rtfd.io/) is a PEP Proxy securing access to the **Orion** and/or **IoT
-    Agent** microservices.
+    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
+-   The FIWARE [IoT Agent for JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/) which will receive
+    southbound requests using
+    [NGSI-LD](https://forge.etsi.org/swagger/ui/?url=https://forge.etsi.org/rep/NGSI-LD/NGSI-LD/raw/master/spec/updated/generated/full_api.json)
+    and convert them to
+    [JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual) commands
+    for the devices
+-   [Keycloak](https://www.keycloak.org/) Identity and Access Management offering:
+    -   An OAuth2 / OIDC authentication system for Applications and Users
+    -   A graphical frontend for Identity Management Administration
+    -   A REST API for Identity Management via HTTP requests
+-   [Apache APISIX](https://apisix.apache.org/) acting as an API Gateway and Policy Enforcement Point:
+    -   Validates JWT Bearer tokens on every request using the `openid-connect` plugin
+    -   Enforces Keycloak RBAC / UMA policies using the `authz-keycloak` plugin on user-facing routes
+    -   Routes IoT Agent northbound traffic (`/data/orion/*`, `/data/scorpio/*`, `/data/stellio/*`) using JWT-only
+        validation
 -   The underlying [MongoDB](https://www.mongodb.com/) database :
     -   Used by the **Orion-LD Context Broker** to hold context data information such as data entities, subscriptions
-        and registrations.
-    -   Used by the **IoT Agent** to hold device information such as device URLs and Keys.
--   A [MySQL](https://www.mysql.com/) database :
-    -   Used to persist user identities, applications, roles and permissions.
--   The **Stock Management Frontend** does the following:
-    -   Displays store information.
-    -   Shows which products can be bought at each store.
-    -   Allows users to "buy" products and reduce the stock count.
-    -   Allows authorized users into restricted areas.
+        and registrations
+    -   Used by the **IoT Agent** to hold device information such as device URLs and Keys
+-   A [PostgreSQL](https://www.postgresql.org/) database :
+    -   Used by **Keycloak** to persist user identities, applications, roles and permissions
+-   The **Farm Management Frontend** does the following:
+    -   Displays farm building and sensor information
+    -   Shows which animals and equipment are present
+    -   Allows authorized users to send commands to IoT devices
+    -   Allows authorized users into restricted areas
 -   A webserver acting as set of [dummy IoT devices](iot-sensors.md) using the
-    [UltraLight 2.0](https://fiware-iotagent-ul.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual)
-    protocol running over HTTP - access to certain resources is restricted.
+    [JSON](https://fiware-iotagent-json.readthedocs.io/en/latest/usermanual/index.html#user-programmers-manual) protocol
+    running over HTTP — access to certain resources is restricted.
 
-Since all interactions between the services are initiated by HTTP requests, the services can be containerized and run
+Since all interactions between the elements are initiated by HTTP requests, the entities can be containerized and run
 from exposed ports.
 
 The specific architecture of each section of the tutorial is discussed below.
@@ -136,13 +161,10 @@ git checkout NGSI-LD
 ./services create
 ```
 
-> **Note :**
->
-> The initial creation of Docker images can take up to three minutes
+> **Note** The initial creation of Docker images can take up to three minutes
 
 Thereafter, all services can be initialized from the command-line by running the
 [services](https://github.com/FIWARE/tutorials.PEP-Proxy/blob/NGSI-LD/services) Bash script provided within the
-repository:
 
 ```console
 ./services <command>
@@ -150,9 +172,7 @@ repository:
 
 Where `<command>` will vary depending upon the exercise we wish to activate.
 
-> **Note :**
->
-> If you want to clean up and start over again you can do so with the following command:
+> :information_source: **Note:** If you want to clean up and start over again you can do so with the following command:
 >
 > ```console
 > ./services stop
@@ -172,7 +192,7 @@ The following person at `fiware.farm` has signed up for an account but has no re
 
 -   **Mallory**, the Malicious Attacker - she should be denied access to all farm resources.
 
-<h4>1. Defined Roles & Capabilities</h4>
+### 1. Defined Roles & Capabilities
 
 The following roles are defined within the `farm-management` realm:
 
@@ -185,7 +205,7 @@ The following roles are defined within the `farm-management` realm:
 | **`equipment-supervisor`** | Manages tractors and machinery.      | Read & Write (Tractors)                |
 | **`field-worker`**         | Worker on the ground.                | Read (Domain), Write (Measurements)    |
 
-<h4>2. User Assignments (Initial Setup)</h4>
+### 2. User Assignments (Initial Setup)
 
 For the purpose of this tutorial, the following users have been provisioned with the credentials below (password is
 always `test`):
@@ -198,9 +218,9 @@ always `test`):
 | **Alice**   | _None_                 | _None_             | **Access Denied** (No roles assigned)         |
 | **Mallory** | _None_                 | _None_             | **Access Denied** (No roles assigned)         |
 
-<blockquote style="border-left-color:#002e67;background-color:#ededee;color:#002e67">
-    <p><b>Note:</b> In the initial setup, <b>Bob</b> is the only user with functional access to the data because he is the only one explicitly assigned a role (<code>farm-manager</code>). For Carol or Jenny to have access, their respective groups would need to be mapped to the <code>livestock-supervisor</code> or <code>read-only-consultant</code> roles within Keycloak.</p>
-</blockquote>
+> [!NOTE] In the initial setup, **Bob** is the only user with functional access to the data because he is the only one
+> explicitly assigned a role (`farm-manager`). For Carol or Jenny to have access, their respective groups would need to
+> be mapped to the `livestock-supervisor` or `read-only-consultant` roles within Keycloak.
 
 One application (`ngsi-ld-farm`), with appropriate roles and permissions has also been created:
 
@@ -211,128 +231,154 @@ One application (`ngsi-ld-farm`), with appropriate roles and permissions has als
 | URL           | `http://localhost:3000`       |
 | RedirectURL   | `http://localhost:3000/login` |
 
-To save time, the data creating users and organizations from the [previous tutorial](roles-permissions.md) has been
-downloaded and is automatically persisted to the MySQL database on start-up so the assigned UUIDs do not change and the
-data does not need to be entered again.
+To save time, the data creating users and roles from the [previous tutorial](roles-permissions.md) has been imported and
+is automatically persisted to the PostgreSQL database on start-up so the assigned UUIDs do not change and the data does
+not need to be entered again.
 
-The **Keycloak** MySQL database deals with all aspects of application security including storing users, password etc.;
-defining access rights and dealing with OAuth2 authorization protocols. The complete database relationship diagram can
-be found [here](https://fiware.github.io/tutorials.Securing-Access/img/keyrock-db.png).
+The **Keycloak** PostgreSQL database deals with all aspects of application security including storing users, passwords
+etc.; defining access rights and dealing with OAuth2 / OIDC authorization protocols.
 
-To refresh your memory about how to create users and organizations and applications, you can log in at
-`http://localhost:3005` using the account `alice@fiware.farm` with a password of `test`.
+To refresh your memory about how to create users, groups and clients, you can log in to the Keycloak Admin Console at
+`http://localhost:3005` using the account `alice` with a password of `test`.
 
-![](https://fiware.github.io/tutorials.PEP-Proxy/img/keyrock-log-in.png)
+![](https://fiware.github.io/tutorials.Securing-Access/img/tutorial-log-in.png)
 
 and look around.
 
 ## Logging In to Keycloak using the REST API
 
-Enter a username and password to enter the application. The default super-user has the values `alice@fiware.farm` and
-`test`.
+The Keycloak token endpoint follows the standard OAuth2 pattern. The base URL exposed externally is
+`http://localhost:3005/realms/farm-management/protocol/openid-connect/token`.
 
 ### Create Token with Password
 
-The following example logs in using the Admin Super-User:
+The following example logs in as Bob the Farm Manager using the User Credentials (password) grant:
 
-#### 1️⃣ Request:
+#### :one: Request:
 
 ```console
 curl -iX POST \
-  'http://localhost:3005/v1/auth/tokens' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "name": "alice@fiware.farm",
-  "password": "test"
-}'
+  'http://localhost:3005/realms/farm-management/protocol/openid-connect/token' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  --data 'username=bob&password=test&grant_type=password&client_id=ngsi-ld-farm&client_secret=1234&scope=openid+profile+email'
 ```
 
 #### Response:
 
-> **Tip :**
->
-> Use [jq](https://www.digitalocean.com/community/tutorials/how-to-transform-json-data-with-jq) to format the JSON
-> responses in this tutorial. Pipe the result by appending `| jq '.'`
-
-The response header returns an `X-Subject-token` which identifies who has logged on the application. This token is
-required in all subsequent requests to gain access:
-
-```text
-HTTP/1.1 201 Created
-X-Subject-Token: d848eb12-889f-433b-9811-6a4fbf0b86ca
-Content-Type: application/json; charset=utf-8
-Content-Length: 138
-ETag: W/"8a-TVwlWNKBsa7cskJw55uE/wZl6L8"
-Date: Mon, 30 Jul 2018 12:07:54 GMT
-Connection: keep-alive
-```
+The response returns an `access_token` (JWT) and a `refresh_token`:
 
 ```json
 {
-    "token": {
-        "methods": ["password"],
-        "expires_at": "2018-07-30T13:02:37.116Z"
-    },
-    "idm_authorization_config": {
-        "level": "basic",
-        "authzforce": false
-    }
+    "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ii4uLiJ9...",
+    "expires_in": 300,
+    "refresh_expires_in": 1800,
+    "refresh_token": "eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6Ii4uLiJ9...",
+    "token_type": "Bearer",
+    "id_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6Ii4uLiJ9...",
+    "scope": "openid profile email"
 }
 ```
 
 ### Get Token Info
 
-Once a user has logged in, the presence of a (time-limited) token is sufficient to find out more information about the
-user.
+The `access_token` is a signed JWT. User details and realm roles can be retrieved from the Keycloak `/userinfo` endpoint
+using the token:
 
-You can use the long-lasting `X-Auth-token=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa` to pretend to be Alice throughout this
-tutorial. Both `{{X-Auth-token}}` and `{{X-Subject-token}}` can be set to the same value in the case that Alice is
-making an enquiry about herself.
-
-#### 2️⃣ Request:
+#### :two: Request:
 
 ```console
 curl -X GET \
-  'http://localhost:3005/v1/auth/tokens' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}' \
-  -H 'X-Subject-token: {{X-Subject-token}}'
+  'http://localhost:3005/realms/farm-management/protocol/openid-connect/userinfo' \
+  -H 'Authorization: Bearer <access_token>'
 ```
 
 #### Response:
 
-The response will return the details of the associated user:
-
 ```json
 {
-    "access_token": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-    "expires": "2036-07-30T12:04:45.000Z",
-    "valid": true,
-    "User": {
-        "id": "aaaaaaaa-good-0000-0000-000000000000",
-        "username": "alice",
-        "email": "alice@fiware.farm",
-        "date_password": "2018-07-30T11:41:14.000Z",
-        "enabled": true,
-        "admin": true
+    "sub": "bbbbbbbb-good-0000-0000-000000000000",
+    "email_verified": true,
+    "name": "Bob Manager",
+    "preferred_username": "bob",
+    "given_name": "Bob",
+    "family_name": "Manager",
+    "email": "bob@fiware.farm",
+    "realm_access": {
+        "roles": ["farm-manager"]
     }
 }
 ```
 
-# Managing PEP Proxies and IoT Agents
+# Configuring the APISIX Gateway
 
-User accounts have been created in a [previous tutorial](identity-management.md). Non-human actors such as a PEP Proxy
-can be set up in the same manner. The account for each PEP Proxy, IoT Agent or IoT Sensor will merely consist of a
-Username and password linked to an application within Keycloak. PEP Proxy and IoT Agents accounts can be created by
-using either the Keycloak GUI or by using the REST API.
+Unlike Keyrock-based PEP Proxies (Wilma) which are separate running containers managed via a REST API, APISIX is
+configured **declaratively** through a YAML file (`apisix-config/apisix.yaml`) that is loaded at startup and
+hot-reloaded on change. There is no imperative CRUD API — routes, upstreams, and plugins are all defined as code.
 
-<h3>Video : Wilma PEP Proxy Configuration</h3>
+<h3>APISIX Route Configuration</h3>
 
-[![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=b4sYU78skrw "PEP Proxy Configuration")
+The gateway configuration is split into two categories of routes:
 
-Click on the image above to see a video about configuring the Wilma PEP Proxy using the **Keycloak** GUI.
+**User-facing routes** (`/orion/*`, `/scorpio/*`, `/stellio/*`) — these apply both JWT validation (`openid-connect`
+plugin in bearer-only mode) **and** Keycloak UMA RBAC enforcement (`authz-keycloak` plugin):
 
-## Managing PEP Proxies and IoT Agents - Start Up
+```yaml
+- id: 1
+  uri: /orion/*
+  upstream_id: 1
+  plugins:
+      proxy-rewrite:
+          regex_uri: ["^/orion(.*)", "$1"]
+      openid-connect:
+          client_id: "ngsi-ld-farm"
+          client_secret: "1234"
+          discovery: "http://keycloak:8080/realms/farm-management/.well-known/openid-configuration"
+          bearer_only: true
+      authz-keycloak:
+          discovery: "http://keycloak:8080/realms/farm-management/.well-known/uma2-configuration"
+          client_id: "ngsi-ld-farm"
+          client_secret: "1234"
+          permissions: ["Entity Collection"]
+          http_method_as_scope: true
+          policy_enforcement_mode: "ENFORCING"
+          ssl_verify: false
+```
+
+**IoT Agent data routes** (`/data/orion/*`, `/data/scorpio/*`, `/data/stellio/*`) — these apply JWT validation only (no
+UMA round-trip on every high-frequency device write):
+
+```yaml
+- id: 4
+  uri: /data/orion/*
+  upstream_id: 1
+  plugins:
+      proxy-rewrite:
+          regex_uri: ["^/data/orion(.*)", "$1"]
+      openid-connect:
+          client_id: "ngsi-ld-farm"
+          client_secret: "1234"
+          discovery: "http://keycloak:8080/realms/farm-management/.well-known/openid-configuration"
+          bearer_only: true
+```
+
+The relevant APISIX configuration keys for the `openid-connect` plugin are:
+
+| Key             | Value                                                                          | Description                                              |
+| --------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------- |
+| `client_id`     | `ngsi-ld-farm`                                                                 | The Keycloak client used to introspect / validate tokens |
+| `client_secret` | `1234`                                                                         | The client secret                                        |
+| `discovery`     | `http://keycloak:8080/realms/farm-management/.well-known/openid-configuration` | OIDC discovery URL — APISIX fetches JWKs automatically   |
+| `bearer_only`   | `true`                                                                         | Only validate tokens; never redirect to login page       |
+
+For the `authz-keycloak` plugin:
+
+| Key                       | Value                   | Description                                         |
+| ------------------------- | ----------------------- | --------------------------------------------------- |
+| `permissions`             | `["Entity Collection"]` | The Keycloak resource name that must be accessible  |
+| `http_method_as_scope`    | `true`                  | Maps HTTP verb (GET/PATCH/DELETE) to Keycloak scope |
+| `policy_enforcement_mode` | `ENFORCING`             | Deny by default if no matching policy is found      |
+
+## APISIX - Start Up
 
 To start the system run the following command:
 
@@ -340,335 +386,87 @@ To start the system run the following command:
 ./services orion
 ```
 
-This will start up **Keycloak** with a series of users. There are already two existing applications and an existing PEP
-Proxy Account associated with the application.
-
-## PEP Proxy CRUD Actions
-
-#### GUI
-
-Once signed-in, users are able to create and update PEP Proxies associated to their applications for themselves.
-
-![](https://fiware.github.io/tutorials.PEP-Proxy/img/create-pep-proxy.png)
-
-#### REST API
-
-Alternatively, the standard CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DELETE) under
-the `/v1/applications/{{application-id}}/pep_proxies` endpoint.
-
-### Create a PEP Proxy
-
-To create a new PEP Proxy account within an application, send a POST request to the
-`/v1/applications/{{application-id}}/pep_proxies` endpoint along with the `X-Auth-token` header from a previously logged
-in administrative user.
-
-#### 3️⃣ Request:
-
-```console
-curl -iX POST \
-  'http://localhost:3005/v1/applications/{{application-id}}/pep_proxies' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-Provided there is no previously existing PEP Proxy account associated with the application, a new account will be
-created with a unique `id` and `password` and the values will be returned to the response.
-
-```json
-{
-    "pep_proxy": {
-        "id": "pep_proxy_ac80aaf8-0ac3-4bd8-8042-5e8f587679b7",
-        "password": "pep_proxy_23d805e7-1b93-434a-8e69-0798dcdd6726"
-    }
-}
-```
-
-### Read PEP Proxy details
-
-Making a GET request to the `/v1/applications/{{application-id}}/pep_proxies` endpoint will return the details of the
-associated PEP Proxy Account. The `X-Auth-token` must be supplied in the headers.
-
-#### 4️⃣ Request:
-
-```console
-curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/pep_proxies/' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-```json
-{
-    "pep_proxy": {
-        "id": "pep_proxy_f84bcba2-3300-4f13-a4bb-7bdbd358b201",
-        "oauth_client_id": "ngsi-ld-farm"
-    }
-}
-```
-
-### Reset Password of a PEP Proxy
-
-To renew the password of a PEP Proxy Account, make a PATCH request to the
-`/v1/applications/{{application-id}}/pep_proxies` endpoint will return the details of the associated PEP Proxy Account.
-The `X-Auth-token` must be supplied in the headers.
-
-#### 5️⃣ Request:
-
-```console
-curl -X PATCH \
-  'http://localhost:3005/v1/applications/{{application-id}}/pep_proxies' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-The response returns a new password for the PEP Proxy Account:
-
-```json
-{
-    "new_password": "pep_proxy_2bc8996e-29bf-4195-ac39-d1116e429602"
-}
-```
-
-### Delete a PEP Proxy
-
-An existing PEP Proxy Account can be deleted by making a DELETE request to the
-`/v1/applications/{{application-id}}/pep_proxies` endpoint. The `X-Auth-token` must be supplied in the headers.
-
-#### 6️⃣ Request:
-
-```console
-curl -X DELETE \
-  'http://localhost:3005/v1/applications/{{application-id}}/pep_proxies' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-## IoT Agent CRUD Actions
-
-#### GUI
-
-In a similar manner to PEP Proxy creation, signed-in, users are able to create and update IoT Sensor Accounts associated
-to their applications.
-
-![](https://fiware.github.io/tutorials.PEP-Proxy/img/create-iot-sensor.png)
-
-#### REST API
-
-Alternatively, the standard CRUD actions are assigned to the appropriate HTTP verbs (POST, GET, PATCH and DELETE) under
-the `/v1/applications/{{application-id}}/iot_agents` endpoint.
-
-### Create an IoT Agent
-
-To create a new IoT Agent account within an application, send a POST request to the
-`/v1/applications/{{application-id}}/iot_agents` endpoint along with the `X-Auth-token` header from a previously logged
-in administrative user.
-
-#### 7️⃣ Request:
-
-```console
-curl -X POST \
-  'http://localhost:3005/v1/applications/{{application-id}}/iot_agents' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-A new account will be created with a unique `id` and `password` and the values will be returned to the response.
-
-```json
-{
-    "iot": {
-        "id": "iot_sensor_f1d0ca9e-b519-4a8d-b6ae-1246e443dd7e",
-        "password": "iot_sensor_8775b438-6e66-4a6e-87c2-45c6525351ee"
-    }
-}
-```
-
-### Read IoT Agent details
-
-Making a GET request the `/v1/applications/{{application-id}}/iot_agents/{{iot-agent-id}}` endpoint will return the
-details of the associated IoT Agent Account. The `X-Auth-token` must be supplied in the headers.
-
-#### 8️⃣ Request:
-
-```console
-curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/iot_agents/{{iot-agent-id}}' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-```json
-{
-    "iot": {
-        "id": "iot_sensor_00000000-0000-0000-0000-000000000000",
-        "oauth_client_id": "ngsi-ld-farm"
-    }
-}
-```
-
-### List IoT Agents
-
-A list of all IoT Agents associated with an application can be obtained by making a GET request the
-`/v1/applications/{{application-id}}/iot_agents` endpoint. The `X-Auth-token` must be supplied in the headers.
-
-#### 9️⃣ Request:
-
-```console
-curl -X GET \
-  'http://localhost:3005/v1/applications/{{application-id}}/iot_agents' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-```json
-{
-    "iots": [
-        {
-            "id": "iot_sensor_00000000-0000-0000-0000-000000000000"
-        },
-        {
-            "id": "iot_sensor_c0fa0a77-ea9e-4a82-8118-b4d3c6b230b1"
-        }
-    ]
-}
-```
-
-### Reset Password of an IoT Agent
-
-To renew the password of an individual IoT Agent Account, make a PATCH request to the
-`/v1/applications/{{application-id}}//iot_agents/{{iot-agent-id}}` endpoint. The `X-Auth-token` must be supplied in the
-headers.
-
-#### 1️⃣0️⃣ Request:
-
-```console
-curl -iX PATCH \
-  'http://localhost:3005/v1/applications/{{application-id}}/iot_agents/{{iot-agent-id}}' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
-
-#### Response:
-
-The response returns a new password for the IoT Agent account.
-
-```json
-{
-    "new_password": "iot_sensor_114cb79c-bf69-444a-82a1-e6e85187dacd"
-}
-```
-
-### Delete an IoT Agent
-
-An existing IoT Agent Account can be deleted by making a DELETE request to the
-`/v1/applications/{{application-id}}/iot_agents/{{iot-agent-id}}` endpoint. The `X-Auth-token` must be supplied in the
-headers.
-
-#### 1️⃣1️⃣ Request:
-
-```console
-curl -X DELETE \
-  'http://localhost:3005/v1/applications/{{application-id}}/iot_agents/{{iot-agent-id}}' \
-  -H 'X-Auth-token: {{X-Auth-token}}'
-```
+This will start up **Keycloak**, **APISIX**, **Orion-LD**, the **IoT Agent** and supporting services. The APISIX gateway
+routes are loaded from `apisix-config/apisix.yaml` automatically.
 
 # Securing the Orion-LD Context Broker
 
 ![](https://fiware.github.io/tutorials.PEP-Proxy/img/pep-proxy-orion.png)
 
-## Securing Orion-LD - PEP Proxy Configuration
+<h3>APISIX Configuration</h3>
 
-The `orion-proxy` container is an instance of FIWARE **Wilma** listening on port `1027`, it is configured to forward
-traffic to `orion` on port `1026`, which is the default port that the Orion-LD Context Broker is listening to for NGSI
-Requests.
+APISIX is the single entry point for all requests to the Context Broker. There is no separate proxy container to deploy
+— the `apisix` service defined in `docker-compose/common.yml` handles all routing based on the declarative YAML
+configuration. The relevant upstream for Orion-LD is:
 
 ```yaml
-orion-proxy:
-    image: quay.io/fiware/pep-proxy
-    container_name: fiware-orion-proxy
-    hostname: orion-proxy
-    networks:
-        default:
-            ipv4_address: 172.18.1.10
-    depends_on:
-        - keyrock
-    ports:
-        - "1027:1027"
-    expose:
-        - "1027"
-    environment:
-        - PEP_PROXY_APP_HOST=orion
-        - PEP_PROXY_APP_PORT=1026
-        - PEP_PROXY_PORT=1027
-        - PEP_PROXY_IDM_HOST=keyrock
-        - PEP_PROXY_HTTPS_ENABLED=false
-        - PEP_PROXY_AUTH_ENABLED=false
-        - PEP_PROXY_IDM_SSL_ENABLED=false
-        - PEP_PROXY_IDM_PORT=3005
-        - PEP_PROXY_APP_ID=ngsi-ld-farm
-        - PEP_PROXY_USERNAME=pep_proxy_00000000-0000-0000-0000-000000000000
-        - PEP_PASSWORD=1234
-        - PEP_PROXY_PDP=idm
-        - PEP_PROXY_MAGIC_KEY=1234
+upstreams:
+    - id: 1
+      nodes:
+          orion:1026: 1
+      type: roundrobin
 ```
 
-The `PEP_PROXY_APP_ID` and `PEP_PROXY_USERNAME` would usually be obtained by adding new entries to the application in
-**Keycloak**, however, in this tutorial, they have been predefined by populating the **MySQL** database with data on
-start-up.
+And the corresponding user-facing route for Orion-LD requests:
 
-The `orion-proxy` container is listening on a single port:
+```yaml
+routes:
+    - id: 1
+      uri: /orion/*
+      upstream_id: 1
+      plugins:
+          proxy-rewrite:
+              regex_uri: ["^/orion(.*)", "$1"]
+          openid-connect:
+              client_id: "ngsi-ld-farm"
+              client_secret: "1234"
+              discovery: "http://keycloak:8080/realms/farm-management/.well-known/openid-configuration"
+              bearer_only: true
+          authz-keycloak:
+              discovery: "http://keycloak:8080/realms/farm-management/.well-known/uma2-configuration"
+              client_id: "ngsi-ld-farm"
+              client_secret: "1234"
+              permissions: ["Entity Collection"]
+              http_method_as_scope: true
+              policy_enforcement_mode: "ENFORCING"
+              ssl_verify: false
+```
 
--   The PEP Proxy Port - `1027` is exposed purely for tutorial access - so that cUrl or Postman can request directly to
-    the **Wilma** instance without being part of the same network.
+APISIX is exposed on port `9080` (HTTP). All Orion-LD requests are sent to `http://localhost:9080/orion/...` and APISIX
+strips the `/orion` prefix before forwarding to the upstream `orion:1026`.
 
-| Key                       | Value                                            | Description                                            |
-| ------------------------- | ------------------------------------------------ | ------------------------------------------------------ |
-| PEP_PROXY_APP_HOST        | `orion`                                          | The hostname of the service behind the PEP Proxy       |
-| PEP_PROXY_APP_PORT        | `1026`                                           | The port of the service behind the PEP Proxy           |
-| PEP_PROXY_PORT            | `1027`                                           | The port that the PEP Proxy is listening on            |
-| PEP_PROXY_IDM_HOST        | `keyrock`                                        | The hostname for the Identity Manager                  |
-| PEP_PROXY_HTTPS_ENABLED   | `false`                                          | Whether the PEP Proxy itself is running under HTTPS    |
-| PEP_PROXY_AUTH_ENABLED    | `false`                                          | Whether the PEP Proxy is checking for Authorization    |
-| PEP_PROXY_IDM_SSL_ENABLED | `false`                                          | Whether the Identity Manager is running under HTTPS    |
-| PEP_PROXY_IDM_PORT        | `3005`                                           | The Port for the Identity Manager instance             |
-| PEP_PROXY_APP_ID          | `ngsi-ld-farm`                                   |                                                        |
-| PEP_PROXY_USERNAME        | `pep_proxy_00000000-0000-0000-0000-000000000000` | The Username for the PEP Proxy                         |
-| PEP_PASSWORD              | `1234`                                           | The Password for the PEP Proxy                         |
-| PEP_PROXY_PDP             | `idm`                                            | The Type of service offering the Policy Decision Point |
-| PEP_PROXY_MAGIC_KEY       | `1234`                                           |                                                        |
+| Key                                   | Value                                                                          | Description                                          |
+| ------------------------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------- |
+| `uri`                                 | `/orion/*`                                                                     | The path prefix matched by this route                |
+| `upstream`                            | `orion:1026`                                                                   | The Context Broker upstream                          |
+| `openid-connect.bearer_only`          | `true`                                                                         | Validate JWT only — never redirect to Keycloak login |
+| `openid-connect.discovery`            | `http://keycloak:8080/realms/farm-management/.well-known/openid-configuration` | Keycloak OIDC discovery for JWK validation           |
+| `authz-keycloak.permissions`          | `["Entity Collection"]`                                                        | The Keycloak resource a caller must have access to   |
+| `authz-keycloak.http_method_as_scope` | `true`                                                                         | GET → read scope, PATCH/DELETE → write scope         |
 
-For this example, the PEP Proxy is checking for Level 1 - _Authentication Access_ not Level 2 - _Basic Authorization_ or
-Level 3 - _Advanced Authorization_.
+For this tutorial, the gateway enforces both Level 1 _Authentication Access_ (valid JWT) and Level 2 _RBAC
+Authorization_ (Keycloak role policy) on user-facing Orion-LD routes.
 
-## Securing Orion-LD - Application Configuration
+<h3>Application Configuration</h3>
 
-The tutorial application has already been registered in **Keycloak**, programmatically the tutorial application will be
-making requests to the **Wilma** PEP Proxy in front of the **Orion-LD Context Broker**. Every request must now include
-an additional `access_token` header.
+The tutorial application has already been registered in **Keycloak** as the `ngsi-ld-farm` client. Programmatically, the
+tutorial application makes requests to **APISIX** in front of the **Orion-LD Context Broker**. Every request must
+include an `Authorization: Bearer <JWT>` header.
 
 ```yaml
 tutorial-app:
-    image: quay.io/fiware/tutorials.context-provider
-    hostname: iot-sensors-app
+    image: fiware/tutorials.context-provider
+    hostname: tutorial-app
     container_name: tutorial-app
     depends_on:
-        - orion-proxy
+        - apisix
         - iot-agent
-        - keyrock
+        - keycloak
     networks:
         default:
             ipv4_address: 172.18.1.7
             aliases:
-                - tutorial
+                - iot-sensors
     expose:
         - "3000"
         - "3001"
@@ -678,7 +476,7 @@ tutorial-app:
     environment:
         - "WEB_APP_PORT=3000"
         - "SECURE_ENDPOINTS=true"
-        - "CONTEXT_BROKER=http://orion-proxy:1027/v2"
+        - "CONTEXT_BROKER=http://apisix:9080/orion"
         - "KEYCLOAK_URL=http://localhost"
         - "KEYCLOAK_IP_ADDRESS=http://172.18.1.5"
         - "KEYCLOAK_PORT=3005"
@@ -687,125 +485,460 @@ tutorial-app:
         - "CALLBACK_URL=http://localhost:3000/login"
 ```
 
-All of the `tutorial` container settings have been described in previous tutorials. One important change is necessary
-however, rather than accessing **Orion** directly on the default port `1026` as shown in all previous tutorials, all
-context broker traffic is now sent to `orion-proxy` on port `1027`. As a reminder, the relevant settings are detailed
-below:
+All context broker traffic is now sent to `apisix` on port `9080` under the `/orion` prefix, rather than directly to
+`orion` on port `1026` as in previous tutorials. The relevant settings are:
 
-| Key                    | Value                         | Description                                                                                     |
-| ---------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------- |
-| WEB_APP_PORT           | `3000`                        | Port used by web-app which displays the login screen & etc.                                     |
-| KEYCLOAK_URL           | `http://localhost`            | This is URL of the **Keycloak** Web frontend itself, used for redirection when forwarding users |
-| KEYCLOAK_IP_ADDRESS    | `http://172.18.1.5`           | This is URL of the **Keycloak** OAuth Communications                                            |
-| KEYCLOAK_PORT          | `3005`                        | This is the port that **Keycloak** is listening on.                                             |
-| KEYCLOAK_CLIENT_ID     | `ngsi-ld-farm`                | The Client ID defined by Keycloak for this application                                          |
-| KEYCLOAK_CLIENT_SECRET | `1234`                        | The Client Secret defined by Keycloak for this application                                      |
-| CALLBACK_URL           | `http://localhost:3000/login` | The callback URL used by Keycloak when a challenge has succeeded.                               |
+| Key                      | Value                         | Description                                                                                     |
+| ------------------------ | ----------------------------- | ----------------------------------------------------------------------------------------------- |
+| `WEB_APP_PORT`           | `3000`                        | Port used by web-app which displays the login screen & etc.                                     |
+| `CONTEXT_BROKER`         | `http://apisix:9080/orion`    | All Context Broker traffic is routed through APISIX                                             |
+| `KEYCLOAK_URL`           | `http://localhost`            | This is URL of the **Keycloak** Web frontend itself, used for redirection when forwarding users |
+| `KEYCLOAK_IP_ADDRESS`    | `http://172.18.1.5`           | This is URL of the **Keycloak** OAuth Communications                                            |
+| `KEYCLOAK_PORT`          | `3005`                        | This is the port that **Keycloak** is listening on.                                             |
+| `KEYCLOAK_CLIENT_ID`     | `ngsi-ld-farm`                | The Client ID defined by Keycloak for this application                                          |
+| `KEYCLOAK_CLIENT_SECRET` | `1234`                        | The Client Secret defined by Keycloak for this application                                      |
+| `CALLBACK_URL`           | `http://localhost:3000/login` | The callback URL used by Keycloak when a challenge has succeeded.                               |
 
-<h2>Securing Orion-LD - Start up</h2>
+## Securing Orion-LD - Start Up
 
-To start the system with a PEP Proxy protecting access to **Orion**, run the following command:
+To start the system with APISIX protecting access to **Orion-LD**, run the following command:
 
 ```console
 ./services orion
 ```
 
-<h3>Video : Securing A REST API</h3>
+### :arrow_forward: Video : Securing A REST API
 
 [![](https://fiware.github.io/tutorials.Step-by-Step/img/video-logo.png)](https://www.youtube.com/watch?v=coxFQEY0_So "Securing a REST API")
 
-Click on the image above to see a video about securing a REST API using the Wilma PEP Proxy.
+Click on the image above to see a video about securing a REST API using an API Gateway
 
-### Wilma PEP Proxy - No Access to Orion without an Access Token
+## User Logs In to the Application using the REST API
 
-Secured Access can be ensured by requiring all requests to the secured service are made indirectly via a Wilma PEP Proxy
-(in this case the PEP Proxy is found in front of the Context Broker). Requests must include an `X-Auth-Token`, failure
-to present a valid token results in a denial of access.
+### APISIX - No Access to Orion-LD without an Access Token
 
-#### 1️⃣2️⃣ Request:
+Secured access is ensured by requiring all requests to the secured service pass through APISIX (the gateway in front of
+the Context Broker). Requests must include an `Authorization: Bearer` JWT; failure to present a valid token results in a
+denial of access.
 
-If a request to the PEP Proxy is made without any access token as shown:
+#### :one::two: Request:
+
+If a request to APISIX is made without any access token:
 
 ```console
-curl -X GET \
-  http://localhost:1027/v2/entities/urn:ngsi-ld:Store:001?options=keyValues
+curl -X GET 'http://localhost:9080/orion/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001?options=keyValues' \
+  -H 'Link: <https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  -H 'Content-Type: application/json'
 ```
 
 #### Response:
 
-The response is a **401 Unauthorized** error code, with the following explanation:
+The response is a **401 Unauthorized** error code:
 
-```text
-Auth-token not found in request header
+```
+{"message":"Missing authorization in request"}
 ```
 
 ### Keycloak - User Obtains an Access Token
 
-#### 1️⃣3️⃣ Request:
+#### :one::three: Request:
 
-To log in to the application using the user-credentials flow send a POST request to **Keyock** using the `oauth2/token`
-endpoint with the `grant_type=password`. For example to log-in as Alice the Admin:
+To log in using the User Credentials grant, send a POST request to **Keycloak** using the OIDC token endpoint with
+`grant_type=password`. For example to log in as Bob the Farm Manager:
 
 ```console
 curl -iX POST \
-  'http://localhost:3005/oauth2/token' \
-  -H 'Accept: application/json' \
-  -H 'Authorization: Basic dHV0b3JpYWwtZGNrci1zaXRlLTAwMDAteHByZXNzd2ViYXBwOnR1dG9yaWFsLWRja3Itc2l0ZS0wMDAwLWNsaWVudHNlY3JldA==' \
+  'http://localhost:3005/realms/farm-management/protocol/openid-connect/token' \
   -H 'Content-Type: application/x-www-form-urlencoded' \
-  --data "username=alice@fiware.farm&password=test&grant_type=password"
+  --data 'username=bob&password=test&grant_type=password&client_id=ngsi-ld-farm&client_secret=1234&scope=openid+profile+email'
 ```
 
 #### Response:
 
-The response returns an access code to identify the user:
+The response returns a JWT `access_token` to identify the user:
 
 ```json
 {
-    "access_token": "a7e22dfe2bd7d883c8621b9eb50797a7f126eeab",
+    "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ii4uLiJ9...",
     "token_type": "Bearer",
-    "expires_in": 3599,
-    "refresh_token": "05e386edd9f95ed0e599c5004db8573e86dff874"
+    "expires_in": 300,
+    "refresh_token": "eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6Ii4uLiJ9...",
+    "scope": "openid profile email"
 }
 ```
 
-This can also be done by entering the Tutorial Application on http:/localhost and logging in using any of the OAuth2
-grants on the page. A successful log-in will return an access token.
+This can also be done by entering the Tutorial Application on `http://localhost:3000` and logging in using any of the
+OAuth2 grants on the page. A successful log-in will return an access token.
 
-### Wilma PEP Proxy - Accessing Orion with an Access Token
+### APISIX - Accessing Orion-LD with an Authorization: Bearer Token
 
-If a request to **Wilma** is made including a valid access token in the `X-Auth-Token` header as shown, the request is
-permitted and the service behind the PEP Proxy (in this case the Orion-LD Context Broker) will return the data as
-expected.
+If a request to APISIX includes a valid JWT in the `Authorization: Bearer` header, the request is permitted and the
+Orion-LD Context Broker will return the data as expected.
 
-#### 1️⃣4️⃣ Request:
+#### :one::four: Request:
 
 ```console
-curl -X GET \
-  http://localhost:1027/v2/entities/urn:ngsi-ld:Store:001?options=keyValues \
-  -H 'X-Auth-Token: {{X-Access-token}}'
+curl -X GET 'http://localhost:9080/orion/ngsi-ld/v1/entities/urn:ngsi-ld:Building:farm001?options=keyValues' \
+  -H 'Link: <https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer {{access_token}}'
 ```
 
 #### Response:
 
+The response returns the information regarding Farm001:
+
 ```json
 {
-    "id": "urn:ngsi-ld:Store:001",
-    "type": "Store",
+    "@context": "https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld",
+    "id": "urn:ngsi-ld:Building:farm001",
+    "type": "Building",
+    "category": "farm",
     "address": {
-        "streetAddress": "Bornholmer Straße 65",
+        "streetAddress": "Großer Stern 1",
         "addressRegion": "Berlin",
-        "addressLocality": "Prenzlauer Berg",
-        "postalCode": "10439"
+        "addressLocality": "Tiergarten",
+        "postalCode": "10557"
     },
     "location": {
         "type": "Point",
-        "coordinates": [13.3986, 52.5547]
+        "coordinates": [13.3505, 52.5144]
     },
-    "name": "Bösebrücke Einkauf"
+    "name": "Victory Farm",
+    "owner": "urn:ngsi-ld:Person:person001"
 }
 ```
+
+#### :one::five: Unauthorized User Request:
+
+A user without the `farm-manager` role (e.g. Mallory) will receive a **403 Forbidden** from APISIX even if they present
+a valid JWT, because the Keycloak UMA policy denies access:
+
+```console
+curl -X GET 'http://localhost:9080/orion/ngsi-ld/v1/entities/urn:ngsi-ld:Building:barn002?options=keyValues' \
+  -H 'Link: <https://fiware.github.io/tutorials.Step-by-Step/tutorials-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer {{mallory_access_token}}'
+```
+
+```
+HTTP/1.1 403 Forbidden
+```
+
+## Securing Orion-LD - Sample Code
+
+When a User logs in to the application using the User Credentials Grant, an `access_token` JWT is obtained which
+identifies the User. The `access_token` is stored in session:
+
+```javascript
+function userCredentialGrant(req, res) {
+    debug("userCredentialGrant");
+
+    const email = req.body.email;
+    const password = req.body.password;
+
+    oa.getOAuthPasswordCredentials(email, password).then((results) => {
+        req.session.access_token = results.access_token;
+        return;
+    });
+}
+```
+
+For each subsequent request, the `access_token` is supplied in the `Authorization: Bearer` header:
+
+```javascript
+function setAuthHeaders(req) {
+    const headers = {};
+    if (req.session.access_token) {
+        headers["Authorization"] = "Bearer " + req.session.access_token;
+    }
+    return headers;
+}
+```
+
+For example, when reading entity data, the `Authorization` header must be added to the request so that the User can be
+identified and access granted:
+
+```javascript
+async function readEntity(req, res) {
+    const entity = await retrieveEntity(req.params.entityId, { options: "keyValues" }, setAuthHeaders(req));
+    res.render("entity", { entity });
+}
+```
+
+# Securing an IoT Agent South Port
+
+![](https://fiware.github.io/tutorials.PEP-Proxy/img/pep-proxy-south-port.png)
+
+<h3>APISIX Configuration</h3>
+
+To secure the South Port (device-to-IOTA communication), APISIX is configured with a route that forwards traffic to the
+IoT Agent's listening port (`7896`). This route applies JWT validation using the `openid-connect` plugin, ensuring that
+only devices with a valid access token can send measurements.
+
+The relevant upstream for the IoT Agent South Port in `apisix-config/apisix.yaml` is:
+
+```yaml
+upstreams:
+    - id: 4
+      nodes:
+          iot-agent:7896: 1
+      type: roundrobin
+```
+
+And the corresponding route:
+
+```yaml
+routes:
+    - id: 7
+      uri: /iot/*
+      upstream_id: 4
+      plugins:
+          openid-connect:
+              client_id: "ngsi-ld-farm"
+              client_secret: "1234"
+              discovery: "http://keycloak:8080/realms/farm-management/.well-known/openid-configuration"
+              realm: "farm-management"
+              bearer_only: true
+```
+
+Devices now send their measurements to `http://apisix:9080/iot/...` (internally) or `http://localhost:1030/iot/...`
+(externally).
+
+| Key                          | Value            | Description                                 |
+| ---------------------------- | ---------------- | ------------------------------------------- |
+| `uri`                        | `/iot/*`         | The path prefix for IoT device traffic      |
+| `upstream`                   | `iot-agent:7896` | The IoT Agent South Port upstream           |
+| `openid-connect.bearer_only` | `true`           | Validate JWT only — no redirection to login |
+
+<h3>Application Configuration</h3>
+
+The dummy IoT sensors within the `tutorial` container have been updated to route their traffic through APISIX. Each
+sensor must now obtain a JWT from Keycloak and include it in the `Authorization: Bearer` header.
+
+```yaml
+tutorial-app:
+    ...
+    environment:
+        - "IOTA_HTTP_HOST=apisix"
+        - "IOTA_HTTP_PORT=9080"
+        - "DUMMY_DEVICES_USER=iot_sensor_00000000-0000-0000-0000-000000000000"
+        - "DUMMY_DEVICES_PASSWORD=test"
+```
+
+The `IOTA_HTTP_HOST` and `IOTA_HTTP_PORT` now point to the APISIX gateway instead of the IoT Agent directly.
+
+## Securing South Port Traffic - Start up
+
+To start the system with APISIX protecting both the Context Broker and the IoT Agent South Port, run:
+
+```console
+./services southport
+```
+
+## IoT Sensor obtaining an Access Token
+
+### Keycloak - IoT Sensor Obtains an Access Token
+
+Devices log in to Keycloak using the same OIDC token endpoint. For example, to log in as a sensor:
+
+#### :one::five: Request:
+
+```console
+curl -iX POST \
+  'http://localhost:3005/realms/farm-management/protocol/openid-connect/token' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  --data 'username=iot_sensor_00000000-0000-0000-0000-000000000000&password=test&grant_type=password&client_id=ngsi-ld-farm&client_secret=1234'
+```
+
+#### Response:
+
+The response returns a JWT `access_token` for the device:
+
+```json
+{
+    "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ii4uLiJ9...",
+    "token_type": "Bearer",
+    "expires_in": 300
+}
+```
+
+### APISIX - Accessing IoT Agent with a Bearer Token
+
+This example simulates a secured measurement coming from the device `motion001`. The request is sent to APISIX with the
+`Authorization: Bearer` header.
+
+#### :one::six: Request:
+
+```console
+curl -X POST \
+  'http://localhost:1030/iot/d?k=4jggokgpepnvsb2uv4s40d59ov&i=motion001' \
+  -H 'Authorization: Bearer {{access_token}}' \
+  -H 'Content-Type: text/plain' \
+  -d 'c|1'
+```
+
+## Securing South Port Traffic - Sample Code
+
+When an IoT Sensor starts up, it must log in to Keycloak to obtain a JWT:
+
+```javascript
+function initSecureDevices() {
+    Security.getAccessToken(process.env.DUMMY_DEVICES_USER, process.env.DUMMY_DEVICES_PASSWORD).then((token) => {
+        DUMMY_DEVICE_HTTP_HEADERS["Authorization"] = "Bearer " + token;
+    });
+}
+```
+
+Each measurement request thereafter includes the `Authorization` header:
+
+```javascript
+const options = {
+    method: "POST",
+    url: "http://apisix:9080/iot/d",
+    qs: { k: UL_API_KEY, i: deviceId },
+    headers: DUMMY_DEVICE_HTTP_HEADERS,
+    body: state,
+};
+```
+
+# Securing an IoT Agent North Port
+
+![](https://fiware.github.io/tutorials.PEP-Proxy/img/pep-proxy-north-port.png)
+
+<h3>IoT Agent Configuration</h3>
+
+The North Port (IOTA-to-Context Broker communication) is secured by requiring the IoT Agent to identify itself to the
+Context Broker (via APISIX) using an OAuth2 access token.
+
+The IoT Agent is configured to obtain a token from Keycloak using the `client_credentials` grant.
+
+```yaml
+iot-agent:
+    ...
+    environment:
+        - IOTA_CB_HOST=apisix
+        - IOTA_CB_PORT=9080
+        - IOTA_AUTH_ENABLED=true
+        - IOTA_AUTH_TYPE=oauth2
+        - IOTA_AUTH_HEADER=Authorization
+        - IOTA_AUTH_URL=http://keycloak:8080
+        - IOTA_AUTH_TOKEN_PATH=/realms/farm-management/protocol/openid-connect/token
+        - IOTA_AUTH_CLIENT_ID=ngsi-ld-farm
+        - IOTA_AUTH_CLIENT_SECRET=1234
+```
+
+The `IOTA_CB_HOST` and `IOTA_CB_PORT` point to the APISIX gateway. Each request sent by the IoT Agent will include the
+`Authorization: Bearer` header containing a valid JWT.
+
+| Key                    | Value                                                   | Description                                     |
+| ---------------------- | ------------------------------------------------------- | ----------------------------------------------- |
+| `IOTA_AUTH_ENABLED`    | `true`                                                  | Enable North Port security                      |
+| `IOTA_AUTH_TYPE`       | `oauth2`                                                | Use OIDC/OAuth2 for authentication              |
+| `IOTA_AUTH_URL`        | `http://keycloak:8080`                                  | The Keycloak base URL                           |
+| `IOTA_AUTH_TOKEN_PATH` | `/realms/farm-management/protocol/openid-connect/token` | The OIDC token endpoint                         |
+| `IOTA_AUTH_CLIENT_ID`  | `ngsi-ld-farm`                                          | The client ID for the IoT Agent service account |
+
+## Securing an IoT Agent North Port - Start up
+
+To start the system with APISIX protecting the communication between the IoT Agent and the Context Broker, run:
+
+```console
+./services northport
+```
+
+### Keycloak - Obtaining an Offline Token (Trust Token)
+
+For certain operations, such as provisioning a trusted service group, a long-lived "offline" token (or a standard client
+credentials token) is required.
+
+#### :one::seven: Request:
+
+```console
+curl -iX POST \
+  'http://localhost:3005/realms/farm-management/protocol/openid-connect/token' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  --data 'grant_type=client_credentials&client_id=ngsi-ld-farm&client_secret=1234'
+```
+
+#### Response:
+
+```json
+{
+    "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ii4uLiJ9...",
+    "token_type": "Bearer",
+    "expires_in": 300
+}
+```
+
+### IoT Agent - Provisioning a Trusted Service Group
+
+The access token obtained above must be added to the `trust` field when provisioning the service group. This token
+allows the IoT Agent to prove its identity when communicating with the Context Broker via APISIX.
+
+#### :one::eight: Request:
+
+```console
+curl -iX POST \
+  'http://localhost:4041/iot/services' \
+  -H 'Content-Type: application/json' \
+  -H 'fiware-service: openiot' \
+  -H 'fiware-servicepath: /' \
+  -d '{
+ "services": [
+   {
+     "apikey":      "4jggokgpepnvsb2uv4s40d59ov",
+     "cbroker":     "http://apisix:9080/data/orion",
+     "entity_type": "Motion",
+     "resource":    "/iot/d",
+     "trust": "{{access_token}}"
+   }
+ ]
+}'
+```
+
+### IoT Agent - Provisioning a Sensor
+
+Once a trusted service group is created, devices can be provisioned normally. APISIX will validate the JWT in the
+`trust` field (or the one automatically refreshed by the IoT Agent) before allowing the update to reach the Context
+Broker.
+
+#### :one::nine: Request:
+
+```console
+curl -iX POST \
+  'http://localhost:4041/iot/devices' \
+  -H 'Content-Type: application/json' \
+  -H 'fiware-service: openiot' \
+  -H 'fiware-servicepath: /' \
+  -d '{
+ "devices": [
+   {
+     "device_id":   "motion001",
+     "entity_name": "urn:ngsi-ld:Motion:001",
+     "entity_type": "Motion",
+     "timezone":    "Europe/Berlin",
+     "attributes": [
+       { "object_id": "c", "name": "count", "type": "Integer" }
+     ],
+     "static_attributes": [
+       { "name":"refStore", "type": "Relationship", "value": "urn:ngsi-ld:Store:001"}
+     ]
+   }
+ ]
+}
+'
+```
+
+---
 
 # Next Steps
 
 Want to learn how to add more complexity to your application by adding advanced features? You can find out by reading
-the other [tutorials in this series](https://fiware-tutorials.rtfd.io)
+the other [NGSI-LD tutorials](https://ngsi-ld-tutorials.rtfd.io).
+
+---
+
+## License
+
+[MIT](https://github.com/FIWARE/tutorials.PEP-Proxy/blob/master/LICENSE) © 2018-2024 FIWARE Foundation e.V.
