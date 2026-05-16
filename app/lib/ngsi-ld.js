@@ -47,7 +47,7 @@ function createAttribute(entityId, body, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 201) {
-                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                const error = new Error(data.body.title || data.body.message || (typeof data.body === 'string' && data.body ? data.body : 'Unknown Error'));
                 error.cause = data.body;
                 throw error;
             }
@@ -65,7 +65,7 @@ function readAttribute(entityId, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 200) {
-                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                const error = new Error(data.body.title || data.body.message || (typeof data.body === 'string' && data.body ? data.body : 'Unknown Error'));
                 error.cause = data.body;
                 throw error;
             }
@@ -84,7 +84,7 @@ function updateAttribute(entityId, body, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 204) {
-                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                const error = new Error(data.body.title || data.body.message || (typeof data.body === 'string' && data.body ? data.body : 'Unknown Error'));
                 error.cause = data.body;
                 throw error;
             }
@@ -102,7 +102,7 @@ function deleteAttribute(entityId, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 204) {
-                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                const error = new Error(data.body.title || data.body.message || (typeof data.body === 'string' && data.body ? data.body : 'Unknown Error'));
                 error.cause = data.body;
                 throw error;
             }
@@ -121,7 +121,7 @@ function createEntity(entityId, type, body, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 201) {
-                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                const error = new Error(data.body.title || data.body.message || (typeof data.body === 'string' && data.body ? data.body : 'Unknown Error'));
                 error.cause = data.body;
                 throw error;
             }
@@ -140,7 +140,7 @@ function updateEntity(entityId, body, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 204) {
-                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                const error = new Error(data.body.title || data.body.message || (typeof data.body === 'string' && data.body ? data.body : 'Unknown Error'));
                 error.cause = data.body;
                 throw error;
             }
@@ -158,7 +158,7 @@ function deleteEntity(entityId, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 204) {
-                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                const error = new Error(data.body.title || data.body.message || (typeof data.body === 'string' && data.body ? data.body : 'Unknown Error'));
                 error.cause = data.body;
                 throw error;
             }
@@ -181,7 +181,7 @@ function readEntity(entityId, opts, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 200) {
-                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                const error = new Error(data.body.title || data.body.message || (typeof data.body === 'string' && data.body ? data.body : 'Unknown Error'));
                 error.cause = data.body;
                 throw error;
             }
@@ -208,7 +208,7 @@ function listEntities(opts, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 200) {
-                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                const error = new Error(data.body.title || data.body.message || (typeof data.body === 'string' && data.body ? data.body : 'Unknown Error'));
                 error.cause = data.body;
                 throw error;
             }
@@ -224,7 +224,7 @@ function readTemporalEntity(entityId, opts, headers = {}) {
         .then((r) => parse(r).then((data) => ({ status: r.status, body: data })))
         .then((data) => {
             if (data.status !== 200) {
-                const error = new Error(data.body.title || data.body.message || 'Unknown Error');
+                const error = new Error(data.body.title || data.body.message || (typeof data.body === 'string' && data.body ? data.body : 'Unknown Error'));
                 error.cause = data.body;
                 throw error;
             }

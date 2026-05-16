@@ -140,6 +140,7 @@ router.get('/', async function (req, res) {
         debug(errorDetail);
         return res.render('index', {
             errors: [errorDetail],
+            securityEnabled,
             buildings: [],
             pigs: [],
             cows: [],
