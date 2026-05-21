@@ -30,7 +30,9 @@ pids
 *.seed
 *.pid.lock
 node_modules/
+app/dist/
 forwarder/dist/
+iot-devices/dist/
 jspm_packages/
 .npm
 .eslintcache
