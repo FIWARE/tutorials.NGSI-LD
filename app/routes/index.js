@@ -19,10 +19,8 @@ const Credentials = require('../controllers/credentials');
 const csvController = require('../controllers/csv');
 
 const ngsiLD = require('../lib/ngsi-ld');
+const { LinkHeader } = ngsiLD;
 const upload = require('../lib/upload');
-
-const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context.jsonld';
-const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json">';
 
 const _ = require('lodash');
 const debug = require('debug')('tutorial:ngsi-ld');

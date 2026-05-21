@@ -1,8 +1,7 @@
 const debug = require('debug')('tutorial:weather');
 const monitor = require('../../lib/monitoring');
 const ngsiLD = require('../../lib/ngsi-ld');
-const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context.jsonld';
-const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json">';
+const { LinkHeader } = ngsiLD;
 
 async function displayWeather(req, res) {
     debug('displayWeather');
@@ -20,7 +19,7 @@ async function displayWeather(req, res) {
         );
         return res.render('weather', { title: weather.name, weather });
     } catch (error) {
-        const errorDetail = error.error || error;
+        const errorDetail = error.cause || error;
         debug(errorDetail);
         // If no weather has been found, display an error screen
         return res.render('error', {

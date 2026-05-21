@@ -1,4 +1,5 @@
 const debug = require('debug')('tutorial:security');
+const crypto = require('crypto');
 const keycloak = require('../lib/keycloak');
 
 const port = process.env.WEB_APP_PORT || '3000';
@@ -52,7 +53,7 @@ function authCodeGrant(req, res) {
     debug('authCodeGrant');
     const verifier = keycloak.generateCodeVerifier();
     const challenge = keycloak.generateCodeChallenge(verifier);
-    const state = require('crypto').randomBytes(16).toString('hex');
+    const state = crypto.randomBytes(16).toString('hex');
 
     req.session.pkce_verifier = verifier;
     req.session.oauth_state = state;
@@ -65,7 +66,7 @@ function authCodeGrant(req, res) {
 // Initiate Implicit flow — redirect to Keycloak login page
 function implicitGrant(req, res) {
     debug('implicitGrant');
-    const state = require('crypto').randomBytes(16).toString('hex');
+    const state = crypto.randomBytes(16).toString('hex');
     req.session.oauth_state = state;
 
     const url = keycloak.getImplicitAuthorizeUrl(state);

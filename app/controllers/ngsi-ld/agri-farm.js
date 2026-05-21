@@ -1,8 +1,7 @@
 const debug = require('debug')('tutorial:farm');
 const monitor = require('../../lib/monitoring');
 const ngsiLD = require('../../lib/ngsi-ld');
-const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context.jsonld';
-const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json">';
+const { LinkHeader } = ngsiLD;
 
 async function displayAgriFarm(req, res) {
     debug('displayAgriFarm');
@@ -20,7 +19,7 @@ async function displayAgriFarm(req, res) {
         );
         return res.render('agri-farm', { title: farm.name, farm });
     } catch (error) {
-        const errorDetail = error.error | error;
+        const errorDetail = error.cause || error;
         debug(errorDetail);
         // If no farm has been found, display an error screen
         return res.render('error', {

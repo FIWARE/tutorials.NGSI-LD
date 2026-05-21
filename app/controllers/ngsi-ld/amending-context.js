@@ -7,8 +7,7 @@
 
 const debug = require('debug')('tutorial:ngsi-ld');
 const jsonld = require('jsonld');
-
-const BASE_PATH = process.env.CONTEXT_BROKER || 'http://localhost:1026/ngsi-ld/v1';
+const { BASE_PATH } = require('../../lib/ngsi-ld');
 
 const coreContext = require('./jsonld-context/ngsi-ld.json');
 const japaneseContext = require('./jsonld-context/japanese.json');

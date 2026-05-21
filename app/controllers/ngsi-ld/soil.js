@@ -1,8 +1,7 @@
 const debug = require('debug')('tutorial:soil');
 const monitor = require('../../lib/monitoring');
 const ngsiLD = require('../../lib/ngsi-ld');
-const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context.jsonld';
-const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json">';
+const { LinkHeader } = ngsiLD;
 
 async function displaySoil(req, res) {
     debug('displaySoil');
@@ -20,7 +19,7 @@ async function displaySoil(req, res) {
         );
         return res.render('soil', { title: soil.name, soil });
     } catch (error) {
-        const errorDetail = error.error;
+        const errorDetail = error.cause;
         debug(errorDetail);
         // If no soil has been found, display an error screen
         return res.render('error', {

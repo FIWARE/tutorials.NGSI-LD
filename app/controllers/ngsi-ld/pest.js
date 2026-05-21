@@ -1,8 +1,7 @@
 const debug = require('debug')('tutorial:pest');
 const monitor = require('../../lib/monitoring');
 const ngsiLD = require('../../lib/ngsi-ld');
-const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context.jsonld';
-const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json">';
+const { LinkHeader } = ngsiLD;
 
 async function displayPest(req, res) {
     debug('displayPest');
@@ -20,7 +19,7 @@ async function displayPest(req, res) {
         );
         return res.render('pest', { title: pest.name, pest });
     } catch (error) {
-        const errorDetail = error.error;
+        const errorDetail = error.cause;
         debug(errorDetail);
         // If no pest has been found, display an error screen
         return res.render('error', {

@@ -1,8 +1,7 @@
 const debug = require('debug')('tutorial:land');
 const monitor = require('../../lib/monitoring');
 const ngsiLD = require('../../lib/ngsi-ld');
-const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context.jsonld';
-const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json">';
+const { LinkHeader } = ngsiLD;
 
 async function displayLand(req, res) {
     debug('displayLand');
@@ -20,7 +19,7 @@ async function displayLand(req, res) {
         );
         return res.render('land', { title: land.name, land });
     } catch (error) {
-        const errorDetail = error.error;
+        const errorDetail = error.cause;
         debug(errorDetail);
         // If no agri-parcel has been found, display an error screen
         return res.render('error', {

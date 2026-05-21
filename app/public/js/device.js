@@ -58,12 +58,7 @@ $(function () {
                     }
 
                     if (waterAudio) {
-                        if (
-                            $('#water001').data('running') ||
-                            $('#water002').data('running') ||
-                            $('#water003').data('running') ||
-                            $('#water004').data('running')
-                        ) {
+                        if ($('[id^="water"]').toArray().some((el) => $(el).data('running'))) {
                             if (waterAudio.paused) {
                                 waterAudio.play();
                             }

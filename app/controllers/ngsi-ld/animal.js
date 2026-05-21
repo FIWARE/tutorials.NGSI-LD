@@ -1,33 +1,35 @@
 const debug = require('debug')('tutorial:animal');
 const monitor = require('../../lib/monitoring');
 const ngsiLD = require('../../lib/ngsi-ld');
-const Context = process.env.IOTA_JSON_LD_CONTEXT || 'http://context/ngsi-context.jsonld';
-const LinkHeader = '<' + Context + '>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json">';
+const { LinkHeader } = ngsiLD;
 
 const ENTITY_LIMIT = process.env.ENTITY_LIMIT || 200;
 
 async function getAnimals(req, res) {
     debug('getAnimals');
-
-    const headers = ngsiLD.setHeaders(req.session.access_token, LinkHeader);
-    headers.Accept = 'application/geo+json';
-    monitor('NGSI', 'listEntities ?type=Animal');
-    const animals = await ngsiLD.listEntities(
-        {
-            type: 'Animal',
-            format: 'simplified',
-            limit: ENTITY_LIMIT
-        },
-        headers
-    );
-    if (animals && animals.features) {
-        animals.features.forEach((animal) => {
-            animal.properties.id = animal.id;
-        });
-        delete animals['@context'];
+    try {
+        const headers = ngsiLD.setHeaders(req.session.access_token, LinkHeader);
+        headers.Accept = 'application/geo+json';
+        monitor('NGSI', 'listEntities ?type=Animal');
+        const animals = await ngsiLD.listEntities(
+            {
+                type: 'Animal',
+                format: 'simplified',
+                limit: ENTITY_LIMIT
+            },
+            headers
+        );
+        if (animals && animals.features) {
+            animals.features.forEach((animal) => {
+                animal.properties.id = animal.id;
+            });
+            delete animals['@context'];
+        }
+        return res.send(animals);
+    } catch (error) {
+        debug(error);
+        return res.status(500).send();
     }
-
-    return res.send(animals);
 }
 
 function displayMap(req, res) {

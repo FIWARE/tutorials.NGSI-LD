@@ -7,10 +7,10 @@
 
 const debug = require('debug')('tutorial:command-listener');
 const Security = require('../security');
+const { BASE_PATH, parse } = require('../../lib/ngsi-ld');
 
 // Connect to the context broker and use fallback values if necessary
-const CONTEXT_BROKER = process.env.CONTEXT_BROKER || 'http://localhost:1026/ngsi-ld/v1';
-const DEVICE_BROKER = process.env.DEVICE_BROKER || CONTEXT_BROKER;
+const DEVICE_BROKER = process.env.DEVICE_BROKER || BASE_PATH;
 const NGSI_LD_TENANT = process.env.NGSI_LD_TENANT !== undefined ? process.env.NGSI_LD_TENANT : 'openiot';
 
 const port = process.env.WEB_APP_PORT || '3000';
@@ -51,17 +51,6 @@ function createNGSILDRequest(action, id) {
     };
 
     return { method, url, headers, body, json: true };
-}
-
-async function parse(response) {
-    let text = '';
-    try {
-        text = await response.text();
-        const data = JSON.parse(text);
-        return data;
-    } catch (err) {
-        return text;
-    }
 }
 
 // This function allows a Water Sprinkler, Tractor of FillingStation command to be sent to the Dummy IoT devices

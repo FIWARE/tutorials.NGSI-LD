@@ -18,12 +18,17 @@ function upsertToMongoDB(building) {
 
 // Function to create address documents in a MongoDB database
 // when receiving an NGSI-LD subscription.
-function duplicateBuildings(req, res) {
+async function duplicateBuildings(req, res) {
     debug('duplicateBuildings');
     async function copyEntityData(building) {
         await upsertToMongoDB(building);
     }
-    req.body.data.forEach(copyEntityData);
+    try {
+        await Promise.all(req.body.data.map(copyEntityData));
+    } catch (error) {
+        debug(error);
+        return res.status(500).send();
+    }
     res.status(204).send();
 }
 

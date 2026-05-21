@@ -4,6 +4,10 @@ const debug = require('debug')('tutorial:history');
 
 const crateUrl = process.env.CRATE_DB_SERVICE_URL || 'http://localhost:4200/_sql';
 
+// TODO: readCrateMotionCount and readCrateLampLuminosity share the same fetch/Promise
+// structure and differ only in table name, column name, and entity-id prefix.
+// Merge into a single queryCrate(id, aggMethod, table, column, entityPrefix) helper
+// once the surrounding SQL and schema are finalised.
 function readCrateMotionCount(id, aggMethod) {
     debug('readCrateMotionCount');
     return new Promise(function (resolve, reject) {
