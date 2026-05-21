@@ -79,10 +79,11 @@
     "typescript-eslint": "^8.0.0"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp -r views dist/ && cp -r public dist/",
     "start": "node ./dist/bin/www.js",
     "healthcheck": "node ./dist/bin/healthcheck.js",
     "no_devices": "DEBUG=tutorial.* DUMMY_OFF=false npm start",
+    "test": "npm run lint",
     "lint": "eslint . --cache",
     "lint:fix": "eslint . --cache --fix",
     "prettier": "prettier --single-quote --write \"**/*.ts\""
