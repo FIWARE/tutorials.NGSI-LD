@@ -302,19 +302,9 @@ const upload = (req, res) => {
 
             return createContextRequests(batchEntities, req.get('NGSILD-Tenant'), req.get('Authorization'));
         })
-        .then(async (promises) => {
-            const results = [];
-            for (const promise of promises) {
-                // eslint-disable-next-line no-await-in-loop
-                const result = await promise;
-                results.push(result);
-            }
-            return results;
-        })
+        .then((promises) => Promise.allSettled(promises))
         .then((results) => {
-            const errors = _.filter(results, function (o) {
-                return o.status === 'rejected';
-            });
+            const errors = results.filter((o) => o.status === 'rejected');
             return errors.length ? res.status(Status.BAD_REQUEST).json(errors) : res.status(Status.NO_CONTENT).send();
         })
         .catch((err) => {

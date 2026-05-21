@@ -3,7 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const bodyParser = require('body-parser');
+
 const indexRouter = require('./routes/index');
 const crypto = require('crypto');
 const session = require('express-session');
@@ -46,7 +46,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(logger('dev'));
-app.use(express.json());
+app.use(express.json({ type: ['application/json', 'application/*+json'] }));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(flash());
@@ -77,12 +77,6 @@ if (process.env.NODE_ENV === 'production' && !sessionOff) {
 }
 
 app.use(express.static(path.join(__dirname, 'public')));
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
-
-// parse application/json
-app.use(bodyParser.json());
-app.use(bodyParser.json({ type: 'application/*+json' }));
 
 app.use(function (req, res, next) {
     res.locals.session = req.session;

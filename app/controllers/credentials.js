@@ -12,6 +12,10 @@ const DIDResolver = require('did-resolver');
 const WebDIDResolver = require('web-did-resolver');
 const debug = require('debug')('tutorial:credentials');
 
+// The resolver is stateless configuration — create it once at module scope
+// rather than constructing a new instance on every verify request.
+const resolver = new DIDResolver.Resolver(WebDIDResolver.getResolver());
+
 function catchErrors(fn) {
     return (req, res, next) => {
         return fn(req, res, next).catch((e) => {
@@ -34,7 +38,6 @@ function catchErrors(fn) {
  */
 async function verifyPresentation(req, res) {
     const payload = req.body ? (typeof req.body === 'string' ? JSON.parse(req.body.payload) : req.body) : {};
-    const resolver = new DIDResolver.Resolver(WebDIDResolver.getResolver());
     const verifiedVP = await VerifiableCredentials.verifyPresentation(payload.jwt, resolver);
     res.status(200).send(verifiedVP);
 }
@@ -48,7 +51,6 @@ async function verifyPresentation(req, res) {
 async function verifyCredential(req, res) {
     const payload = req.body ? (typeof req.body === 'string' ? JSON.parse(req.body.payload) : req.body) : {};
     //    const aud = req.body.aud;
-    const resolver = new DIDResolver.Resolver(WebDIDResolver.getResolver());
     const verifiedVC = await VerifiableCredentials.verifyCredential(payload.jwt, resolver);
     res.status(200).send(verifiedVC);
 }

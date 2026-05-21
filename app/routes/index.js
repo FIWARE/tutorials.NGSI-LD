@@ -62,52 +62,24 @@ router.get('/', async function (req, res) {
     const headers = ngsiLD.setHeaders(req.session.access_token, LinkHeader);
     try {
         monitor('NGSI', 'listEntities ?type=Building');
-        const getBuildings = await ngsiLD.listEntities(
-            {
-                type: 'Building',
-                format: 'keyValues',
-                pick: 'id,name',
-                limit: ENTITY_LIMIT
-            },
-            headers
-        );
+        monitor('NGSI', 'listEntities ?type=Animal');
+        monitor('NGSI', 'listEntities ?type=AgriParcel');
+        monitor('NGSI', 'listEntities ?type=Device');
+        const [getBuildings, animals, getParcels, devices] = await Promise.all([
+            ngsiLD.listEntities({ type: 'Building', format: 'keyValues', pick: 'id,name', limit: ENTITY_LIMIT }, headers),
+            ngsiLD.listEntities(
+                { type: 'Animal', format: 'keyValues', pick: 'id,name,species,phenologicalCondition', limit: ENTITY_LIMIT },
+                headers
+            ),
+            ngsiLD.listEntities({ type: 'AgriParcel', format: 'keyValues', pick: 'id,name', limit: ENTITY_LIMIT }, headers),
+            ngsiLD.listEntities({ type: 'Device', format: 'keyValues', pick: 'id,name', limit: ENTITY_LIMIT }, headers)
+        ]);
         const buildings = getBuildings.sort((a, b) => {
             return a.name.localeCompare(b.name);
         });
-        monitor('NGSI', 'listEntities ?type=Animal');
-        const animals = await ngsiLD.listEntities(
-            {
-                type: 'Animal',
-                format: 'keyValues',
-                pick: 'id,name,species,phenologicalCondition',
-                limit: ENTITY_LIMIT
-            },
-            headers
-        );
-        monitor('NGSI', 'listEntities ?type=AgriParcel');
-        const getParcels = await ngsiLD.listEntities(
-            {
-                type: 'AgriParcel',
-                format: 'keyValues',
-                pick: 'id,name',
-                limit: ENTITY_LIMIT
-            },
-            headers
-        );
         const parcels = getParcels.sort((a, b) => {
             return a.name.localeCompare(b.name);
         });
-
-        monitor('NGSI', 'listEntities ?type=Device');
-        const devices = await ngsiLD.listEntities(
-            {
-                type: 'Device',
-                format: 'keyValues',
-                pick: 'id,name',
-                limit: ENTITY_LIMIT
-            },
-            headers
-        );
 
         const cows = _.filter(animals, (o) => {
             return o.species === 'dairy cattle';

@@ -122,7 +122,6 @@ $(function () {
     });
 
     socket.on('mqtt', function (msg) {
-        moment().format('LTS');
         // If we receive a northbound notification, list it on screen
         const htmlString = '<li>' + moment().format('LTS') + ' <b>MQTT</b> <code>' + msg + '</code>';
         $('#northbound').append(htmlString);

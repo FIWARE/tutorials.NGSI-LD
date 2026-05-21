@@ -182,25 +182,28 @@ function updateTractorStatus() {
     });
 }
 
+const timers = [];
+
 if (!devicesOff) {
     debug(`Enabling dummy device updates on ${devices}`);
-    setInterval(() => {
-        fireDevices('tractor');
-    }, 3361);
-    setInterval(fireAnimalCollars, 5099);
-    setInterval(() => {
-        fireDevices('temperature');
-    }, 7001);
-    setInterval(fireOverallFarmStatus, 10000);
-    setInterval(() => {
-        fireDevices('humidity');
-    }, 8009);
+    timers.push(setInterval(() => { fireDevices('tractor'); }, 3361));
+    timers.push(setInterval(fireAnimalCollars, 5099));
+    timers.push(setInterval(() => { fireDevices('temperature'); }, 7001));
+    timers.push(setInterval(fireOverallFarmStatus, 10000));
+    timers.push(setInterval(() => { fireDevices('humidity'); }, 8009));
 
     if (autoMoveTractors > 0) {
-        setInterval(updateTractorStatus, autoMoveTractors);
+        timers.push(setInterval(updateTractorStatus, autoMoveTractors));
     }
 } else {
     debug('Dummy device updates are disabled.');
+}
+
+// Stop all polling timers — call this during graceful shutdown or in tests
+// to prevent timer handles accumulating across module reloads.
+function teardown() {
+    timers.forEach(clearInterval);
+    timers.length = 0;
 }
 
 // The temperature Gauge does not accept commands,
@@ -216,5 +219,6 @@ function alterTemperature(id, raise) {
 
 module.exports = {
     accessControl,
-    sendCommand
+    sendCommand,
+    teardown
 };

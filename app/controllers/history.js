@@ -87,9 +87,11 @@ async function readCrateDeviceHistory(req, res) {
     debug('readCrateDeviceHistory');
     const id = req.params.deviceId.split(':').pop();
 
-    const crateMotionData = await readCrateMotionCount(id, 'sum');
-    const crateLampMinData = await readCrateLampLuminosity(id, 'min');
-    const crateLampMaxData = await readCrateLampLuminosity(id, 'max');
+    const [crateMotionData, crateLampMinData, crateLampMaxData] = await Promise.all([
+        readCrateMotionCount(id, 'sum'),
+        readCrateLampLuminosity(id, 'min'),
+        readCrateLampLuminosity(id, 'max')
+    ]);
 
     const sumMotionData = crateToTimeSeries(crateMotionData, 'sum', '#45d3dd');
     const minLampData = crateToTimeSeries(crateLampMinData, 'min', '#45d3dd');
