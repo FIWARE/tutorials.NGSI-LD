@@ -229,8 +229,8 @@ function fireDevices(deviceType) {
 }
 
 // Update state of Sensors
-function sendDeviceReading(deviceType, deviceId) {
-    const weather = myCache.get('weather');
+async function sendDeviceReading(deviceType, deviceId) {
+    const weather = await myCache.get('weather');
 
     getDeviceState(deviceId).then((state) => {
         const isSensor = true;
@@ -350,8 +350,8 @@ function getDeviceState(deviceId, force = false) {
 // it also reports (and attempts to send) the northbound traffic to the IoT agent.
 // The state of the dummy device is also sent to the browser for display
 //
-function setDeviceState(deviceId, state, isSensor = true, force = false) {
-    const previousState = myCache.get(deviceId);
+async function setDeviceState(deviceId, state, isSensor = true, force = false) {
+    const previousState = await myCache.get(deviceId);
     myCache.set(deviceId, state);
     const payload = Northbound.format(state);
     // If we are running under HTTP mode the device will respond with a result

@@ -42,12 +42,5 @@ exports.keys = function () {
 };
 
 exports.exists = function (key) {
-    return client.exists(key, (err, reply) => {
-        if (err) {
-            debug(err);
-            return false;
-        } else {
-            return reply === 1;
-        }
-    });
+    return keys.includes(key);
 };

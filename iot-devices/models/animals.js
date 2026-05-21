@@ -221,8 +221,8 @@ function getDeviceState(deviceId, force = false) {
 // it also reports (and attempts to send) the northbound traffic to the IoT agent.
 // The state of the dummy device is also sent to the browser for display
 //
-function setDeviceState(deviceId, state, isSensor = true, force = false) {
-    const previousState = myCache.get(deviceId);
+async function setDeviceState(deviceId, state, isSensor = true, force = false) {
+    const previousState = await myCache.get(deviceId);
     myCache.set(deviceId, state);
     const payload = Northbound.format(state);
     // If we are running under HTTP mode the device will respond with a result
@@ -239,17 +239,49 @@ function getStatusCode(status) {
 }
 
 function getRandomFromArray(array) {
-    console.log(array);
     const randomElement = array[Math.floor(Math.random() * array.length)];
     return randomElement;
 }
 
 function setRawReadings(state, desc) {
+    if (!STATUS[desc].heartRates.length) {
+        return;
+    }
     state.accel_x = getRandomFromArray(STATUS[desc].x).toFixed(4);
     state.accel_y = getRandomFromArray(STATUS[desc].y).toFixed(4);
-    state.bmp = getRandomFromArray(STATUS[desc].heartRates);
+    state.bpm = getRandomFromArray(STATUS[desc].heartRates);
     state.body_temp = getRandomFromArray(STATUS[desc].temperatures);
     state.step_count = getRandomFromArray(STATUS[desc].steps);
+}
+
+async function randomWalk(state, deviceId, lng, lat) {
+    let moveFactor = 6;
+    const weather = await myCache.get('weather');
+
+    if (weather === 'raining' || (state.st && state.st.includes(ANIMAL_STATUS.ILL))) {
+        moveFactor = 8;
+    } else if (state.st && state.st.includes(ANIMAL_STATUS.IN_CALF)) {
+        moveFactor = 7;
+    }
+
+    const location = state.gps.split(',');
+    let y = location[0];
+    let x = location[1];
+    const yOffset = y - lng;
+    const xOffset = x - lat;
+    if (getRandom() > moveFactor || xOffset < -0.015) {
+        x = addAndTrim(x, true, weather);
+    }
+    if (getRandom() > moveFactor || xOffset > 0.015) {
+        x = addAndTrim(x, false, weather);
+    }
+    if (getRandom() > moveFactor || yOffset < -0.015) {
+        y = addAndTrim(y, true, weather);
+    }
+    if (getRandom() > moveFactor || yOffset > 0.015) {
+        y = addAndTrim(y, false, weather);
+    }
+    state.gps = y + ',' + x;
 }
 
 async function directedWalk(state, deviceId, goal) {
@@ -292,38 +324,8 @@ async function directedWalk(state, deviceId, goal) {
     return { gps: y + ',' + x, complete: offset2 >= offset1, onHeat };
 }
 
-function randomWalk(state, deviceId, lng, lat) {
-    let moveFactor = 6;
-    const weather = myCache.get('weather');
-
-    if (weather === 'raining' || (state.st && state.st.includes(ANIMAL_STATUS.ILL))) {
-        moveFactor = 8;
-    } else if (state.st && state.st.includes(ANIMAL_STATUS.IN_CALF)) {
-        moveFactor = 7;
-    }
-
-    const location = state.gps.split(',');
-    let y = location[0];
-    let x = location[1];
-    const yOffset = y - lng;
-    const xOffset = x - lat;
-    if (getRandom() > moveFactor || xOffset < -0.015) {
-        x = addAndTrim(x, true, weather);
-    }
-    if (getRandom() > moveFactor || xOffset > 0.015) {
-        x = addAndTrim(x, false, weather);
-    }
-    if (getRandom() > moveFactor || yOffset < -0.015) {
-        y = addAndTrim(y, true, weather);
-    }
-    if (getRandom() > moveFactor || yOffset > 0.015) {
-        y = addAndTrim(y, false, weather);
-    }
-    state.gps = y + ',' + x;
-}
-
 function selectTarget(id, type, animals) {
-    let targetList;
+    let targetList = [];
 
     _.forEach(animals.targets, function (value) {
         const targets = value.split(',');
@@ -402,7 +404,7 @@ async function getAllAnimalData() {
 
 function sendAnimalCollarReadings(animals) {
     let count = 0;
-    _.forEach(animals.cow, (cow) => {
+    _.forEach(animals.cow, async (cow) => {
         const state = cow.state;
         count = count + getRandom();
         let animalStatus = state.st ? state.st.split(',') : [];
@@ -427,7 +429,7 @@ function sendAnimalCollarReadings(animals) {
                     state.d = COW_ACTIVITY[getRandom() % 6];
                 }
             } else {
-                randomWalk(state, cow.id, 13.34973, 52.51139);
+                await randomWalk(state, cow.id, 13.34973, 52.51139);
                 if (getRandom() > 8) {
                     state.d = getRandom() > 7 ? COW_ACTIVITY[getRandom() % 6] : 'GRAZING';
                 }
@@ -525,7 +527,7 @@ function sendAnimalCollarReadings(animals) {
         }
     });
 
-    _.forEach(animals.pig, (pig) => {
+    _.forEach(animals.pig, async (pig) => {
         const targetRate = PIG_HEART_RATE + 2 * OFFSET_RATE[pig.state.d] + (getRandom() % 4);
 
         if (targetRate > pig.state.bpm) {
@@ -538,7 +540,7 @@ function sendAnimalCollarReadings(animals) {
                 pig.state.d = PIG_ACTIVITY[getRandom() % 6];
             }
         } else {
-            randomWalk(pig.state, pig.id, 13.35073, 52.51839);
+            await randomWalk(pig.state, pig.id, 13.35073, 52.51839);
             if (getRandom() > 7) {
                 pig.state.d = getRandom() > 3 ? PIG_ACTIVITY[getRandom() % 6] : 'AT_REST';
             }
