@@ -1,17 +1,20 @@
 {
-  "name": "proxy",
+  "name": "iot-devices",
   "license": "AGPL-3.0-only",
   "description": "Dummy IoT devices",
   "version": "1.0.0",
-  "main": "bin/proxy.js",
+  "main": "dist/bin/devices.js",
   "engines": {
-    "node": ">=16"
+    "node": ">=20"
   },
   "scripts": {
-    "start": "node ./bin/devices",
+    "build": "tsc",
+    "start": "node ./dist/bin/devices.js",
+    "healthcheck": "node ./dist/bin/healthcheck.js",
     "local": "HISTORY_LOG=append.csv PIG_COUNT=0 COW_COUNT=40 DEBUG=devices.* npm start",
-    "lint": "eslint . --cache --fix",
-    "prettier": "prettier --parser flow --single-quote --write **/**/*.js  **/*.js *.js"
+    "lint": "eslint . --cache",
+    "lint:fix": "eslint . --cache --fix",
+    "prettier": "prettier --single-quote --write \"**/*.ts\""
   },
   "dependencies": {
     "debug": "~4.3.3",
@@ -26,12 +29,17 @@
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
-    "ajv": "^8.10.0",
-    "eslint": "^8.9.0",
-    "eslint-config-tamia": "^7.2.7",
-    "eslint-plugin-prettier": "^4.0.0",
-    "memfs": "3.4.1",
-    "prettier": "^2.5.1"
+    "@types/debug": "^4.1.0",
+    "@types/express": "^5.0.0",
+    "@types/http-errors": "^2.0.0",
+    "@types/lodash": "^4.17.0",
+    "@types/morgan": "^1.9.0",
+    "@types/node": "^22.0.0",
+    "eslint": "^9.0.0",
+    "globals": "^15.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.0.0"
   },
   "keywords": []
 }

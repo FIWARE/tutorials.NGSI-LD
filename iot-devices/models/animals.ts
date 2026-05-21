@@ -1,11 +1,11 @@
-const myCache = require('../lib/cache');
-const _ = require('lodash');
+import * as myCache from '../lib/cache';
+import _ from 'lodash';
+import debug from 'debug';
+import * as Northbound from '../controllers/iot/northbound';
+import * as Emitter from '../lib/emitter';
+import * as Writer from '../lib/writer';
 
-const Northbound = require('../controllers/iot/northbound');
-const Emitter = require('../lib/emitter');
-const Writer = require('../lib/writer');
-
-const debug = require('debug')('devices:animals');
+const log = debug('devices:animals');
 
 const PIG_IDLE = 'o|0|hide|o,x|d|AT_REST';
 const COW_IDLE = 'o|0|hide|o,x|d|AT_REST';
@@ -19,7 +19,6 @@ const COW_BODY_TEMPERATURE = 38.6;
 const COW_AVERAGE_STEPS = 10;
 const COW_ACCEL_X = 0.133;
 const COW_ACCEL_Y = 0.4;
-
 const ABNORMAL_COW_HEART_RATE = 68;
 const PIG_HEART_RATE = 60;
 
@@ -30,81 +29,83 @@ const ANIMAL_STATUS = Object.freeze({
     HUNGRY: 'hungry',
     THIRSTY: 'thirsty',
     HEAT: 'heat',
-    LONELY: 'lonely'
+    LONELY: 'lonely',
 });
 
-function generateRange(mean, sd) {
-    function createListOfNNumbersBetweenAAndB(n, a, b) {
-        const listOfN = [...new Array(n)];
-        return listOfN.map(() => Math.random() * (b - a) + a);
-    }
-
-    function computeMeanSdAndItervalRangeMinMax(list) {
-        const sum = list.reduce((a, b) => a + b, 0);
-        const mean = sum / list.length;
-        const sumMinusMean = list.reduce((a, b) => a + (b - mean) * (b - mean), 0);
-
-        return {
-            mean,
-            sd: Math.sqrt(sumMinusMean / (list.length - 1)),
-            range: [Math.min(...list), Math.max(...list)]
-        };
-    }
-
-    function transfomListToExactMeanAndSd(list, mean, sd) {
-        const current = computeMeanSdAndItervalRangeMinMax(list);
-        return list.map((n) => (sd * (n - current.mean)) / current.sd + mean);
-    }
-
-    const ARRAY_SIZE = 100;
-    const MIN = 1;
-    const MAX = 10;
-    const list = createListOfNNumbersBetweenAAndB(ARRAY_SIZE, MIN, MAX);
-    const newList = transfomListToExactMeanAndSd(list, mean, sd);
-
-    return newList;
+interface StatusEntry {
+    code: number;
+    heartRates: number[];
+    temperatures: number[];
+    steps: number[];
+    x: number[];
+    y: number[];
 }
 
-const STATUS = {
+interface AnimalState {
+    o?: string | number;
+    hide?: string;
+    d?: string;
+    s?: string | number;
+    st?: string;
+    gps?: string;
+    ta?: string;
+    bpm?: string | number;
+    accel_x?: string;
+    accel_y?: string;
+    body_temp?: string | number;
+    step_count?: string | number;
+    by?: string;
+    [key: string]: unknown;
+}
+
+interface AnimalEntry {
+    id: string;
+    state: AnimalState;
+}
+
+interface AnimalData {
+    cow: AnimalEntry[];
+    pig: AnimalEntry[];
+    trough: AnimalEntry[];
+    targets: Record<string, string | null>;
+}
+
+function generateRange(mean: number, sd: number): number[] {
+    const ARRAY_SIZE = 100;
+    const list = [...new Array<number>(ARRAY_SIZE)].map(() => Math.random() * 9 + 1);
+    const sum = list.reduce((a, b) => a + b, 0);
+    const currentMean = sum / list.length;
+    const sumMinusMean = list.reduce((a, b) => a + (b - currentMean) * (b - currentMean), 0);
+    const currentSd = Math.sqrt(sumMinusMean / (list.length - 1));
+    return list.map((n) => (sd * (n - currentMean)) / currentSd + mean);
+}
+
+const STATUS: Record<string, StatusEntry> = {
     AT_REST: {
         code: 0,
         heartRates: generateRange(COW_HEART_RATE, 2).map((n) => parseFloat(n.toFixed(2))),
         temperatures: generateRange(COW_BODY_TEMPERATURE, 1).map((n) => parseFloat(n.toFixed(2))),
         steps: generateRange(COW_AVERAGE_STEPS, 4).map((n) => Math.floor(n * 1000)),
         x: generateRange(COW_ACCEL_X, 1).map((n) => parseFloat(n.toFixed(4))),
-        y: generateRange(COW_ACCEL_Y, 1).map((n) => parseFloat(n.toFixed(4)))
+        y: generateRange(COW_ACCEL_Y, 1).map((n) => parseFloat(n.toFixed(4))),
     },
-    FORAGING: {
-        code: 3,
-        heartRates: [],
-        temperatures: [],
-        steps: [],
-        x: [],
-        y: []
-    },
+    FORAGING: { code: 3, heartRates: [], temperatures: [], steps: [], x: [], y: [] },
     DRINKING: {
         code: 5,
         heartRates: generateRange(COW_HEART_RATE + 0.5, 0.4).map((n) => parseFloat(n.toFixed(2))),
         temperatures: generateRange(COW_BODY_TEMPERATURE + 0.2, 0.2).map((n) => parseFloat(n.toFixed(2))),
         steps: generateRange(COW_AVERAGE_STEPS - 2, 1).map((n) => Math.floor(n * 1000)),
         x: generateRange(COW_ACCEL_X, 0.8),
-        y: generateRange(COW_ACCEL_Y, 1.2)
+        y: generateRange(COW_ACCEL_Y, 1.2),
     },
-    WALLOWING: {
-        code: 5,
-        heartRates: [],
-        temperatures: [],
-        steps: [],
-        x: [],
-        y: []
-    },
+    WALLOWING: { code: 5, heartRates: [], temperatures: [], steps: [], x: [], y: [] },
     GRAZING: {
         code: 6,
         heartRates: generateRange(COW_HEART_RATE - 1, 3).map((n) => parseFloat(n.toFixed(2))),
         temperatures: generateRange(COW_BODY_TEMPERATURE - 0.1, 1).map((n) => parseFloat(n.toFixed(2))),
         steps: generateRange(COW_AVERAGE_STEPS, 3).map((n) => Math.floor(n * 1000)),
         x: generateRange(COW_ACCEL_X, 0.1),
-        y: generateRange(COW_ACCEL_Y, 2)
+        y: generateRange(COW_ACCEL_Y, 2),
     },
     MOVING: {
         code: 7,
@@ -112,7 +113,7 @@ const STATUS = {
         temperatures: generateRange(COW_BODY_TEMPERATURE + 0.2, 2).map((n) => parseFloat(n.toFixed(2))),
         steps: generateRange(COW_AVERAGE_STEPS + 2, 4).map((n) => Math.floor(n * 1000)),
         x: generateRange(COW_ACCEL_X, 2),
-        y: generateRange(COW_ACCEL_Y, 2)
+        y: generateRange(COW_ACCEL_Y, 2),
     },
     MOUNTING: {
         code: 9,
@@ -120,33 +121,32 @@ const STATUS = {
         temperatures: generateRange(COW_BODY_TEMPERATURE, 1).map((n) => parseFloat(n.toFixed(2))),
         steps: generateRange(COW_AVERAGE_STEPS, 4).map((n) => Math.floor(n * 1000)),
         x: generateRange(COW_ACCEL_X, 1.1),
-        y: generateRange(COW_ACCEL_Y, 0.6)
-    }
+        y: generateRange(COW_ACCEL_Y, 0.6),
+    },
 };
 
 const PIG_ACTIVITY = ['AT_REST', 'FORAGING', 'FORAGING', 'FORAGING', 'DRINKING', 'WALLOWING'];
 const COW_ACTIVITY = ['AT_REST', 'AT_REST', 'GRAZING', 'GRAZING', 'GRAZING', 'DRINKING'];
-const OFFSET_RATE = {
+const OFFSET_RATE: Record<string, number> = {
     AT_REST: 0,
     GRAZING: 0,
     FORAGING: 2,
     DRINKING: 1,
-    WALLOWING: 5
+    WALLOWING: 5,
 };
 
 myCache.init().then(() => {
-    for (let i = 1; i <= numberOfPigs; i++) {
+    for (let i = 1; i <= Number(numberOfPigs); i++) {
         const lng = addAndTrim(13.356 + 0.0004 * getRandom(-10), true);
         const lat = addAndTrim(52.515 + 0.0003 * getRandom(-10), true);
-        myCache.set('pig' + i.toString().padStart(3, '0'), PIG_IDLE + '|bpm|60|gps|' + lng + ',' + lat);
+        myCache.set('pig' + i.toString().padStart(3, '0'), `${PIG_IDLE}|bpm|60|gps|${lng},${lat}`);
     }
-    for (let i = 1; i <= numberOfCows; i++) {
+    for (let i = 1; i <= Number(numberOfCows); i++) {
         const lng = addAndTrim(13.41 + 0.0003 * getRandom(-10), true);
         const lat = addAndTrim(52.471 + 0.0004 * getRandom(-10), true);
-        myCache.set('cow' + i.toString().padStart(3, '0'), COW_IDLE + '|bpm|50|gps|' + lng + ',' + lat);
+        myCache.set('cow' + i.toString().padStart(3, '0'), `${COW_IDLE}|bpm|50|gps|${lng},${lat}`);
     }
-
-    for (let i = 1; i <= numberOfFields; i++) {
+    for (let i = 1; i <= Number(numberOfFields); i++) {
         myCache.set('field' + i.toString().padStart(3, '0'), '');
     }
 
@@ -164,69 +164,46 @@ myCache.init().then(() => {
     myCache.set('trough071', '');
 });
 
-// Pick a random number between 1 and 10
-function getRandom(add = 1) {
+function getRandom(add = 1): number {
     return Math.floor(Math.random() * 10) + add;
 }
 
-function addAndTrim(value, add, weather) {
-    let newValue;
-    if (weather === 'sunny') {
-        newValue = add ? parseFloat(value) + 0.0007 : parseFloat(value) - 0.0007;
-    } else {
-        newValue = add ? parseFloat(value) + 0.0003 : parseFloat(value) - 0.0003;
-    }
-
+function addAndTrim(value: number, add: boolean, weather?: string | null): number {
+    const delta = weather === 'sunny' ? 0.0007 : 0.0003;
+    const newValue = add ? value + delta : value - delta;
     return Math.round(newValue * 10000) / 10000;
 }
 
-// Transformation function from a state object to the Ultralight Protocol
-// Ultralight is a series of pipe separated key-value pairs.
-// Each key and value is in turn separated by a pipe character
-//
-// e.g. s|ON,l|1000
-function toUltraLight(object) {
-    const strArray = [];
-    _.forEach(object, function (value, key) {
-        strArray.push(key + '|' + value);
+function toUltraLight(object: Record<string, unknown>): string {
+    const strArray: string[] = [];
+    _.forEach(object, (value, key) => {
+        strArray.push(`${key}|${value}`);
     });
     return strArray.join('|');
 }
 
-//
-// Transformation function from Ultralight Protocol to an object
-// Ultralight is a series of pipe separated key-value pairs.
-// Each key and value is in turn separated by a pipe character
-//
-// e.g. s|ON|gps|1000 becomes
-// { s: 'ON', l: '1000'}
-//
-function getDeviceState(deviceId, force = false) {
+function getDeviceState(deviceId: string): Promise<AnimalState>;
+function getDeviceState(deviceId: string, force: true): Promise<string | null>;
+function getDeviceState(deviceId: string, force = false): Promise<AnimalState | string | null> {
     return myCache.get(deviceId).then((data) => {
         if (force) {
             return data;
         }
-        const obj = {};
+        const obj: AnimalState = {};
         if (data) {
             const keyValuePairs = data.split('|');
-            for (let i = 0; i < keyValuePairs.length; i = i + 2) {
+            for (let i = 0; i < keyValuePairs.length; i += 2) {
                 obj[keyValuePairs[i]] = keyValuePairs[i + 1];
             }
         }
         return obj;
     });
 }
-//
-// Sets the device state in the in-memory cache. If the device is a sensor
-// it also reports (and attempts to send) the northbound traffic to the IoT agent.
-// The state of the dummy device is also sent to the browser for display
-//
-async function setDeviceState(deviceId, state, isSensor = true, force = false) {
+
+async function setDeviceState(deviceId: string, state: string, isSensor = true, force = false): Promise<void> {
     const previousState = await myCache.get(deviceId);
     myCache.set(deviceId, state);
     const payload = Northbound.format(state);
-    // If we are running under HTTP mode the device will respond with a result
-    // If we are running under MQTT mode the device will post the result as a topic
     if (isSensor && (state !== previousState || force)) {
         Northbound.sendMeasure(deviceId, payload);
     }
@@ -234,16 +211,15 @@ async function setDeviceState(deviceId, state, isSensor = true, force = false) {
     Emitter.emit(deviceId, payload);
 }
 
-function getStatusCode(status) {
+function getStatusCode(status: string): number {
     return STATUS[status].code;
 }
 
-function getRandomFromArray(array) {
-    const randomElement = array[Math.floor(Math.random() * array.length)];
-    return randomElement;
+function getRandomFromArray<T>(array: T[]): T {
+    return array[Math.floor(Math.random() * array.length)];
 }
 
-function setRawReadings(state, desc) {
+function setRawReadings(state: AnimalState, desc: string): void {
     if (!STATUS[desc].heartRates.length) {
         return;
     }
@@ -254,7 +230,7 @@ function setRawReadings(state, desc) {
     state.step_count = getRandomFromArray(STATUS[desc].steps);
 }
 
-async function randomWalk(state, deviceId, lng, lat) {
+async function randomWalk(state: AnimalState, deviceId: string, lng: number, lat: number): Promise<void> {
     let moveFactor = 6;
     const weather = await myCache.get('weather');
 
@@ -264,94 +240,83 @@ async function randomWalk(state, deviceId, lng, lat) {
         moveFactor = 7;
     }
 
-    const location = state.gps.split(',');
-    let y = location[0];
-    let x = location[1];
+    const location = (state.gps as string).split(',');
+    let y = parseFloat(location[0]);
+    let x = parseFloat(location[1]);
     const yOffset = y - lng;
     const xOffset = x - lat;
-    if (getRandom() > moveFactor || xOffset < -0.015) {
-        x = addAndTrim(x, true, weather);
-    }
-    if (getRandom() > moveFactor || xOffset > 0.015) {
-        x = addAndTrim(x, false, weather);
-    }
-    if (getRandom() > moveFactor || yOffset < -0.015) {
-        y = addAndTrim(y, true, weather);
-    }
-    if (getRandom() > moveFactor || yOffset > 0.015) {
-        y = addAndTrim(y, false, weather);
-    }
-    state.gps = y + ',' + x;
+
+    if (getRandom() > moveFactor || xOffset < -0.015) x = addAndTrim(x, true, weather);
+    if (getRandom() > moveFactor || xOffset > 0.015) x = addAndTrim(x, false, weather);
+    if (getRandom() > moveFactor || yOffset < -0.015) y = addAndTrim(y, true, weather);
+    if (getRandom() > moveFactor || yOffset > 0.015) y = addAndTrim(y, false, weather);
+
+    state.gps = `${y},${x}`;
 }
 
-async function directedWalk(state, deviceId, goal) {
-    const location = state.gps.split(',');
+async function directedWalk(
+    state: AnimalState,
+    deviceId: string,
+    goal: string
+): Promise<{ gps: string; complete: boolean; onHeat?: boolean }> {
+    const location = (state.gps as string).split(',');
     let y = parseFloat(location[0]);
     let x = parseFloat(location[1]);
 
     const weather = await myCache.get('weather');
-    const target = await getDeviceState(state.ta);
+    const target = await getDeviceState(state.ta as string);
 
     if (target.gps === undefined) {
-        debug(`${deviceId} ${goal} - ${state.ta} is ${target.gps}`);
-        return { gps: y + ',' + x, complete: false };
+        log(`${deviceId} ${goal} - ${state.ta} is ${String(target.gps)}`);
+        return { gps: `${y},${x}`, complete: false };
     }
 
-    const targetLocation = target.gps.split(',');
+    const targetLocation = (target.gps as string).split(',');
     const ty = parseFloat(targetLocation[0]);
     const tx = parseFloat(targetLocation[1]);
 
-    const offset1 = (Math.abs(0 + parseFloat(location[1]) - tx) + Math.abs(0 + parseFloat(location[0]) - ty)).toFixed(
-        4
-    );
+    const offset1 = (
+        Math.abs(parseFloat(location[1]) - tx) + Math.abs(parseFloat(location[0]) - ty)
+    ).toFixed(4);
 
-    if (tx > x) {
-        x = addAndTrim(x, true, weather);
-    }
-    if (tx < x) {
-        x = addAndTrim(x, false, weather);
-    }
-    if (ty > y) {
-        y = addAndTrim(y, true, weather);
-    }
-    if (ty < y) {
-        y = addAndTrim(y, false, weather);
-    }
+    if (tx > x) x = addAndTrim(x, true, weather);
+    if (tx < x) x = addAndTrim(x, false, weather);
+    if (ty > y) y = addAndTrim(y, true, weather);
+    if (ty < y) y = addAndTrim(y, false, weather);
 
-    const offset2 = (Math.abs(0 + x - tx) + Math.abs(0 + y - ty)).toFixed(4);
-
-    const onHeat = target.st && target.st.includes(ANIMAL_STATUS.HEAT);
-    return { gps: y + ',' + x, complete: offset2 >= offset1, onHeat };
+    const offset2 = (Math.abs(x - tx) + Math.abs(y - ty)).toFixed(4);
+    const onHeat = target.st ? (target.st as string).includes(ANIMAL_STATUS.HEAT) : false;
+    return { gps: `${y},${x}`, complete: offset2 >= offset1, onHeat };
 }
 
-function selectTarget(id, type, animals) {
-    let targetList = [];
+function selectTarget(id: string, type: string, animals: AnimalData): string | undefined {
+    let targetList: string[] = [];
 
-    _.forEach(animals.targets, function (value) {
+    _.forEach(animals.targets, (value) => {
+        if (!value) return;
         const targets = value.split(',');
         if (targets.includes(id)) {
             targetList = targets.filter((e) => e !== id).filter((e) => e.startsWith(type));
         }
     });
-    const target = targetList[Math.floor(Math.random() * targetList.length)];
-    return target;
+
+    return targetList[Math.floor(Math.random() * targetList.length)];
 }
 
-function findNeighbour(id, state, animals) {
-    const location = state.gps.split(',');
+function findNeighbour(id: string, state: AnimalState, animals: AnimalEntry[]): string | undefined {
+    const location = (state.gps as string).split(',');
     const y = parseFloat(location[0]);
     const x = parseFloat(location[1]);
 
-    let nearest;
+    let nearest: string | undefined;
     let distance = Infinity;
-    _.forEach(animals, function (animal) {
+
+    _.forEach(animals, (animal) => {
         if (animal.id !== id) {
-            const animalLocation = animal.state.gps.split(',');
+            const animalLocation = (animal.state.gps as string).split(',');
             const ty = parseFloat(animalLocation[0]);
             const tx = parseFloat(animalLocation[1]);
-
-            const animalDistance = (Math.abs(0 + x - tx) + Math.abs(0 + y - ty)).toFixed(4);
-
+            const animalDistance = parseFloat((Math.abs(x - tx) + Math.abs(y - ty)).toFixed(4));
             if (distance > animalDistance) {
                 nearest = animal.id;
                 distance = animalDistance;
@@ -362,14 +327,9 @@ function findNeighbour(id, state, animals) {
     return nearest;
 }
 
-async function getAllAnimalData() {
+async function getAllAnimalData(): Promise<AnimalData> {
     const deviceIds = myCache.keys();
-    const animals = {
-        cow: [],
-        pig: [],
-        trough: [],
-        targets: {}
-    };
+    const animals: AnimalData = { cow: [], pig: [], trough: [], targets: {} };
 
     const promises = deviceIds.map((id) => {
         switch (id.replace(/\d/g, '')) {
@@ -377,22 +337,18 @@ async function getAllAnimalData() {
                 return getDeviceState(id).then((state) => {
                     animals.pig.push({ id, state });
                 });
-
             case 'cow':
                 return getDeviceState(id).then((state) => {
                     animals.cow.push({ id, state });
                 });
-
             case 'trough':
                 return getDeviceState(id).then((state) => {
                     animals.trough.push({ id, state });
                 });
-
             case 'field':
                 return getDeviceState(id, true).then((targets) => {
                     animals.targets[id] = targets;
                 });
-
             default:
                 return Promise.resolve();
         }
@@ -402,27 +358,34 @@ async function getAllAnimalData() {
     return animals;
 }
 
-function sendAnimalCollarReadings(animals) {
+function sendAnimalCollarReadings(animals: AnimalData): void {
     let count = 0;
+
     _.forEach(animals.cow, async (cow) => {
         const state = cow.state;
-        count = count + getRandom();
-        let animalStatus = state.st ? state.st.split(',') : [];
+        count += getRandom();
+        let animalStatus = state.st ? (state.st as string).split(',') : [];
+
         const isLonely = animalStatus.includes(ANIMAL_STATUS.LONELY);
         const isThirsty = animalStatus.includes(ANIMAL_STATUS.THIRSTY);
         const isHungry = !(isLonely || isThirsty);
-        let targetRate = COW_HEART_RATE + 2 * OFFSET_RATE[cow.state.d] + (getRandom() % 4);
+
+        let targetRate =
+            COW_HEART_RATE + 2 * (OFFSET_RATE[state.d as string] ?? 0) + (getRandom() % 4);
         if (animalStatus.includes(ANIMAL_STATUS.ILL)) {
-            targetRate = ABNORMAL_COW_HEART_RATE + 2 * OFFSET_RATE[state.d] + (getRandom() % 4);
+            targetRate = ABNORMAL_COW_HEART_RATE + 2 * (OFFSET_RATE[state.d as string] ?? 0) + (getRandom() % 4);
         }
-        if (targetRate > state.bpm) {
-            state.bpm++;
-        } else if (targetRate < state.bpm) {
-            state.bpm--;
+
+        if (targetRate > Number(state.bpm)) {
+            state.bpm = Number(state.bpm) + 1;
+        } else if (targetRate < Number(state.bpm)) {
+            state.bpm = Number(state.bpm) - 1;
         }
+
         if (state.d === 'MOUNTING') {
             state.d = 'AT_REST';
         }
+
         if (isHungry) {
             if (state.d === 'AT_REST') {
                 if (getRandom() * getRandom() > 80) {
@@ -436,30 +399,27 @@ function sendAnimalCollarReadings(animals) {
             }
 
             if (state.o) {
-                if ((state.o + count) % 27 === 0) {
+                if ((Number(state.o) + count) % 27 === 0) {
                     if (getRandom() > 3) {
-                        debug(`${cow.id} lonely`);
+                        log(`${cow.id} lonely`);
                         animalStatus = animalStatus.filter((e) => e !== ANIMAL_STATUS.HUNGRY);
                         animalStatus.push(ANIMAL_STATUS.LONELY);
-                        const hide = state.hide.split(',') || [];
+                        const hide = state.hide ? (state.hide as string).split(',') : [];
                         if (!hide.includes('ta')) {
                             hide.push('ta');
                             state.hide = hide.join(',');
                         }
                         state.ta = selectTarget(cow.id, 'cow', animals);
-
                         if (state.ta === undefined) {
                             animalStatus = animalStatus.filter((e) => e !== ANIMAL_STATUS.LONELY);
                             animalStatus.push(ANIMAL_STATUS.THIRSTY);
                             state.ta = selectTarget(cow.id, 'trough', animals);
                         }
-
-                        // eslint-disable-next-line  no-dupe-else-if
                     } else if (getRandom() > 3) {
-                        debug(`${cow.id} thirsty`);
+                        log(`${cow.id} thirsty`);
                         animalStatus = animalStatus.filter((e) => e !== ANIMAL_STATUS.HUNGRY);
                         animalStatus.push(ANIMAL_STATUS.THIRSTY);
-                        const hide = state.hide.split(',') || [];
+                        const hide = state.hide ? (state.hide as string).split(',') : [];
                         if (!hide.includes('ta')) {
                             hide.push('ta');
                             state.hide = hide.join(',');
@@ -470,12 +430,11 @@ function sendAnimalCollarReadings(animals) {
                 }
             }
 
-            state.s = getStatusCode(state.d);
+            state.s = getStatusCode(state.d as string);
             if (state.o) {
-                setRawReadings(state, state.d);
-                state.o++;
+                setRawReadings(state, state.d as string);
+                state.o = Number(state.o) + 1;
             }
-
             state.by = findNeighbour(cow.id, state, animals.cow);
             setDeviceState(cow.id, toUltraLight(cow.state), true);
         } else if (isLonely) {
@@ -484,23 +443,20 @@ function sendAnimalCollarReadings(animals) {
                 state.d = 'GRAZING';
                 state.s = getStatusCode(state.d);
                 if (result.complete) {
-                    debug(`${cow.id} not lonely`);
+                    log(`${cow.id} not lonely`);
                     animalStatus = animalStatus.filter((e) => e !== ANIMAL_STATUS.LONELY);
                     animalStatus.push(ANIMAL_STATUS.HUNGRY);
                     state.st = animalStatus.join(',');
-
                     state.d = 'AT_REST';
                     if (result.onHeat || getRandom() > 3) {
                         state.d = 'MOUNTING';
                     }
-
                     state.s = getStatusCode(state.d);
                 }
                 if (state.o) {
-                    setRawReadings(state, state.d);
-                    state.o++;
+                    setRawReadings(state, state.d as string);
+                    state.o = Number(state.o) + 1;
                 }
-
                 state.by = findNeighbour(cow.id, state, animals.cow);
                 setDeviceState(cow.id, toUltraLight(cow.state), true);
             });
@@ -510,17 +466,16 @@ function sendAnimalCollarReadings(animals) {
                 state.d = 'GRAZING';
                 state.s = getStatusCode(state.d);
                 if (result.complete) {
-                    debug(`${cow.id} not thirsty`);
+                    log(`${cow.id} not thirsty`);
                     animalStatus = animalStatus.filter((e) => e !== ANIMAL_STATUS.THIRSTY);
                     animalStatus.push(ANIMAL_STATUS.HUNGRY);
                     state.st = animalStatus.join(',');
                     state.d = 'DRINKING';
                     state.s = getStatusCode(state.d);
                 }
-
                 if (state.o) {
-                    setRawReadings(state, state.d);
-                    state.o++;
+                    setRawReadings(state, state.d as string);
+                    state.o = Number(state.o) + 1;
                 }
                 setDeviceState(cow.id, toUltraLight(cow.state), true);
             });
@@ -528,13 +483,14 @@ function sendAnimalCollarReadings(animals) {
     });
 
     _.forEach(animals.pig, async (pig) => {
-        const targetRate = PIG_HEART_RATE + 2 * OFFSET_RATE[pig.state.d] + (getRandom() % 4);
+        const targetRate = PIG_HEART_RATE + 2 * (OFFSET_RATE[pig.state.d as string] ?? 0) + (getRandom() % 4);
 
-        if (targetRate > pig.state.bpm) {
-            pig.state.bpm++;
-        } else if (targetRate < pig.state.bpm) {
-            pig.state.bpm--;
+        if (targetRate > Number(pig.state.bpm)) {
+            pig.state.bpm = Number(pig.state.bpm) + 1;
+        } else if (targetRate < Number(pig.state.bpm)) {
+            pig.state.bpm = Number(pig.state.bpm) - 1;
         }
+
         if (pig.state.d === 'AT_REST') {
             if (getRandom() * getRandom() > 63) {
                 pig.state.d = PIG_ACTIVITY[getRandom() % 6];
@@ -545,29 +501,21 @@ function sendAnimalCollarReadings(animals) {
                 pig.state.d = getRandom() > 3 ? PIG_ACTIVITY[getRandom() % 6] : 'AT_REST';
             }
         }
-        pig.state.s = getStatusCode(pig.state.d);
+
+        pig.state.s = getStatusCode(pig.state.d as string);
         if (pig.state.o) {
-            pig.state.o++;
+            pig.state.o = Number(pig.state.o) + 1;
         }
         setDeviceState(pig.id, toUltraLight(pig.state), true);
     });
 }
 
-function fireAnimalCollars() {
+export function fireAnimalCollars(): void {
     myCache.get('barn').then((state) => {
         if (state === 'door-open') {
-            getAllAnimalData()
-                .then((animals) => {
-                    return sendAnimalCollarReadings(animals);
-                })
-                .then(() => {
-                    return true;
-                });
+            getAllAnimalData().then((animals) => {
+                sendAnimalCollarReadings(animals);
+            });
         }
-        return false;
     });
 }
-
-module.exports = {
-    fireAnimalCollars
-};

@@ -1,20 +1,20 @@
 #!/usr/bin/env node
 
-const http = require('http');
+import http from 'http';
+
 const port = process.env.DUMMY_DEVICES_PORT || 3001;
 const path = process.env.HEALTHCHECK_PATH || '/health';
-const httpCode = process.env.HEALTHCHECK_CODE || 200;
+const httpCode = parseInt(String(process.env.HEALTHCHECK_CODE || '200'), 10);
 
-const options = {
+const options: http.RequestOptions = {
     host: 'localhost',
     port,
     timeout: 2000,
     method: 'GET',
-    path
+    path,
 };
 
 const request = http.request(options, (result) => {
-    // eslint-disable-next-line no-console
     console.info(`Performed health check, result ${result.statusCode}`);
     if (result.statusCode === httpCode) {
         process.exit(0);
@@ -23,8 +23,7 @@ const request = http.request(options, (result) => {
     }
 });
 
-request.on('error', (err) => {
-    // eslint-disable-next-line no-console
+request.on('error', (err: Error) => {
     console.error(`An error occurred while performing health check, error: ${err}`);
     process.exit(1);
 });
