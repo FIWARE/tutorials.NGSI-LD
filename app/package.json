@@ -79,7 +79,7 @@
     "typescript-eslint": "^8.0.0"
   },
   "scripts": {
-    "build": "tsc && cp -r views dist/ && cp -r public dist/",
+    "build": "tsc && cp -r views dist/ && cp -r public dist/ && mkdir -p dist/resources",
     "start": "node ./dist/bin/www.js",
     "healthcheck": "node ./dist/bin/healthcheck.js",
     "no_devices": "DEBUG=tutorial.* DUMMY_OFF=false npm start",
