@@ -19,6 +19,7 @@
   "version": "0.0.1",
   "private": true,
   "license": "MIT",
+  "main": "dist/bin/www.js",
   "engines": {
     "node": ">=20"
   },
@@ -59,25 +60,36 @@
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
+    "@types/connect-flash": "^0.0.40",
+    "@types/cookie-parser": "^1.4.0",
+    "@types/debug": "^4.1.0",
+    "@types/express": "^5.0.0",
+    "@types/express-session": "^1.17.0",
+    "@types/lodash": "^4.17.0",
+    "@types/moment": "^2.13.0",
+    "@types/morgan": "^1.9.0",
+    "@types/multer": "^1.4.0",
+    "@types/node": "^22.0.0",
     "ajv": "^8.10.0",
-    "eslint": "^8.9.0",
-    "eslint-config-tamia": "^7.2.7",
-    "eslint-plugin-prettier": "^4.0.0",
+    "eslint": "^9.0.0",
+    "globals": "^15.0.0",
     "lint-staged": "^12.3.4",
-    "memfs": "3.4.1",
-    "prettier": "^2.5.1"
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.0.0"
   },
   "scripts": {
-    "pre-commit": "lint-staged",
-    "start": "node ./bin/www",
+    "build": "tsc",
+    "start": "node ./dist/bin/www.js",
+    "healthcheck": "node ./dist/bin/healthcheck.js",
     "no_devices": "DEBUG=tutorial.* DUMMY_OFF=false npm start",
-    "lint": "eslint . --cache --fix",
-    "prettier": "prettier --parser flow --config ./.prettierrc.json --write **/**/*.js  **/*.js *.js",
-    "test": "eslint ."
+    "lint": "eslint . --cache",
+    "lint:fix": "eslint . --cache --fix",
+    "prettier": "prettier --single-quote --write \"**/*.ts\""
   },
   "lint-staged": {
-    "*.js": [
-      "prettier --config .prettierrc.json --write",
+    "*.ts": [
+      "prettier --single-quote --write",
       "eslint --fix"
     ],
     "*.md": [

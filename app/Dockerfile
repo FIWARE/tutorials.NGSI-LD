@@ -8,7 +8,7 @@ ARG SOURCE_COMMIT=unknown
 
 ########################################################################################
 #
-# This build stage retrieves the source code from GitHub. The default download is the 
+# This build stage retrieves the source code from GitHub. The default download is the
 # latest tip of the master of the named repository on GitHub.
 #
 # To obtain the latest stable release run this Docker file with the parameters:
@@ -17,12 +17,12 @@ ARG SOURCE_COMMIT=unknown
 # To obtain any specific version of a release run this Docker file with the parameters:
 # --no-cache --build-arg DOWNLOAD=1.7.0
 #
-# For development purposes, to create a development image including a running Distro, 
+# For development purposes, to create a development image including a running Distro,
 # run this Docker file with the parameter:
 #
 # --target=builder
 #
-######################################################################################## 
+########################################################################################
 FROM node:${NODE_VERSION} AS builder
 ARG GITHUB_ACCOUNT
 ARG GITHUB_REPOSITORY
@@ -31,8 +31,8 @@ ARG SOURCE_BRANCH
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# As an Alternative for local development, just copy this Dockerfile into file the root of 
-# the repository and replace the whole RUN statement below by the following COPY statement 
+# As an Alternative for local development, just copy this Dockerfile into file the root of
+# the repository and replace the whole RUN statement below by the following COPY statement
 # in your local source using :
 #
 # COPY ./app /opt/ngsi-tutorial
@@ -63,7 +63,7 @@ RUN \
   apt-get clean && \
   apt-get remove -y unzip && \
   apt-get -y autoremove && \
-  rm -rf /var/lib/apt/lists/* 
+  rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt/ngsi-tutorial
 
@@ -71,8 +71,10 @@ WORKDIR /opt/ngsi-tutorial
 RUN \
   # Ensure that Git is installed prior to running npm install
   apt-get install -y --no-install-recommends git && \
-  echo "INFO: npm install --production..." && \
-  npm install --only=prod --no-package-lock --no-optional && \
+  echo "INFO: npm install..." && \
+  npm install --no-package-lock --no-optional && \
+  npm run build && \
+  npm prune --omit=dev && \
   # Remove Git and clean apt cache
   apt-get clean && \
   apt-get remove -y git && \
@@ -82,7 +84,7 @@ USER node
 ENV NODE_ENV=development
 # Ports used by application
 EXPOSE ${WEB_APP_PORT:-3000}
-CMD ["node", "/opt/ngsi-tutorial/bin/www"]
+CMD ["node", "/opt/ngsi-tutorial/dist/bin/www.js"]
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s \
    CMD npm run healthcheck
 
@@ -115,7 +117,7 @@ LABEL "org.opencontainers.image.authors"="https://www.fiware.org/contact-us/"
 LABEL "org.opencontainers.image.documentation"="http://fiware-tutorials.rtfd.io/"
 LABEL "org.opencontainers.image.vendor"="FIWARE Foundation"
 LABEL "org.opencontainers.image.licenses"="MIT"
-LABEL "org.opencontainers.image.title"="FIWARE NGSI-LD Tutorials"
+LABEL "org.opencontainers.image.title"="FIWARE NGSI-LD Tutorial App"
 LABEL "org.opencontainers.image.description"="Simple Node.js express application for use with the FIWARE NGSI-LD tutorials"
 LABEL "org.opencontainers.image.source"=https://github.com/${GITHUB_ACCOUNT}/${GITHUB_REPOSITORY}
 LABEL "org.nodejs.version"=${NODE_VERSION}
@@ -128,7 +130,6 @@ ENV NODE_ENV=production
 # Ports used by application
 EXPOSE ${WEB_APP_PORT:-3000}
 USER nonroot
-CMD ["./bin/www"]
+CMD ["./dist/bin/www.js"]
 HEALTHCHECK  --interval=30s --timeout=3s --start-period=10s \
-  CMD ["/nodejs/bin/node", "./bin/healthcheck"]
-
+  CMD ["/nodejs/bin/node", "./dist/bin/healthcheck.js"]
