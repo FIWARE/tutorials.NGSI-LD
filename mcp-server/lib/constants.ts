@@ -14,18 +14,11 @@ const TENANT = process.env.NGSI_LD_TENANT || undefined;
 
 const SCHEMA_DIR = process.env.SCHEMA_DIR || `${__dirname}/../schemas`;
 const COMMON_DIR = `${SCHEMA_DIR}/common`;
-
-// NGSI-LD context-discovery response types (EntityTypeList / EntityType /
-// EntityTypeInfo / AttributeList / Attribute). Bundled with the code, kept separate
-// from SCHEMA_DIR because that dir will be a mounted volume of Smart Data Models.
-const CORE_SCHEMA_DIR = process.env.NGSI_CORE_SCHEMA_DIR || `${__dirname}/../ngsi-schemas`;
-
-// filter (default) | strict | off — see ARCHITECTURE.md §7.
+const CORE_SCHEMA_DIR = `${__dirname}/../ngsi-schemas`;
 const VALIDATION = process.env.SCHEMA_VALIDATION || 'filter';
 
 const ENTITY_LIMIT = Number(process.env.ENTITY_LIMIT || 100);
 
-// Remap `pick` -> `attrs` for brokers that predate NGSI-LD v1.4 projection.
 const SEND_PICK_AS_ATTRS = process.env.SEND_PICK_AS_ATTRS === 'true';
 
 const TRANSPORT = process.env.MCP_TRANSPORT || 'stdio';

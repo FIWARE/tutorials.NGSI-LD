@@ -49,12 +49,39 @@ function tryParse(value: string): unknown {
     }
 }
 
-// CSV birthdates are authored relative to this baseline date. Shift each one
-// forward by (now - baseline) so imported animals keep the age they had then.
-const BIRTHDATE_BASELINE = new Date('2025-08-01T00:00:00.000Z');
+// Row `offset` values are multiples of the unit named by the `offset-duration`
+// request header. Absent or unrecognised ⇒ MINUTE (the historical behaviour).
+const DURATION_MS: Record<string, number> = {
+    SECOND: 1000,
+    MINUTE: 60000,
+    HOUR: 3600000,
+    DAY: 86400000,
+    WEEK: 604800000
+};
 
-function rebaseBirthdate(value: string, now: Date): string {
-    const offset = now.getTime() - BIRTHDATE_BASELINE.getTime();
+function shiftByDuration(now: Date, amount: number, unit: string | undefined): Date {
+    const key = (unit || 'MINUTE').trim().toUpperCase();
+    // MONTH and YEAR have no fixed millisecond length — use calendar arithmetic.
+    if (key === 'MONTH') {
+        const d = new Date(now.getTime());
+        d.setUTCMonth(d.getUTCMonth() + amount);
+        return d;
+    }
+    if (key === 'YEAR') {
+        const d = new Date(now.getTime());
+        d.setUTCFullYear(d.getUTCFullYear() + amount);
+        return d;
+    }
+    return new Date(now.getTime() + amount * (DURATION_MS[key] || DURATION_MS.MINUTE));
+}
+
+// CSV dates (birthdate, dateObserved, dateIssued, dateRetrieved) are authored
+// relative to this baseline. Shift each one forward by (now - baseline) so the
+// imported data keeps the same relative age it had then.
+const DATE_BASELINE = new Date('2025-08-16T00:00:00.000Z');
+
+function rebaseDate(value: string, now: Date): string {
+    const offset = now.getTime() - DATE_BASELINE.getTime();
     return new Date(new Date(value).getTime() + offset).toISOString();
 }
 
@@ -88,7 +115,7 @@ const unitCode: Record<string, string> = {
     batteryLevel: 'C68'
 };
 
-function createEntitiesFromRows(rows: Record<string, string>[]): Entity[] {
+function createEntitiesFromRows(rows: Record<string, string>[], offsetUnit?: string): Entity[] {
     const allEntities: Entity[] = [];
     const now = new Date();
     const currentTimestamp = now.toISOString();
@@ -101,7 +128,7 @@ function createEntitiesFromRows(rows: Record<string, string>[]): Entity[] {
 
         let timestamp = currentTimestamp;
         if (row.offset) {
-            timestamp = new Date(now.getTime() + Number(row.offset) * 60000).toISOString();
+            timestamp = shiftByDuration(now, Number(row.offset), offsetUnit).toISOString();
         }
 
         Object.keys(row).forEach((key) => {
@@ -112,9 +139,6 @@ function createEntitiesFromRows(rows: Record<string, string>[]): Entity[] {
                     case 'alternateName':
                     case 'controlledProperty':
                     case 'dataProvider':
-                    case 'dateIssued':
-                    case 'dateObserved':
-                    case 'dateRetrieved':
                     case 'dayMaximum':
                     case 'dayMinimum':
                     case 'description':
@@ -140,7 +164,10 @@ function createEntitiesFromRows(rows: Record<string, string>[]): Entity[] {
                         entity[key] = { value: tryParse(value), type: 'Property' };
                         break;
                     case 'birthdate':
-                        entity[key] = { value: rebaseBirthdate(value, now), type: 'Property' };
+                    case 'dateObserved':
+                    case 'dateIssued':
+                    case 'dateRetrieved':
+                        entity[key] = { value: rebaseDate(value, now), type: 'Property' };
                         break;
                     case 'comment':
                         entity[key] = { value: tryParse(value), type: 'Property', observedAt: timestamp };
@@ -317,7 +344,7 @@ const upload = (req: Request, res: Response): Promise<Response> => {
     return readCsvFile(file)
         .then((rows) => {
             removeCsvFile(file);
-            return createEntitiesFromRows(rows);
+            return createEntitiesFromRows(rows, req.get('offset-duration'));
         })
         .then((entities) => {
             const batchEntities: Entity[][] = [];

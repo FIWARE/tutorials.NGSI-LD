@@ -154,7 +154,7 @@ function listEntities(opts: Record<string, unknown>): Promise<EntityPage> {
     return requestFull(`${BASE_PATH}/entities?${query}`, 200).then(({ body, headers }) => {
         const raw = headers.get('NGSILD-Results-Count');
         const total = raw !== null && raw.trim() !== '' && !Number.isNaN(Number(raw)) ? Number(raw) : null;
-        const entities = Array.isArray(body) ? body : body ? [body] : [];
+        const entities = Array.isArray(body) ? body : [];
         return { entities, total, limit, offset, returned: entities.length };
     });
 }
