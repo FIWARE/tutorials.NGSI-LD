@@ -3,6 +3,7 @@
 
 import { z } from 'zod';
 import { VALIDATION, ENTITY_LIMIT } from '../../lib/constants';
+import type { EntityPage } from '../../lib/ngsi-ld';
 
 export function ok(data: unknown): string {
     return JSON.stringify(data, null, 2);
@@ -32,6 +33,33 @@ export function clampLimit(limit?: number): number {
     return Math.min(limit, ENTITY_LIMIT);
 }
 
+// Wrap a page of list results so the agent cannot silently mistake the first
+// page for the whole result set. When the broker holds more matches than this
+// page returned, a `_notice` string is emitted as the first key — so it is the
+// first line of the pretty-printed JSON the model reads — and `pagination`
+// carries the machine-readable `hasMore` / `nextOffset`.
+//
+// `page.returned` is the broker's pre-validation row count; `entities` is the
+// payload actually emitted (which SCHEMA_VALIDATION=filter may have shrunk).
+export function okPage(entities: unknown[], page: EntityPage, toolName: string, typeLabel: string): string {
+    const { total, limit, offset, returned } = page;
+    const nextOffset = offset + limit;
+    const hasMore = total === null ? returned >= limit : total > offset + returned;
+
+    const out: Record<string, unknown> = {};
+    if (hasMore) {
+        out._notice =
+            (total === null
+                ? `MORE DATA LIKELY: ${returned} ${typeLabel} entities returned and the page was full`
+                : `MORE DATA AVAILABLE: returned ${returned} of ${total} matching ${typeLabel} entities`) +
+            `. Do not treat this as the complete set — call ${toolName} again with offset=${nextOffset} for the ` +
+            `next page, or add filters / narrow \`pick\` to reduce the result count.`;
+    }
+    out.pagination = { total, limit, offset, returned, hasMore, nextOffset: hasMore ? nextOffset : null };
+    out.entities = entities;
+    return JSON.stringify(out, null, 2);
+}
+
 type ListOutcome = { data: unknown[] } | { error: string; details: unknown };
 type OneOutcome = { data: unknown } | { error: string; details: unknown };
 
@@ -43,7 +71,10 @@ export function validateList(entities: unknown[], validator: z.ZodTypeAny): List
         const parsed = z.array(validator).safeParse(entities);
         return parsed.success
             ? { data: parsed.data }
-            : { error: 'Broker returned entities that do not match the required profile.', details: parsed.error.issues };
+            : {
+                  error: 'Broker returned entities that do not match the required profile.',
+                  details: parsed.error.issues
+              };
     }
     // filter: drop the records that fail, keep the rest
     return { data: entities.filter((e) => validator.safeParse(e).success) };
@@ -58,7 +89,10 @@ export function validateOne(entity: unknown, validator: z.ZodTypeAny): OneOutcom
         return { data: parsed.data };
     }
     if (VALIDATION === 'strict') {
-        return { error: 'Broker returned an entity that does not match the required profile.', details: parsed.error.issues };
+        return {
+            error: 'Broker returned an entity that does not match the required profile.',
+            details: parsed.error.issues
+        };
     }
     return { data: entity }; // filter mode: nothing to filter for a single entity
 }

@@ -60,6 +60,10 @@ stdio transport.
 -   `SCHEMA_VALIDATION` - Policy for a broker payload that fails its schema: `filter` drops the offending entities and
     returns the rest, `strict` returns an error object, `off` passes the payload through untouched. Default: `filter`.
 -   `ENTITY_LIMIT` - Default and maximum value for the `limit` parameter of the query tools. Default: `100`.
+    Every `query_*` call also sends `count=true` to the broker and returns a `pagination` block
+    (`total`, `limit`, `offset`, `returned`, `hasMore`, `nextOffset`) alongside `entities`. When more matches
+    exist than were returned, a leading `_notice` field tells the agent to page with `offset` or narrow the
+    query rather than treat the first page as complete.
 -   `SEND_PICK_AS_ATTRS` - Set to `true` to remap the `pick` parameter to the deprecated `attrs` parameter for brokers
     that predate NGSI-LD v1.4. Default: `false`.
 

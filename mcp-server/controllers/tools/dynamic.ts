@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { listEntities, readEntity, readTemporalEntity } from '../../lib/ngsi-ld';
 import { ENTITY_LIMIT } from '../../lib/constants';
 import type { LoadedSchema } from '../../lib/schema';
-import { ok, fail, stripContext, clampLimit, validateList, validateOne } from './util';
+import { ok, fail, stripContext, clampLimit, validateList, validateOne, okPage } from './util';
 
 export function registerDynamic(server: FastMCP, schema: LoadedSchema): void {
     const stem = schema.typeName.toLowerCase();
@@ -16,27 +16,40 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema): void {
         name: `query_${stem}`,
         description:
             `[Preferred tool for ${schema.typeName}] Typed, schema-validated current-state query — use this rather than ` +
-            `\`query_entities\` whenever the target is a ${schema.typeName}.\n\n${schema.toolDescription}`,
+            `\`query_entities\` whenever the target is a ${schema.typeName}.\n\n${schema.toolDescription}\n\n` +
+            'The response is paginated: check the `pagination` block and, when `hasMore` is true, either call again with ' +
+            'the given `offset` or narrow the query — never assume the first page is the whole result set.',
         parameters: z.object({
             ...schema.inputShape,
             q: z.string().optional().describe('Extra raw NGSI-LD q filter, ANDed with the fields above.'),
             pick: z.string().optional().describe('Comma-separated attributes to return. Always set this.'),
-            limit: z.number().optional().describe(`Max entities to return (default/max ${ENTITY_LIMIT}).`)
+            limit: z.number().optional().describe(`Max entities to return (default/max ${ENTITY_LIMIT}).`),
+            offset: z
+                .number()
+                .optional()
+                .describe(
+                    'Row offset for pagination; pass the `nextOffset` from a previous response to fetch the next page.'
+                )
         }),
         execute: async (args: Record<string, unknown>) => {
             try {
-                const { q, pick, limit, ...filters } = args;
-                const body = await listEntities({
+                const { q, pick, limit, offset, ...filters } = args;
+                const page = await listEntities({
                     type: schema.typeName,
                     filters,
                     q,
                     pick,
                     limit: clampLimit(limit as number | undefined),
+                    offset: offset as number | undefined,
                     options: 'concise'
                 });
-                const entities = (Array.isArray(body) ? body : [body]).map((e) => stripContext(e));
+                const entities = page.entities.map((e) => stripContext(e));
                 const validator = pick ? schema.entityValidatorLoose : schema.entityValidator;
-                return ok(validateList(entities, validator));
+                const outcome = validateList(entities, validator);
+                if ('error' in outcome) {
+                    return ok(outcome);
+                }
+                return okPage(outcome.data, page, `query_${stem}`, schema.typeName);
             } catch (err) {
                 return fail(err);
             }
@@ -77,7 +90,10 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema): void {
             `not for current state. Returns [value, timestamp] tuples. Full schema: \`${schema.ontologyUri}\`.`,
         parameters: z.object({
             id: z.string().describe(`URN of the ${schema.typeName}.`),
-            pick: z.string().optional().describe('Comma-separated attributes to track, e.g. "weight". Always set this.'),
+            pick: z
+                .string()
+                .optional()
+                .describe('Comma-separated attributes to track, e.g. "weight". Always set this.'),
             timerel: z
                 .enum(['before', 'after', 'between'])
                 .optional()

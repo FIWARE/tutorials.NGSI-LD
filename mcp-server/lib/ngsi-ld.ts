@@ -6,7 +6,7 @@
 // OpenAPI v1.8.1 spec, not from that file.
 
 import debug from 'debug';
-import { BASE_PATH, LinkHeader, TENANT, SEND_PICK_AS_ATTRS } from './constants';
+import { BASE_PATH, LinkHeader, TENANT, SEND_PICK_AS_ATTRS, ENTITY_LIMIT } from './constants';
 
 const log = debug('mcp:ngsi');
 
@@ -86,9 +86,15 @@ function toQueryString(opts: Record<string, unknown>): string {
     }
     if (params.pick) {
         // Always keep id/type so a projected entity is still identifiable and validatable.
-        const attrs = [...new Set(['id', 'type', ...String(params.pick).split(',').map((s) => s.trim())])].filter(
-            Boolean
-        );
+        const attrs = [
+            ...new Set([
+                'id',
+                'type',
+                ...String(params.pick)
+                    .split(',')
+                    .map((s) => s.trim())
+            ])
+        ].filter(Boolean);
         params.pick = attrs.join(',');
         if (SEND_PICK_AS_ATTRS) {
             params.attrs = params.pick;
@@ -102,28 +108,55 @@ function toQueryString(opts: Record<string, unknown>): string {
         .join('&');
 }
 
-function request(url: string, expected: number): Promise<unknown> {
+function requestFull(url: string, expected: number): Promise<{ body: unknown; headers: Headers }> {
     log('GET %s', url);
     return fetch(url, { method: 'GET', headers: setHeaders() })
-        .then((r) => parse(r).then((body) => ({ status: r.status, body })))
+        .then((r) => parse(r).then((body) => ({ status: r.status, body, headers: r.headers })))
         .then((data) => {
             if (data.status !== expected) {
                 const body = (data.body || {}) as Record<string, unknown>;
                 const error: CauseError = new Error(
                     (body.title as string) ||
                         (body.message as string) ||
-                        (typeof data.body === 'string' && data.body ? (data.body as string) : `NGSI-LD error ${data.status}`)
+                        (typeof data.body === 'string' && data.body
+                            ? (data.body as string)
+                            : `NGSI-LD error ${data.status}`)
                 );
                 error.cause = data.body;
                 throw error;
             }
-            return data.body;
+            return { body: data.body, headers: data.headers };
         });
 }
 
-// GET /entities
-function listEntities(opts: Record<string, unknown>): Promise<unknown> {
-    return request(`${BASE_PATH}/entities?${toQueryString(opts)}`, 200);
+function request(url: string, expected: number): Promise<unknown> {
+    return requestFull(url, expected).then((d) => d.body);
+}
+
+// A page of GET /entities results plus the metadata a caller needs to decide
+// whether it has seen the whole result set. `total` is the broker's
+// NGSILD-Results-Count, or null when the broker withheld the header.
+interface EntityPage {
+    entities: unknown[];
+    total: number | null;
+    limit: number;
+    offset: number;
+    returned: number;
+}
+
+// GET /entities — always requests `count=true` so the response carries the total
+// match count; controllers/tools/util.okPage turns that into an explicit
+// "more data available" notice for the agent.
+function listEntities(opts: Record<string, unknown>): Promise<EntityPage> {
+    const limit = Number(opts.limit) || ENTITY_LIMIT;
+    const offset = Math.max(0, Math.floor(Number(opts.offset) || 0));
+    const query = toQueryString({ ...opts, limit, offset: offset || undefined, count: true });
+    return requestFull(`${BASE_PATH}/entities?${query}`, 200).then(({ body, headers }) => {
+        const raw = headers.get('NGSILD-Results-Count');
+        const total = raw !== null && raw.trim() !== '' && !Number.isNaN(Number(raw)) ? Number(raw) : null;
+        const entities = Array.isArray(body) ? body : body ? [body] : [];
+        return { entities, total, limit, offset, returned: entities.length };
+    });
 }
 
 // GET /entities/{entityId}
@@ -156,6 +189,7 @@ function readAttribute(attrId: string): Promise<unknown> {
     return request(`${BASE_PATH}/attributes/${encodeURIComponent(attrId)}`, 200);
 }
 
+export type { EntityPage };
 export {
     parse,
     setHeaders,

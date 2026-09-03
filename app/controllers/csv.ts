@@ -49,6 +49,15 @@ function tryParse(value: string): unknown {
     }
 }
 
+// CSV birthdates are authored relative to this baseline date. Shift each one
+// forward by (now - baseline) so imported animals keep the age they had then.
+const BIRTHDATE_BASELINE = new Date('2025-08-01T00:00:00.000Z');
+
+function rebaseBirthdate(value: string, now: Date): string {
+    const offset = now.getTime() - BIRTHDATE_BASELINE.getTime();
+    return new Date(new Date(value).getTime() + offset).toISOString();
+}
+
 interface EntityAttribute {
     type: string;
     value?: unknown;
@@ -101,8 +110,6 @@ function createEntitiesFromRows(rows: Record<string, string>[]): Entity[] {
                 switch (key) {
                     case 'agroVocConcept':
                     case 'alternateName':
-                    case 'birthdate':
-
                     case 'controlledProperty':
                     case 'dataProvider':
                     case 'dateIssued':
@@ -131,6 +138,9 @@ function createEntitiesFromRows(rows: Record<string, string>[]): Entity[] {
                     case 'weatherType':
                     case 'windDirection':
                         entity[key] = { value: tryParse(value), type: 'Property' };
+                        break;
+                    case 'birthdate':
+                        entity[key] = { value: rebaseBirthdate(value, now), type: 'Property' };
                         break;
                     case 'comment':
                         entity[key] = { value: tryParse(value), type: 'Property', observedAt: timestamp };
