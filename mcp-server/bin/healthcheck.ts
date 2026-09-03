@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import { BASE_PATH } from '../lib/constants';
+import { CONTEXT_BROKER } from '../lib/constants';
 
-fetch(`${BASE_PATH}/types`, { headers: { Accept: 'application/json' } })
+fetch(`${CONTEXT_BROKER}/types`, { headers: { Accept: 'application/json' } })
     .then((r) => {
         console.info(`broker responded ${r.status}`);
         process.exit(r.status < 500 ? 0 : 1);

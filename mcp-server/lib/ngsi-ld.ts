@@ -6,7 +6,7 @@
 // OpenAPI v1.8.1 spec, not from that file.
 
 import debug from 'debug';
-import { BASE_PATH, LinkHeader, TENANT, SEND_PICK_AS_ATTRS, ENTITY_LIMIT } from './constants';
+import { CONTEXT_BROKER, TEMPORAL_BROKER, LinkHeader, TENANT, SEND_PICK_AS_ATTRS, ENTITY_LIMIT } from './constants';
 
 const log = debug('mcp:ngsi');
 
@@ -151,7 +151,7 @@ function listEntities(opts: Record<string, unknown>): Promise<EntityPage> {
     const limit = Number(opts.limit) || ENTITY_LIMIT;
     const offset = Math.max(0, Math.floor(Number(opts.offset) || 0));
     const query = toQueryString({ ...opts, limit, offset: offset || undefined, count: true });
-    return requestFull(`${BASE_PATH}/entities?${query}`, 200).then(({ body, headers }) => {
+    return requestFull(`${CONTEXT_BROKER}/entities?${query}`, 200).then(({ body, headers }) => {
         const raw = headers.get('NGSILD-Results-Count');
         const total = raw !== null && raw.trim() !== '' && !Number.isNaN(Number(raw)) ? Number(raw) : null;
         const entities = Array.isArray(body) ? body : [];
@@ -161,32 +161,43 @@ function listEntities(opts: Record<string, unknown>): Promise<EntityPage> {
 
 // GET /entities/{entityId}
 function readEntity(entityId: string, opts: Record<string, unknown>): Promise<unknown> {
-    return request(`${BASE_PATH}/entities/${encodeURIComponent(entityId)}?${toQueryString(opts)}`, 200);
+    return request(`${CONTEXT_BROKER}/entities/${encodeURIComponent(entityId)}?${toQueryString(opts)}`, 200);
 }
 
-// GET /temporal/entities/{entityId}
+// GET /temporal/entities/{entityId} — against the (optionally distinct) temporal
+// broker. Only reached when TEMPORAL_BROKER is set: the history tools are gated on it.
+// Projection goes out as `attrs`, which the temporal endpoints support far more
+// widely than the newer `pick` parameter.
 function readTemporalEntity(entityId: string, opts: Record<string, unknown>): Promise<unknown> {
-    return request(`${BASE_PATH}/temporal/entities/${encodeURIComponent(entityId)}?${toQueryString(opts)}`, 200);
+    const { pick, ...rest } = opts;
+    if (pick) {
+        rest.attrs = String(pick)
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean)
+            .join(',');
+    }
+    return request(`${TEMPORAL_BROKER!}/temporal/entities/${encodeURIComponent(entityId)}?${toQueryString(rest)}`, 200);
 }
 
 // GET /types  (details=false → EntityTypeList, details=true → EntityType[])
 function listTypes(details = true): Promise<unknown> {
-    return request(`${BASE_PATH}/types?${toQueryString({ details })}`, 200);
+    return request(`${CONTEXT_BROKER}/types?${toQueryString({ details })}`, 200);
 }
 
 // GET /types/{type} → EntityTypeInfo
 function readType(type: string): Promise<unknown> {
-    return request(`${BASE_PATH}/types/${encodeURIComponent(type)}`, 200);
+    return request(`${CONTEXT_BROKER}/types/${encodeURIComponent(type)}`, 200);
 }
 
 // GET /attributes  (details=false → AttributeList, details=true → Attribute[])
 function listAttributes(details = true): Promise<unknown> {
-    return request(`${BASE_PATH}/attributes?${toQueryString({ details })}`, 200);
+    return request(`${CONTEXT_BROKER}/attributes?${toQueryString({ details })}`, 200);
 }
 
 // GET /attributes/{attrId} → Attribute
 function readAttribute(attrId: string): Promise<unknown> {
-    return request(`${BASE_PATH}/attributes/${encodeURIComponent(attrId)}`, 200);
+    return request(`${CONTEXT_BROKER}/attributes/${encodeURIComponent(attrId)}`, 200);
 }
 
 export type { EntityPage };
