@@ -87,7 +87,7 @@ ENV NODE_ENV=development
 EXPOSE ${DUMMY_DEVICES_PORT:-3001}
 CMD ["node", "/opt/iot-devices/dist/bin/devices.js"]
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s \
-   CMD npm run healthcheck
+   CMD ["npm", "run", "healthcheck"]
 
 ########################################################################################
 #

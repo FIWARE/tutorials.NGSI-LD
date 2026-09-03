@@ -45,6 +45,7 @@ Dockerfile
 !app/Dockerfile
 !forwarder/Dockerfile
 !iot-devices/Dockerfile
+!mcp-server/Dockerfile
 iot-devices/init.sh
 iot-devices/animals.sh
 iot-devices/append.csv

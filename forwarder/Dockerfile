@@ -86,7 +86,7 @@ ENV NODE_ENV=development
 EXPOSE ${PORT:-80}
 CMD ["node", "/opt/forwarder/dist/bin/proxy.js"]
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s \
-   CMD npm run healthcheck
+   CMD ["npm", "run", "healthcheck"]
 
 ########################################################################################
 #

@@ -31,11 +31,11 @@ ARG SOURCE_BRANCH
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# As an Alternative for local development, just copy this Dockerfile into file the root of
-# the repository and replace the whole RUN statement below by the following COPY statement
-# in your local source using :
+# As an alternative for local development, just copy this Dockerfile into the root of
+# the repository and replace the whole RUN statement below by the following COPY
+# statement using your local source:
 #
-# COPY ./app /opt/ngsi-tutorial
+# COPY ./mcp-server /opt/mcp-server
 #
 
 # hadolint ignore=DL3008
@@ -58,33 +58,32 @@ RUN \
   curl -s -L https://github.com/"${GITHUB_ACCOUNT}"/"${GITHUB_REPOSITORY}"/archive/"${RELEASE}".zip > source.zip && \
   unzip -qq source.zip -x "*/docs/**" "*/.*" && \
   rm source.zip && \
-  mv "${GITHUB_REPOSITORY}-${RELEASE_CONCAT}/app" /opt/ngsi-tutorial && \
+  mv "${GITHUB_REPOSITORY}-${RELEASE_CONCAT}/mcp-server" /opt/mcp-server && \
   # Remove unzip and clean apt cache
   apt-get clean && \
   apt-get remove -y unzip && \
   apt-get -y autoremove && \
   rm -rf /var/lib/apt/lists/*
 
-WORKDIR /opt/ngsi-tutorial
+WORKDIR /opt/mcp-server
 
-# hadolint ignore=DL3008
 RUN \
-  # Ensure that Git is installed prior to running npm install
-  apt-get install -y --no-install-recommends git && \
   echo "INFO: npm install..." && \
   npm install --no-package-lock --no-optional && \
   npm run build && \
-  npm prune --omit=dev && \
-  # Remove Git and clean apt cache
-  apt-get clean && \
-  apt-get remove -y git && \
-  apt-get -y autoremove
+  npm prune --omit=dev
 
 USER node
 ENV NODE_ENV=development
-# Ports used by application
-EXPOSE ${WEB_APP_PORT:-3000}
-CMD ["node", "/opt/ngsi-tutorial/dist/bin/www.js"]
+ENV MCP_TRANSPORT=http
+# Mount a directory of Smart Data Models schema.json files here (with a common/
+# subdir for offline $ref resolution). Empty/absent => generic + context-discovery
+# tools only. The NGSI-LD context-discovery response schemas are bundled in the image.
+ENV SCHEMA_DIR=/schemas
+VOLUME ["/schemas"]
+# Port used by the HTTP-stream MCP transport
+EXPOSE 3000
+CMD ["node", "/opt/mcp-server/dist/bin/www.js"]
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s \
    CMD ["npm", "run", "healthcheck"]
 
@@ -117,19 +116,21 @@ LABEL "org.opencontainers.image.authors"="https://www.fiware.org/contact-us/"
 LABEL "org.opencontainers.image.documentation"="http://fiware-tutorials.rtfd.io/"
 LABEL "org.opencontainers.image.vendor"="FIWARE Foundation"
 LABEL "org.opencontainers.image.licenses"="MIT"
-LABEL "org.opencontainers.image.title"="FIWARE NGSI-LD Tutorial App"
-LABEL "org.opencontainers.image.description"="Simple Node.js express application for use with the FIWARE NGSI-LD tutorials"
+LABEL "org.opencontainers.image.title"="NGSI-LD MCP Server"
+LABEL "org.opencontainers.image.description"="Model Context Protocol server exposing an NGSI-LD Context Broker to LLM agents"
 LABEL "org.opencontainers.image.source"=https://github.com/${GITHUB_ACCOUNT}/${GITHUB_REPOSITORY}
 LABEL "org.nodejs.version"=${NODE_VERSION}
 
-COPY --from=builder   --chown=nonroot:nonroot /opt/ngsi-tutorial /opt/ngsi-tutorial
-WORKDIR /opt/ngsi-tutorial
+COPY --from=builder /opt/mcp-server /opt/mcp-server
+WORKDIR /opt/mcp-server
 
 USER nobody
 ENV NODE_ENV=production
-# Ports used by application
-EXPOSE ${WEB_APP_PORT:-3000}
-USER nonroot
+ENV MCP_TRANSPORT=http
+ENV SCHEMA_DIR=/schemas
+VOLUME ["/schemas"]
+# Port used by the HTTP-stream MCP transport
+EXPOSE 3000
 CMD ["./dist/bin/www.js"]
 HEALTHCHECK  --interval=30s --timeout=3s --start-period=10s \
   CMD ["/nodejs/bin/node", "./dist/bin/healthcheck.js"]
