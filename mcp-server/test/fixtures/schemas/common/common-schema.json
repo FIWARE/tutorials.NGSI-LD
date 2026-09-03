@@ -1,0 +1,23 @@
+{
+    "$id": "https://smart-data-models.github.io/data-models/common-schema.json",
+    "title": "Test commons",
+    "definitions": {
+        "EntityIdentifierType": { "type": "string", "format": "uri" },
+        "GSMA-Commons": {
+            "type": "object",
+            "properties": {
+                "id": { "$ref": "#/definitions/EntityIdentifierType" },
+                "dateCreated": { "type": "string", "format": "date-time", "description": "Entity creation timestamp." },
+                "dateModified": { "type": "string", "format": "date-time", "description": "Last modification timestamp." },
+                "name": { "type": "string", "description": "The name of this item." },
+                "description": { "type": "string", "description": "A description of this item." }
+            }
+        },
+        "Location-Commons": {
+            "type": "object",
+            "properties": {
+                "location": { "type": "object", "description": "GeoJSON geometry." }
+            }
+        }
+    }
+}

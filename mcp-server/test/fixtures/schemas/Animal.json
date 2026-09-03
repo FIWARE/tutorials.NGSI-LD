@@ -1,0 +1,36 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://smart-data-models.github.io/dataModel.Agrifood/Animal/schema.json",
+    "title": "Animal",
+    "description": "A farm animal.",
+    "modelTags": "",
+    "type": "object",
+    "allOf": [
+        { "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/GSMA-Commons" },
+        { "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/Location-Commons" },
+        { "$ref": "https://smart-data-models.github.io/dataModel.Agrifood/agrifood-schema.json#/definitions/AgriFood-Commons" },
+        {
+            "properties": {
+                "type": { "type": "string", "enum": ["Animal"] },
+                "species": {
+                    "type": "string",
+                    "enum": ["dairy cattle", "beef cattle", "pig", "sheep"],
+                    "description": "Species to which the animal belongs."
+                },
+                "legalId": { "type": "string", "description": "Legal ID of the animal." },
+                "sex": { "type": "string", "enum": ["female", "male"], "description": "Sex of the animal." },
+                "breed": { "type": "string", "description": "Breed of the animal." },
+                "weight": { "type": "number", "description": "Weight of the animal in kg." },
+                "birthdate": { "type": "string", "format": "date-time", "description": "Animal's birthdate." },
+                "ownedBy": {
+                    "anyOf": [
+                        { "type": "string", "minLength": 1, "maxLength": 256 },
+                        { "type": "string", "format": "uri" }
+                    ],
+                    "description": "The owner of the animal (relationship)."
+                }
+            }
+        }
+    ],
+    "required": ["id", "type", "species", "legalId", "sex"]
+}

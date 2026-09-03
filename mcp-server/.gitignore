@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.log
+.eslintcache
+.DS_Store
+
+# entity schemas are supplied at runtime via a mounted volume — keep the dir, ignore contents
+/schemas/*
+!/schemas/.gitkeep

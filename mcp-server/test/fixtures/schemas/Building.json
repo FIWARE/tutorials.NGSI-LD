@@ -1,0 +1,25 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://smart-data-models.github.io/dataModel.Building/Building/schema.json",
+    "title": "Building",
+    "description": "A building.",
+    "modelTags": "",
+    "type": "object",
+    "allOf": [
+        { "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/GSMA-Commons" },
+        { "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/Location-Commons" },
+        {
+            "properties": {
+                "type": { "type": "string", "enum": ["Building"] },
+                "category": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Building category (array — not a scalar filter)."
+                },
+                "mapUrl": { "type": "string", "format": "uri", "description": "URL of a map of the building." },
+                "collapseRisk": { "type": "number", "description": "Probability of collapse, 0..1." }
+            }
+        }
+    ],
+    "required": ["type", "id", "category"]
+}

@@ -1,0 +1,24 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://smart-data-models.github.io/dataModel.Device/Device/schema.json",
+    "title": "Device",
+    "description": "A device.",
+    "modelTags": "",
+    "type": "object",
+    "allOf": [
+        { "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/GSMA-Commons" },
+        {
+            "properties": {
+                "type": { "type": "string", "enum": ["Device"] },
+                "controlledProperty": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Measured/controlled properties."
+                },
+                "serialNumber": { "type": "string", "description": "Serial number of the device." },
+                "batteryLevel": { "type": "number", "description": "Battery level, 0..1." }
+            }
+        }
+    ],
+    "required": ["id", "type", "controlledProperty"]
+}

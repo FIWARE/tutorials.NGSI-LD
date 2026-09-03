@@ -43,6 +43,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HADOLINT_ACTION_DOCKERFILE_FOLDER: iot-devices
 
+  lint-mcp-server-dockerfile:
+    name: Lint MCP Server Dockerfile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
+      - name: Run Hadolint Dockerfile Linter
+        uses: burdzwastaken/hadolint-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HADOLINT_ACTION_DOCKERFILE_FOLDER: mcp-server
+
   lint-markdown:
     name: Lint Markdown
     runs-on: ubuntu-latest
@@ -76,3 +88,6 @@ jobs:
         run: |
           npm install -C ./app
           npm test -C ./app
+          npm install -C ./mcp-server
+          npm run lint -C ./mcp-server
+          npm test -C ./mcp-server

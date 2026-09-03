@@ -1,0 +1,21 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://ngsi-ld-tutorials/generated/PartField/schema.json",
+    "title": "PartField",
+    "description": "A sub-division of an AgriParcel. Stub: no instances and no resolvable model.",
+    "modelTags": "generated,stub",
+    "x-derivedFrom": { "method": "context-term only", "instances": 0 },
+    "type": "object",
+    "properties": {
+        "id": { "type": "string", "format": "uri" },
+        "type": { "type": "string", "enum": ["PartField"] },
+        "name": { "type": "string", "x-ngsi-type": "Property", "description": "Zone name." },
+        "hasAgriParcel": {
+            "type": "string",
+            "format": "uri",
+            "x-ngsi-type": "Relationship",
+            "description": "Parent AgriParcel."
+        }
+    },
+    "required": ["hasAgriParcel", "id", "name", "type"]
+}

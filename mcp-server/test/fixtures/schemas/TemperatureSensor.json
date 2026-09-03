@@ -1,0 +1,31 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://ngsi-ld-tutorials/generated/TemperatureSensor/schema.json",
+    "title": "TemperatureSensor",
+    "description": "A SAREF temperature-sensor profile over the Device model.",
+    "modelTags": "generated,profile",
+    "x-derivedFrom": { "method": "context-term + SAREF + parent-model", "parent": "Device", "instances": 0 },
+    "type": "object",
+    "allOf": [
+        { "$ref": "./Device.json" },
+        {
+            "type": "object",
+            "properties": {
+                "type": { "type": "string", "enum": ["Device"] },
+                "category": { "type": "array", "items": { "type": "string" }, "description": "Fixed to 'sensor'." },
+                "controlledProperty": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Must include 'temperature'."
+                },
+                "temperature": {
+                    "type": "number",
+                    "x-ngsi-type": "Property",
+                    "x-unitCode": "CEL",
+                    "description": "Latest temperature reading."
+                }
+            },
+            "required": ["type", "category", "controlledProperty"]
+        }
+    ]
+}

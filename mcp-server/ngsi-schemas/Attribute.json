@@ -1,0 +1,40 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://uri.etsi.org/ngsi-ld/Attribute/schema.json",
+    "title": "Attribute",
+    "description": "NGSI-LD Attribute data type (ETSI GS CIM 009 clause 5.2.28). Used as an element of EntityTypeInfo.attributeDetails (clause 4.5.12), in the detailed attribute list from GET /attributes?details=true (clause 4.5.14), and as the attribute information from GET /attributes/{attrId} (clause 4.5.15). Not subject to options=concise/keyValues.",
+    "modelTags": "ngsi-ld-core",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "format": "uri",
+            "description": "Full URI of the attribute name."
+        },
+        "type": {
+            "type": "string",
+            "enum": ["Attribute"],
+            "description": "JSON-LD @type. It shall be equal to \"Attribute\"."
+        },
+        "attributeName": {
+            "type": "string",
+            "description": "Name of the attribute; short name if contained in @context."
+        },
+        "attributeCount": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of attribute instances with this attribute name. Cardinality 0..1."
+        },
+        "attributeTypes": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of attribute types (e.g. Property, Relationship, GeoProperty) for which entity instances containing an attribute with this name exist. Cardinality 0..1."
+        },
+        "typeNames": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of entity type names for which entity instances exist containing an attribute with this name. Cardinality 0..1."
+        }
+    },
+    "required": ["id", "type", "attributeName"]
+}

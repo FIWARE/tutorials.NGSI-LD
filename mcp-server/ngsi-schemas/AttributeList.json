@@ -1,0 +1,26 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://uri.etsi.org/ngsi-ld/AttributeList/schema.json",
+    "title": "AttributeList",
+    "description": "NGSI-LD AttributeList data type (ETSI GS CIM 009 clause 5.2.27). The attribute list representation returned by GET /attributes (clause 4.5.13). Not subject to options=concise/keyValues.",
+    "modelTags": "ngsi-ld-core",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "format": "uri",
+            "description": "URI that is unique within the system scope. Identifier for the attribute list."
+        },
+        "type": {
+            "type": "string",
+            "enum": ["AttributeList"],
+            "description": "JSON-LD @type. It shall be equal to \"AttributeList\"."
+        },
+        "attributeList": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List containing the attribute names."
+        }
+    },
+    "required": ["id", "type", "attributeList"]
+}

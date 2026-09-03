@@ -1,0 +1,16 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://ngsi-ld-tutorials/generated/Tractor/schema.json",
+    "title": "Tractor",
+    "description": "Agricultural machinery controlled over IoT with start/stop commands.",
+    "modelTags": "generated",
+    "x-derivedFrom": { "method": "entity-introspection + /types", "sampleCount": 4 },
+    "type": "object",
+    "properties": {
+        "id": { "type": "string", "format": "uri" },
+        "type": { "type": "string", "enum": ["Tractor"] },
+        "start": { "x-ngsi-type": "Command", "description": "Actuation command (write-only; not returned on read)." },
+        "stop": { "x-ngsi-type": "Command", "description": "Actuation command (write-only; not returned on read)." }
+    },
+    "required": ["id", "type"]
+}

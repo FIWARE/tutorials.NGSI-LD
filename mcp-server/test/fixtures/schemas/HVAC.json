@@ -1,0 +1,22 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://ngsi-ld-tutorials/generated/HVAC/schema.json",
+    "title": "HVAC",
+    "description": "A heating/ventilation/air-conditioning profile over the Device model.",
+    "modelTags": "generated,profile",
+    "x-derivedFrom": { "method": "context-term + SAREF + parent-model", "parent": "Device", "instances": 0 },
+    "type": "object",
+    "allOf": [
+        { "$ref": "./Device.json" },
+        {
+            "type": "object",
+            "properties": {
+                "type": { "type": "string", "enum": ["Device"] },
+                "category": { "type": "array", "items": { "type": "string" }, "description": "Fixed to 'actuator'." },
+                "controlledProperty": { "type": "array", "items": { "type": "string" }, "description": "e.g. temperature." },
+                "temperature": { "type": "number", "x-ngsi-type": "Property", "description": "Measured temperature." },
+                "targetTemperature": { "type": "number", "x-ngsi-type": "Property", "description": "Set-point." }
+            }
+        }
+    ]
+}

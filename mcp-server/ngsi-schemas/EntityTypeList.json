@@ -1,0 +1,26 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://uri.etsi.org/ngsi-ld/EntityTypeList/schema.json",
+    "title": "EntityTypeList",
+    "description": "NGSI-LD EntityTypeList data type (ETSI GS CIM 009 clause 5.2.24). The entity type list representation returned by GET /types (clause 4.5.10). Not subject to options=concise/keyValues.",
+    "modelTags": "ngsi-ld-core",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "format": "uri",
+            "description": "URI that is unique within the system scope. Identifier for the entity type list."
+        },
+        "type": {
+            "type": "string",
+            "enum": ["EntityTypeList"],
+            "description": "JSON-LD @type. It shall be equal to \"EntityTypeList\"."
+        },
+        "typeList": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List containing the entity type names."
+        }
+    },
+    "required": ["id", "type", "typeList"]
+}

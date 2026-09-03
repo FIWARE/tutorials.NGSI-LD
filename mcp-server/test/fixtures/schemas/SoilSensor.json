@@ -1,0 +1,23 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://ngsi-ld-tutorials/generated/SoilSensor/schema.json",
+    "title": "SoilSensor",
+    "description": "Soil-humidity sensor, baseline generated from live broker entities.",
+    "modelTags": "generated",
+    "x-derivedFrom": { "method": "entity-introspection + /types", "sampleCount": 6 },
+    "type": "object",
+    "properties": {
+        "id": { "type": "string", "format": "uri" },
+        "type": { "type": "string", "enum": ["SoilSensor"] },
+        "humidity": { "type": "number", "x-ngsi-type": "Property", "x-unitCode": "P1", "description": "Soil humidity 0..1." },
+        "batteryLevel": { "type": "number", "x-ngsi-type": "Property", "description": "Battery 0..1." },
+        "controlledAsset": {
+            "type": "string",
+            "format": "uri",
+            "x-ngsi-type": "Relationship",
+            "description": "Parcel this sensor monitors."
+        },
+        "description": { "type": "string", "x-ngsi-type": "Property", "description": "Free-text label." }
+    },
+    "required": ["batteryLevel", "controlledAsset", "description", "humidity", "id", "type"]
+}

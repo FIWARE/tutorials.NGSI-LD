@@ -1,0 +1,7 @@
+node_modules
+dist
+test
+*.md
+.git
+.DS_Store
+.eslintcache

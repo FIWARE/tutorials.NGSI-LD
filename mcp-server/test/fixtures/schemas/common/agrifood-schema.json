@@ -1,0 +1,12 @@
+{
+    "$id": "https://smart-data-models.github.io/dataModel.Agrifood/agrifood-schema.json",
+    "title": "Test agrifood commons",
+    "definitions": {
+        "AgriFood-Commons": {
+            "type": "object",
+            "properties": {
+                "relatedSource": { "type": "array", "items": { "type": "object" } }
+            }
+        }
+    }
+}

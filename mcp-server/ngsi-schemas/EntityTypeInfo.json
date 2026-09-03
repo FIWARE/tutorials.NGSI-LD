@@ -1,0 +1,35 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://uri.etsi.org/ngsi-ld/EntityTypeInfo/schema.json",
+    "title": "EntityTypeInfo",
+    "description": "NGSI-LD EntityTypeInfo data type (ETSI GS CIM 009 clause 5.2.26). The detailed entity type information representation returned by GET /types/{type} (clause 4.5.12). Not subject to options=concise/keyValues.",
+    "modelTags": "ngsi-ld-core",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "format": "uri",
+            "description": "Fully Qualified Name (FQN) of the entity type being described."
+        },
+        "type": {
+            "type": "string",
+            "enum": ["EntityTypeInfo"],
+            "description": "JSON-LD @type. It shall be equal to \"EntityTypeInfo\"."
+        },
+        "typeName": {
+            "type": "string",
+            "description": "Name of the entity type; short name if contained in @context."
+        },
+        "entityCount": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of entity instances of this entity type."
+        },
+        "attributeDetails": {
+            "type": "array",
+            "description": "List of attributes that entity instances with the specified entity type can have. Each item is an Attribute restricted to the members id, type, attributeName and attributeTypes.",
+            "items": { "$ref": "./Attribute.json" }
+        }
+    },
+    "required": ["id", "type", "typeName", "entityCount", "attributeDetails"]
+}

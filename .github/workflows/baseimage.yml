@@ -10,6 +10,7 @@ on:
       - app/**
       - forwarder/**
       - iot-devices/**
+      - mcp-server/**
     branches:
       - master
   workflow_dispatch:
@@ -106,3 +107,24 @@ jobs:
             quay.io/fiware/tutorials.iot-devices:latest
           file: iot-devices/Dockerfile
           labels: ${{ steps.meta-iot-devices.outputs.labels }}
+      - name: Docker meta (MCP Server)
+        id: meta-mcp-server
+        uses: docker/metadata-action@v5
+        with:
+          # list of Docker images to use as base name for tags
+          images: |
+            fiware/tutorials.mcp-server:latest
+          labels: |
+            org.opencontainers.image.title=NGSI-LD MCP Server
+            org.opencontainers.image.description=Model Context Protocol server exposing an NGSI-LD Context Broker to LLM agents
+      - name: Build and push (MCP Server)
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            fiware/tutorials.mcp-server:latest
+            ghcr.io/fiware/tutorials.mcp-server:latest
+            quay.io/fiware/tutorials.mcp-server:latest
+          file: mcp-server/Dockerfile
+          labels: ${{ steps.meta-mcp-server.outputs.labels }}

@@ -1,0 +1,42 @@
+{
+    "name": "ngsi-ld-mcp-server",
+    "description": "MCP server wrapping an NGSI-LD Context Broker; tools and resources generated from Smart Data Models schemas",
+    "version": "1.0.0",
+    "private": true,
+    "license": "MIT",
+    "type": "commonjs",
+    "main": "dist/bin/www.js",
+    "engines": {
+        "node": ">=20"
+    },
+    "scripts": {
+        "build": "tsc && mkdir -p schemas dist/schemas dist/ngsi-schemas && cp -R schemas/. dist/schemas/ && cp -R ngsi-schemas/. dist/ngsi-schemas/",
+        "start": "node ./dist/bin/www.js",
+        "dev": "DEBUG=mcp:* ts-node bin/www.ts",
+        "healthcheck": "node ./dist/bin/healthcheck.js",
+        "lint": "eslint . --cache",
+        "lint:fix": "eslint . --cache --fix",
+        "prettier": "prettier --single-quote --write \"**/*.ts\"",
+        "test": "vitest run"
+    },
+    "dependencies": {
+        "@apidevtools/json-schema-ref-parser": "^11",
+        "debug": "^4",
+        "fastmcp": "^1",
+        "zod": "^3"
+    },
+    "devDependencies": {
+        "@types/debug": "^4",
+        "@types/node": "^22",
+        "eslint": "^9",
+        "globals": "^15",
+        "prettier": "^3",
+        "ts-node": "^10",
+        "typescript": "^5",
+        "typescript-eslint": "^8",
+        "vitest": "^2"
+    },
+    "overrides": {
+        "@modelcontextprotocol/sdk": "1.12.3"
+    }
+}
