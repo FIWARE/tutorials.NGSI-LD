@@ -6,7 +6,15 @@
 // OpenAPI v1.8.1 spec, not from that file.
 
 import debug from 'debug';
-import { CONTEXT_BROKER, TEMPORAL_BROKER, LinkHeader, TENANT, SEND_PICK_AS_ATTRS, ENTITY_LIMIT } from './constants';
+import {
+    CONTEXT_BROKER,
+    TEMPORAL_BROKER,
+    LinkHeader,
+    TENANT,
+    TEMPORAL_TENANT,
+    SEND_PICK_AS_ATTRS,
+    ENTITY_LIMIT
+} from './constants';
 
 const log = debug('mcp:ngsi');
 
@@ -26,15 +34,16 @@ async function parse(response: Response): Promise<unknown> {
     }
 }
 
-// Tenant selection is not the agent's concern: NGSI_LD_TENANT (if set) is applied
-// to every request; default is the broker's default tenant.
-function setHeaders(): Record<string, string> {
+// Tenant selection is not the agent's concern: the resolved tenant (TENANT for the
+// context broker, TEMPORAL_TENANT for the temporal broker) is applied to every
+// request; undefined is the broker's default tenant.
+function setHeaders(tenant: string | undefined): Record<string, string> {
     const headers: Record<string, string> = {
         Accept: JSON_LD_HEADER,
         Link: LinkHeader
     };
-    if (TENANT) {
-        headers['NGSILD-Tenant'] = TENANT;
+    if (tenant) {
+        headers['NGSILD-Tenant'] = tenant;
         headers['NGSILD-Path'] = '/';
     }
     return headers;
@@ -108,9 +117,13 @@ function toQueryString(opts: Record<string, unknown>): string {
         .join('&');
 }
 
-function requestFull(url: string, expected: number): Promise<{ body: unknown; headers: Headers }> {
+function requestFull(
+    url: string,
+    expected: number,
+    tenant: string | undefined = TENANT
+): Promise<{ body: unknown; headers: Headers }> {
     log('GET %s', url);
-    return fetch(url, { method: 'GET', headers: setHeaders() })
+    return fetch(url, { method: 'GET', headers: setHeaders(tenant) })
         .then((r) => parse(r).then((body) => ({ status: r.status, body, headers: r.headers })))
         .then((data) => {
             if (data.status !== expected) {
@@ -129,8 +142,8 @@ function requestFull(url: string, expected: number): Promise<{ body: unknown; he
         });
 }
 
-function request(url: string, expected: number): Promise<unknown> {
-    return requestFull(url, expected).then((d) => d.body);
+function request(url: string, expected: number, tenant: string | undefined = TENANT): Promise<unknown> {
+    return requestFull(url, expected, tenant).then((d) => d.body);
 }
 
 // A page of GET /entities results plus the metadata a caller needs to decide
@@ -165,9 +178,10 @@ function readEntity(entityId: string, opts: Record<string, unknown>): Promise<un
 }
 
 // GET /temporal/entities/{entityId} — against the (optionally distinct) temporal
-// broker. Only reached when TEMPORAL_BROKER is set: the history tools are gated on it.
-// Projection goes out as `attrs`, which the temporal endpoints support far more
-// widely than the newer `pick` parameter.
+// broker, under TEMPORAL_TENANT (independent of TENANT). Only reached when
+// TEMPORAL_BROKER is set: the history tools are gated on it. Projection goes out
+// as `attrs`, which the temporal endpoints support far more widely than the newer
+// `pick` parameter.
 function readTemporalEntity(entityId: string, opts: Record<string, unknown>): Promise<unknown> {
     const { pick, ...rest } = opts;
     if (pick) {
@@ -177,7 +191,11 @@ function readTemporalEntity(entityId: string, opts: Record<string, unknown>): Pr
             .filter(Boolean)
             .join(',');
     }
-    return request(`${TEMPORAL_BROKER!}/temporal/entities/${encodeURIComponent(entityId)}?${toQueryString(rest)}`, 200);
+    return request(
+        `${TEMPORAL_BROKER!}/temporal/entities/${encodeURIComponent(entityId)}?${toQueryString(rest)}`,
+        200,
+        TEMPORAL_TENANT
+    );
 }
 
 // GET /types  (details=false → EntityTypeList, details=true → EntityType[])

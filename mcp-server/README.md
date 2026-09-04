@@ -48,8 +48,11 @@ stdio transport.
     not registered.
 -   `NGSI_LD_CONTEXT` - JSON-LD `@context` added to the `Link` header on every broker call. Default:
     `http://context/ngsi-context.jsonld`.
--   `NGSI_LD_TENANT` - Value for the `NGSILD-Tenant` header (paired with `NGSILD-Path: /`), applied to every request.
-    Unset means the broker default tenant. One server instance targets one tenant.
+-   `NGSI_LD_TENANT` - Value for the `NGSILD-Tenant` header (paired with `NGSILD-Path: /`), applied to every request
+    against `CONTEXT_BROKER`. Unset means the broker default tenant.
+-   `TEMPORAL_TENANT` - Same, but for requests against `TEMPORAL_BROKER` — independent of `NGSI_LD_TENANT`, since the
+    temporal service may be scoped to its own tenant. Unset means the broker default tenant (does not fall back to
+    `NGSI_LD_TENANT`).
 
 ### Schemas
 

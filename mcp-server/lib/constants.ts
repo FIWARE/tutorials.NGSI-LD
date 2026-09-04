@@ -17,6 +17,11 @@ const LinkHeader = `<${CONTEXT}>; rel="http://www.w3.org/ns/json-ld#context"; ty
 // Unset ⇒ the broker's default tenant. Tenant choice is deployment config, not an agent concern.
 const TENANT = process.env.NGSI_LD_TENANT || undefined;
 
+// NGSILD-Tenant for temporal requests, independent of TENANT above — the temporal
+// interface may be a separate service scoped to its own tenant. Unset ⇒ the
+// broker's default tenant (does not fall back to TENANT).
+const TEMPORAL_TENANT = process.env.TEMPORAL_TENANT || undefined;
+
 const SCHEMA_DIR = process.env.SCHEMA_DIR || `${__dirname}/../schemas`;
 const COMMON_DIR = `${SCHEMA_DIR}/common`;
 const CORE_SCHEMA_DIR = `${__dirname}/../ngsi-schemas`;
@@ -55,6 +60,7 @@ export {
     CONTEXT,
     LinkHeader,
     TENANT,
+    TEMPORAL_TENANT,
     SCHEMA_DIR,
     COMMON_DIR,
     CORE_SCHEMA_DIR,
