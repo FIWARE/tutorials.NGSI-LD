@@ -117,16 +117,14 @@ function toQueryString(opts: Record<string, unknown>): string {
         .join('&');
 }
 
-function requestFull(
-    url: string,
-    expected: number,
-    tenant: string | undefined = TENANT
-): Promise<{ body: unknown; headers: Headers }> {
+// Any 2xx is success — NGSI-LD brokers use 206 (not just 200) for a truncated
+// result, e.g. temporal `lastN` or a broker-side page cap. Only 3xx/4xx/5xx are errors.
+function requestFull(url: string, tenant: string | undefined = TENANT): Promise<{ body: unknown; headers: Headers }> {
     log('GET %s', url);
     return fetch(url, { method: 'GET', headers: setHeaders(tenant) })
         .then((r) => parse(r).then((body) => ({ status: r.status, body, headers: r.headers })))
         .then((data) => {
-            if (data.status !== expected) {
+            if (data.status < 200 || data.status >= 300) {
                 const body = (data.body || {}) as Record<string, unknown>;
                 const error: CauseError = new Error(
                     (body.title as string) ||
@@ -142,8 +140,8 @@ function requestFull(
         });
 }
 
-function request(url: string, expected: number, tenant: string | undefined = TENANT): Promise<unknown> {
-    return requestFull(url, expected, tenant).then((d) => d.body);
+function request(url: string, tenant: string | undefined = TENANT): Promise<unknown> {
+    return requestFull(url, tenant).then((d) => d.body);
 }
 
 // A page of GET /entities results plus the metadata a caller needs to decide
@@ -164,7 +162,7 @@ function listEntities(opts: Record<string, unknown>): Promise<EntityPage> {
     const limit = Number(opts.limit) || ENTITY_LIMIT;
     const offset = Math.max(0, Math.floor(Number(opts.offset) || 0));
     const query = toQueryString({ ...opts, limit, offset: offset || undefined, count: true });
-    return requestFull(`${CONTEXT_BROKER}/entities?${query}`, 200).then(({ body, headers }) => {
+    return requestFull(`${CONTEXT_BROKER}/entities?${query}`).then(({ body, headers }) => {
         const raw = headers.get('NGSILD-Results-Count');
         const total = raw !== null && raw.trim() !== '' && !Number.isNaN(Number(raw)) ? Number(raw) : null;
         const entities = Array.isArray(body) ? body : [];
@@ -174,7 +172,7 @@ function listEntities(opts: Record<string, unknown>): Promise<EntityPage> {
 
 // GET /entities/{entityId}
 function readEntity(entityId: string, opts: Record<string, unknown>): Promise<unknown> {
-    return request(`${CONTEXT_BROKER}/entities/${encodeURIComponent(entityId)}?${toQueryString(opts)}`, 200);
+    return request(`${CONTEXT_BROKER}/entities/${encodeURIComponent(entityId)}?${toQueryString(opts)}`);
 }
 
 // GET /temporal/entities/{entityId} — against the (optionally distinct) temporal
@@ -193,29 +191,28 @@ function readTemporalEntity(entityId: string, opts: Record<string, unknown>): Pr
     }
     return request(
         `${TEMPORAL_BROKER!}/temporal/entities/${encodeURIComponent(entityId)}?${toQueryString(rest)}`,
-        200,
         TEMPORAL_TENANT
     );
 }
 
 // GET /types  (details=false → EntityTypeList, details=true → EntityType[])
 function listTypes(details = true): Promise<unknown> {
-    return request(`${CONTEXT_BROKER}/types?${toQueryString({ details })}`, 200);
+    return request(`${CONTEXT_BROKER}/types?${toQueryString({ details })}`);
 }
 
 // GET /types/{type} → EntityTypeInfo
 function readType(type: string): Promise<unknown> {
-    return request(`${CONTEXT_BROKER}/types/${encodeURIComponent(type)}`, 200);
+    return request(`${CONTEXT_BROKER}/types/${encodeURIComponent(type)}`);
 }
 
 // GET /attributes  (details=false → AttributeList, details=true → Attribute[])
 function listAttributes(details = true): Promise<unknown> {
-    return request(`${CONTEXT_BROKER}/attributes?${toQueryString({ details })}`, 200);
+    return request(`${CONTEXT_BROKER}/attributes?${toQueryString({ details })}`);
 }
 
 // GET /attributes/{attrId} → Attribute
 function readAttribute(attrId: string): Promise<unknown> {
-    return request(`${CONTEXT_BROKER}/attributes/${encodeURIComponent(attrId)}`, 200);
+    return request(`${CONTEXT_BROKER}/attributes/${encodeURIComponent(attrId)}`);
 }
 
 export type { EntityPage };

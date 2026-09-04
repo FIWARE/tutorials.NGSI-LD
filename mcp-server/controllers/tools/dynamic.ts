@@ -107,21 +107,31 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema): number {
                 timerel: z
                     .enum(['before', 'after', 'between'])
                     .optional()
-                    .describe('Temporal relationship (default "after").'),
-                timeAt: z.string().describe('ISO8601 anchor timestamp, e.g. "2026-08-01T00:00:00Z".'),
-                endTimeAt: z.string().optional().describe('ISO8601 end timestamp; required when timerel is "between".')
+                    .describe('Temporal relationship; requires timeAt. Omit both for the full available history.'),
+                timeAt: z
+                    .string()
+                    .optional()
+                    .describe('ISO8601 anchor timestamp, e.g. "2026-08-01T00:00:00Z". Required when timerel is set.'),
+                endTimeAt: z.string().optional().describe('ISO8601 end timestamp; required when timerel is "between".'),
+                lastN: z.number().optional().describe('Return only the most recent N instances per attribute.')
             }),
-            execute: async ({ id, pick, timerel, timeAt, endTimeAt }) => {
+            execute: async ({ id, pick, timerel, timeAt, endTimeAt, lastN }) => {
                 try {
-                    const rel = timerel || 'after';
-                    if (rel === 'between' && !endTimeAt) {
+                    if (timerel && !timeAt) {
+                        return JSON.stringify({ error: 'timeAt is required when timerel is set.' });
+                    }
+                    if (timeAt && !timerel) {
+                        return JSON.stringify({ error: 'timerel is required when timeAt is set.' });
+                    }
+                    if (timerel === 'between' && !endTimeAt) {
                         return JSON.stringify({ error: 'endTimeAt is required when timerel is "between".' });
                     }
                     const body = await readTemporalEntity(id, {
                         pick,
-                        timerel: rel,
+                        timerel,
                         timeAt,
                         endTimeAt,
+                        lastN,
                         options: 'temporalValues'
                     });
                     return ok(validateOne(stripContext(body), schema.temporalValidator));
