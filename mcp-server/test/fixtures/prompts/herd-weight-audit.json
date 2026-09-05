@@ -1,0 +1,17 @@
+{
+  "name": "herd-weight-audit",
+  "types": ["Animal"],
+  "description": "Compare every animal's current weight snapshot against its own temporal history to catch stale or anomalous readings",
+  "arguments": {
+    "species": "Optional filter, e.g. dairy cattle, pig"
+  },
+  "tools": ["query_{{type}}", "get_{{type}}_history"],
+  "pick": ["name", "species", "weight"],
+  "trendCheck": ["weight"],
+  "rules": [
+    "current weight snapshot must equal the latest history point; otherwise flag as stale",
+    "flag if weight declined more than 10 percent over the trailing 6 months",
+    "flag if a single-month change exceeds twice the animal's own trailing 3-month average pace"
+  ],
+  "template": "Call {{tools}} for every entity matching species={{species}}, picking {{pick}}. Compare {{trendCheck}} current value against its own history, from the same tool list, for the same attribute. Apply rules: {{rules}}. Report entity id, name, and the specific values and dates for every rule violation."
+}

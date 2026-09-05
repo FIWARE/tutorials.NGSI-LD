@@ -2,10 +2,11 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
     test: {
-        // schemas/ is a runtime volume mount and is empty in the repo; the schema-pipeline
-        // unit tests run against dedicated fixtures instead.
+        // schemas/ and prompts/ are runtime volume mounts and are empty in the repo; the
+        // loader unit tests run against dedicated fixtures instead.
         env: {
-            SCHEMA_DIR: './test/fixtures/schemas'
+            SCHEMA_DIR: './test/fixtures/schemas',
+            PROMPTS_DIR: './test/fixtures/prompts'
         }
     }
 });

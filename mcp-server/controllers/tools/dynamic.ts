@@ -8,14 +8,17 @@ import { ENTITY_LIMIT, TEMPORAL_BROKER, isQueriableType, isReadableType } from '
 import type { LoadedSchema } from '../../lib/schema';
 import { ok, fail, stripContext, clampLimit, validateList, validateOne, okPage } from './util';
 
-// Returns the number of typed tools registered for this schema.
-export function registerDynamic(server: FastMCP, schema: LoadedSchema): number {
+// Returns the number of typed tools registered for this schema. `exposed` collects
+// every registered tool name so controllers/prompts/dynamic.ts can tell which
+// typed tools actually exist when resolving a prompt's {{tools}} placeholder.
+export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: Set<string>): number {
     const stem = schema.typeName.toLowerCase();
     let count = 0;
 
     // query_<type> — current state. Gated on QUERIABLE_TYPES.
     if (isQueriableType(schema.typeName)) {
         count++;
+        exposed.add(`query_${stem}`);
         server.addTool({
             name: `query_${stem}`,
             description:
@@ -64,6 +67,7 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema): number {
     // get_<type> — single entity. Gated on READABLE_TYPES.
     if (isReadableType(schema.typeName)) {
         count++;
+        exposed.add(`get_${stem}`);
         server.addTool({
             name: `get_${stem}`,
             description:
@@ -93,6 +97,7 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema): number {
     // get_<type>_history — temporal trend. Gated on READABLE_TYPES and a configured temporal broker.
     if (isReadableType(schema.typeName) && TEMPORAL_BROKER) {
         count++;
+        exposed.add(`get_${stem}_history`);
         server.addTool({
             name: `get_${stem}_history`,
             description:

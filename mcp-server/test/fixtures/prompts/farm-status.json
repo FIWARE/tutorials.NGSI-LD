@@ -1,0 +1,22 @@
+{
+  "name": "farm-status",
+  "types": ["AgriFarm", "AgriParcel", "Animal", "Building", "WeatherObserved"],
+  "description": "Give a snapshot of overall farm status: crops, livestock, buildings, and weather",
+  "arguments": {
+    "farmId": "Optional AgriFarm URN to scope the report; omit for all farms"
+  },
+  "tools": ["query_{{type}}"],
+  "pick": {
+    "AgriParcel": ["name", "cropType", "cropStatus"],
+    "Animal": ["name", "species", "healthCondition", "reproductiveCondition", "locatedAt"],
+    "Building": ["name", "category", "containedInPlace"],
+    "WeatherObserved": ["temperature", "windSpeed", "precipitation", "atmosphericPressure"]
+  },
+  "rollups": [
+    "count animals by species and by healthCondition",
+    "count animals not located in a pasture-type parcel",
+    "list parcels by cropStatus",
+    "summarize weather conditions across parcels: temperature, wind, precipitation, pressure trend"
+  ],
+  "template": "Give a farm status report for farmId={{farmId}}. Call {{tools}} for each type in {{types}}, picking the fields listed per type in {{pick}}. Compute: {{rollups}}. Summarize herd health, crop status, and weather in a few sentences, calling out anything abnormal."
+}

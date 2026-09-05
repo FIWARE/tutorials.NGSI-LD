@@ -7,3 +7,7 @@ dist/
 # entity schemas are supplied at runtime via a mounted volume — keep the dir, ignore contents
 /schemas/*
 !/schemas/.gitkeep
+
+# prompt specs are supplied at runtime via a mounted volume — keep the dir, ignore contents
+/prompts/*
+!/prompts/.gitkeep

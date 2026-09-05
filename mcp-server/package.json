@@ -10,7 +10,7 @@
         "node": ">=20"
     },
     "scripts": {
-        "build": "tsc && mkdir -p schemas dist/schemas dist/ngsi-schemas && cp -R schemas/. dist/schemas/ && cp -R ngsi-schemas/. dist/ngsi-schemas/",
+        "build": "tsc && mkdir -p schemas prompts dist/schemas dist/ngsi-schemas dist/prompts && cp -R schemas/. dist/schemas/ && cp -R ngsi-schemas/. dist/ngsi-schemas/ && cp -R prompts/. dist/prompts/",
         "start": "node ./dist/bin/www.js",
         "dev": "DEBUG=mcp:* ts-node bin/www.ts",
         "healthcheck": "node ./dist/bin/healthcheck.js",

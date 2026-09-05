@@ -81,6 +81,9 @@ ENV MCP_TRANSPORT=http
 # tools only. The NGSI-LD context-discovery response schemas are bundled in the image.
 ENV SCHEMA_DIR=/schemas
 VOLUME ["/schemas"]
+# Mount a directory of prompt.json specs here. Empty/absent => no prompts.
+ENV PROMPTS_DIR=/prompts
+VOLUME ["/prompts"]
 # Port used by the HTTP-stream MCP transport
 EXPOSE 3000
 CMD ["node", "/opt/mcp-server/dist/bin/www.js"]
@@ -129,6 +132,8 @@ ENV NODE_ENV=production
 ENV MCP_TRANSPORT=http
 ENV SCHEMA_DIR=/schemas
 VOLUME ["/schemas"]
+ENV PROMPTS_DIR=/prompts
+VOLUME ["/prompts"]
 # Port used by the HTTP-stream MCP transport
 EXPOSE 3000
 CMD ["./dist/bin/www.js"]

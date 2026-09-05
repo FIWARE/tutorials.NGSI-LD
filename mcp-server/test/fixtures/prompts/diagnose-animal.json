@@ -1,0 +1,37 @@
+{
+  "name": "diagnose-animal",
+  "types": ["Animal"],
+  "description": "Investigate a single Animal entity for anomalies",
+  "arguments": {
+    "id": "Entity URN, e.g. urn:ngsi-ld:Animal:cow001"
+  },
+  "tools": ["get_{{type}}", "get_{{type}}_history"],
+  "pick": [
+    "name",
+    "comment",
+    "locatedAt",
+    "healthCondition",
+    "reproductiveCondition",
+    "welfareCondition",
+    "phenologicalCondition"
+  ],
+  "relationships": ["calvedBy", "siredBy"],
+  "trendCheck": ["weight"],
+  "flagValues": {
+    "healthCondition": ["sick", "inTreatment"],
+    "welfareCondition": ["issue"],
+    "reproductiveCondition": ["noStatus"]
+  },
+  "exceptions": [
+    "reproductiveCondition of noStatus is not a flag when phenologicalCondition is grazingBaby or lactatingBaby"
+  ],
+  "contextChecks": ["locatedAt", "weight"],
+  "phrasing": {
+    "healthCondition": "non-healthy status",
+    "welfareCondition": "a welfare issue",
+    "reproductiveCondition": "non-'active' reproductive status",
+    "locatedAt": "barn placement while the rest of the herd is on pasture",
+    "weight": "weight deviating from the species growth curve"
+  },
+  "template": "Investigate {{id}} (type {{type}}). Call {{tools}} picking {{pick}}. Cross-reference relationships: {{relationships}}. Flag anomalies: {{phrasing}}, applying exceptions: {{exceptions}}. Report findings and the most likely explanation."
+}

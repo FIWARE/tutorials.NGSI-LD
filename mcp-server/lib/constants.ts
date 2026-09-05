@@ -27,6 +27,10 @@ const COMMON_DIR = `${SCHEMA_DIR}/common`;
 const CORE_SCHEMA_DIR = `${__dirname}/../ngsi-schemas`;
 const VALIDATION = process.env.SCHEMA_VALIDATION || 'filter';
 
+// Directory of prompt.json specs, one flat folder — same mounted-volume pattern as
+// SCHEMA_DIR. Empty or absent is valid: the server then offers no prompts.
+const PROMPTS_DIR = process.env.PROMPTS_DIR || `${__dirname}/../prompts`;
+
 const ENTITY_LIMIT = Number(process.env.ENTITY_LIMIT || 100);
 
 // Which loaded schemas get typed tools generated. QUERIABLE_TYPES drives
@@ -64,6 +68,7 @@ export {
     SCHEMA_DIR,
     COMMON_DIR,
     CORE_SCHEMA_DIR,
+    PROMPTS_DIR,
     VALIDATION,
     ENTITY_LIMIT,
     isQueriableType,

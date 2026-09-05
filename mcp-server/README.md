@@ -24,6 +24,9 @@ response against a schema, and shapes the NGSI-LD payload into a token-efficient
     context cost is only worth paying for a small, stable set.
 *   **Context discovery**: `list_entity_types`, `get_entity_type`, `list_attributes` and `get_attribute` wrap the NGSI-LD
     `/types` and `/attributes` endpoints for run-time introspection.
+*   **Prompts** (opt-in): each `prompt.json` supplied at start up (see `PROMPTS_DIR`) becomes an MCP prompt whose
+    template names the tools this server instance actually exposes, falling back to the matching generic tool for any
+    type without a typed one.
 *   **Resources**: the dereferenced schema for each model is served at `ontology://<model>/<type>`, plus live
     `ngsi://types` and `ngsi://attributes` views of the broker.
 *   **`@context` injection**: the agent never sees or handles a context URI; the server adds the `Link` header and
@@ -70,6 +73,23 @@ stdio transport.
     Regardless of these lists, every loaded schema is served as an `ontology://<model>/<type>` resource and the generic
     tools handle retrieval; the typed tools add a per-type context cost that only pays off for a small, stable set.
 
+### Prompts
+
+-   `PROMPTS_DIR` - Directory of prompt `*.json` specs, one flat folder — same mounted-volume pattern as `SCHEMA_DIR`.
+    Default: `./prompts`. The Docker image sets `/prompts` and expects it to be a mounted volume. An empty or absent
+    directory is valid - the server then offers no prompts.
+
+    Each file becomes one MCP prompt. `name`, `description` and `template` are required; `arguments` maps each
+    argument name to the description shown to the caller (a description starting with "Optional" makes that argument
+    optional, everything else is required). `template` is plain text with `{{placeholder}}` tokens, filled in at call
+    time from, in order: the caller's own argument values; `{{type}}`, the prompt's `types` entry (or a comma-joined
+    list when there is more than one); `{{tools}}`, resolved from `tools` (patterns such as `"get_{{type}}"` or
+    `"query_entities_geo"`) — a `{{type}}` pattern is expanded once per entry in `types`, keeping the typed tool name
+    only if this server instance actually exposes it (i.e. the type is in `QUERIABLE_TYPES`/`READABLE_TYPES`), and
+    otherwise falling back to that pattern's generic tool (`query_entities`, `get_entity`, `get_entity_history`) when
+    that one is exposed; every other top-level field (`pick`, `relationships`, `rules`, …) is stringified as-is — an
+    array joins with `, `, an object (e.g. a per-type `pick`) renders as `key: value` pairs joined with `; `.
+
 ### Validation and Retrieval
 
 -   `SCHEMA_VALIDATION` - Policy for a broker payload that fails its schema: `filter` drops the offending entities and
@@ -105,12 +125,14 @@ npm test
 ```
 
 
-The image expects the Smart Data Models schemas as a mounted volume at `/schemas`:
+The image expects the Smart Data Models schemas as a mounted volume at `/schemas`, and optionally a directory of
+prompt specs at `/prompts`:
 
 ```console
 docker run --rm -p 3000:3000 \
   -e CONTEXT_BROKER=http://orion:1026/ngsi-ld/v1 \
   -v "$(pwd)/schemas:/schemas:ro" \
+  -v "$(pwd)/prompts:/prompts:ro" \
   fiware/tutorials.mcp-server
 ```
 
