@@ -144,6 +144,80 @@ function request(url: string, tenant: string | undefined = TENANT): Promise<unkn
     return requestFull(url, tenant).then((d) => d.body);
 }
 
+// POST / PATCH / DELETE against the context broker. NGSI-LD write endpoints answer
+// 201/204 with an empty body on success; anything outside 2xx becomes an Error
+// carrying the ProblemDetails payload on `.cause`.
+function mutate(
+    url: string,
+    method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',
+    body?: unknown,
+    tenant: string | undefined = TENANT
+): Promise<unknown> {
+    log('%s %s', method, url);
+    const headers = setHeaders(tenant);
+    const init: RequestInit = { method, headers };
+    if (body !== undefined) {
+        // The @context travels in the Link header (set by setHeaders), so the body
+        // is plain application/json — Orion-LD rejects a Link header alongside an
+        // application/ld+json body.
+        headers['Content-Type'] = 'application/json';
+        init.body = JSON.stringify(body);
+    }
+    return fetch(url, init)
+        .then((r) => parse(r).then((b) => ({ status: r.status, body: b })))
+        .then((data) => {
+            if (data.status < 200 || data.status >= 300) {
+                const b = (data.body || {}) as Record<string, unknown>;
+                const error: CauseError = new Error(
+                    (b.title as string) ||
+                        (b.detail as string) ||
+                        (typeof data.body === 'string' && data.body
+                            ? (data.body as string)
+                            : `NGSI-LD error ${data.status}`)
+                );
+                error.cause = data.body;
+                throw error;
+            }
+            return data.body || {};
+        });
+}
+
+// POST /entities — create one entity (normalised NGSI-LD; @context via the Link header).
+function createEntity(entity: Record<string, unknown>): Promise<unknown> {
+    return mutate(`${CONTEXT_BROKER}/entities`, 'POST', entity);
+}
+
+// DELETE /entities/{entityId} — remove an entity and all of its attributes.
+function deleteEntity(entityId: string): Promise<unknown> {
+    return mutate(`${CONTEXT_BROKER}/entities/${encodeURIComponent(entityId)}`, 'DELETE');
+}
+
+// POST /entities/{entityId}/attrs — append attributes (payload keyed by name).
+// On Orion-LD this merges into an existing attribute rather than replacing it, so
+// it is only used here to create an attribute that does not yet exist.
+function appendAttribute(entityId: string, attr: string, node: unknown): Promise<unknown> {
+    return mutate(`${CONTEXT_BROKER}/entities/${encodeURIComponent(entityId)}/attrs`, 'POST', { [attr]: node });
+}
+
+// PUT /entities/{entityId}/attrs/{attrId} — full replacement of one attribute
+// (payload is the attribute representation without the name wrapper). Drops any
+// sub-attributes absent from the payload; 404 when the attribute does not exist.
+function replaceAttribute(entityId: string, attr: string, node: unknown): Promise<unknown> {
+    return mutate(
+        `${CONTEXT_BROKER}/entities/${encodeURIComponent(entityId)}/attrs/${encodeURIComponent(attr)}`,
+        'PUT',
+        node
+    );
+}
+
+// DELETE /entities/{entityId}/attrs/{attrId} — remove one attribute.
+function deleteAttribute(entityId: string, attr: string): Promise<unknown> {
+    return mutate(
+        `${CONTEXT_BROKER}/entities/${encodeURIComponent(entityId)}/attrs/${encodeURIComponent(attr)}`,
+        'DELETE'
+    );
+}
+
 // A page of GET /entities results plus the metadata a caller needs to decide
 // whether it has seen the whole result set. `total` is the broker's
 // NGSILD-Results-Count, or null when the broker withheld the header.
@@ -157,15 +231,27 @@ interface EntityPage {
 
 // GET /entities — always requests `count=true` so the response carries the total
 // match count; controllers/tools/util.okPage turns that into an explicit
-// "more data available" notice for the agent.
+// "more data available" notice for the agent. `metadataOnly` is the HEAD-style
+// "how many match" query: the single returned row is discarded, leaving just the
+// count and an empty array, while the EntityPage still reports the caller's own
+// limit so the pagination block stays meaningful.
 function listEntities(opts: Record<string, unknown>): Promise<EntityPage> {
+    const { metadataOnly, ...rest } = opts;
     const limit = Number(opts.limit) || ENTITY_LIMIT;
     const offset = Math.max(0, Math.floor(Number(opts.offset) || 0));
-    const query = toQueryString({ ...opts, limit, offset: offset || undefined, count: true });
+    // limit=0 is the natural count-only form, but Orion-LD returns an unreliable
+    // NGSILD-Results-Count for it (0 on some tenants); limit=1 always reports the
+    // true count, and the row it returns is dropped below.
+    const query = toQueryString({
+        ...rest,
+        limit: metadataOnly === true ? 1 : limit,
+        offset: offset || undefined,
+        count: true
+    });
     return requestFull(`${CONTEXT_BROKER}/entities?${query}`).then(({ body, headers }) => {
         const raw = headers.get('NGSILD-Results-Count');
         const total = raw !== null && raw.trim() !== '' && !Number.isNaN(Number(raw)) ? Number(raw) : null;
-        const entities = Array.isArray(body) ? body : [];
+        const entities = metadataOnly === true ? [] : Array.isArray(body) ? body : [];
         return { entities, total, limit, offset, returned: entities.length };
     });
 }
@@ -226,5 +312,10 @@ export {
     listTypes,
     readType,
     listAttributes,
-    readAttribute
+    readAttribute,
+    createEntity,
+    deleteEntity,
+    appendAttribute,
+    replaceAttribute,
+    deleteAttribute
 };

@@ -4,6 +4,7 @@
     "title": "Animal",
     "description": "A farm animal.",
     "modelTags": "",
+    "x-mobile": true,
     "type": "object",
     "allOf": [
         { "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/GSMA-Commons" },
@@ -15,19 +16,37 @@
                 "species": {
                     "type": "string",
                     "enum": ["dairy cattle", "beef cattle", "pig", "sheep"],
+                    "x-ngsi-type": "Property",
                     "description": "Species to which the animal belongs."
                 },
-                "legalId": { "type": "string", "description": "Legal ID of the animal." },
-                "sex": { "type": "string", "enum": ["female", "male"], "description": "Sex of the animal." },
-                "breed": { "type": "string", "description": "Breed of the animal." },
-                "weight": { "type": "number", "description": "Weight of the animal in kg." },
-                "birthdate": { "type": "string", "format": "date-time", "description": "Animal's birthdate." },
+                "legalId": { "type": "string", "x-ngsi-type": "Property", "description": "Legal ID of the animal." },
+                "sex": {
+                    "type": "string",
+                    "enum": ["female", "male"],
+                    "x-ngsi-type": "VocabProperty",
+                    "description": "Sex of the animal."
+                },
+                "breed": { "type": "string", "x-ngsi-type": "Property", "description": "Breed of the animal." },
+                "weight": {
+                    "type": "number",
+                    "x-ngsi-type": "Property",
+                    "x-unitCode": "KGM",
+                    "x-observedAt": true,
+                    "description": "Weight of the animal in kg."
+                },
+                "birthdate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "x-ngsi-type": "Property",
+                    "description": "Animal's birthdate."
+                },
                 "ownedBy": {
                     "anyOf": [
                         { "type": "string", "minLength": 1, "maxLength": 256 },
                         { "type": "string", "format": "uri" }
                     ],
-                    "description": "The owner of the animal (relationship)."
+                    "x-ngsi-type": "Relationship",
+                    "description": "The owner of the animal."
                 }
             }
         }

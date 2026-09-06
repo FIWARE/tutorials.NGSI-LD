@@ -15,16 +15,31 @@ export function registerGetEntity(server: FastMCP): void {
             pick: z
                 .string()
                 .optional()
-                .describe('Comma-separated attributes to return, e.g. "location,containedInPlace". Always set this.')
+                .describe('Comma-separated attributes to return, e.g. "location,containedInPlace". Always set this.'),
+            metadataOnly: z
+                .boolean()
+                .optional()
+                .describe(
+                    'Existence check only — return `{ exists, id, type }` with no attributes. A missing entity yields `{ exists: false }`, not an error.'
+                )
         }),
-        execute: async ({ id, pick }) => {
+        execute: async ({ id, pick, metadataOnly }) => {
             try {
+                if (metadataOnly) {
+                    const head = stripContext(await readEntity(id, { pick: 'id', options: 'concise' })) as Record<
+                        string,
+                        unknown
+                    >;
+                    return ok({ exists: true, id: head.id ?? id, type: head.type });
+                }
                 const body = await readEntity(id, { pick, options: 'concise' });
                 return ok(stripContext(body));
             } catch (err) {
                 const e = err as Error;
                 if (/\b404\b|not found/i.test(e.message)) {
-                    return JSON.stringify({ error: `No entity found with id ${id}` });
+                    return metadataOnly
+                        ? ok({ exists: false, id })
+                        : JSON.stringify({ error: `No entity found with id ${id}` });
                 }
                 return fail(err);
             }

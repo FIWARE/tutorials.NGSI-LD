@@ -27,9 +27,15 @@ export function registerQueryEntities(server: FastMCP): void {
                 .optional()
                 .describe(
                     'Row offset for pagination; pass the `nextOffset` from a previous response to fetch the next page.'
+                ),
+            metadataOnly: z
+                .boolean()
+                .optional()
+                .describe(
+                    'Return only the `pagination` block (total match count etc.) with an empty `entities` array — use to count matches without transferring any bodies.'
                 )
         }),
-        execute: async ({ type, q, pick, limit, offset }) => {
+        execute: async ({ type, q, pick, limit, offset, metadataOnly }) => {
             try {
                 const page = await listEntities({
                     type,
@@ -37,9 +43,10 @@ export function registerQueryEntities(server: FastMCP): void {
                     pick,
                     limit: clampLimit(limit),
                     offset,
+                    metadataOnly,
                     options: 'concise'
                 });
-                return okPage(page.entities.map(stripContext), page, 'query_entities', type);
+                return okPage(page.entities.map(stripContext), page, 'query_entities', type, metadataOnly === true);
             } catch (err) {
                 return fail(err);
             }

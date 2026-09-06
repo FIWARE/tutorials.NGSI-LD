@@ -16,12 +16,30 @@ response against a schema, and shapes the NGSI-LD payload into a token-efficient
 
 *   **Generic tools**: `query_entities`, `get_entity` and `query_entities_geo` cover any entity type with an NGSI-LD `q`
     filter, attribute projection (`pick`) and the broker geo engine (`georel` / `geometry` / `coordinates`);
-    `get_entity_history` adds the temporal interface (`timerel` / `timeAt`) when `TEMPORAL_BROKER` is set.
+    `get_entity_history` adds the temporal interface (`timerel` / `timeAt`) when `TEMPORAL_BROKER` is set. An optional
+    `metadataOnly` flag turns any read into a headers-only probe: on `query_*` it sends `limit=0` and returns just the
+    `pagination` block (`total`, `hasMore`, `nextOffset`, …) with an empty `entities` array; on `get_entity` /
+    `get_<type>` it is an existence check, returning `{ exists, id, type }` (a missing entity yields `{ exists: false }`
+    rather than an error).
 *   **Schema-driven tools** (opt-in per type): for each Smart Data Models `schema.json` supplied at start up, a typed
     `query_<type>` is generated when the type is listed in `QUERIABLE_TYPES` and a `get_<type>` (plus `get_<type>_history`
     when `TEMPORAL_BROKER` is set) when it is listed in `READABLE_TYPES`. Both lists default to empty — the ontology
     resources below document every type regardless and the generic tools cover retrieval, so the typed tools' per-type
     context cost is only worth paying for a small, stable set.
+*   **Write tools** (off unless `WRITABLE=true`): with the master `WRITABLE` interlock set, an unset `WRITABLE_TYPES`
+    gives a generic `create_entity` / `update_entity_attribute` pair (any type), and a set `WRITABLE_TYPES` swaps that for
+    typed `create_<type>` / `update_<type>_attribute` stubs. `DELETABLE_TYPES` does the same independently for
+    `delete_entity` / `delete_entity_attribute` vs typed `delete_<type>` / `delete_<type>`. `ENTITY_DEFAULTS` supplies
+    per-type default attribute values for creates. The agent supplies attributes in simplified
+    `name: value` form; the server encodes the NGSI-LD attribute type (any of the eight — `Property`, `GeoProperty`,
+    `Relationship`, `VocabProperty`, `LanguageProperty`, `ListProperty`, `ListRelationship`, `JsonProperty`), `unitCode`
+    and `observedAt` from the schema's `x-ngsi-type` / `x-unitCode` / `x-observedAt` keywords (a `location` GeoProperty is
+    timestamped only when the schema carries `x-mobile: true`; a bare `[lng, lat]` array is expanded to a GeoJSON Point).
+    `create_<type>` enforces the schema's required attributes. `update_<type>_attribute` replaces one attribute wholesale
+    (`PUT /entities/{id}/attrs/{attrId}` — sub-attributes omitted from the call are dropped; it is not a partial merge),
+    falling back to `POST /entities/{id}/attrs` to create the attribute when it is absent; it accepts `unitCode` /
+    `observedAt` overrides. When `PROVIDED_BY` is set its URN is attached as a `providedBy` link to every measurement the
+    write tools assert.
 *   **Context discovery**: `list_entity_types`, `get_entity_type`, `list_attributes` and `get_attribute` wrap the NGSI-LD
     `/types` and `/attributes` endpoints for run-time introspection.
 *   **Prompts** (opt-in): each `prompt.json` supplied at start up (see `PROMPTS_DIR`) becomes an MCP prompt whose
@@ -29,8 +47,9 @@ response against a schema, and shapes the NGSI-LD payload into a token-efficient
     type without a typed one.
 *   **Resources**: the dereferenced schema for each model is served at `ontology://<model>/<type>`, plus live
     `ngsi://types` and `ngsi://attributes` views of the broker.
-*   **`@context` injection**: the agent never sees or handles a context URI; the server adds the `Link` header and
-    requests `application/ld+json` on every call.
+*   **`@context` injection**: the agent never sees or handles a context URI; the server adds the `Link` header on every
+    call (reads accept `application/ld+json`; writes send a plain `application/json` body so the `Link` header carries
+    the context).
 
 To run the application in debug mode add `DEBUG=mcp:*`. All logging is written to `stderr` so it is safe alongside the
 stdio transport.
@@ -72,6 +91,28 @@ stdio transport.
     (and `get_<type>_history` when `TEMPORAL_BROKER` is set); `*` for all loaded types, unset for none. Default: unset.
     Regardless of these lists, every loaded schema is served as an `ontology://<model>/<type>` resource and the generic
     tools handle retrieval; the typed tools add a per-type context cost that only pays off for a small, stable set.
+
+### Writes
+
+-   `WRITABLE` - Master interlock. Unless set to exactly `true` the server is **read-only**: no `create_`, `update_` or
+    `delete_` tool is registered regardless of the `*_TYPES` lists below. This one variable is the audit point for
+    "can this server mutate the broker?". Default: **unset (read-only)** — least privilege.
+-   `WRITABLE_TYPES` - Only consulted when `WRITABLE=true`. **Unset** ⇒ one generic `create_entity` /
+    `update_entity_attribute` pair covering any type (schema-encoded when a schema is loaded for the given `type`,
+    inferred otherwise: a `urn:ngsi-ld:` value is a Relationship, GeoJSON a GeoProperty, else a Property). **Set** to a
+    comma-separated list (or `*`) ⇒ a typed `create_<type>` / `update_<type>_attribute` per listed type **and no generic
+    tool**. Batch operations, subscriptions and context-source registrations are out of scope.
+-   `DELETABLE_TYPES` - Only consulted when `WRITABLE=true`, decided independently of `WRITABLE_TYPES`. **Unset** ⇒
+    generic `delete_entity` / `delete_entity_attribute`. **Set** ⇒ typed `delete_<type>` / `delete_<type>_attribute` per
+    listed type and no generic tool. Default: **unset**.
+-   `ENTITY_DEFAULTS` - JSON object `{ "TypeName": { "attr": value, … } }`. On `create_<type>` any listed attribute the
+    caller omits is filled in from here; caller-supplied values always win, and an explicit `null` suppresses a default.
+    The values are simplified form and go through the same schema encoding as any other attribute. Parsing is strict -
+    malformed JSON stops the server starting - and the server **refuses to start** if a key names a type with no loaded
+    schema. Default: unset.
+-   `PROVIDED_BY` - URN attached as a `providedBy` relationship to every measurement the write tools assert (the
+    attributes the schema marks `x-observedAt`, plus a moving `location`). Unset means no provenance link is added.
+    Deployment config, not an agent concern.
 
 ### Prompts
 

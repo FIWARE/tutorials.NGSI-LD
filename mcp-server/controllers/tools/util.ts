@@ -14,6 +14,22 @@ export function fail(err: unknown): string {
     return JSON.stringify({ error: e.message, detail: e.cause?.detail });
 }
 
+// Entity members, not writable/removable data attributes.
+export const RESERVED_ATTRS = new Set(['id', 'type', '@context']);
+
+// NGSI-LD answers a missing entity or attribute with 404: the ProblemDetails body
+// carries `status`, proxied/older paths only leave it in the message.
+export function is404(err: unknown): boolean {
+    const e = err as { cause?: { status?: number }; message?: string };
+    return e?.cause?.status === 404 || /\b404\b|not found/i.test(e?.message || '');
+}
+
+export function notFound(type: string, id: string, attr?: string): string {
+    return JSON.stringify({
+        error: attr ? `No ${type} "${id}", or it has no attribute "${attr}"` : `No ${type} found with id ${id}`
+    });
+}
+
 export function stripContext<T>(payload: T): T {
     if (Array.isArray(payload)) {
         return payload.map((p) => stripContext(p)) as unknown as T;
@@ -41,13 +57,21 @@ export function clampLimit(limit?: number): number {
 //
 // `page.returned` is the broker's pre-validation row count; `entities` is the
 // payload actually emitted (which SCHEMA_VALIDATION=filter may have shrunk).
-export function okPage(entities: unknown[], page: EntityPage, toolName: string, typeLabel: string): string {
+export function okPage(
+    entities: unknown[],
+    page: EntityPage,
+    toolName: string,
+    typeLabel: string,
+    metadataOnly = false
+): string {
     const { total, limit, offset, returned } = page;
     const nextOffset = offset + limit;
     const hasMore = total === null ? returned >= limit : total > offset + returned;
 
     const out: Record<string, unknown> = {};
-    if (hasMore) {
+    // A metadata-only call asked for no bodies on purpose — the "you didn't get
+    // everything, paginate" notice would be noise.
+    if (hasMore && !metadataOnly) {
         out._notice =
             (total === null
                 ? `MORE DATA LIKELY: ${returned} ${typeLabel} entities returned and the page was full`

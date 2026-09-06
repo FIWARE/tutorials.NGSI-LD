@@ -38,4 +38,13 @@ describe('okPage', () => {
         const out = JSON.parse(okPage([], page({ total: 500, offset: 100, returned: 100 }), 'query_animal', 'Animal'));
         expect(out.pagination).toMatchObject({ offset: 100, hasMore: true, nextOffset: 200 });
     });
+
+    it('metadataOnly returns pagination with an empty list and no notice', () => {
+        const out = JSON.parse(
+            okPage([], page({ total: 1342, returned: 0, limit: 100, offset: 0 }), 'query_animal', 'Animal', true)
+        );
+        expect(out.entities).toEqual([]);
+        expect(out._notice).toBeUndefined();
+        expect(out.pagination).toMatchObject({ total: 1342, limit: 100, hasMore: true, nextOffset: 100 });
+    });
 });

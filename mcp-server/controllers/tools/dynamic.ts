@@ -36,11 +36,17 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
                     .optional()
                     .describe(
                         'Row offset for pagination; pass the `nextOffset` from a previous response to fetch the next page.'
+                    ),
+                metadataOnly: z
+                    .boolean()
+                    .optional()
+                    .describe(
+                        'Return only the `pagination` block (total match count etc.) with an empty `entities` array — use to count matches without transferring any bodies.'
                     )
             }),
             execute: async (args: Record<string, unknown>) => {
                 try {
-                    const { q, pick, limit, offset, ...filters } = args;
+                    const { q, pick, limit, offset, metadataOnly, ...filters } = args;
                     const page = await listEntities({
                         type: schema.typeName,
                         filters,
@@ -48,6 +54,7 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
                         pick,
                         limit: clampLimit(limit as number | undefined),
                         offset: offset as number | undefined,
+                        metadataOnly,
                         options: 'concise'
                     });
                     const entities = page.entities.map((e) => stripContext(e));
@@ -56,7 +63,7 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
                     if ('error' in outcome) {
                         return ok(outcome);
                     }
-                    return okPage(outcome.data, page, `query_${stem}`, schema.typeName);
+                    return okPage(outcome.data, page, `query_${stem}`, schema.typeName, metadataOnly === true);
                 } catch (err) {
                     return fail(err);
                 }
@@ -76,17 +83,32 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
                 `Narrow with \`pick\`. Full schema: \`${schema.ontologyUri}\`.`,
             parameters: z.object({
                 id: z.string().describe(`URN of the ${schema.typeName}, e.g. "urn:ngsi-ld:${schema.typeName}:001".`),
-                pick: z.string().optional().describe('Comma-separated attributes to return. Always set this.')
+                pick: z.string().optional().describe('Comma-separated attributes to return. Always set this.'),
+                metadataOnly: z
+                    .boolean()
+                    .optional()
+                    .describe(
+                        'Existence check only — return `{ exists, id, type }` with no attributes. A missing entity yields `{ exists: false }`, not an error.'
+                    )
             }),
-            execute: async ({ id, pick }) => {
+            execute: async ({ id, pick, metadataOnly }) => {
                 try {
+                    if (metadataOnly) {
+                        const head = stripContext(await readEntity(id, { pick: 'id', options: 'concise' })) as Record<
+                            string,
+                            unknown
+                        >;
+                        return ok({ exists: true, id: head.id ?? id, type: head.type });
+                    }
                     const body = await readEntity(id, { pick, options: 'concise' });
                     const validator = pick ? schema.entityValidatorLoose : schema.entityValidator;
                     return ok(validateOne(stripContext(body), validator));
                 } catch (err) {
                     const e = err as Error;
                     if (/\b404\b|not found/i.test(e.message)) {
-                        return JSON.stringify({ error: `No ${schema.typeName} found with id ${id}` });
+                        return metadataOnly
+                            ? ok({ exists: false, id })
+                            : JSON.stringify({ error: `No ${schema.typeName} found with id ${id}` });
                     }
                     return fail(err);
                 }

@@ -24,8 +24,42 @@ export interface LoadedSchema {
     temporalValidator: z.ZodTypeAny; // single temporalValues entity, .passthrough()
     required: string[];
     lowTrust: boolean;
+    writeAttrs: Record<string, WriteAttr>; // per-attribute NGSI-LD encoding hints for the write tools
+    mobile: boolean; // x-mobile: the entity's `location` is a moving measurement
     raw: JsonSchemaNode; // dereferenced + flattened
     source: JsonSchemaNode; // as read from disk (served by the ontology resource)
+}
+
+// The eight NGSI-LD attribute types (ETSI GS CIM 009 §4.5.2), each with its own
+// value-bearing member — see VALUE_KEY in lib/normalize.ts.
+export type NgsiAttrType =
+    | 'Property'
+    | 'GeoProperty'
+    | 'Relationship'
+    | 'VocabProperty'
+    | 'LanguageProperty'
+    | 'ListProperty'
+    | 'ListRelationship'
+    | 'JsonProperty';
+
+export const NGSI_ATTR_TYPES: ReadonlySet<NgsiAttrType> = new Set([
+    'Property',
+    'GeoProperty',
+    'Relationship',
+    'VocabProperty',
+    'LanguageProperty',
+    'ListProperty',
+    'ListRelationship',
+    'JsonProperty'
+]);
+
+// How a write tool must encode one attribute into normalised NGSI-LD, derived
+// from x-ngsi-type / x-unitCode / x-observedAt / enum on the flattened schema.
+export interface WriteAttr {
+    ngsiType: NgsiAttrType;
+    unitCode?: string;
+    observedAt: boolean;
+    enumValues?: string[];
 }
 
 // --- $ref resolution -------------------------------------------------------
@@ -152,6 +186,27 @@ export interface Shapes {
     temporalValidator: z.ZodTypeAny;
     required: string[];
     lowTrust: boolean;
+    writeAttrs: Record<string, WriteAttr>;
+    mobile: boolean;
+}
+
+// x-ngsi-type wins; fall back to the SDM "<Kind>. ..." description prefix; else Property.
+function ngsiKind(prop: JsonSchemaNode): NgsiAttrType {
+    const xt = prop['x-ngsi-type'];
+    if (typeof xt === 'string' && NGSI_ATTR_TYPES.has(xt as NgsiAttrType)) {
+        return xt as NgsiAttrType;
+    }
+    // Longest alternatives first so "ListRelationship" is not shadowed by "Relationship".
+    const m = (prop.description || '').match(
+        /^\s*(GeoProperty|LanguageProperty|ListRelationship|ListProperty|VocabProperty|JsonProperty|Relationship)\b/i
+    );
+    if (m) {
+        const found = m[1].toLowerCase();
+        for (const t of NGSI_ATTR_TYPES) {
+            if (t.toLowerCase() === found) return t;
+        }
+    }
+    return 'Property';
 }
 
 export function buildShapes(source: JsonSchemaNode, deref: JsonSchemaNode): Shapes {
@@ -171,6 +226,7 @@ export function buildShapes(source: JsonSchemaNode, deref: JsonSchemaNode): Shap
     const inputShape: z.ZodRawShape = {};
     const entityShape: z.ZodRawShape = {};
     const temporalShape: z.ZodRawShape = {};
+    const writeAttrs: Record<string, WriteAttr> = {};
 
     for (const [key, prop] of Object.entries(properties)) {
         if (prop['x-ngsi-type'] === 'Command') {
@@ -182,6 +238,16 @@ export function buildShapes(source: JsonSchemaNode, deref: JsonSchemaNode): Shap
             temporalShape[key] = baseZod(prop);
             continue;
         }
+
+        writeAttrs[key] = {
+            ngsiType: ngsiKind(prop),
+            unitCode: typeof prop['x-unitCode'] === 'string' ? (prop['x-unitCode'] as string) : undefined,
+            observedAt: prop['x-observedAt'] === true,
+            enumValues:
+                Array.isArray(prop.enum) && prop.enum.every((e) => typeof e === 'string')
+                    ? (prop.enum as string[])
+                    : undefined
+        };
 
         const base = baseZod(prop);
         let out = conciseValidator(base);
@@ -216,7 +282,9 @@ export function buildShapes(source: JsonSchemaNode, deref: JsonSchemaNode): Shap
         entityValidatorLoose: entityObject.partial().passthrough(),
         temporalValidator: z.object(temporalShape).passthrough(),
         required,
-        lowTrust
+        lowTrust,
+        writeAttrs,
+        mobile: source['x-mobile'] === true
     };
 }
 
@@ -277,6 +345,8 @@ export async function loadOne(file: string): Promise<LoadedSchema> {
         temporalValidator: shapes.temporalValidator,
         required: shapes.required,
         lowTrust: shapes.lowTrust,
+        writeAttrs: shapes.writeAttrs,
+        mobile: shapes.mobile,
         raw: deref,
         source
     };

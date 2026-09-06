@@ -9,10 +9,18 @@ import { registerGetEntity } from './controllers/tools/get-entity';
 import { registerGetEntityHistory } from './controllers/tools/get-entity-history';
 import { registerGeoQuery } from './controllers/tools/geo-query';
 import { registerDynamic } from './controllers/tools/dynamic';
+import { registerWrite, registerGenericWrite } from './controllers/tools/write';
+import { registerDelete, registerGenericDelete } from './controllers/tools/delete';
 import { registerPrompts } from './controllers/prompts/dynamic';
 import { registerOntology } from './controllers/resources/ontology';
 import { registerContextDiscoveryResources } from './controllers/resources/context-discovery';
-import { TEMPORAL_BROKER } from './lib/constants';
+import {
+    TEMPORAL_BROKER,
+    WRITABLE,
+    WRITABLE_TYPES_LISTED,
+    DELETABLE_TYPES_LISTED,
+    ENTITY_DEFAULTS
+} from './lib/constants';
 
 const log = debug('mcp:server');
 
@@ -42,9 +50,31 @@ export async function buildServer(): Promise<FastMCP> {
     // Ontology resources document every loaded type regardless; typed per-type
     // tools are generated only for the types named in QUERIABLE_TYPES / READABLE_TYPES.
     const schemas = await loadSchemas();
+
+    // Fail fast: a default configured for a type we have no schema for is a config
+    // error, not something to silently ignore.
+    const loadedTypes = new Set(schemas.map((s) => s.typeName.toLowerCase()));
+    for (const type of ENTITY_DEFAULTS.keys()) {
+        if (!loadedTypes.has(type.toLowerCase())) {
+            throw new Error(`ENTITY_DEFAULTS names unknown type "${type}" — no schema is loaded for it`);
+        }
+    }
+
     let typedTools = 0;
+    let writeTools = 0;
     for (const schema of schemas) {
         typedTools += registerDynamic(server, schema, exposed);
+        // No-ops unless WRITABLE=true AND the type is named in WRITABLE_TYPES / DELETABLE_TYPES.
+        writeTools += registerWrite(server, schema, exposed);
+        writeTools += registerDelete(server, schema, exposed);
+    }
+    // With WRITABLE=true and no list, the generic tool stands in for the typed stubs
+    // (write and delete decided independently).
+    if (WRITABLE && !WRITABLE_TYPES_LISTED) {
+        writeTools += registerGenericWrite(server, schemas, exposed);
+    }
+    if (WRITABLE && !DELETABLE_TYPES_LISTED) {
+        writeTools += registerGenericDelete(server, exposed);
     }
     registerOntology(server, schemas);
     registerContextDiscoveryResources(server);
@@ -54,10 +84,12 @@ export async function buildServer(): Promise<FastMCP> {
     const promptCount = registerPrompts(server, prompts, exposed);
 
     log(
-        '%d generic tools + %d typed tools (temporal %s) + %d ontology resources + %d prompts',
+        '%d generic tools + %d typed tools + %d write/delete tools (temporal %s, writable %s) + %d ontology resources + %d prompts',
         TEMPORAL_BROKER ? 7 : 6,
         typedTools,
+        writeTools,
         TEMPORAL_BROKER ? 'on' : 'off',
+        WRITABLE ? 'on' : 'off',
         schemas.length,
         promptCount
     );

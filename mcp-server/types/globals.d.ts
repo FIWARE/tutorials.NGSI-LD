@@ -3,8 +3,6 @@ export interface DerivedFrom {
     method?: string;
     parent?: string;
     instances?: number;
-    sampleCount?: number;
-    typeUri?: string;
 }
 
 export interface JsonSchemaNode {
@@ -23,6 +21,9 @@ export interface JsonSchemaNode {
     oneOf?: JsonSchemaNode[];
     'x-ai-instruction'?: string;
     'x-ngsi-type'?: string;
+    'x-unitCode'?: string;
+    'x-observedAt'?: boolean;
+    'x-mobile'?: boolean;
     'x-derivedFrom'?: DerivedFrom;
     [key: string]: unknown;
 }
