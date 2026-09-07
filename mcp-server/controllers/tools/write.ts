@@ -86,7 +86,8 @@ export function registerWrite(server: FastMCP, schema: LoadedSchema, exposed: Se
                       .map((k) => `${k}=${JSON.stringify(defaults[k])}`)
                       .join(', ')}. `
                 : '') +
-            `Full schema: \`${schema.ontologyUri}\`.`,
+            `Full schema: \`${schema.ontologyUri}\`. For an attribute not in the schema, use the canonical spelling ` +
+            'from `ontology://attributes`.',
         parameters: z.object({
             id: z.string().describe(`URN for the new entity, e.g. "urn:ngsi-ld:${t}:001".`),
             attributes: z
@@ -113,10 +114,11 @@ export function registerWrite(server: FastMCP, schema: LoadedSchema, exposed: Se
     server.addTool({
         name: `update_${stem}_attribute`,
         description:
-            `[WRITE] Update one attribute on an existing ${t}: the value — and any sub-attributes you pass — are merged ` +
-            `into it; sub-attributes you do not mention are kept. Creates the attribute if it is absent. \`value\` is ` +
-            `simplified form (a target URN for a relationship). unitCode and observedAt come from the schema — pass them ` +
-            `only to override. Full schema: \`${schema.ontologyUri}\`.`,
+            `[WRITE] Update one attribute on an existing ${t}, or add a new one — the value (and any sub-attributes you ` +
+            `pass) are merged in; sub-attributes you do not mention are kept; the attribute is created if absent. ` +
+            `\`value\` is simplified form (a target URN for a relationship). unitCode and observedAt come from the schema ` +
+            `— pass them only to override. Schema: \`${schema.ontologyUri}\`; for an \`attr\` not in it, use the ` +
+            'canonical spelling from `ontology://attributes`.',
         parameters: z.object({
             id: z.string().describe(`URN of the ${t}.`),
             attr: z.string().describe('Attribute name, e.g. "weight" or "locatedAt".'),
@@ -155,36 +157,51 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
         return 0;
     }
     const byType = new Map(schemas.map((s) => [s.typeName.toLowerCase(), s]));
+    const typeNames = schemas.map((s) => s.typeName).sort();
+    // Creation is restricted to types with a loaded schema — no schema, no create.
+    const typeParam =
+        typeNames.length > 0
+            ? z.enum(typeNames as [string, ...string[]])
+            : z.string();
 
     exposed.add('create_entity');
     server.addTool({
         name: 'create_entity',
         description:
-            '[WRITE] Create a new NGSI-LD entity of any type. Pass attributes in simplified form (`name: value`). When a ' +
-            'schema is loaded for `type` the server encodes attribute types, units and observedAt from it and enforces ' +
-            'its required attributes; otherwise it infers (a `urn:ngsi-ld:` value is a Relationship, GeoJSON is a ' +
-            'GeoProperty, everything else a Property) — pass an already-typed node like `{ "object": "urn:…" }` to be ' +
-            'explicit. Prefer a typed `create_<type>` tool when one exists.',
+            '[WRITE] Create a new NGSI-LD entity. `type` must be one of the loaded data models — creation of an ' +
+            'unmodelled type is refused. Pass attributes in simplified form (`name: value`); the server encodes the ' +
+            'NGSI-LD attribute type, unitCode and observedAt from the schema and enforces its required attributes. A ' +
+            'relationship attribute takes the target entity URN; a GeoProperty takes GeoJSON (or a bare [lng, lat]). ' +
+            'Use the canonical attribute names from `ontology://attributes`. Prefer a typed `create_<type>` tool when one exists.',
         parameters: z.object({
             id: z.string().describe('URN for the new entity, e.g. "urn:ngsi-ld:Animal:001".'),
-            type: z.string().describe('Entity type, e.g. "Animal".'),
+            type: typeParam.describe('Entity type — must be a loaded data model.'),
             attributes: z.record(jsonValue).describe('Attribute name → value in simplified (or already-typed) form.')
         }),
         execute: async ({ id, type, attributes }) => {
             try {
-                const schema = byType.get(type.toLowerCase());
-                const attrs = { ...entityDefaultsFor(type), ...((attributes ?? {}) as Record<string, unknown>) };
-                if (schema) {
-                    const missing = schema.required
-                        .filter((r) => !RESERVED_ATTRS.has(r))
-                        .filter((r) => attrs[r] === undefined || attrs[r] === null);
-                    if (missing.length) {
-                        return JSON.stringify({ error: `Missing required attribute(s): ${missing.join(', ')}` });
-                    }
+                const schema = byType.get(String(type).toLowerCase());
+                if (!schema) {
+                    return JSON.stringify({
+                        error: `No data model loaded for type "${type}" — creation refused. Supported types: ${
+                            typeNames.join(', ') || '(none)'
+                        }.`
+                    });
                 }
-                const entity = { id, type, ...encodeAttrs(attrs, schema) };
+                const attrs = { ...entityDefaultsFor(schema.typeName), ...((attributes ?? {}) as Record<string, unknown>) };
+                const missing = schema.required
+                    .filter((r) => !RESERVED_ATTRS.has(r))
+                    .filter((r) => attrs[r] === undefined || attrs[r] === null);
+                if (missing.length) {
+                    return JSON.stringify({ error: `Missing required attribute(s): ${missing.join(', ')}` });
+                }
+                const entity = { id, type: schema.typeName, ...encodeAttrs(attrs, schema) };
                 await createEntity(entity);
-                return ok({ created: id, type, attributes: Object.keys(entity).filter((k) => !RESERVED_ATTRS.has(k)) });
+                return ok({
+                    created: id,
+                    type: schema.typeName,
+                    attributes: Object.keys(entity).filter((k) => !RESERVED_ATTRS.has(k))
+                });
             } catch (err) {
                 return fail(err);
             }
@@ -195,10 +212,11 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
     server.addTool({
         name: 'update_entity_attribute',
         description:
-            '[WRITE] Update one attribute on any existing entity: the supplied value — and any sub-attributes — are ' +
-            'merged in; sub-attributes you do not mention are kept. Creates the attribute if absent. Give `type` so the ' +
-            'server can apply the schema encoding; without it the value is inferred. Prefer a typed ' +
-            '`update_<type>_attribute` tool when one exists.',
+            '[WRITE] Update one attribute on any existing entity, or add a new one — the supplied value (and any ' +
+            'sub-attributes) are merged in; sub-attributes you do not mention are kept; the attribute is created if ' +
+            'absent. Give `type` so the server can apply the schema encoding; without it the value is inferred. Use the ' +
+            'canonical spelling of `attr` from `ontology://attributes`. Prefer a typed `update_<type>_attribute` tool ' +
+            'when one exists.',
         parameters: z.object({
             id: z.string().describe('URN of the entity.'),
             attr: z.string().describe('Attribute name.'),

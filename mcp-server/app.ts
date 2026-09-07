@@ -12,8 +12,9 @@ import { registerDynamic } from './controllers/tools/dynamic';
 import { registerWrite, registerGenericWrite } from './controllers/tools/write';
 import { registerDelete, registerGenericDelete } from './controllers/tools/delete';
 import { registerPrompts } from './controllers/prompts/dynamic';
-import { registerOntology } from './controllers/resources/ontology';
+import { registerOntology, registerAttributeVocabulary } from './controllers/resources/ontology';
 import { registerContextDiscoveryResources } from './controllers/resources/context-discovery';
+import { buildVocabulary } from './lib/vocabulary';
 import {
     TEMPORAL_BROKER,
     WRITABLE,
@@ -77,6 +78,7 @@ export async function buildServer(): Promise<FastMCP> {
         writeTools += registerGenericDelete(server, exposed);
     }
     registerOntology(server, schemas);
+    registerAttributeVocabulary(server, await buildVocabulary(schemas));
     registerContextDiscoveryResources(server);
 
     // Prompts are opt-in via PROMPTS_DIR, same mounted-volume pattern as schemas.

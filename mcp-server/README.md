@@ -46,8 +46,11 @@ response against a schema, and shapes the NGSI-LD payload into a token-efficient
 *   **Prompts** (opt-in): each `prompt.json` supplied at start up (see `PROMPTS_DIR`) becomes an MCP prompt whose
     template names the tools this server instance actually exposes, falling back to the matching generic tool for any
     type without a typed one.
-*   **Resources**: the dereferenced schema for each model is served at `ontology://<model>/<type>`, plus live
-    `ngsi://types` and `ngsi://attributes` views of the broker.
+*   **Resources**: the dereferenced schema for each model is served at `ontology://<model>/<type>`; `ontology://attributes`
+    is the canonical attribute-*name* list — `core` (the NGSI-LD core terms, each with a one-line meaning since they are
+    in no model) and `attributes` (one sorted list of every attribute name across the loaded models and the deployment
+    `@context`). Per-attribute detail (type, unit, enum) stays in `ontology://<model>/<type>`. Plus live `ngsi://types`
+    and `ngsi://attributes` views of the broker.
 *   **`@context` injection**: the agent never sees or handles a context URI; the server adds the `Link` header on every
     call (reads accept `application/ld+json`; writes send a plain `application/json` body so the `Link` header carries
     the context).

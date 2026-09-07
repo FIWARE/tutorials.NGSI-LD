@@ -1,5 +1,20 @@
 import type { FastMCP } from 'fastmcp';
 import type { LoadedSchema } from '../../lib/schema';
+import type { Vocabulary } from '../../lib/vocabulary';
+
+// ontology://attributes — the preferred attribute-term list (core + @context + schemas).
+export function registerAttributeVocabulary(server: FastMCP, vocab: Vocabulary): void {
+    server.addResource({
+        uri: 'ontology://attributes',
+        name: 'Attribute vocabulary',
+        mimeType: 'application/json',
+        description:
+            'Preferred attribute term names for writing entities: the canonical spelling of each attribute, its ' +
+            'NGSI-LD attribute type, unit code, enum values, and which loaded data models use it — merged from the ' +
+            'NGSI-LD core context, this deployment\'s @context and the loaded schemas. Consult before choosing names.',
+        load: async () => ({ text: JSON.stringify(vocab, null, 2) })
+    });
+}
 
 function firstLine(text?: string): string {
     if (!text) {
