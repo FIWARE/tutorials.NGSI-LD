@@ -13,14 +13,24 @@ const TEMPORAL_BROKER = process.env.TEMPORAL_BROKER || undefined;
 const CONTEXT = process.env.NGSI_LD_CONTEXT || 'http://context/ngsi-context.jsonld';
 const LinkHeader = `<${CONTEXT}>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"`;
 
-// NGSILD-Tenant header (paired with NGSILD-Path: /) applied to every broker request.
-// Unset ⇒ the broker's default tenant. Tenant choice is deployment config, not an agent concern.
-const TENANT = process.env.NGSI_LD_TENANT || undefined;
+// NGSILD-Tenant header (paired with NGSILD-Path: /) applied to broker requests.
+// READ_TENANT scopes queries/retrievals against CONTEXT_BROKER; WRITE_TENANT
+// scopes create/update/delete. They are independent — WRITE_TENANT does not fall
+// back to READ_TENANT — so a deployment can read federated data from one tenant
+// and write to another. Unset ⇒ the broker's default tenant. Tenant choice is
+// deployment config, not an agent concern.
+const READ_TENANT = process.env.READ_TENANT || undefined;
+const WRITE_TENANT = process.env.WRITE_TENANT || undefined;
 
-// NGSILD-Tenant for temporal requests, independent of TENANT above — the temporal
+// NGSILD-Tenant for temporal requests, independent of READ_TENANT — the temporal
 // interface may be a separate service scoped to its own tenant. Unset ⇒ the
-// broker's default tenant (does not fall back to TENANT).
+// broker's default tenant (does not fall back to READ_TENANT).
 const TEMPORAL_TENANT = process.env.TEMPORAL_TENANT || undefined;
+
+// NGSI-LD §6.3.18: append `local=true` to every write so it is not cascaded to
+// matching Context Source Registrations (avoids distributed writes / loops).
+// Default true; set WRITE_LOCAL_ONLY=false to allow distributed writes.
+const WRITE_LOCAL_ONLY = process.env.WRITE_LOCAL_ONLY !== 'false';
 
 const SCHEMA_DIR = process.env.SCHEMA_DIR || `${__dirname}/../schemas`;
 const COMMON_DIR = `${SCHEMA_DIR}/common`;
@@ -127,7 +137,9 @@ export {
     TEMPORAL_BROKER,
     CONTEXT,
     LinkHeader,
-    TENANT,
+    READ_TENANT,
+    WRITE_TENANT,
+    WRITE_LOCAL_ONLY,
     TEMPORAL_TENANT,
     SCHEMA_DIR,
     COMMON_DIR,

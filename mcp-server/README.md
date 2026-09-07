@@ -35,11 +35,12 @@ response against a schema, and shapes the NGSI-LD payload into a token-efficient
     `Relationship`, `VocabProperty`, `LanguageProperty`, `ListProperty`, `ListRelationship`, `JsonProperty`), `unitCode`
     and `observedAt` from the schema's `x-ngsi-type` / `x-unitCode` / `x-observedAt` keywords (a `location` GeoProperty is
     timestamped only when the schema carries `x-mobile: true`; a bare `[lng, lat]` array is expanded to a GeoJSON Point).
-    `create_<type>` enforces the schema's required attributes. `update_<type>_attribute` replaces one attribute wholesale
-    (`PUT /entities/{id}/attrs/{attrId}` — sub-attributes omitted from the call are dropped; it is not a partial merge),
-    falling back to `POST /entities/{id}/attrs` to create the attribute when it is absent; it accepts `unitCode` /
-    `observedAt` overrides. When `PROVIDED_BY` is set its URN is attached as a `providedBy` link to every measurement the
-    write tools assert.
+    `create_<type>` enforces the schema's required attributes. `update_<type>_attribute` merges into one attribute
+    (`PATCH /entities/{id}/attrs/{attrId}` — the value and any sub-attributes in the call are updated, sub-attributes
+    absent from it are kept), falling back to `POST /entities/{id}/attrs` to create the attribute when it is absent; it
+    accepts `unitCode` / `observedAt` overrides. `PATCH` is used rather than `PUT` attribute replacement, which is newer
+    and unevenly supported across brokers. When `PROVIDED_BY` is set its URN is attached as a `providedBy` link to every
+    measurement the write tools assert.
 *   **Context discovery**: `list_entity_types`, `get_entity_type`, `list_attributes` and `get_attribute` wrap the NGSI-LD
     `/types` and `/attributes` endpoints for run-time introspection.
 *   **Prompts** (opt-in): each `prompt.json` supplied at start up (see `PROMPTS_DIR`) becomes an MCP prompt whose
@@ -70,11 +71,17 @@ stdio transport.
     not registered.
 -   `NGSI_LD_CONTEXT` - JSON-LD `@context` added to the `Link` header on every broker call. Default:
     `http://context/ngsi-context.jsonld`.
--   `NGSI_LD_TENANT` - Value for the `NGSILD-Tenant` header (paired with `NGSILD-Path: /`), applied to every request
-    against `CONTEXT_BROKER`. Unset means the broker default tenant.
--   `TEMPORAL_TENANT` - Same, but for requests against `TEMPORAL_BROKER` — independent of `NGSI_LD_TENANT`, since the
+-   `READ_TENANT` - Value for the `NGSILD-Tenant` header (paired with `NGSILD-Path: /`) on **read** requests against
+    `CONTEXT_BROKER` (queries, retrievals, context discovery). Unset means the broker default tenant.
+-   `WRITE_TENANT` - Same, for **write / delete** requests (`create_*`, `update_*`, `delete_*`). Independent of
+    `READ_TENANT` — it does **not** fall back to it — so a deployment can read federated data from one tenant and write
+    to another. Unset means the broker default tenant.
+-   `WRITE_LOCAL_ONLY` - When not `false` (the **default**), every write appends `?local=true` so the broker does not
+    cascade it to matching Context Source Registrations (NGSI-LD §6.3.18 — avoids distributed writes and loops). Set
+    `WRITE_LOCAL_ONLY=false` to allow a write to propagate to registered context sources.
+-   `TEMPORAL_TENANT` - Same as `READ_TENANT` but for requests against `TEMPORAL_BROKER` — independent, since the
     temporal service may be scoped to its own tenant. Unset means the broker default tenant (does not fall back to
-    `NGSI_LD_TENANT`).
+    `READ_TENANT`).
 
 ### Schemas
 

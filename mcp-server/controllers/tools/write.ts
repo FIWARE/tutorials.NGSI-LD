@@ -6,11 +6,23 @@
 
 import type { FastMCP } from 'fastmcp';
 import { z } from 'zod';
-import { createEntity, appendAttribute, replaceAttribute } from '../../lib/ngsi-ld';
+import { createEntity, appendAttribute, patchAttribute } from '../../lib/ngsi-ld';
 import { WRITABLE, isWritableType, PROVIDED_BY, entityDefaultsFor } from '../../lib/constants';
 import { normalizeAttribute } from '../../lib/normalize';
 import type { LoadedSchema } from '../../lib/schema';
 import { ok, fail, is404, notFound, RESERVED_ATTRS } from './util';
+
+// A value of any JSON type. Spelled as an explicit anyOf rather than z.any() so
+// the emitted JSON Schema carries a validation keyword on the property — some MCP
+// clients reject a bare `{}` property schema.
+const jsonValue = z.union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+    z.null(),
+    z.array(z.any()),
+    z.record(z.any())
+]);
 
 // Encode a caller's { name: value } map into normalised NGSI-LD, using the schema
 // when one is supplied and best-effort inference otherwise.
@@ -28,12 +40,12 @@ function encodeAttrs(attrs: Record<string, unknown>, schema?: LoadedSchema): Rec
     return out;
 }
 
-// PUT the attribute (full replace); on 404 the attribute does not exist yet, so
-// POST it. A missing entity 404s both calls — the caller maps that to notFound.
-async function putOrAppend(id: string, attr: string, node: unknown): Promise<'replaced' | 'created'> {
+// PATCH the attribute (partial merge); on 404 the attribute does not exist yet, so
+// POST it to create. A missing entity 404s both calls — mapped to notFound.
+async function patchOrAppend(id: string, attr: string, node: unknown): Promise<'merged' | 'created'> {
     try {
-        await replaceAttribute(id, attr, node);
-        return 'replaced';
+        await patchAttribute(id, attr, node);
+        return 'merged';
     } catch (err) {
         if (is404(err)) {
             await appendAttribute(id, attr, node);
@@ -78,7 +90,7 @@ export function registerWrite(server: FastMCP, schema: LoadedSchema, exposed: Se
         parameters: z.object({
             id: z.string().describe(`URN for the new entity, e.g. "urn:ngsi-ld:${t}:001".`),
             attributes: z
-                .record(z.any())
+                .record(jsonValue)
                 .describe('Attribute name → value in simplified form, e.g. { "species": "cow", "ownedBy": "urn:ngsi-ld:Person:001" }.')
         }),
         execute: async ({ id, attributes }) => {
@@ -101,14 +113,14 @@ export function registerWrite(server: FastMCP, schema: LoadedSchema, exposed: Se
     server.addTool({
         name: `update_${stem}_attribute`,
         description:
-            `[WRITE] Set one attribute on an existing ${t} to exactly the supplied value, replacing it wholesale — any ` +
-            `sub-attributes not in this call are dropped (it is not a partial merge). Creates the attribute if it is ` +
-            `absent. \`value\` is simplified form (a target URN for a relationship). unitCode and observedAt come from ` +
-            `the schema — pass them only to override. Full schema: \`${schema.ontologyUri}\`.`,
+            `[WRITE] Update one attribute on an existing ${t}: the value — and any sub-attributes you pass — are merged ` +
+            `into it; sub-attributes you do not mention are kept. Creates the attribute if it is absent. \`value\` is ` +
+            `simplified form (a target URN for a relationship). unitCode and observedAt come from the schema — pass them ` +
+            `only to override. Full schema: \`${schema.ontologyUri}\`.`,
         parameters: z.object({
             id: z.string().describe(`URN of the ${t}.`),
             attr: z.string().describe('Attribute name, e.g. "weight" or "locatedAt".'),
-            value: z.any().describe('New value in simplified form.'),
+            value: jsonValue.describe('New value in simplified form.'),
             ...attrOverrides
         }),
         execute: async ({ id, attr, value, unitCode, observedAt }) => {
@@ -122,7 +134,7 @@ export function registerWrite(server: FastMCP, schema: LoadedSchema, exposed: Se
                     observedAt,
                     providedBy: PROVIDED_BY
                 });
-                const mode = await putOrAppend(id, attr, node);
+                const mode = await patchOrAppend(id, attr, node);
                 return ok({ updated: id, attr, mode });
             } catch (err) {
                 if (is404(err)) {
@@ -156,7 +168,7 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
         parameters: z.object({
             id: z.string().describe('URN for the new entity, e.g. "urn:ngsi-ld:Animal:001".'),
             type: z.string().describe('Entity type, e.g. "Animal".'),
-            attributes: z.record(z.any()).describe('Attribute name → value in simplified (or already-typed) form.')
+            attributes: z.record(jsonValue).describe('Attribute name → value in simplified (or already-typed) form.')
         }),
         execute: async ({ id, type, attributes }) => {
             try {
@@ -183,13 +195,14 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
     server.addTool({
         name: 'update_entity_attribute',
         description:
-            '[WRITE] Set one attribute on any existing entity to exactly the supplied value, replacing it wholesale ' +
-            '(not a partial merge); creates the attribute if absent. Give `type` so the server can apply the schema ' +
-            "encoding; without it the value is inferred. Prefer a typed `update_<type>_attribute` tool when one exists.",
+            '[WRITE] Update one attribute on any existing entity: the supplied value — and any sub-attributes — are ' +
+            'merged in; sub-attributes you do not mention are kept. Creates the attribute if absent. Give `type` so the ' +
+            'server can apply the schema encoding; without it the value is inferred. Prefer a typed ' +
+            '`update_<type>_attribute` tool when one exists.',
         parameters: z.object({
             id: z.string().describe('URN of the entity.'),
             attr: z.string().describe('Attribute name.'),
-            value: z.any().describe('New value in simplified (or already-typed) form.'),
+            value: jsonValue.describe('New value in simplified (or already-typed) form.'),
             type: z.string().optional().describe('Entity type, to apply the loaded schema encoding.'),
             ...attrOverrides
         }),
@@ -205,7 +218,7 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
                     observedAt,
                     providedBy: PROVIDED_BY
                 });
-                const mode = await putOrAppend(id, attr, node);
+                const mode = await patchOrAppend(id, attr, node);
                 return ok({ updated: id, attr, mode });
             } catch (err) {
                 if (is404(err)) {

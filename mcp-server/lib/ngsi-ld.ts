@@ -10,7 +10,9 @@ import {
     CONTEXT_BROKER,
     TEMPORAL_BROKER,
     LinkHeader,
-    TENANT,
+    READ_TENANT,
+    WRITE_TENANT,
+    WRITE_LOCAL_ONLY,
     TEMPORAL_TENANT,
     SEND_PICK_AS_ATTRS,
     ENTITY_LIMIT
@@ -34,9 +36,9 @@ async function parse(response: Response): Promise<unknown> {
     }
 }
 
-// Tenant selection is not the agent's concern: the resolved tenant (TENANT for the
-// context broker, TEMPORAL_TENANT for the temporal broker) is applied to every
-// request; undefined is the broker's default tenant.
+// Tenant selection is not the agent's concern: the resolved tenant (READ_TENANT
+// for reads, WRITE_TENANT for writes, TEMPORAL_TENANT for the temporal broker) is
+// applied to every request; undefined is the broker's default tenant.
 function setHeaders(tenant: string | undefined): Record<string, string> {
     const headers: Record<string, string> = {
         Accept: JSON_LD_HEADER,
@@ -119,7 +121,10 @@ function toQueryString(opts: Record<string, unknown>): string {
 
 // Any 2xx is success — NGSI-LD brokers use 206 (not just 200) for a truncated
 // result, e.g. temporal `lastN` or a broker-side page cap. Only 3xx/4xx/5xx are errors.
-function requestFull(url: string, tenant: string | undefined = TENANT): Promise<{ body: unknown; headers: Headers }> {
+function requestFull(
+    url: string,
+    tenant: string | undefined = READ_TENANT
+): Promise<{ body: unknown; headers: Headers }> {
     log('GET %s', url);
     return fetch(url, { method: 'GET', headers: setHeaders(tenant) })
         .then((r) => parse(r).then((body) => ({ status: r.status, body, headers: r.headers })))
@@ -140,20 +145,23 @@ function requestFull(url: string, tenant: string | undefined = TENANT): Promise<
         });
 }
 
-function request(url: string, tenant: string | undefined = TENANT): Promise<unknown> {
+function request(url: string, tenant: string | undefined = READ_TENANT): Promise<unknown> {
     return requestFull(url, tenant).then((d) => d.body);
 }
 
 // POST / PATCH / DELETE against the context broker. NGSI-LD write endpoints answer
 // 201/204 with an empty body on success; anything outside 2xx becomes an Error
-// carrying the ProblemDetails payload on `.cause`.
+// carrying the ProblemDetails payload on `.cause`. Under WRITE_LOCAL_ONLY (default)
+// `local=true` is appended so the write is not cascaded to Context Source
+// Registrations (NGSI-LD §6.3.18).
 function mutate(
     url: string,
-    method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',
+    method: 'POST' | 'PATCH' | 'DELETE',
     body?: unknown,
-    tenant: string | undefined = TENANT
+    tenant: string | undefined = WRITE_TENANT
 ): Promise<unknown> {
-    log('%s %s', method, url);
+    const target = WRITE_LOCAL_ONLY ? `${url}${url.includes('?') ? '&' : '?'}local=true` : url;
+    log('%s %s', method, target);
     const headers = setHeaders(tenant);
     const init: RequestInit = { method, headers };
     if (body !== undefined) {
@@ -163,7 +171,7 @@ function mutate(
         headers['Content-Type'] = 'application/json';
         init.body = JSON.stringify(body);
     }
-    return fetch(url, init)
+    return fetch(target, init)
         .then((r) => parse(r).then((b) => ({ status: r.status, body: b })))
         .then((data) => {
             if (data.status < 200 || data.status >= 300) {
@@ -199,13 +207,15 @@ function appendAttribute(entityId: string, attr: string, node: unknown): Promise
     return mutate(`${CONTEXT_BROKER}/entities/${encodeURIComponent(entityId)}/attrs`, 'POST', { [attr]: node });
 }
 
-// PUT /entities/{entityId}/attrs/{attrId} — full replacement of one attribute
-// (payload is the attribute representation without the name wrapper). Drops any
-// sub-attributes absent from the payload; 404 when the attribute does not exist.
-function replaceAttribute(entityId: string, attr: string, node: unknown): Promise<unknown> {
+// PATCH /entities/{entityId}/attrs/{attrId} — partial update of one attribute
+// (payload is the attribute fragment without the name wrapper). Merges: the value
+// and any sub-attributes in the payload are updated, sub-attributes absent from it
+// are kept. 404 when the attribute does not exist. Chosen over PUT (attribute
+// replacement) which is newer and unevenly supported across brokers.
+function patchAttribute(entityId: string, attr: string, node: unknown): Promise<unknown> {
     return mutate(
         `${CONTEXT_BROKER}/entities/${encodeURIComponent(entityId)}/attrs/${encodeURIComponent(attr)}`,
-        'PUT',
+        'PATCH',
         node
     );
 }
@@ -262,7 +272,7 @@ function readEntity(entityId: string, opts: Record<string, unknown>): Promise<un
 }
 
 // GET /temporal/entities/{entityId} — against the (optionally distinct) temporal
-// broker, under TEMPORAL_TENANT (independent of TENANT). Only reached when
+// broker, under TEMPORAL_TENANT (independent of READ_TENANT). Only reached when
 // TEMPORAL_BROKER is set: the history tools are gated on it. Projection goes out
 // as `attrs`, which the temporal endpoints support far more widely than the newer
 // `pick` parameter.
@@ -316,6 +326,6 @@ export {
     createEntity,
     deleteEntity,
     appendAttribute,
-    replaceAttribute,
+    patchAttribute,
     deleteAttribute
 };
