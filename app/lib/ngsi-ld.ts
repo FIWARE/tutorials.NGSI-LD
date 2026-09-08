@@ -214,10 +214,6 @@ function listEntities(opts: Record<string, unknown>, headers: Record<string, str
         params.options = params.format === 'simplified' ? 'keyValues' : params.format;
         delete params.format;
     }
-    if (params.pick) {
-        params.attrs = params.pick;
-        delete params.pick;
-    }
     return fetch(`${BASE_PATH}/entities/?${new URLSearchParams(params as Record<string, string>)}`, {
         method: 'GET',
         headers
