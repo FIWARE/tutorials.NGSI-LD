@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { okPage } from '../controllers/tools/util';
+import { okPage, spreadAdditionalProperty } from '../controllers/tools/util';
 import type { EntityPage } from '../lib/ngsi-ld';
 
 const page = (over: Partial<EntityPage>): EntityPage => ({
@@ -46,5 +46,41 @@ describe('okPage', () => {
         expect(out.entities).toEqual([]);
         expect(out._notice).toBeUndefined();
         expect(out.pagination).toMatchObject({ total: 1342, limit: 100, hasMore: true, nextOffset: 100 });
+    });
+});
+
+describe('spreadAdditionalProperty', () => {
+    it('lifts JsonProperty members (normalised form) to the top level', () => {
+        const e = {
+            id: 'urn:ngsi-ld:Animal:1',
+            type: 'Animal',
+            species: 'cow',
+            additionalProperty: { type: 'JsonProperty', json: { colour: 'brown', mudScore: 7 } }
+        };
+        expect(spreadAdditionalProperty(e, 'additionalProperty')).toEqual({
+            id: 'urn:ngsi-ld:Animal:1',
+            type: 'Animal',
+            species: 'cow',
+            colour: 'brown',
+            mudScore: 7
+        });
+    });
+
+    it('accepts the concise { json } and keyValues bare-object forms', () => {
+        expect(spreadAdditionalProperty({ id: 'x', extras: { json: { a: 1 } } }, 'extras')).toEqual({ id: 'x', a: 1 });
+        expect(spreadAdditionalProperty({ id: 'x', extras: { a: 1 } }, 'extras')).toEqual({ id: 'x', a: 1 });
+    });
+
+    it('does not overwrite a real attribute of the same name', () => {
+        const e = { id: 'x', colour: 'blue', additionalProperty: { json: { colour: 'red', size: 'L' } } };
+        expect(spreadAdditionalProperty(e, 'additionalProperty')).toEqual({ id: 'x', colour: 'blue', size: 'L' });
+    });
+
+    it('returns the entity untouched when the holder is absent or not an object', () => {
+        expect(spreadAdditionalProperty({ id: 'x' }, 'additionalProperty')).toEqual({ id: 'x' });
+        expect(spreadAdditionalProperty({ id: 'x', additionalProperty: 'oops' }, 'additionalProperty')).toEqual({
+            id: 'x',
+            additionalProperty: 'oops'
+        });
     });
 });

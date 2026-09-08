@@ -20,6 +20,7 @@ import {
     WRITABLE,
     WRITABLE_TYPES_LISTED,
     DELETABLE_TYPES_LISTED,
+    UNKNOWN_ATTRIBUTES,
     ENTITY_DEFAULTS
 } from './lib/constants';
 
@@ -78,7 +79,11 @@ export async function buildServer(): Promise<FastMCP> {
         writeTools += registerGenericDelete(server, exposed);
     }
     registerOntology(server, schemas);
-    registerAttributeVocabulary(server, await buildVocabulary(schemas));
+    // The attribute vocabulary is a guide for adding new attribute names — pointless
+    // (and the @context fetch it does is wasted) when unmodelled names are rejected.
+    if (UNKNOWN_ATTRIBUTES !== 'reject') {
+        registerAttributeVocabulary(server, await buildVocabulary(schemas));
+    }
     registerContextDiscoveryResources(server);
 
     // Prompts are opt-in via PROMPTS_DIR, same mounted-volume pattern as schemas.

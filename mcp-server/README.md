@@ -123,6 +123,13 @@ stdio transport.
 -   `PROVIDED_BY` - URN attached as a `providedBy` relationship to every measurement the write tools assert (the
     attributes the schema marks `x-observedAt`, plus a moving `location`). Unset means no provenance link is added.
     Deployment config, not an agent concern.
+-   `UNKNOWN_ATTRIBUTES` - How create/update handles an attribute name that is not in the target type's schema:
+    `accept` (**default** - encode it best-effort), `reject` (fail the whole call), or `additionalProperty` (collect all
+    such attributes into one `JsonProperty`, per schema.org/additionalProperty). In `additionalProperty` mode a single
+    `update_<type>_attribute` for an unmodelled attr is deep-merged into that JsonProperty via `PATCH` merge-patch (other
+    collected members are kept), and `query_<type>` / `get_<type>` lift its members back to the top level of each result
+    so they read as ordinary fields. Not surfaced in the tool descriptions - deployment behaviour.
+-   `ADDITIONAL_PROPERTY` - Name of that catch-all `JsonProperty` attribute. Default: `additionalProperty`.
 
 ### Prompts
 

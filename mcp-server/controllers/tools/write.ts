@@ -6,38 +6,76 @@
 
 import type { FastMCP } from 'fastmcp';
 import { z } from 'zod';
-import { createEntity, appendAttribute, patchAttribute } from '../../lib/ngsi-ld';
-import { WRITABLE, isWritableType, PROVIDED_BY, entityDefaultsFor } from '../../lib/constants';
+import { createEntity, mergeEntity, appendAttribute, patchAttribute } from '../../lib/ngsi-ld';
+import {
+    WRITABLE,
+    isWritableType,
+    PROVIDED_BY,
+    entityDefaultsFor,
+    UNKNOWN_ATTRIBUTES,
+    ADDITIONAL_PROPERTY
+} from '../../lib/constants';
 import { normalizeAttribute } from '../../lib/normalize';
 import type { LoadedSchema } from '../../lib/schema';
 import { ok, fail, is404, notFound, RESERVED_ATTRS } from './util';
 
-// A value of any JSON type. Spelled as an explicit anyOf rather than z.any() so
-// the emitted JSON Schema carries a validation keyword on the property — some MCP
-// clients reject a bare `{}` property schema.
+// A value of any JSON type. Spelled as an explicit anyOf, and the object branch as
+// z.object({}).passthrough() (→ additionalProperties: true) rather than
+// z.record(z.any()) (→ a bare {}), so every branch of the emitted JSON Schema
+// carries a real validation keyword — some MCP clients reject a bare `{}`.
 const jsonValue = z.union([
     z.string(),
     z.number(),
     z.boolean(),
     z.null(),
     z.array(z.any()),
-    z.record(z.any())
+    z.object({}).passthrough()
 ]);
 
-// Encode a caller's { name: value } map into normalised NGSI-LD, using the schema
-// when one is supplied and best-effort inference otherwise.
-function encodeAttrs(attrs: Record<string, unknown>, schema?: LoadedSchema): Record<string, unknown> {
-    const out: Record<string, unknown> = {};
+// Core-context terms valid on any entity even when a schema omits them.
+const CORE_ENTITY_ATTRS = new Set(['description', 'title', 'location']);
+
+const isKnown = (name: string, schema: LoadedSchema): boolean =>
+    name in schema.writeAttrs || CORE_ENTITY_ATTRS.has(name);
+
+type Composed = { entity: Record<string, unknown> } | { error: string };
+
+// Build the normalised entity, applying UNKNOWN_ATTRIBUTES to any name not in the
+// type's schema: accept (encode best-effort), reject (fail), or additionalProperty
+// (collect into one JsonProperty named ADDITIONAL_PROPERTY, per schema.org).
+function composeEntity(id: string, type: string, attrs: Record<string, unknown>, schema: LoadedSchema): Composed {
+    const entity: Record<string, unknown> = { id, type };
+    const extra: Record<string, unknown> = {};
+    const rejected: string[] = [];
+
     for (const [name, value] of Object.entries(attrs)) {
-        if (RESERVED_ATTRS.has(name) || value === undefined || value === null) {
+        if (RESERVED_ATTRS.has(name) || value === undefined || value === null) continue;
+        if (name === ADDITIONAL_PROPERTY && value && typeof value === 'object' && !Array.isArray(value)) {
+            Object.assign(extra, value as Record<string, unknown>);
             continue;
         }
-        out[name] = normalizeAttribute(name, value, schema?.writeAttrs[name], {
-            mobile: schema?.mobile ?? false,
-            providedBy: PROVIDED_BY
-        });
+        if (isKnown(name, schema) || UNKNOWN_ATTRIBUTES === 'accept') {
+            entity[name] = normalizeAttribute(name, value, schema.writeAttrs[name], {
+                mobile: schema.mobile,
+                providedBy: PROVIDED_BY
+            });
+        } else if (UNKNOWN_ATTRIBUTES === 'additionalProperty') {
+            extra[name] = value;
+        } else {
+            rejected.push(name);
+        }
     }
-    return out;
+
+    if (rejected.length) {
+        return {
+            error: `Unknown attribute(s) for ${type}: ${rejected.join(', ')}. Only ${type} schema attributes ` +
+                `(${schema.ontologyUri}) are accepted.`
+        };
+    }
+    if (Object.keys(extra).length) {
+        entity[ADDITIONAL_PROPERTY] = { type: 'JsonProperty', json: extra };
+    }
+    return { entity };
 }
 
 // PATCH the attribute (partial merge); on 404 the attribute does not exist yet, so
@@ -55,10 +93,46 @@ async function patchOrAppend(id: string, attr: string, node: unknown): Promise<'
     }
 }
 
+// Apply UNKNOWN_ATTRIBUTES to a single-attribute update. When the attr is not in
+// the schema and the mode is additionalProperty, it is deep-merged into the
+// JsonProperty via merge-patch rather than written as its own attribute.
+async function updateOne(
+    id: string,
+    attr: string,
+    value: unknown,
+    schema: LoadedSchema | undefined,
+    over: { unitCode?: string; observedAt?: string }
+): Promise<Record<string, unknown>> {
+    if (schema && !isKnown(attr, schema)) {
+        if (UNKNOWN_ATTRIBUTES === 'reject') {
+            return {
+                error: `Unknown attribute "${attr}" for ${schema.typeName}. Only ${schema.typeName} schema attributes ` +
+                    `(${schema.ontologyUri}) are accepted.`
+            };
+        }
+        if (UNKNOWN_ATTRIBUTES === 'additionalProperty') {
+            await mergeEntity(id, { [ADDITIONAL_PROPERTY]: { type: 'JsonProperty', json: { [attr]: value } } });
+            return { updated: id, attr, into: ADDITIONAL_PROPERTY, mode: 'merged' };
+        }
+    }
+    const node = normalizeAttribute(attr, value, schema?.writeAttrs[attr], {
+        mobile: schema?.mobile ?? false,
+        unitCode: over.unitCode,
+        observedAt: over.observedAt,
+        providedBy: PROVIDED_BY
+    });
+    const mode = await patchOrAppend(id, attr, node);
+    return { updated: id, attr, mode };
+}
+
 const attrOverrides = {
     unitCode: z.string().optional().describe('Override the schema UN/CEFACT unit code.'),
     observedAt: z.string().optional().describe('Override observedAt with an explicit ISO8601 timestamp.')
 };
+
+// The attribute vocabulary is only useful when new names can be added — in reject
+// mode it is not loaded, so do not point at it.
+const CANON = UNKNOWN_ATTRIBUTES === 'reject' ? '' : ' Canonical attribute names: `ontology://attributes`.';
 
 // ---- typed: one pair per type named in WRITABLE_TYPES ----------------------
 
@@ -86,8 +160,7 @@ export function registerWrite(server: FastMCP, schema: LoadedSchema, exposed: Se
                       .map((k) => `${k}=${JSON.stringify(defaults[k])}`)
                       .join(', ')}. `
                 : '') +
-            `Full schema: \`${schema.ontologyUri}\`. For an attribute not in the schema, use the canonical spelling ` +
-            'from `ontology://attributes`.',
+            `Full schema: \`${schema.ontologyUri}\`.` + CANON,
         parameters: z.object({
             id: z.string().describe(`URN for the new entity, e.g. "urn:ngsi-ld:${t}:001".`),
             attributes: z
@@ -101,9 +174,14 @@ export function registerWrite(server: FastMCP, schema: LoadedSchema, exposed: Se
                 if (missing.length) {
                     return JSON.stringify({ error: `Missing required attribute(s): ${missing.join(', ')}` });
                 }
-                const entity = { id, type: t, ...encodeAttrs(attrs, schema) };
-                await createEntity(entity);
-                return ok({ created: id, type: t, attributes: Object.keys(entity).filter((k) => !RESERVED_ATTRS.has(k)) });
+                const composed = composeEntity(id, t, attrs, schema);
+                if ('error' in composed) return JSON.stringify(composed);
+                await createEntity(composed.entity);
+                return ok({
+                    created: id,
+                    type: t,
+                    attributes: Object.keys(composed.entity).filter((k) => !RESERVED_ATTRS.has(k))
+                });
             } catch (err) {
                 return fail(err);
             }
@@ -117,8 +195,7 @@ export function registerWrite(server: FastMCP, schema: LoadedSchema, exposed: Se
             `[WRITE] Update one attribute on an existing ${t}, or add a new one — the value (and any sub-attributes you ` +
             `pass) are merged in; sub-attributes you do not mention are kept; the attribute is created if absent. ` +
             `\`value\` is simplified form (a target URN for a relationship). unitCode and observedAt come from the schema ` +
-            `— pass them only to override. Schema: \`${schema.ontologyUri}\`; for an \`attr\` not in it, use the ` +
-            'canonical spelling from `ontology://attributes`.',
+            `— pass them only to override. Schema: \`${schema.ontologyUri}\`.` + CANON,
         parameters: z.object({
             id: z.string().describe(`URN of the ${t}.`),
             attr: z.string().describe('Attribute name, e.g. "weight" or "locatedAt".'),
@@ -130,14 +207,7 @@ export function registerWrite(server: FastMCP, schema: LoadedSchema, exposed: Se
                 if (RESERVED_ATTRS.has(attr)) {
                     return JSON.stringify({ error: `"${attr}" is not a writable attribute` });
                 }
-                const node = normalizeAttribute(attr, value, schema.writeAttrs[attr], {
-                    mobile: schema.mobile,
-                    unitCode,
-                    observedAt,
-                    providedBy: PROVIDED_BY
-                });
-                const mode = await patchOrAppend(id, attr, node);
-                return ok({ updated: id, attr, mode });
+                return ok(await updateOne(id, attr, value, schema, { unitCode, observedAt }));
             } catch (err) {
                 if (is404(err)) {
                     return notFound(t, id, attr);
@@ -171,8 +241,9 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
             '[WRITE] Create a new NGSI-LD entity. `type` must be one of the loaded data models — creation of an ' +
             'unmodelled type is refused. Pass attributes in simplified form (`name: value`); the server encodes the ' +
             'NGSI-LD attribute type, unitCode and observedAt from the schema and enforces its required attributes. A ' +
-            'relationship attribute takes the target entity URN; a GeoProperty takes GeoJSON (or a bare [lng, lat]). ' +
-            'Use the canonical attribute names from `ontology://attributes`. Prefer a typed `create_<type>` tool when one exists.',
+            'relationship attribute takes the target entity URN; a GeoProperty takes GeoJSON (or a bare [lng, lat]).' +
+            CANON +
+            ' Prefer a typed `create_<type>` tool when one exists.',
         parameters: z.object({
             id: z.string().describe('URN for the new entity, e.g. "urn:ngsi-ld:Animal:001".'),
             type: typeParam.describe('Entity type — must be a loaded data model.'),
@@ -195,12 +266,13 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
                 if (missing.length) {
                     return JSON.stringify({ error: `Missing required attribute(s): ${missing.join(', ')}` });
                 }
-                const entity = { id, type: schema.typeName, ...encodeAttrs(attrs, schema) };
-                await createEntity(entity);
+                const composed = composeEntity(id, schema.typeName, attrs, schema);
+                if ('error' in composed) return JSON.stringify(composed);
+                await createEntity(composed.entity);
                 return ok({
                     created: id,
                     type: schema.typeName,
-                    attributes: Object.keys(entity).filter((k) => !RESERVED_ATTRS.has(k))
+                    attributes: Object.keys(composed.entity).filter((k) => !RESERVED_ATTRS.has(k))
                 });
             } catch (err) {
                 return fail(err);
@@ -214,9 +286,10 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
         description:
             '[WRITE] Update one attribute on any existing entity, or add a new one — the supplied value (and any ' +
             'sub-attributes) are merged in; sub-attributes you do not mention are kept; the attribute is created if ' +
-            'absent. Give `type` so the server can apply the schema encoding; without it the value is inferred. Use the ' +
-            'canonical spelling of `attr` from `ontology://attributes`. Prefer a typed `update_<type>_attribute` tool ' +
-            'when one exists.',
+            'absent. Give `type` so the server can apply the schema encoding and the unknown-attribute policy; without ' +
+            `it the value is inferred and \`attr\` is written as given.` +
+            CANON +
+            ' Prefer a typed `update_<type>_attribute` tool when one exists.',
         parameters: z.object({
             id: z.string().describe('URN of the entity.'),
             attr: z.string().describe('Attribute name.'),
@@ -230,14 +303,7 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
                     return JSON.stringify({ error: `"${attr}" is not a writable attribute` });
                 }
                 const schema = type ? byType.get(type.toLowerCase()) : undefined;
-                const node = normalizeAttribute(attr, value, schema?.writeAttrs[attr], {
-                    mobile: schema?.mobile ?? false,
-                    unitCode,
-                    observedAt,
-                    providedBy: PROVIDED_BY
-                });
-                const mode = await patchOrAppend(id, attr, node);
-                return ok({ updated: id, attr, mode });
+                return ok(await updateOne(id, attr, value, schema, { unitCode, observedAt }));
             } catch (err) {
                 if (is404(err)) {
                     return notFound(type ?? 'entity', id, attr);

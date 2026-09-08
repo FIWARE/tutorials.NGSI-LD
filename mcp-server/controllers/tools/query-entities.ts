@@ -1,8 +1,13 @@
 import type { FastMCP } from 'fastmcp';
 import { z } from 'zod';
 import { listEntities } from '../../lib/ngsi-ld';
-import { ENTITY_LIMIT } from '../../lib/constants';
-import { fail, stripContext, clampLimit, okPage } from './util';
+import { ENTITY_LIMIT, UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY } from '../../lib/constants';
+import { fail, stripContext, clampLimit, okPage, spreadAdditionalProperty } from './util';
+
+const shape = (e: unknown): unknown => {
+    const s = stripContext(e);
+    return UNKNOWN_ATTRIBUTES === 'additionalProperty' ? spreadAdditionalProperty(s, ADDITIONAL_PROPERTY) : s;
+};
 
 export function registerQueryEntities(server: FastMCP): void {
     server.addTool({
@@ -46,7 +51,7 @@ export function registerQueryEntities(server: FastMCP): void {
                     metadataOnly,
                     options: 'concise'
                 });
-                return okPage(page.entities.map(stripContext), page, 'query_entities', type, metadataOnly === true);
+                return okPage(page.entities.map(shape), page, 'query_entities', type, metadataOnly === true);
             } catch (err) {
                 return fail(err);
             }

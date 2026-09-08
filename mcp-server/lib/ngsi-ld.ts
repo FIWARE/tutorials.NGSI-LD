@@ -158,7 +158,8 @@ function mutate(
     url: string,
     method: 'POST' | 'PATCH' | 'DELETE',
     body?: unknown,
-    tenant: string | undefined = WRITE_TENANT
+    tenant: string | undefined = WRITE_TENANT,
+    contentType = 'application/json'
 ): Promise<unknown> {
     const target = WRITE_LOCAL_ONLY ? `${url}${url.includes('?') ? '&' : '?'}local=true` : url;
     log('%s %s', method, target);
@@ -166,9 +167,9 @@ function mutate(
     const init: RequestInit = { method, headers };
     if (body !== undefined) {
         // The @context travels in the Link header (set by setHeaders), so the body
-        // is plain application/json — Orion-LD rejects a Link header alongside an
-        // application/ld+json body.
-        headers['Content-Type'] = 'application/json';
+        // is plain application/json (or application/merge-patch+json) — Orion-LD
+        // rejects a Link header alongside an application/ld+json body.
+        headers['Content-Type'] = contentType;
         init.body = JSON.stringify(body);
     }
     return fetch(target, init)
@@ -193,6 +194,19 @@ function mutate(
 // POST /entities — create one entity (normalised NGSI-LD; @context via the Link header).
 function createEntity(entity: Record<string, unknown>): Promise<unknown> {
     return mutate(`${CONTEXT_BROKER}/entities`, 'POST', entity);
+}
+
+// PATCH /entities/{entityId} with application/merge-patch+json (RFC 7386) — deep-
+// merges the partial entity, so nested objects (e.g. a JsonProperty's `json`) are
+// merged rather than replaced. 404 when the entity does not exist.
+function mergeEntity(entityId: string, patch: Record<string, unknown>): Promise<unknown> {
+    return mutate(
+        `${CONTEXT_BROKER}/entities/${encodeURIComponent(entityId)}`,
+        'PATCH',
+        patch,
+        WRITE_TENANT,
+        'application/merge-patch+json'
+    );
 }
 
 // DELETE /entities/{entityId} — remove an entity and all of its attributes.
@@ -324,6 +338,7 @@ export {
     listAttributes,
     readAttribute,
     createEntity,
+    mergeEntity,
     deleteEntity,
     appendAttribute,
     patchAttribute,

@@ -30,6 +30,25 @@ export function notFound(type: string, id: string, attr?: string): string {
     });
 }
 
+// When UNKNOWN_ATTRIBUTES=additionalProperty, unmodelled attributes are stored as
+// members of one JsonProperty. On read, lift those members back to the top level
+// so the agent sees them as ordinary fields (a real attribute of the same name
+// always wins). Accepts the concise `{ json: {...} }`, the normalised
+// `{ type: "JsonProperty", json: {...} }` and the keyValues bare-object forms.
+export function spreadAdditionalProperty<T>(entity: T, name: string): T {
+    if (!entity || typeof entity !== 'object' || Array.isArray(entity)) return entity;
+    const e = entity as Record<string, unknown>;
+    const holder = e[name];
+    if (holder === undefined || holder === null || typeof holder !== 'object' || Array.isArray(holder)) {
+        return entity;
+    }
+    const h = holder as Record<string, unknown>;
+    const bag = (h.json ?? h.value ?? h) as unknown;
+    if (!bag || typeof bag !== 'object' || Array.isArray(bag)) return entity;
+    const { [name]: _drop, ...rest } = e;
+    return { ...(bag as Record<string, unknown>), ...rest } as T;
+}
+
 export function stripContext<T>(payload: T): T {
     if (Array.isArray(payload)) {
         return payload.map((p) => stripContext(p)) as unknown as T;

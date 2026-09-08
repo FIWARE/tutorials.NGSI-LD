@@ -4,9 +4,38 @@
 import type { FastMCP } from 'fastmcp';
 import { z } from 'zod';
 import { listEntities, readEntity, readTemporalEntity } from '../../lib/ngsi-ld';
-import { ENTITY_LIMIT, TEMPORAL_BROKER, isQueriableType, isReadableType } from '../../lib/constants';
+import {
+    ENTITY_LIMIT,
+    TEMPORAL_BROKER,
+    isQueriableType,
+    isReadableType,
+    UNKNOWN_ATTRIBUTES,
+    ADDITIONAL_PROPERTY
+} from '../../lib/constants';
 import type { LoadedSchema } from '../../lib/schema';
-import { ok, fail, stripContext, clampLimit, validateList, validateOne, okPage } from './util';
+import {
+    ok,
+    fail,
+    stripContext,
+    clampLimit,
+    validateList,
+    validateOne,
+    okPage,
+    spreadAdditionalProperty
+} from './util';
+
+// In additionalProperty mode, lift the collected JsonProperty members back to the
+// top level of every returned entity so they read as ordinary fields.
+const unbundle = <T>(e: T): T =>
+    UNKNOWN_ATTRIBUTES === 'additionalProperty' ? spreadAdditionalProperty(e, ADDITIONAL_PROPERTY) : e;
+
+// Sub-attribute filtering uses bracket syntax in a raw `q`, e.g.
+// q=address[addressLocality]=="Tiergarten"; collected data is at
+// q=<ADDITIONAL_PROPERTY>[<key>]==<value>.
+const Q_HELP =
+    UNKNOWN_ATTRIBUTES === 'additionalProperty'
+        ? ` Filter a sub-attribute with bracket syntax, e.g. \`${ADDITIONAL_PROPERTY}[colour]=="red"\` or \`address[addressLocality]=="Tiergarten"\`.`
+        : ' Filter a sub-attribute with bracket syntax, e.g. `address[addressLocality]=="Tiergarten"`.';
 
 // Returns the number of typed tools registered for this schema. `exposed` collects
 // every registered tool name so controllers/prompts/dynamic.ts can tell which
@@ -28,7 +57,7 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
                 'the given `offset` or narrow the query — never assume the first page is the whole result set.',
             parameters: z.object({
                 ...schema.inputShape,
-                q: z.string().optional().describe('Extra raw NGSI-LD q filter, ANDed with the fields above.'),
+                q: z.string().optional().describe(`Extra raw NGSI-LD q filter, ANDed with the fields above.${Q_HELP}`),
                 pick: z.string().optional().describe('Comma-separated attributes to return. Always set this.'),
                 limit: z.number().optional().describe(`Max entities to return (default/max ${ENTITY_LIMIT}).`),
                 offset: z
@@ -63,7 +92,13 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
                     if ('error' in outcome) {
                         return ok(outcome);
                     }
-                    return okPage(outcome.data, page, `query_${stem}`, schema.typeName, metadataOnly === true);
+                    return okPage(
+                        outcome.data.map(unbundle),
+                        page,
+                        `query_${stem}`,
+                        schema.typeName,
+                        metadataOnly === true
+                    );
                 } catch (err) {
                     return fail(err);
                 }
@@ -102,7 +137,8 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
                     }
                     const body = await readEntity(id, { pick, options: 'concise' });
                     const validator = pick ? schema.entityValidatorLoose : schema.entityValidator;
-                    return ok(validateOne(stripContext(body), validator));
+                    const res = validateOne(stripContext(body), validator);
+                    return ok('data' in res ? { ...res, data: unbundle(res.data) } : res);
                 } catch (err) {
                     const e = err as Error;
                     if (/\b404\b|not found/i.test(e.message)) {

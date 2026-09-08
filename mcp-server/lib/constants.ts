@@ -32,6 +32,17 @@ const TEMPORAL_TENANT = process.env.TEMPORAL_TENANT || undefined;
 // Default true; set WRITE_LOCAL_ONLY=false to allow distributed writes.
 const WRITE_LOCAL_ONLY = process.env.WRITE_LOCAL_ONLY !== 'false';
 
+// How a create/update handles an attribute name that is not in the target type's
+// schema: `accept` (default — encode it best-effort), `reject` (refuse the call),
+// or `additionalProperty` (collect all such attributes into one JsonProperty, per
+// schema.org/additionalProperty). ADDITIONAL_PROPERTY names that catch-all
+// attribute (default `additionalProperty`).
+const UNKNOWN_ATTRIBUTES = (() => {
+    const v = process.env.UNKNOWN_ATTRIBUTES || 'accept';
+    return v === 'reject' || v === 'additionalProperty' ? v : 'accept';
+})() as 'accept' | 'reject' | 'additionalProperty';
+const ADDITIONAL_PROPERTY = process.env.ADDITIONAL_PROPERTY || 'additionalProperty';
+
 const SCHEMA_DIR = process.env.SCHEMA_DIR || `${__dirname}/../schemas`;
 const COMMON_DIR = `${SCHEMA_DIR}/common`;
 const CORE_SCHEMA_DIR = `${__dirname}/../ngsi-schemas`;
@@ -140,6 +151,8 @@ export {
     READ_TENANT,
     WRITE_TENANT,
     WRITE_LOCAL_ONLY,
+    UNKNOWN_ATTRIBUTES,
+    ADDITIONAL_PROPERTY,
     TEMPORAL_TENANT,
     SCHEMA_DIR,
     COMMON_DIR,
