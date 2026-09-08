@@ -1,7 +1,5 @@
-// NGSI-LD context-discovery tools — GET /types, /types/{type}, /attributes,
-// /attributes/{attrId} (ETSI GS CIM 009 clauses 4.5.10–4.5.15). Responses are
-// validated against the ngsi-schemas/*.json types. options=concise / keyValues
-// does not apply to these endpoints.
+// Context-discovery tools: GET /types, /types/{type}, /attributes, /attributes/{attrId}.
+// Responses validated against ngsi-schemas/*.json.
 
 import type { FastMCP } from 'fastmcp';
 import { z } from 'zod';
@@ -9,9 +7,8 @@ import { listTypes, readType, listAttributes, readAttribute } from '../../lib/ng
 import type { CoreSchemas } from '../../lib/core-schema';
 import { ok, fail, stripContext, validateOne } from './util';
 
-// These endpoints return discovery data, not entities — a payload that misses a
-// spec field (Orion-LD emits `typeName: []`, for one) is still useful, so never drop
-// rows in `filter` mode. `validateOne` honours `strict` and passes through otherwise.
+// Discovery data, not entities: a payload missing a spec field (Orion-LD emits
+// `typeName: []`) is still useful, so `validateOne` never drops rows in filter mode.
 
 export function registerContextDiscoveryTools(server: FastMCP, core: CoreSchemas): void {
     // GET /types

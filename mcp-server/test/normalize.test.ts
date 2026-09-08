@@ -141,6 +141,50 @@ describe('normalizeAttribute', () => {
             json: { type: 'Property', value: 1 }
         });
     });
+
+    it('unpacks a concise-read Property object rather than double-wrapping it', () => {
+        expect(
+            normalizeAttribute(
+                'weight',
+                { value: 118, unitCode: 'KGM', observedAt: '2026-01-01T00:00:00Z' },
+                prop({ ngsiType: 'Property', unitCode: 'KGM', observedAt: true })
+            )
+        ).toEqual({ type: 'Property', value: 118, unitCode: 'KGM', observedAt: '2026-01-01T00:00:00Z' });
+    });
+
+    it('lifts observedAt from a concise value but a caller override still wins', () => {
+        const n = normalizeAttribute('heartRate', { value: 52, observedAt: '2026-01-01T00:00:00Z' }, prop({ observedAt: true }), {
+            observedAt: '2025-12-31T00:00:00Z'
+        });
+        expect(n).toMatchObject({ type: 'Property', value: 52, observedAt: '2025-12-31T00:00:00Z' });
+    });
+
+    it('unpacks the NGSI-specific concise members without needing a metadata sibling', () => {
+        expect(normalizeAttribute('ownedBy', { object: 'urn:ngsi-ld:Person:1' }, prop({ ngsiType: 'Relationship' }))).toEqual(
+            { type: 'Relationship', object: 'urn:ngsi-ld:Person:1' }
+        );
+        expect(normalizeAttribute('sex', { vocab: 'male' }, prop({ ngsiType: 'VocabProperty' }))).toEqual({
+            type: 'VocabProperty',
+            vocab: 'male'
+        });
+        expect(normalizeAttribute('extra', { json: { a: 1 } }, prop({ ngsiType: 'JsonProperty' }))).toEqual({
+            type: 'JsonProperty',
+            json: { a: 1 }
+        });
+    });
+
+    it('does not treat a bare { value } with no metadata as concise (could be literal data)', () => {
+        expect(normalizeAttribute('config', { value: 42 }, prop())).toEqual({
+            type: 'Property',
+            value: { value: 42 }
+        });
+    });
+
+    it('does not touch a plain multi-key object value', () => {
+        expect(
+            normalizeAttribute('address', { city: 'Berlin', value: 'x' }, prop())
+        ).toEqual({ type: 'Property', value: { city: 'Berlin', value: 'x' } });
+    });
 });
 
 describe('loadOne — write encoding hints', () => {

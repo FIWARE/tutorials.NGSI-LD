@@ -2,7 +2,9 @@ import type { FastMCP } from 'fastmcp';
 import { z } from 'zod';
 import { readEntity } from '../../lib/ngsi-ld';
 import { UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY } from '../../lib/constants';
-import { ok, fail, stripContext, spreadAdditionalProperty } from './util';
+import { ok, fail, stripContext, spreadAdditionalProperty, pickWithAdditionalProperty } from './util';
+
+const ADDITIONAL_PROPERTY_MODE = UNKNOWN_ATTRIBUTES === 'additionalProperty';
 
 export function registerGetEntity(server: FastMCP): void {
     server.addTool({
@@ -33,12 +35,13 @@ export function registerGetEntity(server: FastMCP): void {
                     >;
                     return ok({ exists: true, id: head.id ?? id, type: head.type });
                 }
-                const body = stripContext(await readEntity(id, { pick, options: 'concise' }));
-                return ok(
-                    UNKNOWN_ATTRIBUTES === 'additionalProperty'
-                        ? spreadAdditionalProperty(body, ADDITIONAL_PROPERTY)
-                        : body
-                );
+                // No schema to tell modelled from collected names, so pull the whole
+                // container back whenever `pick` is set and let the spread do the rest.
+                const projected = ADDITIONAL_PROPERTY_MODE
+                    ? pickWithAdditionalProperty(pick, null, ADDITIONAL_PROPERTY)
+                    : pick;
+                const body = stripContext(await readEntity(id, { pick: projected, options: 'concise' }));
+                return ok(ADDITIONAL_PROPERTY_MODE ? spreadAdditionalProperty(body, ADDITIONAL_PROPERTY) : body);
             } catch (err) {
                 const e = err as Error;
                 if (/\b404\b|not found/i.test(e.message)) {

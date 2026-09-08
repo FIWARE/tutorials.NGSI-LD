@@ -1,10 +1,5 @@
-// Per-file prompt factory: one FastMCP prompt per prompts/*.json spec (lib/prompt.ts).
-// A spec's static fields (pick, relationships, rules, …) are stringified into the
-// `template` once per call; `{{tools}}` is resolved against the tools this server
-// instance actually exposes, falling back per-type to the matching generic tool
-// (query_entities / get_entity / get_entity_history) when the typed one isn't
-// registered — same QUERIABLE_TYPES/READABLE_TYPES/TEMPORAL_BROKER gating the typed
-// tools already respect, since `exposed` is built from what was actually registered.
+// One FastMCP prompt per prompts/*.json spec. Static fields are stringified into
+// `template`; `{{tools}}` resolves against `exposed`, per-type generic fallback.
 
 import type { FastMCP, InputPromptArgument } from 'fastmcp';
 import debug from 'debug';
@@ -19,9 +14,8 @@ const DEFAULT_TOOL: Record<string, string> = {
     'get_{{type}}_history': 'get_entity_history'
 };
 
-// A string as-is; an array joined with ", "; an object rendered as "key: value" pairs
-// joined with "; " (covers `pick` as either a flat list or a per-type map, `phrasing`,
-// `flagValues`, and any other object/array field a prompt file defines).
+// String as-is; array joined with ", "; object rendered as "key: value" pairs
+// joined with "; ". Covers `pick`, `phrasing`, `flagValues` and any other field.
 function stringifyField(value: unknown): string {
     if (Array.isArray(value)) {
         return value.map(stringifyField).join(', ');
@@ -34,9 +28,8 @@ function stringifyField(value: unknown): string {
     return String(value);
 }
 
-// Substitute {{type}} into each pattern for every type in turn, keeping a result
-// only when that tool is exposed; per type, fall back to the pattern's generic tool
-// when the typed one isn't. A pattern with no {{type}} is kept verbatim if exposed.
+// Substitute {{type}} into each pattern per type, keeping the result only if
+// exposed, else the generic fallback. A pattern with no {{type}} is kept if exposed.
 function resolveTools(tools: string[], types: string[], exposed: ReadonlySet<string>): string[] {
     const resolved: string[] = [];
     for (const pattern of tools) {

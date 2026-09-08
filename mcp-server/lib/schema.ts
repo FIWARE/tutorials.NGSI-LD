@@ -1,6 +1,5 @@
-// Load schemas/*.json, dereference $ref / flatten allOf, and derive the Zod
-// shapes each dynamic tool needs (input filters, concise output, temporal output).
-// See ARCHITECTURE.md §4 (lib/schema.ts) and §7.
+// Load schemas/*.json, dereference $ref, flatten allOf, and derive the Zod shapes
+// each dynamic tool needs (input filters, concise output, temporal). ARCHITECTURE.md §4, §7.
 
 import fs from 'fs';
 import path from 'path';
@@ -20,18 +19,18 @@ export interface LoadedSchema {
     toolDescription: string;
     inputShape: z.ZodRawShape;
     entityValidator: z.ZodTypeAny; // single concise entity, full required baseline, .passthrough()
-    entityValidatorLoose: z.ZodTypeAny; // same, all fields optional — used when `pick` narrows the response
+    entityValidatorLoose: z.ZodTypeAny; // same but all-optional, for when `pick` narrows the response
     temporalValidator: z.ZodTypeAny; // single temporalValues entity, .passthrough()
     required: string[];
     lowTrust: boolean;
     writeAttrs: Record<string, WriteAttr>; // per-attribute NGSI-LD encoding hints for the write tools
-    mobile: boolean; // x-mobile: the entity's `location` is a moving measurement
+    mobile: boolean; // x-mobile: `location` is a moving measurement
     raw: JsonSchemaNode; // dereferenced + flattened
     source: JsonSchemaNode; // as read from disk (served by the ontology resource)
 }
 
-// The eight NGSI-LD attribute types (ETSI GS CIM 009 §4.5.2), each with its own
-// value-bearing member — see VALUE_KEY in lib/normalize.ts.
+// The eight NGSI-LD attribute types; value-bearing member per type is VALUE_KEY
+// in lib/normalize.ts.
 export type NgsiAttrType =
     | 'Property'
     | 'GeoProperty'
@@ -53,8 +52,8 @@ export const NGSI_ATTR_TYPES: ReadonlySet<NgsiAttrType> = new Set([
     'JsonProperty'
 ]);
 
-// How a write tool must encode one attribute into normalised NGSI-LD, derived
-// from x-ngsi-type / x-unitCode / x-observedAt / enum on the flattened schema.
+// How a write tool encodes one attribute into normalised NGSI-LD, from
+// x-ngsi-type / x-unitCode / x-observedAt / enum on the flattened schema.
 export interface WriteAttr {
     ngsiType: NgsiAttrType;
     unitCode?: string;
@@ -149,10 +148,8 @@ function baseZod(p: JsonSchemaNode): z.ZodTypeAny {
     }
 }
 
-// options=concise: a flat primitive when there is no metadata, otherwise an object
-// holding the value/target plus metadata with the redundant "type" tag dropped.
-// The object branch also covers Relationship ({object}), GeoProperty ({value: GeoJSON})
-// and VocabProperty ({vocab}) forms, so `value` is checked against `base` only when present.
+// options=concise: a flat primitive with no metadata, else an object (value/target
+// plus metadata, no "type" tag) also covering Relationship / GeoProperty / VocabProperty.
 export function conciseValidator(base: z.ZodTypeAny): z.ZodTypeAny {
     return z.union([
         base,
@@ -176,7 +173,7 @@ function temporalValidator(base: z.ZodTypeAny): z.ZodTypeAny {
 
 // --- shape builder --------------------------------------------------------
 
-// Storage-platform timestamps — present on entities but never sensible query filters.
+// Storage-platform timestamps: on entities, but never sensible query filters.
 const SYSTEM_FIELDS = new Set(['dateCreated', 'dateModified', 'createdAt', 'modifiedAt']);
 
 export interface Shapes {
@@ -218,8 +215,8 @@ export function buildShapes(source: JsonSchemaNode, deref: JsonSchemaNode): Shap
         .filter(Boolean);
     const derived = source['x-derivedFrom'];
     const lowTrust = tags.includes('stub') || tags.includes('profile') || derived?.instances === 0;
-    // Any non-canonical schema (derived from broker introspection, SAREF, a context
-    // term or a parent model) has an unreliable `required` list — enforce only id/type.
+    // A non-canonical schema (broker introspection, SAREF, a context term, a parent
+    // model) has an unreliable `required` list, so enforce only id/type.
     const relaxRequired = lowTrust || !!derived;
     const required = relaxRequired ? ['id', 'type'] : schemaRequired;
 
@@ -230,7 +227,7 @@ export function buildShapes(source: JsonSchemaNode, deref: JsonSchemaNode): Shap
 
     for (const [key, prop] of Object.entries(properties)) {
         if (prop['x-ngsi-type'] === 'Command') {
-            continue; // write-only actuations — out of scope for the read-only tools
+            continue; // write-only actuations, out of scope for the read tools
         }
 
         if (key === 'id' || key === 'type') {
@@ -277,8 +274,8 @@ export function buildShapes(source: JsonSchemaNode, deref: JsonSchemaNode): Shap
     return {
         inputShape,
         entityValidator: entityObject.passthrough(),
-        // When the agent narrows with `pick`, the required baseline is intentionally
-        // absent — validate the types of whatever came back, require nothing.
+        // With `pick` the required baseline is intentionally absent: type-check
+        // whatever came back, require nothing.
         entityValidatorLoose: entityObject.partial().passthrough(),
         temporalValidator: z.object(temporalShape).passthrough(),
         required,
@@ -359,7 +356,7 @@ export async function loadSchemas(): Promise<LoadedSchema[]> {
             .readdirSync(SCHEMA_DIR)
             .filter(
                 (f) =>
-                    !f.startsWith('.') && // .gitkeep, .DS_Store, …
+                    !f.startsWith('.') && // .gitkeep, .DS_Store
                     f.endsWith('.json') &&
                     fs.statSync(path.join(SCHEMA_DIR, f)).isFile()
             );

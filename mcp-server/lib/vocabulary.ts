@@ -1,8 +1,5 @@
-// ontology://attributes — the canonical attribute *names* only. Per-attribute
-// detail (NGSI-LD type, unit, enum, constraints) lives in ontology://<model>/<type>,
-// which an agent reads first; this resource just fixes the spellings and lists
-// the NGSI-LD core terms (which are in no data model). Names come from the loaded
-// schemas plus, best effort, the deployment @context file at NGSI_LD_CONTEXT.
+// ontology://attributes: canonical attribute names plus the NGSI-LD core terms.
+// From the loaded schemas and, best effort, the @context at NGSI_LD_CONTEXT.
 
 import debug from 'debug';
 import { CONTEXT } from './constants';
@@ -13,14 +10,12 @@ const log = debug('mcp:vocab');
 export interface Vocabulary {
     note: string;
     contextRead: boolean;
-    core: Record<string, string>; // term → one-line meaning
+    core: Record<string, string>; // term -> one-line meaning
     attributes: string[];
 }
 
-// NGSI-LD core-context terms an agent needs when building an entity. Kept apart
-// because they are defined by the core context, not by any data model. `id`/`type`
-// are mandatory reserved members (not usable as attribute names); `datasetId` is
-// reserved too but out of scope for now.
+// NGSI-LD core-context terms, defined by the core context rather than any data
+// model. `id`/`type` are reserved members; `datasetId` is reserved, out of scope here.
 const CORE: Record<string, string> = {
     id: 'Unique entity identifier, a URI — conventionally urn:ngsi-ld:<Type>:<name>. Mandatory, immutable, reserved (JSON-LD keyword @id).',
     type: 'Entity type name. Mandatory, immutable, reserved (JSON-LD keyword @type).',
@@ -51,8 +46,8 @@ export async function buildVocabulary(schemas: LoadedSchema[]): Promise<Vocabula
         clearTimeout(timer);
         for (const [name, val] of Object.entries(body['@context'] ?? {})) {
             if (typeof val !== 'string' || name in CORE || attributes.has(name)) continue;
-            // Keep only terms that look like an attribute — not a namespace-prefix
-            // declaration, a type alias, an enum/vocab value, or an OSM building tag.
+            // Keep only attribute-looking terms: not a prefix declaration, type
+            // alias, enum/vocab value, or OSM building tag.
             if (
                 typeNames.has(name.toLowerCase()) ||
                 /^[A-Z]/.test(name) ||

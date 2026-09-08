@@ -1,16 +1,16 @@
-// Destructive tools, kept apart from ./write.ts so the irreversible operations are
-// easy to find and review. Gated by the WRITABLE master interlock. With
-// WRITABLE=true and no DELETABLE_TYPES list, registerGenericDelete adds
-// delete_entity / delete_entity_attribute covering any type; with a list,
-// registerDelete adds typed delete_<type> / delete_<type>_attribute per listed
-// type and no generic tool.
+// Destructive tools, kept apart from ./write.ts. Driven by WRITABLE. No DELETABLE_TYPES
+// list gives a generic delete pair; a list gives typed delete_<type> per listed type.
 
 import type { FastMCP } from 'fastmcp';
 import { z } from 'zod';
-import { deleteEntity, deleteAttribute } from '../../lib/ngsi-ld';
-import { WRITABLE, isDeletableType } from '../../lib/constants';
+import { deleteEntity, deleteAttribute, mergeEntity } from '../../lib/ngsi-ld';
+import { WRITABLE, isDeletableType, UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY } from '../../lib/constants';
 import type { LoadedSchema } from '../../lib/schema';
-import { ok, fail, is404, notFound, RESERVED_ATTRS } from './util';
+import { ok, fail, is404, notFound, RESERVED_ATTRS, isKnownAttr } from './util';
+
+// NGSI-LD merge-patch removes a member with the `urn:ngsi-ld:null` sentinel;
+// a literal JSON null does not delete.
+const NGSI_NULL = 'urn:ngsi-ld:null';
 
 const guardAttr = (attr: string): string | null =>
     RESERVED_ATTRS.has(attr) ? JSON.stringify({ error: `"${attr}" cannot be removed` }) : null;
@@ -37,6 +37,14 @@ export function registerDelete(server: FastMCP, schema: LoadedSchema, exposed: S
             try {
                 const bad = guardAttr(attr);
                 if (bad) return bad;
+                // Mirror update_<type>_attribute: an unmodelled attr lives in the
+                // JsonProperty, so remove it with the merge-patch null sentinel.
+                if (UNKNOWN_ATTRIBUTES === 'additionalProperty' && !isKnownAttr(attr, schema)) {
+                    await mergeEntity(id, {
+                        [ADDITIONAL_PROPERTY]: { type: 'JsonProperty', json: { [attr]: NGSI_NULL } }
+                    });
+                    return ok({ deleted: attr, from: id, into: ADDITIONAL_PROPERTY });
+                }
                 await deleteAttribute(id, attr);
                 return ok({ deleted: attr, from: id });
             } catch (err) {

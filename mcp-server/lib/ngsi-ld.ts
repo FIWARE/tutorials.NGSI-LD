@@ -1,9 +1,5 @@
-// Promise-chain fetch wrappers around the NGSI-LD Context Broker.
-//
-// Structure (promise chains, `parse()` helper, `Error` + `.cause`) mirrors
-// ../Step-by-Step/NGSI-LD/app/lib/ngsi-ld.ts — a STYLE reference only. Every path,
-// query parameter, header and status code below is taken from the ETSI NGSI-LD
-// OpenAPI v1.8.1 spec, not from that file.
+// Fetch wrappers around the NGSI-LD Context Broker. Paths, params, headers and
+// status codes follow the NGSI-LD API.
 
 import debug from 'debug';
 import {
@@ -36,9 +32,8 @@ async function parse(response: Response): Promise<unknown> {
     }
 }
 
-// Tenant selection is not the agent's concern: the resolved tenant (READ_TENANT
-// for reads, WRITE_TENANT for writes, TEMPORAL_TENANT for the temporal broker) is
-// applied to every request; undefined is the broker's default tenant.
+// The agent never picks a tenant. Reads use READ_TENANT, writes WRITE_TENANT,
+// temporal TEMPORAL_TENANT; undefined means the broker default.
 function setHeaders(tenant: string | undefined): Record<string, string> {
     const headers: Record<string, string> = {
         Accept: JSON_LD_HEADER,
@@ -51,9 +46,8 @@ function setHeaders(tenant: string | undefined): Record<string, string> {
     return headers;
 }
 
-// key=="value" clauses joined by ';' (logical AND). A value that already starts
-// with an operator (heartRate + ">60") is emitted verbatim so the agent can pass
-// ranges. Numeric-looking values stay unquoted.
+// key=="value" clauses joined by ';' (AND). A value already starting with an
+// operator passes through so the agent can send ranges; numeric values stay unquoted.
 function buildQuery(filters: Record<string, unknown> = {}): string {
     const clauses: string[] = [];
     for (const [key, raw] of Object.entries(filters)) {
@@ -75,9 +69,8 @@ function buildQuery(filters: Record<string, unknown> = {}): string {
     return clauses.join(';');
 }
 
-// Build the query string by hand with encodeURIComponent: URLSearchParams encodes
-// spaces as '+', which Orion-LD's `q` parser does not decode ( q=species=="dairy
-// cattle" would silently match nothing ). encodeURIComponent uses %20.
+// Build the query string by hand: URLSearchParams encodes spaces as '+', which
+// Orion-LD's `q` parser leaves undecoded and then matches nothing.
 function toQueryString(opts: Record<string, unknown>): string {
     const params: Record<string, unknown> = { ...opts };
 
@@ -96,7 +89,7 @@ function toQueryString(opts: Record<string, unknown>): string {
         delete params.format;
     }
     if (params.pick) {
-        // Always keep id/type so a projected entity is still identifiable and validatable.
+        // Keep id/type so a projected entity stays identifiable and validatable.
         const attrs = [
             ...new Set([
                 'id',
@@ -119,8 +112,8 @@ function toQueryString(opts: Record<string, unknown>): string {
         .join('&');
 }
 
-// Any 2xx is success — NGSI-LD brokers use 206 (not just 200) for a truncated
-// result, e.g. temporal `lastN` or a broker-side page cap. Only 3xx/4xx/5xx are errors.
+// Any 2xx is success. Brokers use 206 for a truncated result (temporal lastN, a
+// page cap), not just 200.
 function requestFull(
     url: string,
     tenant: string | undefined = READ_TENANT
@@ -149,11 +142,8 @@ function request(url: string, tenant: string | undefined = READ_TENANT): Promise
     return requestFull(url, tenant).then((d) => d.body);
 }
 
-// POST / PATCH / DELETE against the context broker. NGSI-LD write endpoints answer
-// 201/204 with an empty body on success; anything outside 2xx becomes an Error
-// carrying the ProblemDetails payload on `.cause`. Under WRITE_LOCAL_ONLY (default)
-// `local=true` is appended so the write is not cascaded to Context Source
-// Registrations (NGSI-LD §6.3.18).
+// POST / PATCH / DELETE. Non-2xx throws with the ProblemDetails body on `.cause`.
+// WRITE_LOCAL_ONLY adds `local=true` to stop the write cascading to registrations.
 function mutate(
     url: string,
     method: 'POST' | 'PATCH' | 'DELETE',
@@ -166,9 +156,8 @@ function mutate(
     const headers = setHeaders(tenant);
     const init: RequestInit = { method, headers };
     if (body !== undefined) {
-        // The @context travels in the Link header (set by setHeaders), so the body
-        // is plain application/json (or application/merge-patch+json) — Orion-LD
-        // rejects a Link header alongside an application/ld+json body.
+        // @context rides in the Link header, so the body is plain json / merge-patch+json.
+        // Orion-LD rejects a Link header next to an application/ld+json body.
         headers['Content-Type'] = contentType;
         init.body = JSON.stringify(body);
     }
@@ -191,14 +180,13 @@ function mutate(
         });
 }
 
-// POST /entities — create one entity (normalised NGSI-LD; @context via the Link header).
+// POST /entities: create one entity (normalised NGSI-LD; @context in the Link header).
 function createEntity(entity: Record<string, unknown>): Promise<unknown> {
     return mutate(`${CONTEXT_BROKER}/entities`, 'POST', entity);
 }
 
-// PATCH /entities/{entityId} with application/merge-patch+json (RFC 7386) — deep-
-// merges the partial entity, so nested objects (e.g. a JsonProperty's `json`) are
-// merged rather than replaced. 404 when the entity does not exist.
+// PATCH with merge-patch+json (RFC 7386): deep-merges the partial entity, so a
+// JsonProperty's `json` is merged not replaced. 404 when the entity is absent.
 function mergeEntity(entityId: string, patch: Record<string, unknown>): Promise<unknown> {
     return mutate(
         `${CONTEXT_BROKER}/entities/${encodeURIComponent(entityId)}`,
@@ -209,23 +197,19 @@ function mergeEntity(entityId: string, patch: Record<string, unknown>): Promise<
     );
 }
 
-// DELETE /entities/{entityId} — remove an entity and all of its attributes.
+// DELETE /entities/{entityId}: remove an entity and all of its attributes.
 function deleteEntity(entityId: string): Promise<unknown> {
     return mutate(`${CONTEXT_BROKER}/entities/${encodeURIComponent(entityId)}`, 'DELETE');
 }
 
-// POST /entities/{entityId}/attrs — append attributes (payload keyed by name).
-// On Orion-LD this merges into an existing attribute rather than replacing it, so
-// it is only used here to create an attribute that does not yet exist.
+// POST /entities/{id}/attrs: append attributes. Orion-LD merges into an existing
+// attribute, so this is only used to create one that does not exist yet.
 function appendAttribute(entityId: string, attr: string, node: unknown): Promise<unknown> {
     return mutate(`${CONTEXT_BROKER}/entities/${encodeURIComponent(entityId)}/attrs`, 'POST', { [attr]: node });
 }
 
-// PATCH /entities/{entityId}/attrs/{attrId} — partial update of one attribute
-// (payload is the attribute fragment without the name wrapper). Merges: the value
-// and any sub-attributes in the payload are updated, sub-attributes absent from it
-// are kept. 404 when the attribute does not exist. Chosen over PUT (attribute
-// replacement) which is newer and unevenly supported across brokers.
+// PATCH one attribute (fragment without the name wrapper): merges the value and
+// named sub-attributes, keeps the rest. 404 when absent. PUT is unevenly supported.
 function patchAttribute(entityId: string, attr: string, node: unknown): Promise<unknown> {
     return mutate(
         `${CONTEXT_BROKER}/entities/${encodeURIComponent(entityId)}/attrs/${encodeURIComponent(attr)}`,
@@ -234,7 +218,7 @@ function patchAttribute(entityId: string, attr: string, node: unknown): Promise<
     );
 }
 
-// DELETE /entities/{entityId}/attrs/{attrId} — remove one attribute.
+// DELETE /entities/{entityId}/attrs/{attrId}: remove one attribute.
 function deleteAttribute(entityId: string, attr: string): Promise<unknown> {
     return mutate(
         `${CONTEXT_BROKER}/entities/${encodeURIComponent(entityId)}/attrs/${encodeURIComponent(attr)}`,
@@ -242,9 +226,8 @@ function deleteAttribute(entityId: string, attr: string): Promise<unknown> {
     );
 }
 
-// A page of GET /entities results plus the metadata a caller needs to decide
-// whether it has seen the whole result set. `total` is the broker's
-// NGSILD-Results-Count, or null when the broker withheld the header.
+// A page of GET /entities results plus what the caller needs to tell if it has the
+// whole set. `total` is NGSILD-Results-Count, or null when the broker withheld it.
 interface EntityPage {
     entities: unknown[];
     total: number | null;
@@ -253,19 +236,14 @@ interface EntityPage {
     returned: number;
 }
 
-// GET /entities — always requests `count=true` so the response carries the total
-// match count; controllers/tools/util.okPage turns that into an explicit
-// "more data available" notice for the agent. `metadataOnly` is the HEAD-style
-// "how many match" query: the single returned row is discarded, leaving just the
-// count and an empty array, while the EntityPage still reports the caller's own
-// limit so the pagination block stays meaningful.
+// GET /entities with count=true so the response carries the match total (util.okPage
+// turns it into a "more data" notice). metadataOnly keeps the count, drops the rows.
 function listEntities(opts: Record<string, unknown>): Promise<EntityPage> {
     const { metadataOnly, ...rest } = opts;
     const limit = Number(opts.limit) || ENTITY_LIMIT;
     const offset = Math.max(0, Math.floor(Number(opts.offset) || 0));
-    // limit=0 is the natural count-only form, but Orion-LD returns an unreliable
-    // NGSILD-Results-Count for it (0 on some tenants); limit=1 always reports the
-    // true count, and the row it returns is dropped below.
+    // limit=0 is the natural count-only form but Orion-LD's NGSILD-Results-Count is
+    // unreliable for it; limit=1 always reports the true count and the row is dropped.
     const query = toQueryString({
         ...rest,
         limit: metadataOnly === true ? 1 : limit,
@@ -285,11 +263,8 @@ function readEntity(entityId: string, opts: Record<string, unknown>): Promise<un
     return request(`${CONTEXT_BROKER}/entities/${encodeURIComponent(entityId)}?${toQueryString(opts)}`);
 }
 
-// GET /temporal/entities/{entityId} — against the (optionally distinct) temporal
-// broker, under TEMPORAL_TENANT (independent of READ_TENANT). Only reached when
-// TEMPORAL_BROKER is set: the history tools are gated on it. Projection goes out
-// as `attrs`, which the temporal endpoints support far more widely than the newer
-// `pick` parameter.
+// GET /temporal/entities/{id} against the temporal broker under TEMPORAL_TENANT.
+// Projection goes as `attrs`, supported far more widely than `pick` on temporal.
 function readTemporalEntity(entityId: string, opts: Record<string, unknown>): Promise<unknown> {
     const { pick, ...rest } = opts;
     if (pick) {
@@ -305,22 +280,22 @@ function readTemporalEntity(entityId: string, opts: Record<string, unknown>): Pr
     );
 }
 
-// GET /types  (details=false → EntityTypeList, details=true → EntityType[])
+// GET /types  (details=false -> EntityTypeList, details=true -> EntityType[])
 function listTypes(details = true): Promise<unknown> {
     return request(`${CONTEXT_BROKER}/types?${toQueryString({ details })}`);
 }
 
-// GET /types/{type} → EntityTypeInfo
+// GET /types/{type} -> EntityTypeInfo
 function readType(type: string): Promise<unknown> {
     return request(`${CONTEXT_BROKER}/types/${encodeURIComponent(type)}`);
 }
 
-// GET /attributes  (details=false → AttributeList, details=true → Attribute[])
+// GET /attributes  (details=false -> AttributeList, details=true -> Attribute[])
 function listAttributes(details = true): Promise<unknown> {
     return request(`${CONTEXT_BROKER}/attributes?${toQueryString({ details })}`);
 }
 
-// GET /attributes/{attrId} → Attribute
+// GET /attributes/{attrId} -> Attribute
 function readAttribute(attrId: string): Promise<unknown> {
     return request(`${CONTEXT_BROKER}/attributes/${encodeURIComponent(attrId)}`);
 }

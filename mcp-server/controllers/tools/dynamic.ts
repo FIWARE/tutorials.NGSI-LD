@@ -21,30 +21,37 @@ import {
     validateList,
     validateOne,
     okPage,
-    spreadAdditionalProperty
+    spreadAdditionalProperty,
+    rewriteAdditionalPropertyQuery,
+    pickWithAdditionalProperty
 } from './util';
+
+const ADDITIONAL_PROPERTY_MODE = UNKNOWN_ATTRIBUTES === 'additionalProperty';
 
 // In additionalProperty mode, lift the collected JsonProperty members back to the
 // top level of every returned entity so they read as ordinary fields.
 const unbundle = <T>(e: T): T =>
-    UNKNOWN_ATTRIBUTES === 'additionalProperty' ? spreadAdditionalProperty(e, ADDITIONAL_PROPERTY) : e;
+    ADDITIONAL_PROPERTY_MODE ? spreadAdditionalProperty(e, ADDITIONAL_PROPERTY) : e;
 
-// Sub-attribute filtering uses bracket syntax in a raw `q`, e.g.
-// q=address[addressLocality]=="Tiergarten"; collected data is at
-// q=<ADDITIONAL_PROPERTY>[<key>]==<value>.
-const Q_HELP =
-    UNKNOWN_ATTRIBUTES === 'additionalProperty'
-        ? ` Filter a sub-attribute with bracket syntax, e.g. \`${ADDITIONAL_PROPERTY}[colour]=="red"\` or \`address[addressLocality]=="Tiergarten"\`.`
-        : ' Filter a sub-attribute with bracket syntax, e.g. `address[addressLocality]=="Tiergarten"`.';
+// Sub-attributes filter with bracket syntax, e.g. q=address[addressLocality]=="x".
+// In additionalProperty mode an unmodelled attr filters by its plain name (server-mapped).
+const Q_HELP = ' Filter a sub-attribute with bracket syntax, e.g. `address[addressLocality]=="Tiergarten"`.';
 
-// Returns the number of typed tools registered for this schema. `exposed` collects
-// every registered tool name so controllers/prompts/dynamic.ts can tell which
-// typed tools actually exist when resolving a prompt's {{tools}} placeholder.
+// Returns the count of typed tools registered for this schema. `exposed` collects
+// their names for controllers/prompts/dynamic.ts to resolve a prompt's {{tools}}.
 export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: Set<string>): number {
     const stem = schema.typeName.toLowerCase();
     let count = 0;
 
-    // query_<type> — current state. Gated on QUERIABLE_TYPES.
+    // Attribute names this schema models. In additionalProperty mode a raw `q`
+    // clause or a `pick` entry on anything else is remapped onto the container.
+    const modelledAttrs: ReadonlySet<string> = new Set(Object.keys(schema.writeAttrs));
+    const projectPick = (pick: unknown): string | undefined =>
+        ADDITIONAL_PROPERTY_MODE
+            ? pickWithAdditionalProperty(pick as string | undefined, modelledAttrs, ADDITIONAL_PROPERTY)
+            : (pick as string | undefined);
+
+    // query_<type>: current state. Driven by QUERIABLE_TYPES.
     if (isQueriableType(schema.typeName)) {
         count++;
         exposed.add(`query_${stem}`);
@@ -76,11 +83,14 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
             execute: async (args: Record<string, unknown>) => {
                 try {
                     const { q, pick, limit, offset, metadataOnly, ...filters } = args;
+                    const rawQ = ADDITIONAL_PROPERTY_MODE
+                        ? rewriteAdditionalPropertyQuery(q as string | undefined, modelledAttrs, ADDITIONAL_PROPERTY)
+                        : (q as string | undefined);
                     const page = await listEntities({
                         type: schema.typeName,
                         filters,
-                        q,
-                        pick,
+                        q: rawQ,
+                        pick: projectPick(pick),
                         limit: clampLimit(limit as number | undefined),
                         offset: offset as number | undefined,
                         metadataOnly,
@@ -106,7 +116,7 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
         });
     }
 
-    // get_<type> — single entity. Gated on READABLE_TYPES.
+    // get_<type>: single entity. Driven by READABLE_TYPES.
     if (isReadableType(schema.typeName)) {
         count++;
         exposed.add(`get_${stem}`);
@@ -135,7 +145,7 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
                         >;
                         return ok({ exists: true, id: head.id ?? id, type: head.type });
                     }
-                    const body = await readEntity(id, { pick, options: 'concise' });
+                    const body = await readEntity(id, { pick: projectPick(pick), options: 'concise' });
                     const validator = pick ? schema.entityValidatorLoose : schema.entityValidator;
                     const res = validateOne(stripContext(body), validator);
                     return ok('data' in res ? { ...res, data: unbundle(res.data) } : res);
@@ -152,7 +162,7 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
         });
     }
 
-    // get_<type>_history — temporal trend. Gated on READABLE_TYPES and a configured temporal broker.
+    // get_<type>_history: temporal trend. Driven by READABLE_TYPES and TEMPORAL_BROKER.
     if (isReadableType(schema.typeName) && TEMPORAL_BROKER) {
         count++;
         exposed.add(`get_${stem}_history`);

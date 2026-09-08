@@ -1,8 +1,5 @@
-// Write tools. Gated by the WRITABLE master interlock. With WRITABLE=true and no
-// WRITABLE_TYPES list, registerGenericWrite adds one create_entity /
-// update_entity_attribute pair covering any type; with a WRITABLE_TYPES list,
-// registerWrite adds a typed create_<type> / update_<type>_attribute per listed
-// type and no generic tool. Destructive removal lives in ./delete.ts.
+// Write tools, driven by WRITABLE. No WRITABLE_TYPES list gives a generic create /
+// update pair; a list gives typed create_<type> / update_<type>_attribute. Delete is ./delete.ts.
 
 import type { FastMCP } from 'fastmcp';
 import { z } from 'zod';
@@ -17,12 +14,10 @@ import {
 } from '../../lib/constants';
 import { normalizeAttribute } from '../../lib/normalize';
 import type { LoadedSchema } from '../../lib/schema';
-import { ok, fail, is404, notFound, RESERVED_ATTRS } from './util';
+import { ok, fail, is404, notFound, RESERVED_ATTRS, isKnownAttr } from './util';
 
-// A value of any JSON type. Spelled as an explicit anyOf, and the object branch as
-// z.object({}).passthrough() (→ additionalProperties: true) rather than
-// z.record(z.any()) (→ a bare {}), so every branch of the emitted JSON Schema
-// carries a real validation keyword — some MCP clients reject a bare `{}`.
+// Any JSON value. Explicit anyOf, object branch as z.object({}).passthrough(), so
+// every branch of the emitted JSON Schema has a keyword; some MCP clients reject a bare {}.
 const jsonValue = z.union([
     z.string(),
     z.number(),
@@ -32,17 +27,10 @@ const jsonValue = z.union([
     z.object({}).passthrough()
 ]);
 
-// Core-context terms valid on any entity even when a schema omits them.
-const CORE_ENTITY_ATTRS = new Set(['description', 'title', 'location']);
-
-const isKnown = (name: string, schema: LoadedSchema): boolean =>
-    name in schema.writeAttrs || CORE_ENTITY_ATTRS.has(name);
-
 type Composed = { entity: Record<string, unknown> } | { error: string };
 
-// Build the normalised entity, applying UNKNOWN_ATTRIBUTES to any name not in the
-// type's schema: accept (encode best-effort), reject (fail), or additionalProperty
-// (collect into one JsonProperty named ADDITIONAL_PROPERTY, per schema.org).
+// Build the normalised entity, applying UNKNOWN_ATTRIBUTES (accept / reject /
+// additionalProperty) to any name not in the type's schema.
 function composeEntity(id: string, type: string, attrs: Record<string, unknown>, schema: LoadedSchema): Composed {
     const entity: Record<string, unknown> = { id, type };
     const extra: Record<string, unknown> = {};
@@ -54,7 +42,7 @@ function composeEntity(id: string, type: string, attrs: Record<string, unknown>,
             Object.assign(extra, value as Record<string, unknown>);
             continue;
         }
-        if (isKnown(name, schema) || UNKNOWN_ATTRIBUTES === 'accept') {
+        if (isKnownAttr(name, schema) || UNKNOWN_ATTRIBUTES === 'accept') {
             entity[name] = normalizeAttribute(name, value, schema.writeAttrs[name], {
                 mobile: schema.mobile,
                 providedBy: PROVIDED_BY
@@ -78,8 +66,8 @@ function composeEntity(id: string, type: string, attrs: Record<string, unknown>,
     return { entity };
 }
 
-// PATCH the attribute (partial merge); on 404 the attribute does not exist yet, so
-// POST it to create. A missing entity 404s both calls — mapped to notFound.
+// PATCH the attribute; on 404 it does not exist yet, so POST to create it. A
+// missing entity 404s both calls and maps to notFound.
 async function patchOrAppend(id: string, attr: string, node: unknown): Promise<'merged' | 'created'> {
     try {
         await patchAttribute(id, attr, node);
@@ -93,9 +81,8 @@ async function patchOrAppend(id: string, attr: string, node: unknown): Promise<'
     }
 }
 
-// Apply UNKNOWN_ATTRIBUTES to a single-attribute update. When the attr is not in
-// the schema and the mode is additionalProperty, it is deep-merged into the
-// JsonProperty via merge-patch rather than written as its own attribute.
+// Single-attribute update under UNKNOWN_ATTRIBUTES. In additionalProperty mode an
+// unmodelled attr is merge-patched into the JsonProperty, not written on its own.
 async function updateOne(
     id: string,
     attr: string,
@@ -103,7 +90,7 @@ async function updateOne(
     schema: LoadedSchema | undefined,
     over: { unitCode?: string; observedAt?: string }
 ): Promise<Record<string, unknown>> {
-    if (schema && !isKnown(attr, schema)) {
+    if (schema && !isKnownAttr(attr, schema)) {
         if (UNKNOWN_ATTRIBUTES === 'reject') {
             return {
                 error: `Unknown attribute "${attr}" for ${schema.typeName}. Only ${schema.typeName} schema attributes ` +
@@ -130,8 +117,8 @@ const attrOverrides = {
     observedAt: z.string().optional().describe('Override observedAt with an explicit ISO8601 timestamp.')
 };
 
-// The attribute vocabulary is only useful when new names can be added — in reject
-// mode it is not loaded, so do not point at it.
+// The attribute vocabulary only helps when new names can be added; reject mode
+// does not load it, so do not point there.
 const CANON = UNKNOWN_ATTRIBUTES === 'reject' ? '' : ' Canonical attribute names: `ontology://attributes`.';
 
 // ---- typed: one pair per type named in WRITABLE_TYPES ----------------------
@@ -228,7 +215,7 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
     }
     const byType = new Map(schemas.map((s) => [s.typeName.toLowerCase(), s]));
     const typeNames = schemas.map((s) => s.typeName).sort();
-    // Creation is restricted to types with a loaded schema — no schema, no create.
+    // Creation is restricted to types with a loaded schema.
     const typeParam =
         typeNames.length > 0
             ? z.enum(typeNames as [string, ...string[]])

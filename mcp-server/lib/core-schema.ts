@@ -1,7 +1,5 @@
-// Load the NGSI-LD context-discovery response schemas (ngsi-schemas/*.json) and
-// build a Zod validator per type. These describe the responses of GET /types,
-// /types/{type}, /attributes and /attributes/{attrId} — see ETSI GS CIM 009
-// clauses 5.2.24–5.2.28. options=concise / keyValues never apply to these payloads.
+// Load the context-discovery response schemas (ngsi-schemas/*.json), one Zod validator
+// per type: the GET /types, /types/{type}, /attributes, /attributes/{attrId} responses.
 
 import fs from 'fs';
 import path from 'path';
@@ -66,7 +64,7 @@ function toZod(node: JsonSchemaNode): z.ZodTypeAny {
 async function loadOne(file: string): Promise<CoreSchema> {
     const full = path.join(CORE_SCHEMA_DIR, file);
     const source = JSON.parse(fs.readFileSync(full, 'utf-8')) as JsonSchemaNode;
-    // EntityTypeInfo $refs ./Attribute.json — resolved against the same folder, offline.
+    // EntityTypeInfo $refs ./Attribute.json, resolved against the same folder, offline.
     const deref = (await dereference(full, { dereference: { circular: 'ignore' } })) as JsonSchemaNode;
     return { typeName: path.basename(file, '.json'), source, validator: toZod(deref) };
 }

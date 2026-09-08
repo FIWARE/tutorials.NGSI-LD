@@ -29,12 +29,11 @@ const log = debug('mcp:server');
 export async function buildServer(): Promise<FastMCP> {
     const server = new FastMCP({ name: 'ngsi-ld-mcp-server', version: '1.0.0' });
 
-    // Every tool name actually registered below — prompts/*.json's {{tools}}
-    // placeholder is resolved against this, so a prompt only ever names a tool
-    // this server instance exposes.
+    // Every tool name registered below. prompts/*.json's {{tools}} resolves against
+    // this, so a prompt only ever names a tool this instance exposes.
     const exposed = new Set<string>();
 
-    // Core NGSI-LD tools — always present.
+    // Core NGSI-LD tools, always present.
     const core = await loadCoreSchemas();
     registerContextDiscoveryTools(server, core);
     registerQueryEntities(server);
@@ -43,22 +42,21 @@ export async function buildServer(): Promise<FastMCP> {
     exposed.add('get_entity');
     registerGeoQuery(server);
     exposed.add('query_entities_geo');
-    // Temporal interface is optional — no TEMPORAL_BROKER ⇒ no history tools.
+    // No TEMPORAL_BROKER, no history tools.
     if (TEMPORAL_BROKER) {
         registerGetEntityHistory(server);
         exposed.add('get_entity_history');
     }
 
-    // Ontology resources document every loaded type regardless; typed per-type
-    // tools are generated only for the types named in QUERIABLE_TYPES / READABLE_TYPES.
+    // Ontology resources cover every loaded type; typed per-type tools are generated
+    // only for QUERIABLE_TYPES / READABLE_TYPES.
     const schemas = await loadSchemas();
 
-    // Fail fast: a default configured for a type we have no schema for is a config
-    // error, not something to silently ignore.
+    // A default for a type with no loaded schema is a config error, not ignorable.
     const loadedTypes = new Set(schemas.map((s) => s.typeName.toLowerCase()));
     for (const type of ENTITY_DEFAULTS.keys()) {
         if (!loadedTypes.has(type.toLowerCase())) {
-            throw new Error(`ENTITY_DEFAULTS names unknown type "${type}" — no schema is loaded for it`);
+            throw new Error(`ENTITY_DEFAULTS names unknown type "${type}"; no schema is loaded for it`);
         }
     }
 
@@ -66,12 +64,12 @@ export async function buildServer(): Promise<FastMCP> {
     let writeTools = 0;
     for (const schema of schemas) {
         typedTools += registerDynamic(server, schema, exposed);
-        // No-ops unless WRITABLE=true AND the type is named in WRITABLE_TYPES / DELETABLE_TYPES.
+        // No-ops unless WRITABLE=true and the type is in WRITABLE_TYPES / DELETABLE_TYPES.
         writeTools += registerWrite(server, schema, exposed);
         writeTools += registerDelete(server, schema, exposed);
     }
-    // With WRITABLE=true and no list, the generic tool stands in for the typed stubs
-    // (write and delete decided independently).
+    // WRITABLE=true with no list: the generic tool stands in (write and delete
+    // decided independently).
     if (WRITABLE && !WRITABLE_TYPES_LISTED) {
         writeTools += registerGenericWrite(server, schemas, exposed);
     }
@@ -79,14 +77,14 @@ export async function buildServer(): Promise<FastMCP> {
         writeTools += registerGenericDelete(server, exposed);
     }
     registerOntology(server, schemas);
-    // The attribute vocabulary is a guide for adding new attribute names — pointless
-    // (and the @context fetch it does is wasted) when unmodelled names are rejected.
+    // The attribute vocabulary guides adding new names; pointless (and its @context
+    // fetch wasted) when unmodelled names are rejected.
     if (UNKNOWN_ATTRIBUTES !== 'reject') {
         registerAttributeVocabulary(server, await buildVocabulary(schemas));
     }
     registerContextDiscoveryResources(server);
 
-    // Prompts are opt-in via PROMPTS_DIR, same mounted-volume pattern as schemas.
+    // Prompts are opt-in via PROMPTS_DIR.
     const prompts = loadPrompts();
     const promptCount = registerPrompts(server, prompts, exposed);
 

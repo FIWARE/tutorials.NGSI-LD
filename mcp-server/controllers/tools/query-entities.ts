@@ -42,6 +42,8 @@ export function registerQueryEntities(server: FastMCP): void {
         }),
         execute: async ({ type, q, pick, limit, offset, metadataOnly }) => {
             try {
+                // No schema, so `q` is not rewritten the way typed query_<type> tools do:
+                // a filter on an unmodelled attr must use `additionalProperty[<name>]` here.
                 const page = await listEntities({
                     type,
                     q,

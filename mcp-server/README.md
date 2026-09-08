@@ -6,163 +6,145 @@
 [![NGSI LD](https://img.shields.io/badge/NGSI-LD-d6604d.svg)](https://cim.etsi.org/NGSI-LD/official/front-page.html)
 [![JSON LD](https://img.shields.io/badge/JSON--LD-1.1-f06f38.svg)](https://w3c.github.io/json-ld-syntax/)
 
-TypeScript [`fastmcp`](https://github.com/punkpeye/fastmcp) application for use with the FIWARE Step-by-Step tutorials. This
-is a **Model Context Protocol (MCP) server** that exposes an NGSI-LD Context Broker  to Large Language Model
-agents as a set of tools and resources.
+A TypeScript [`fastmcp`](https://github.com/punkpeye/fastmcp) application for the FIWARE Step-by-Step tutorials: a
+**Model Context Protocol (MCP) server** that exposes an NGSI-LD Context Broker to Large Language Model agents as tools
+and resources.
 
-The server does the protocol work an LLM should not: it translates a request such as `{ "type": "Animal" }` into
+It does the NGSI-LD protocol work an LLM should not. It turns a request like `{ "type": "Animal" }` into
 `GET /entities?type=Animal`, injects the JSON-LD `@context` through the `Link` header on every broker call, validates the
-response against a schema, and shapes the NGSI-LD payload into a token-efficient form. Its main features include:
+response against a schema, and returns a token-efficient shape.
 
-*   **Generic tools**: `query_entities`, `get_entity` and `query_entities_geo` cover any entity type with an NGSI-LD `q`
-    filter, attribute projection (`pick`) and the broker geo engine (`georel` / `geometry` / `coordinates`);
-    `get_entity_history` adds the temporal interface (`timerel` / `timeAt`) when `TEMPORAL_BROKER` is set. An optional
-    `metadataOnly` flag turns any read into a headers-only probe: on `query_*` it sends `limit=0` and returns just the
-    `pagination` block (`total`, `hasMore`, `nextOffset`, …) with an empty `entities` array; on `get_entity` /
-    `get_<type>` it is an existence check, returning `{ exists, id, type }` (a missing entity yields `{ exists: false }`
-    rather than an error).
-*   **Schema-driven tools** (opt-in per type): for each Smart Data Models `schema.json` supplied at start up, a typed
-    `query_<type>` is generated when the type is listed in `QUERIABLE_TYPES` and a `get_<type>` (plus `get_<type>_history`
-    when `TEMPORAL_BROKER` is set) when it is listed in `READABLE_TYPES`. Both lists default to empty — the ontology
-    resources below document every type regardless and the generic tools cover retrieval, so the typed tools' per-type
-    context cost is only worth paying for a small, stable set.
-*   **Write tools** (off unless `WRITABLE=true`): with the master `WRITABLE` interlock set, an unset `WRITABLE_TYPES`
-    gives a generic `create_entity` / `update_entity_attribute` pair (any type), and a set `WRITABLE_TYPES` swaps that for
-    typed `create_<type>` / `update_<type>_attribute` stubs. `DELETABLE_TYPES` does the same independently for
-    `delete_entity` / `delete_entity_attribute` vs typed `delete_<type>` / `delete_<type>`. `ENTITY_DEFAULTS` supplies
-    per-type default attribute values for creates. The agent supplies attributes in simplified
-    `name: value` form; the server encodes the NGSI-LD attribute type (any of the eight — `Property`, `GeoProperty`,
-    `Relationship`, `VocabProperty`, `LanguageProperty`, `ListProperty`, `ListRelationship`, `JsonProperty`), `unitCode`
-    and `observedAt` from the schema's `x-ngsi-type` / `x-unitCode` / `x-observedAt` keywords (a `location` GeoProperty is
-    timestamped only when the schema carries `x-mobile: true`; a bare `[lng, lat]` array is expanded to a GeoJSON Point).
-    `create_<type>` enforces the schema's required attributes. `update_<type>_attribute` merges into one attribute
-    (`PATCH /entities/{id}/attrs/{attrId}` — the value and any sub-attributes in the call are updated, sub-attributes
-    absent from it are kept), falling back to `POST /entities/{id}/attrs` to create the attribute when it is absent; it
-    accepts `unitCode` / `observedAt` overrides. `PATCH` is used rather than `PUT` attribute replacement, which is newer
-    and unevenly supported across brokers. When `PROVIDED_BY` is set its URN is attached as a `providedBy` link to every
-    measurement the write tools assert.
-*   **Context discovery**: `list_entity_types`, `get_entity_type`, `list_attributes` and `get_attribute` wrap the NGSI-LD
+## Features
+
+-   **Generic tools**: `query_entities`, `get_entity` and `query_entities_geo` work on any type, with an NGSI-LD `q`
+    filter, attribute projection (`pick`) and the broker geo engine (`georel` / `geometry` / `coordinates`).
+    `get_entity_history` adds the temporal interface (`timerel` / `timeAt`) when `TEMPORAL_BROKER` is set. `metadataOnly`
+    turns any read into a probe: on `query_*` it returns just the `pagination` block with an empty `entities` array; on
+    `get_entity` / `get_<type>` it is an existence check returning `{ exists, id, type }` (a missing entity gives
+    `{ exists: false }`, not an error).
+-   **Schema-driven tools** (opt-in per type): for each Smart Data Models `schema.json` loaded at start-up, a typed
+    `query_<type>` when the type is in `QUERIABLE_TYPES`, and `get_<type>` (plus `get_<type>_history` when
+    `TEMPORAL_BROKER` is set) when it is in `READABLE_TYPES`. Both lists default to empty. The ontology resources document
+    every type regardless and the generic tools cover retrieval, so typed tools only earn their context cost for a small,
+    stable set.
+-   **Write tools** (off unless `WRITABLE=true`): with `WRITABLE` set, an unset `WRITABLE_TYPES` gives a generic
+    `create_entity` / `update_entity_attribute` pair; a set list swaps that for typed `create_<type>` /
+    `update_<type>_attribute`. `DELETABLE_TYPES` does the same, independently, for delete. `ENTITY_DEFAULTS` supplies
+    per-type default values for creates. The agent passes attributes as `name: value`; the server encodes the NGSI-LD
+    attribute type (one of the eight: `Property`, `GeoProperty`, `Relationship`, `VocabProperty`, `LanguageProperty`,
+    `ListProperty`, `ListRelationship`, `JsonProperty`), `unitCode` and `observedAt` from the schema's `x-ngsi-type` /
+    `x-unitCode` / `x-observedAt` keywords. A `location` GeoProperty is timestamped only when the schema has
+    `x-mobile: true`; a bare `[lng, lat]` becomes a GeoJSON Point. `create_<type>` enforces required attributes.
+    `update_<type>_attribute` merges one attribute (value and named sub-attributes updated, the rest kept), creates it if
+    absent, and takes `unitCode` / `observedAt` overrides. `PROVIDED_BY`, when set, is attached as a `providedBy` link to
+    every asserted measurement.
+-   **Context discovery**: `list_entity_types`, `get_entity_type`, `list_attributes` and `get_attribute` wrap the
     `/types` and `/attributes` endpoints for run-time introspection.
-*   **Prompts** (opt-in): each `prompt.json` supplied at start up (see `PROMPTS_DIR`) becomes an MCP prompt whose
-    template names the tools this server instance actually exposes, falling back to the matching generic tool for any
-    type without a typed one.
-*   **Resources**: the dereferenced schema for each model is served at `ontology://<model>/<type>`; `ontology://attributes`
-    is the canonical attribute-*name* list — `core` (the NGSI-LD core terms, each with a one-line meaning since they are
-    in no model) and `attributes` (one sorted list of every attribute name across the loaded models and the deployment
-    `@context`). Per-attribute detail (type, unit, enum) stays in `ontology://<model>/<type>`. Plus live `ngsi://types`
-    and `ngsi://attributes` views of the broker.
-*   **`@context` injection**: the agent never sees or handles a context URI; the server adds the `Link` header on every
-    call (reads accept `application/ld+json`; writes send a plain `application/json` body so the `Link` header carries
-    the context).
+-   **Prompts** (opt-in): each `prompt.json` (see `PROMPTS_DIR`) becomes an MCP prompt whose template names the tools this
+    instance exposes, falling back to the generic tool for any type without a typed one.
+-   **Resources**: each model's dereferenced schema is served at `ontology://<model>/<type>`. `ontology://attributes` is
+    the canonical attribute-name list: `core` (the NGSI-LD core terms, each with a one-line meaning) and `attributes`
+    (every attribute name across the loaded models and the deployment `@context`, sorted). `ngsi://types` and
+    `ngsi://attributes` are live views of the broker.
+-   **`@context` injection**: the agent never handles a context URI. The server adds the `Link` header on every call;
+    reads accept `application/ld+json`, writes send a plain `application/json` body so the `Link` header carries the
+    context.
 
-To run the application in debug mode add `DEBUG=mcp:*`. All logging is written to `stderr` so it is safe alongside the
-stdio transport.
+Add `DEBUG=mcp:*` for debug output. All logging goes to `stderr`, safe alongside the stdio transport.
 
 ## Environment Variables
 
-### Core Configuration
+### Core
 
--   `MCP_TRANSPORT` - Transport the server listens on, `stdio` or `http`. Default: `stdio` (the Docker image sets `http`).
+-   `MCP_TRANSPORT` - `stdio` or `http`. Default: `stdio` (the Docker image sets `http`).
 -   `MCP_PORT` - Port for the HTTP-stream transport. Default: `3000`.
--   `DEBUG` - Debug level. Set to `mcp:*` for full output on `stderr`.
+-   `DEBUG` - Set to `mcp:*` for full output on `stderr`.
 
 ### Context Broker
 
--   `CONTEXT_BROKER` - Base path of the target Context Broker. Default: `http://localhost:1026/ngsi-ld/v1`.
--   `TEMPORAL_BROKER` - Base path of the NGSI-LD temporal interface, which may be a separate service (e.g.
-    Mintaka). Optional, no default. When unset the history tools (`get_entity_history` and every `get_<type>_history`) are
-    not registered.
--   `NGSI_LD_CONTEXT` - JSON-LD `@context` added to the `Link` header on every broker call. Default:
+-   `CONTEXT_BROKER` - Base path of the target broker. Default: `http://localhost:1026/ngsi-ld/v1`.
+-   `TEMPORAL_BROKER` - Base path of the temporal interface, which may be a separate service (e.g. Mintaka for Orion). No default;
+    unset means the history tools are not registered.
+-   `NGSI_LD_CONTEXT` - JSON-LD `@context` added to the `Link` header on every call. Default:
     `http://context/ngsi-context.jsonld`.
--   `READ_TENANT` - Value for the `NGSILD-Tenant` header (paired with `NGSILD-Path: /`) on **read** requests against
-    `CONTEXT_BROKER` (queries, retrievals, context discovery). Unset means the broker default tenant.
--   `WRITE_TENANT` - Same, for **write / delete** requests (`create_*`, `update_*`, `delete_*`). Independent of
-    `READ_TENANT` — it does **not** fall back to it — so a deployment can read federated data from one tenant and write
-    to another. Unset means the broker default tenant.
--   `WRITE_LOCAL_ONLY` - When not `false` (the **default**), every write appends `?local=true` so the broker does not
-    cascade it to matching Context Source Registrations (NGSI-LD §6.3.18 — avoids distributed writes and loops). Set
-    `WRITE_LOCAL_ONLY=false` to allow a write to propagate to registered context sources.
--   `TEMPORAL_TENANT` - Same as `READ_TENANT` but for requests against `TEMPORAL_BROKER` — independent, since the
-    temporal service may be scoped to its own tenant. Unset means the broker default tenant (does not fall back to
-    `READ_TENANT`).
+-   `READ_TENANT` - `NGSILD-Tenant` header (with `NGSILD-Path: /`) on read requests. Unset means the broker's default tenant.
+-   `WRITE_TENANT` - Same, for write and delete requests. Independent of `READ_TENANT`, no fallback, so reads and writes
+    can target different tenants.
+-   `WRITE_LOCAL_ONLY` - Defaults to a `true`, every write appends `?local=true` so the broker does not cascade it
+    to matching Context Source Registrations. Set `false` to let writes propagate.
+-   `TEMPORAL_TENANT` - Like `READ_TENANT`, for `TEMPORAL_BROKER` requests. Independent, no fallback.
 
 ### Schemas
 
--   `SCHEMA_DIR` - Directory of Smart Data Models `schema.json` files, one flat folder, plus a `common/` sub-directory
-    holding the GSMA and domain commons for offline `$ref` resolution. Default: `./schemas`. The Docker image sets
-    `/schemas` and expects it to be a mounted volume. An empty or absent directory is valid - the server then offers the
-    generic and context-discovery tools only.
--   `NGSI_CORE_SCHEMA_DIR` - Directory of the bundled NGSI-LD context-discovery response schemas
-    (`EntityTypeList`, `EntityType`, `EntityTypeInfo`, `AttributeList`, `Attribute`). Default: `./ngsi-schemas`. Shipped
-    inside the image; you should not need to change this.
--   `QUERIABLE_TYPES` - Comma-separated list of type names (case-insensitive) to generate a typed `query_<type>` tool for;
-    `*` for all loaded types, unset for none. Default: unset.
--   `READABLE_TYPES` - Comma-separated list of type names (case-insensitive) to generate a typed `get_<type>` tool for
-    (and `get_<type>_history` when `TEMPORAL_BROKER` is set); `*` for all loaded types, unset for none. Default: unset.
-    Regardless of these lists, every loaded schema is served as an `ontology://<model>/<type>` resource and the generic
-    tools handle retrieval; the typed tools add a per-type context cost that only pays off for a small, stable set.
+-   `SCHEMA_DIR` - Flat folder of Smart Data Models `schema.json` files, plus a `common/` sub-directory of GSMA and domain
+    commons for offline `$ref` resolution. Default: `./schemas` (`/schemas` in the image, a mounted volume). Empty or
+    absent is valid; the server then offers only the generic and context-discovery tools.
+-   `NGSI_CORE_SCHEMA_DIR` - The bundled context-discovery response schemas. Default: `./ngsi-schemas`. Shipped in the
+    image; you should not need to change it.
+-   `QUERIABLE_TYPES` - Comma-separated type names (case-insensitive) to get a typed `query_<type>`; `*` for all, unset
+    for none. Default: unset.
+-   `READABLE_TYPES` - Same, for `get_<type>` (and `get_<type>_history` when `TEMPORAL_BROKER` is set). Default: unset.
+    Every loaded schema is still served as an `ontology://<model>/<type>` resource and the generic tools still handle
+    retrieval.
 
-### Writes
+### Write Requests
 
--   `WRITABLE` - Master interlock. Unless set to exactly `true` the server is **read-only**: no `create_`, `update_` or
-    `delete_` tool is registered regardless of the `*_TYPES` lists below. This one variable is the audit point for
-    "can this server mutate the broker?". Default: **unset (read-only)** — least privilege.
--   `WRITABLE_TYPES` - Only consulted when `WRITABLE=true`. **Unset** ⇒ one generic `create_entity` /
-    `update_entity_attribute` pair covering any type (schema-encoded when a schema is loaded for the given `type`,
-    inferred otherwise: a `urn:ngsi-ld:` value is a Relationship, GeoJSON a GeoProperty, else a Property). **Set** to a
-    comma-separated list (or `*`) ⇒ a typed `create_<type>` / `update_<type>_attribute` per listed type **and no generic
-    tool**. Batch operations, subscriptions and context-source registrations are out of scope.
--   `DELETABLE_TYPES` - Only consulted when `WRITABLE=true`, decided independently of `WRITABLE_TYPES`. **Unset** ⇒
-    generic `delete_entity` / `delete_entity_attribute`. **Set** ⇒ typed `delete_<type>` / `delete_<type>_attribute` per
-    listed type and no generic tool. Default: **unset**.
--   `ENTITY_DEFAULTS` - JSON object `{ "TypeName": { "attr": value, … } }`. On `create_<type>` any listed attribute the
-    caller omits is filled in from here; caller-supplied values always win, and an explicit `null` suppresses a default.
-    The values are simplified form and go through the same schema encoding as any other attribute. Parsing is strict -
-    malformed JSON stops the server starting - and the server **refuses to start** if a key names a type with no loaded
-    schema. Default: unset.
--   `PROVIDED_BY` - URN attached as a `providedBy` relationship to every measurement the write tools assert (the
-    attributes the schema marks `x-observedAt`, plus a moving `location`). Unset means no provenance link is added.
-    Deployment config, not an agent concern.
--   `UNKNOWN_ATTRIBUTES` - How create/update handles an attribute name that is not in the target type's schema:
-    `accept` (**default** - encode it best-effort), `reject` (fail the whole call), or `additionalProperty` (collect all
-    such attributes into one `JsonProperty`, per schema.org/additionalProperty). In `additionalProperty` mode a single
-    `update_<type>_attribute` for an unmodelled attr is deep-merged into that JsonProperty via `PATCH` merge-patch (other
-    collected members are kept), and `query_<type>` / `get_<type>` lift its members back to the top level of each result
-    so they read as ordinary fields. Not surfaced in the tool descriptions - deployment behaviour.
--   `ADDITIONAL_PROPERTY` - Name of that catch-all `JsonProperty` attribute. Default: `additionalProperty`.
+-   `WRITABLE` - Master switch. Only if set to `true` is the server is considered as read-write: no `create_`, `update_` or `delete_` tool,
+    whatever the `*_TYPES` lists say. This is the audit point for "can this server mutate the broker?". Default: unset
+    (read-only).
+-   `WRITABLE_TYPES` - Read only when `WRITABLE=true`. Unset gives one generic `create_entity` /
+    `update_entity_attribute` pair (schema-encoded when a schema is loaded for the `type`, else inferred: `urn:ngsi-ld:`
+    is a Relationship, GeoJSON a GeoProperty, else a Property). A comma-separated list (or `*`) gives typed
+    `create_<type>` / `update_<type>_attribute` per type and no generic tool. Batch operations, subscriptions and
+    context-source registrations are out of scope.
+-   `DELETABLE_TYPES` - Read only when `WRITABLE=true`, decided independently of `WRITABLE_TYPES`. Unset gives generic
+    `delete_entity` / `delete_entity_attribute`; a list gives typed `delete_<type>` / `delete_<type>_attribute` and no
+    generic tool. Default: unset.
+-   `ENTITY_DEFAULTS` - JSON `{ "TypeName": { "attr": value } }`. On `create_<type>` a listed attribute the caller omits
+    is filled in from here; caller values win, an explicit `null` suppresses a default. Values are simplified form and go
+    through the usual schema encoding. Strict parse: bad JSON stops start-up, and so does a key naming a type with no
+    loaded schema. Default: unset.
+-   `PROVIDED_BY` - URN attached as a `providedBy` relationship to every asserted measurement (the `x-observedAt`
+    attributes, plus a moving `location`). Unset means no provenance link.
+-   `UNKNOWN_ATTRIBUTES` - How create/update handles an attribute not in the target type's schema: `accept` (default,
+    encode best-effort), `reject` (fail the call), or `additionalProperty` (collect into one `JsonProperty`). In
+    `additionalProperty` mode, `update_<type>_attribute` deep-merges an unmodelled attr into that JsonProperty;
+    `delete_<type>_attribute` removes one with the `urn:ngsi-ld:null` sentinel; and `query_<type>` / `get_<type>` /
+    `get_entity` lift its members to the top level so they read as ordinary fields. The agent addresses collected
+    attributes by their plain name: a `q` clause like `colour=="red"` is rewritten to `additionalProperty[colour]=="red"`,
+    and a `pick` of an unmodelled name pulls the container back so the member survives projection. Generic
+    `query_entities` has no schema and cannot rewrite `q`; use bracket syntax there. Not surfaced in the tool
+    descriptions.
+-   `ADDITIONAL_PROPERTY` - Name of that catch-all `JsonProperty`. Default: `additionalProperty`.
 
 ### Prompts
 
--   `PROMPTS_DIR` - Directory of prompt `*.json` specs, one flat folder — same mounted-volume pattern as `SCHEMA_DIR`.
-    Default: `./prompts`. The Docker image sets `/prompts` and expects it to be a mounted volume. An empty or absent
-    directory is valid - the server then offers no prompts.
+-   `PROMPTS_DIR` - Flat folder of prompt `*.json` specs. Default: `./prompts` (`/prompts` in the image, a mounted
+    volume). Empty or absent is valid; the server then offers no prompts.
 
-    Each file becomes one MCP prompt. `name`, `description` and `template` are required; `arguments` maps each
-    argument name to the description shown to the caller (a description starting with "Optional" makes that argument
-    optional, everything else is required). `template` is plain text with `{{placeholder}}` tokens, filled in at call
-    time from, in order: the caller's own argument values; `{{type}}`, the prompt's `types` entry (or a comma-joined
-    list when there is more than one); `{{tools}}`, resolved from `tools` (patterns such as `"get_{{type}}"` or
-    `"query_entities_geo"`) — a `{{type}}` pattern is expanded once per entry in `types`, keeping the typed tool name
-    only if this server instance actually exposes it (i.e. the type is in `QUERIABLE_TYPES`/`READABLE_TYPES`), and
-    otherwise falling back to that pattern's generic tool (`query_entities`, `get_entity`, `get_entity_history`) when
-    that one is exposed; every other top-level field (`pick`, `relationships`, `rules`, …) is stringified as-is — an
-    array joins with `, `, an object (e.g. a per-type `pick`) renders as `key: value` pairs joined with `; `.
+    Each file is one MCP prompt. `name`, `description` and `template` are required. `arguments` maps each argument name to
+    the description shown to the caller (one starting with "Optional" is optional, the rest required). `template` is plain
+    text with `{{placeholder}}` tokens, filled at call time from: the caller's argument values; `{{type}}` (the prompt's
+    `types` entry, or a comma-joined list for more than one); `{{tools}}`, resolved from `tools` patterns like
+    `"get_{{type}}"` or `"query_entities_geo"`. A `{{type}}` pattern expands once per `types` entry, keeping the typed
+    tool name only if this instance exposes it, otherwise falling back to the pattern's generic tool. Every other
+    top-level field (`pick`, `relationships`, `rules`, ...) is stringified as-is: an array joins with `, `, an object
+    renders as `key: value` pairs joined with `; `.
 
 ### Validation and Retrieval
 
--   `SCHEMA_VALIDATION` - Policy for a broker payload that fails its schema: `filter` drops the offending entities and
-    returns the rest, `strict` returns an error object, `off` passes the payload through untouched. Default: `filter`.
--   `ENTITY_LIMIT` - Default and maximum value for the `limit` parameter of the query tools. Default: `100`.
-    Every `query_*` call also sends `count=true` to the broker and returns a `pagination` block
-    (`total`, `limit`, `offset`, `returned`, `hasMore`, `nextOffset`) alongside `entities`. When more matches
-    exist than were returned, a leading `_notice` field tells the agent to page with `offset` or narrow the
-    query rather than treat the first page as complete.
--   `SEND_PICK_AS_ATTRS` - Set to `true` to remap the `pick` parameter to the deprecated `attrs` parameter for brokers
-    that predate NGSI-LD v1.4. Default: `false`.
+-   `SCHEMA_VALIDATION` - For a broker payload that fails its schema: `filter` drops the offending entities and returns
+    the rest, `strict` returns an error, `off` passes it through. Default: `filter`.
+-   `ENTITY_LIMIT` - Default and maximum for the query tools' `limit`. Default: `100`. Every `query_*` call sends
+    `count=true` and returns a `pagination` block (`total`, `limit`, `offset`, `returned`, `hasMore`, `nextOffset`)
+    alongside `entities`. When matches remain, a leading `_notice` tells the agent to page or narrow rather than treat the
+    first page as complete.
+-   `SEND_PICK_AS_ATTRS` - `true` remaps `pick` to the deprecated `attrs` parameter for brokers that predate NGSI-LD v1.4.
+    Default: `false`.
 
 ## Building
 
-The application is written in TypeScript and must be compiled before running.
+TypeScript; compile before running.
 
 ```console
 npm install
@@ -170,21 +152,20 @@ npm run build
 npm start
 ```
 
-For debug output:
+Debug output:
 
 ```console
 DEBUG=mcp:* npm start
 ```
 
-Run the test suite with:
+Tests:
 
 ```console
 npm test
 ```
 
-
-The image expects the Smart Data Models schemas as a mounted volume at `/schemas`, and optionally a directory of
-prompt specs at `/prompts`:
+The image expects the Smart Data Models schemas as a mounted volume at `/schemas`, and optionally prompt specs at
+`/prompts`:
 
 ```console
 docker run --rm -p 3000:3000 \

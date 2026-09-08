@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { okPage, spreadAdditionalProperty } from '../controllers/tools/util';
+import {
+    okPage,
+    spreadAdditionalProperty,
+    rewriteAdditionalPropertyQuery,
+    pickWithAdditionalProperty
+} from '../controllers/tools/util';
 import type { EntityPage } from '../lib/ngsi-ld';
 
 const page = (over: Partial<EntityPage>): EntityPage => ({
@@ -82,5 +87,82 @@ describe('spreadAdditionalProperty', () => {
             id: 'x',
             additionalProperty: 'oops'
         });
+    });
+});
+
+describe('rewriteAdditionalPropertyQuery', () => {
+    const modelled = new Set(['species', 'weight', 'dateModified']);
+    const rw = (q?: string) => rewriteAdditionalPropertyQuery(q, modelled, 'additionalProperty');
+
+    it('remaps an unmodelled leaf attribute onto the container', () => {
+        expect(rw('colour=="red"')).toBe('additionalProperty[colour]=="red"');
+        expect(rw('mudScore>4')).toBe('additionalProperty[mudScore]>4');
+    });
+
+    it('leaves modelled attributes, id and type untouched', () => {
+        expect(rw('species=="cow";weight>=400')).toBe('species=="cow";weight>=400');
+        expect(rw('id=="urn:ngsi-ld:Animal:1"')).toBe('id=="urn:ngsi-ld:Animal:1"');
+        expect(rw('dateModified>"2026-01-01T00:00:00Z"')).toBe('dateModified>"2026-01-01T00:00:00Z"');
+    });
+
+    it('rewrites only the unmodelled clauses in a compound query', () => {
+        expect(rw('species=="cow";colour=="red";weight>4')).toBe(
+            'species=="cow";additionalProperty[colour]=="red";weight>4'
+        );
+        expect(rw('colour=="red"|species=="pig"')).toBe('additionalProperty[colour]=="red"|species=="pig"');
+        expect(rw('(colour=="red";weight>4)')).toBe('(additionalProperty[colour]=="red";weight>4)');
+    });
+
+    it('handles a bare existence check', () => {
+        expect(rw('colour')).toBe('additionalProperty[colour]');
+        expect(rw('species;colour')).toBe('species;additionalProperty[colour]');
+    });
+
+    it('never treats structure inside a quoted value as a clause', () => {
+        expect(rw('colour=="a;b|c"')).toBe('additionalProperty[colour]=="a;b|c"');
+        expect(rw('note~="weight>400"')).toBe('additionalProperty[note]~="weight>400"');
+    });
+
+    it('does not touch an unquoted URN on the right-hand side', () => {
+        expect(rw('fedWith==urn:ngsi-ld:Feed:1')).toBe('additionalProperty[fedWith]==urn:ngsi-ld:Feed:1');
+    });
+
+    it('collapses a deeper accessor on an unmodelled attribute to the container member', () => {
+        expect(rw('colour[shade]=="dark"')).toBe('additionalProperty[colour]=="dark"');
+        expect(rw('colour.shade=="dark"')).toBe('additionalProperty[colour]=="dark"');
+    });
+
+    it('passes through empty input', () => {
+        expect(rw(undefined)).toBeUndefined();
+        expect(rw('')).toBe('');
+    });
+});
+
+describe('pickWithAdditionalProperty', () => {
+    const modelled = new Set(['species', 'weight']);
+    const p = (pick?: string) => pickWithAdditionalProperty(pick, modelled, 'additionalProperty');
+
+    it('adds the container when a picked name is unmodelled', () => {
+        expect(p('id,colour')).toBe('id,colour,additionalProperty');
+        expect(p('mudScore')).toBe('mudScore,additionalProperty');
+    });
+
+    it('leaves an all-modelled pick untouched', () => {
+        expect(p('id,species,weight')).toBe('id,species,weight');
+        expect(p('type')).toBe('type');
+    });
+
+    it('does not double-add when the container is already picked', () => {
+        expect(p('colour,additionalProperty')).toBe('colour,additionalProperty');
+    });
+
+    it('with no schema, adds the container whenever pick is set', () => {
+        expect(pickWithAdditionalProperty('species', null, 'additionalProperty')).toBe('species,additionalProperty');
+        expect(pickWithAdditionalProperty(undefined, null, 'additionalProperty')).toBeUndefined();
+    });
+
+    it('tolerates whitespace and passes through empty input', () => {
+        expect(p(' id , colour ')).toBe('id,colour,additionalProperty');
+        expect(p(undefined)).toBeUndefined();
     });
 });

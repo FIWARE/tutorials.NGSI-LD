@@ -2,7 +2,7 @@ import type { FastMCP } from 'fastmcp';
 import type { LoadedSchema } from '../../lib/schema';
 import type { Vocabulary } from '../../lib/vocabulary';
 
-// ontology://attributes — the preferred attribute-term list (core + @context + schemas).
+// ontology://attributes: the preferred attribute-term list (core + @context + schemas).
 export function registerAttributeVocabulary(server: FastMCP, vocab: Vocabulary): void {
     server.addResource({
         uri: 'ontology://attributes',

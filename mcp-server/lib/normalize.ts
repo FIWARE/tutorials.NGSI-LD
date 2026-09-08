@@ -1,11 +1,10 @@
 // Turn a caller's simplified `attr: value` into a normalised NGSI-LD attribute
-// node, using the encoding hints the schema loader derived (WriteAttr). The agent
-// never writes normalised form; the write tools call this.
+// node, using the schema loader's encoding hints (WriteAttr). The write tools call this.
 
 import { NGSI_ATTR_TYPES } from './schema';
 import type { NgsiAttrType, WriteAttr } from './schema';
 
-// The value-bearing member for each NGSI-LD attribute type (ETSI GS CIM 009 §4.5.2).
+// The value-bearing member for each NGSI-LD attribute type.
 const VALUE_KEY: Record<NgsiAttrType, string> = {
     Property: 'value',
     GeoProperty: 'value',
@@ -34,13 +33,33 @@ function isMeasurement(name: string, spec: WriteAttr | undefined, mobile: boolea
     return mobile && (name === 'location' || spec?.ngsiType === 'GeoProperty');
 }
 
-// The caller already handed us a normalised attribute node ({ type: <NGSI type>,
-// <value-member>: … }) — used by the generic write tools where there is no schema
-// to encode from. Pass it straight through.
+// The caller handed us an already-normalised node ({ type, <value-member> }). The
+// generic write tools have no schema to encode from, so pass it straight through.
 function isNormalisedNode(v: unknown): v is Record<string, unknown> {
     if (!v || typeof v !== 'object' || Array.isArray(v)) return false;
     const t = (v as Record<string, unknown>).type;
     return typeof t === 'string' && NGSI_ATTR_TYPES.has(t as NgsiAttrType) && VALUE_KEY[t as NgsiAttrType] in v;
+}
+
+const META_KEYS = ['unitCode', 'observedAt', 'datasetId'];
+
+// Unpack a value copied back from a concise read so it is not wrapped again into
+// `{ type, value: { value: 118 } }`. A plain `value` needs a metadata sibling to qualify.
+function fromConcise(
+    v: unknown,
+    key: string
+): { payload: unknown; unitCode?: string; observedAt?: string } | null {
+    if (!v || typeof v !== 'object' || Array.isArray(v) || 'type' in v) return null;
+    const o = v as Record<string, unknown>;
+    if (!(key in o)) return null;
+    const others = Object.keys(o).filter((k) => k !== key);
+    if (!others.every((k) => META_KEYS.includes(k))) return null;
+    if (key === 'value' && others.length === 0) return null;
+    return {
+        payload: o[key],
+        unitCode: typeof o.unitCode === 'string' ? o.unitCode : undefined,
+        observedAt: typeof o.observedAt === 'string' ? o.observedAt : undefined
+    };
 }
 
 // No schema: best-effort. A URN string is a Relationship; a GeoJSON geometry is a
@@ -70,29 +89,36 @@ export function normalizeAttribute(
     }
     const kind: NgsiAttrType = spec?.ngsiType ?? inferKind(value);
 
-    // A bare [lng, lat(, alt)] array for a GeoProperty is shorthand for a GeoJSON Point.
-    // Otherwise the value — primitive, array or object — goes into its slot verbatim.
-    let payload = value;
+    // A concise-read value's unitCode / observedAt become overrides unless the
+    // caller passed their own.
+    const concise = fromConcise(value, VALUE_KEY[kind]);
+    const source = concise ? concise.payload : value;
+    const unitCodeIn = opts.unitCode ?? concise?.unitCode;
+    const observedAtIn = opts.observedAt ?? concise?.observedAt;
+
+    // A bare [lng, lat(, alt)] array is GeoProperty shorthand for a GeoJSON Point.
+    // Any other value goes into its slot verbatim.
+    let payload = source;
     if (
         kind === 'GeoProperty' &&
-        Array.isArray(value) &&
-        value.length >= 2 &&
-        value.length <= 3 &&
-        value.every((n) => typeof n === 'number')
+        Array.isArray(source) &&
+        source.length >= 2 &&
+        source.length <= 3 &&
+        source.every((n) => typeof n === 'number')
     ) {
-        payload = { type: 'Point', coordinates: value };
+        payload = { type: 'Point', coordinates: source };
     }
 
     const node: Record<string, unknown> = { type: kind, [VALUE_KEY[kind]]: payload };
 
-    const unit = opts.unitCode ?? spec?.unitCode;
+    const unit = unitCodeIn ?? spec?.unitCode;
     if (unit && UNIT_BEARING.has(kind)) {
         node.unitCode = unit;
     }
 
     const measurement = isMeasurement(name, spec, opts.mobile === true);
-    if (opts.observedAt) {
-        node.observedAt = opts.observedAt;
+    if (observedAtIn) {
+        node.observedAt = observedAtIn;
     } else if (measurement) {
         node.observedAt = new Date().toISOString();
     }

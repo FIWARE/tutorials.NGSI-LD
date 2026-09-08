@@ -1,9 +1,10 @@
-// Shared helpers for tool `execute` handlers: token-lean output, friendly error
-// shaping, @context stripping, and the SCHEMA_VALIDATION policy (ARCHITECTURE.md §7, §11).
+// Shared helpers for tool `execute` handlers: output, error shaping, @context
+// stripping, the SCHEMA_VALIDATION policy (ARCHITECTURE.md §7, §11).
 
 import { z } from 'zod';
 import { VALIDATION, ENTITY_LIMIT } from '../../lib/constants';
 import type { EntityPage } from '../../lib/ngsi-ld';
+import type { LoadedSchema } from '../../lib/schema';
 
 export function ok(data: unknown): string {
     return JSON.stringify(data, null, 2);
@@ -17,8 +18,8 @@ export function fail(err: unknown): string {
 // Entity members, not writable/removable data attributes.
 export const RESERVED_ATTRS = new Set(['id', 'type', '@context']);
 
-// NGSI-LD answers a missing entity or attribute with 404: the ProblemDetails body
-// carries `status`, proxied/older paths only leave it in the message.
+// 404 for a missing entity or attribute. Newer brokers set `status` on the body,
+// proxied/older ones only put it in the message.
 export function is404(err: unknown): boolean {
     const e = err as { cause?: { status?: number }; message?: string };
     return e?.cause?.status === 404 || /\b404\b|not found/i.test(e?.message || '');
@@ -30,11 +31,8 @@ export function notFound(type: string, id: string, attr?: string): string {
     });
 }
 
-// When UNKNOWN_ATTRIBUTES=additionalProperty, unmodelled attributes are stored as
-// members of one JsonProperty. On read, lift those members back to the top level
-// so the agent sees them as ordinary fields (a real attribute of the same name
-// always wins). Accepts the concise `{ json: {...} }`, the normalised
-// `{ type: "JsonProperty", json: {...} }` and the keyValues bare-object forms.
+// additionalProperty mode: unmodelled attributes are stored inside one JsonProperty.
+// Lift its members to the top level on read (a real attribute of the same name wins).
 export function spreadAdditionalProperty<T>(entity: T, name: string): T {
     if (!entity || typeof entity !== 'object' || Array.isArray(entity)) return entity;
     const e = entity as Record<string, unknown>;
@@ -47,6 +45,58 @@ export function spreadAdditionalProperty<T>(entity: T, name: string): T {
     if (!bag || typeof bag !== 'object' || Array.isArray(bag)) return entity;
     const { [name]: _drop, ...rest } = e;
     return { ...(bag as Record<string, unknown>), ...rest } as T;
+}
+
+// Read counterpart of spreadAdditionalProperty: rewrite a raw `q` clause on an
+// unmodelled attr onto the container (`colour==` -> `additionalProperty[colour]==`).
+export function rewriteAdditionalPropertyQuery(
+    q: string | undefined,
+    modelled: ReadonlySet<string>,
+    name: string
+): string | undefined {
+    if (!q) {
+        return q;
+    }
+    // Split on double quotes: even indices are outside a string value, odd inside.
+    const parts = q.split('"');
+    for (let i = 0; i < parts.length; i += 2) {
+        parts[i] = parts[i].replace(
+            /(^|[;|(]\s*)([A-Za-z_][A-Za-z0-9_]*)(?:\.[A-Za-z0-9_]+)*(?:\[[^\]]*\])?/g,
+            (m, lead: string, head: string) =>
+                head === 'id' || head === 'type' || modelled.has(head) ? m : `${lead}${name}[${head}]`
+        );
+    }
+    return parts.join('"');
+}
+
+// Core-context terms valid on any entity even when a schema omits them.
+export const CORE_ENTITY_ATTRS = new Set(['description', 'title', 'location']);
+
+// The attribute is in the type's schema or is a core term; the UNKNOWN_ATTRIBUTES
+// policy does not apply to it.
+export const isKnownAttr = (name: string, schema: LoadedSchema): boolean =>
+    name in schema.writeAttrs || CORE_ENTITY_ATTRS.has(name);
+
+// Projection counterpart of rewriteAdditionalPropertyQuery: `pick` returns only the
+// named members, so add the container when a picked name is unmodelled (or `modelled` null).
+export function pickWithAdditionalProperty(
+    pick: string | undefined,
+    modelled: ReadonlySet<string> | null,
+    name: string
+): string | undefined {
+    if (!pick) {
+        return pick;
+    }
+    const names = pick
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+    if (names.includes(name)) {
+        return pick;
+    }
+    const needsContainer =
+        modelled === null || names.some((n) => n !== 'id' && n !== 'type' && !modelled.has(n));
+    return needsContainer ? [...names, name].join(',') : pick;
 }
 
 export function stripContext<T>(payload: T): T {
@@ -68,14 +118,8 @@ export function clampLimit(limit?: number): number {
     return Math.min(limit, ENTITY_LIMIT);
 }
 
-// Wrap a page of list results so the agent cannot silently mistake the first
-// page for the whole result set. When the broker holds more matches than this
-// page returned, a `_notice` string is emitted as the first key — so it is the
-// first line of the pretty-printed JSON the model reads — and `pagination`
-// carries the machine-readable `hasMore` / `nextOffset`.
-//
-// `page.returned` is the broker's pre-validation row count; `entities` is the
-// payload actually emitted (which SCHEMA_VALIDATION=filter may have shrunk).
+// Wrap a page of list results so the agent cannot mistake the first page for the whole
+// set: `_notice` leads the JSON when matches remain, `pagination` has `hasMore`/`nextOffset`.
 export function okPage(
     entities: unknown[],
     page: EntityPage,
@@ -88,14 +132,14 @@ export function okPage(
     const hasMore = total === null ? returned >= limit : total > offset + returned;
 
     const out: Record<string, unknown> = {};
-    // A metadata-only call asked for no bodies on purpose — the "you didn't get
-    // everything, paginate" notice would be noise.
+    // A metadata-only call asked for no bodies, so the "paginate for more" notice
+    // would just be noise.
     if (hasMore && !metadataOnly) {
         out._notice =
             (total === null
                 ? `MORE DATA LIKELY: ${returned} ${typeLabel} entities returned and the page was full`
                 : `MORE DATA AVAILABLE: returned ${returned} of ${total} matching ${typeLabel} entities`) +
-            `. Do not treat this as the complete set — call ${toolName} again with offset=${nextOffset} for the ` +
+            `. Do not treat this as the complete set. Call ${toolName} again with offset=${nextOffset} for the ` +
             `next page, or add filters / narrow \`pick\` to reduce the result count.`;
     }
     out.pagination = { total, limit, offset, returned, hasMore, nextOffset: hasMore ? nextOffset : null };
@@ -119,7 +163,7 @@ export function validateList(entities: unknown[], validator: z.ZodTypeAny): List
                   details: parsed.error.issues
               };
     }
-    // filter: drop the records that fail, keep the rest
+    // filter mode: keep the records that pass
     return { data: entities.filter((e) => validator.safeParse(e).success) };
 }
 

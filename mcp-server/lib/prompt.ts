@@ -1,7 +1,5 @@
-// Load prompts/*.json — MCP prompt specs whose `template` is filled in at call
-// time. Mirrors lib/schema.ts: same mounted-volume-directory pattern (PROMPTS_DIR
-// alongside SCHEMA_DIR), same tolerant per-file loader. See ARCHITECTURE.md §4/§5
-// and controllers/prompts/dynamic.ts, which does the template substitution.
+// Load prompts/*.json: MCP prompt specs whose `template` is filled in at call time.
+// Tolerant per-file loader like lib/schema.ts; substitution in controllers/prompts/dynamic.ts.
 
 import fs from 'fs';
 import path from 'path';
