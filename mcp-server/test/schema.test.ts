@@ -58,6 +58,15 @@ describe('loadOne — Animal (canonical SDM)', () => {
         expect(s.entityValidator.safeParse(missingRequired).success).toBe(false);
     });
 
+    it('a VocabProperty filter lists its enum values and flags case sensitivity', async () => {
+        const s = await loadOne('Animal.json');
+        const desc = s.inputShape.sex.description ?? '';
+        expect(desc).toMatch(/case-sensitive, exact match/);
+        for (const v of s.writeAttrs.sex.enumValues ?? []) {
+            expect(desc).toContain(v);
+        }
+    });
+
     it('temporal validator accepts [value, timestamp] tuples', async () => {
         const s = await loadOne('Animal.json');
         const parsed = s.temporalValidator.safeParse({

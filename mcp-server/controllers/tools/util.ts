@@ -69,6 +69,40 @@ export function rewriteAdditionalPropertyQuery(
     return parts.join('"');
 }
 
+// Enum matching is case-sensitive. Snap a filter value to the schema term when it
+// differs only by case; mutates and returns `filters`.
+export function snapEnumCase(
+    filters: Record<string, unknown>,
+    enumsFor: (attr: string) => string[] | undefined
+): Record<string, unknown> {
+    for (const [k, v] of Object.entries(filters)) {
+        const terms = enumsFor(k);
+        if (terms && typeof v === 'string') {
+            const hit = terms.find((t) => t.toLowerCase() === v.toLowerCase());
+            if (hit) {
+                filters[k] = hit;
+            }
+        }
+    }
+    return filters;
+}
+
+// The attribute name at the head of each `q` clause, ignoring quoted values. Used
+// to see which schema attributes a raw query actually touches.
+export function queryClauseHeads(q: string | undefined): string[] {
+    if (!q) {
+        return [];
+    }
+    const heads: string[] = [];
+    const parts = q.split('"');
+    for (let i = 0; i < parts.length; i += 2) {
+        for (const m of parts[i].matchAll(/(?:^|[;|(]\s*)([A-Za-z_][A-Za-z0-9_]*)/g)) {
+            heads.push(m[1]);
+        }
+    }
+    return heads;
+}
+
 // Core-context terms valid on any entity even when a schema omits them.
 export const CORE_ENTITY_ATTRS = new Set(['description', 'title', 'location']);
 

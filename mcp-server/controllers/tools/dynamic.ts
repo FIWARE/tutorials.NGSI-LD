@@ -23,7 +23,9 @@ import {
     okPage,
     spreadAdditionalProperty,
     rewriteAdditionalPropertyQuery,
-    pickWithAdditionalProperty
+    pickWithAdditionalProperty,
+    queryClauseHeads,
+    snapEnumCase
 } from './util';
 
 const ADDITIONAL_PROPERTY_MODE = UNKNOWN_ATTRIBUTES === 'additionalProperty';
@@ -34,8 +36,10 @@ const unbundle = <T>(e: T): T =>
     ADDITIONAL_PROPERTY_MODE ? spreadAdditionalProperty(e, ADDITIONAL_PROPERTY) : e;
 
 // Sub-attributes filter with bracket syntax, e.g. q=address[addressLocality]=="x".
-// In additionalProperty mode an unmodelled attr filters by its plain name (server-mapped).
-const Q_HELP = ' Filter a sub-attribute with bracket syntax, e.g. `address[addressLocality]=="Tiergarten"`.';
+// A VocabProperty value must match the schema enum term exactly, case included.
+const Q_HELP =
+    ' Filter a sub-attribute with bracket syntax, e.g. `address[addressLocality]=="Tiergarten"`.' +
+    ' A VocabProperty value is matched case-sensitively against the schema enum term.';
 
 // Returns the count of typed tools registered for this schema. `exposed` collects
 // their names for controllers/prompts/dynamic.ts to resolve a prompt's {{tools}}.
@@ -46,6 +50,11 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
     // Attribute names this schema models. In additionalProperty mode a raw `q`
     // clause or a `pick` entry on anything else is remapped onto the container.
     const modelledAttrs: ReadonlySet<string> = new Set(Object.keys(schema.writeAttrs));
+    // VocabProperty attrs: a `q` filter on one needs `expandValues` so the broker
+    // expands the RHS term against the @context before matching.
+    const vocabAttrs = Object.entries(schema.writeAttrs)
+        .filter(([, w]) => w.ngsiType === 'VocabProperty')
+        .map(([k]) => k);
     const projectPick = (pick: unknown): string | undefined =>
         ADDITIONAL_PROPERTY_MODE
             ? pickWithAdditionalProperty(pick as string | undefined, modelledAttrs, ADDITIONAL_PROPERTY)
@@ -83,13 +92,22 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
             execute: async (args: Record<string, unknown>) => {
                 try {
                     const { q, pick, limit, offset, metadataOnly, ...filters } = args;
+                    snapEnumCase(filters, (a) => schema.writeAttrs[a]?.enumValues);
                     const rawQ = ADDITIONAL_PROPERTY_MODE
                         ? rewriteAdditionalPropertyQuery(q as string | undefined, modelledAttrs, ADDITIONAL_PROPERTY)
                         : (q as string | undefined);
+                    const touched = new Set([
+                        ...Object.entries(filters)
+                            .filter(([, v]) => v !== undefined && v !== null && v !== '')
+                            .map(([k]) => k),
+                        ...queryClauseHeads(rawQ)
+                    ]);
+                    const expandValues = vocabAttrs.filter((a) => touched.has(a)).join(',');
                     const page = await listEntities({
                         type: schema.typeName,
                         filters,
                         q: rawQ,
+                        expandValues: expandValues || undefined,
                         pick: projectPick(pick),
                         limit: clampLimit(limit as number | undefined),
                         offset: offset as number | undefined,

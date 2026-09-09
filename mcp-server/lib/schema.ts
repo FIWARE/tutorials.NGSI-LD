@@ -255,10 +255,12 @@ export function buildShapes(source: JsonSchemaNode, deref: JsonSchemaNode): Shap
 
         if (scalarType(prop)) {
             if (!SYSTEM_FIELDS.has(key)) {
-                inputShape[key] = z
-                    .string()
-                    .optional()
-                    .describe(prop.description || key);
+                const wa = writeAttrs[key];
+                let desc = prop.description || key;
+                if (wa.ngsiType === 'VocabProperty' && wa.enumValues?.length) {
+                    desc += ` One of: ${wa.enumValues.join(', ')} (case-sensitive, exact match).`;
+                }
+                inputShape[key] = z.string().optional().describe(desc);
             }
             temporalShape[key] = temporalValidator(base).optional();
         }

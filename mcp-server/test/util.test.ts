@@ -3,7 +3,9 @@ import {
     okPage,
     spreadAdditionalProperty,
     rewriteAdditionalPropertyQuery,
-    pickWithAdditionalProperty
+    pickWithAdditionalProperty,
+    queryClauseHeads,
+    snapEnumCase
 } from '../controllers/tools/util';
 import type { EntityPage } from '../lib/ngsi-ld';
 
@@ -164,5 +166,42 @@ describe('pickWithAdditionalProperty', () => {
     it('tolerates whitespace and passes through empty input', () => {
         expect(p(' id , colour ')).toBe('id,colour,additionalProperty');
         expect(p(undefined)).toBeUndefined();
+    });
+});
+
+describe('queryClauseHeads', () => {
+    it('pulls the attribute at the head of each clause', () => {
+        expect(queryClauseHeads('species=="pig";sex=="Male"')).toEqual(['species', 'sex']);
+        expect(queryClauseHeads('weight>400|heartRate<50')).toEqual(['weight', 'heartRate']);
+        expect(queryClauseHeads('(colour=="red";weight>4)')).toEqual(['colour', 'weight']);
+    });
+
+    it('ignores identifiers inside quoted values', () => {
+        expect(queryClauseHeads('note~="sex==Male;weight>4"')).toEqual(['note']);
+        expect(queryClauseHeads('fedWith==urn:ngsi-ld:Feed:1')).toEqual(['fedWith']);
+    });
+
+    it('handles a bare existence check and empty input', () => {
+        expect(queryClauseHeads('colour')).toEqual(['colour']);
+        expect(queryClauseHeads(undefined)).toEqual([]);
+        expect(queryClauseHeads('')).toEqual([]);
+    });
+});
+
+describe('snapEnumCase', () => {
+    const enumsFor = (a: string) => (a === 'sex' ? ['Male', 'Female'] : undefined);
+
+    it('snaps a value that differs only by case to the schema term', () => {
+        expect(snapEnumCase({ sex: 'male' }, enumsFor)).toEqual({ sex: 'Male' });
+        expect(snapEnumCase({ sex: 'FEMALE' }, enumsFor)).toEqual({ sex: 'Female' });
+    });
+
+    it('leaves an exact match, a non-enum field and an unknown value alone', () => {
+        expect(snapEnumCase({ sex: 'Male', species: 'pig', breed: 'x' }, enumsFor)).toEqual({
+            sex: 'Male',
+            species: 'pig',
+            breed: 'x'
+        });
+        expect(snapEnumCase({ sex: 'unknown' }, enumsFor)).toEqual({ sex: 'unknown' });
     });
 });
