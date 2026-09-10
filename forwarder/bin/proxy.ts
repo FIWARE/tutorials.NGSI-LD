@@ -20,13 +20,38 @@ const walletAddress = process.env.WALLET_ADDRESS;
 const acceptEncoding = process.env.ACCEPT_ENCODING;
 
 const verify = process.env.VERIFY_CREDENTIALS || false;
+const SKIP_HEADERS = new Set([
+  'connection',
+  'keep-alive',
+  'proxy-authenticate',
+  'proxy-authorization',
+  'te',
+  'trailer',
+  'transfer-encoding',
+  'upgrade',
+  'host',
+  'content-length',
+]);
+
+const isHop = (req: { originalUrl?: string; url?: string }): boolean =>
+  /[?&]hops(=|&|$)/.test(req.originalUrl ?? req.url ?? '');
 
 const proxy = createProxyMiddleware<express.Request, express.Response>({
   target,
   changeOrigin: true,
   on: {
     proxyReq: (proxyReq, req) => {
-      log(req.originalUrl);
+      const quiet = isHop(req);
+      if (!quiet) {
+        log('-'.repeat(72));
+        log(req.originalUrl);
+      }
+      for (const [name, value] of Object.entries(req.headers)) {
+        if (value === undefined || SKIP_HEADERS.has(name.toLowerCase())) {
+          continue;
+        }
+        proxyReq.setHeader(name, value);
+      }
       if (tenant) {
         proxyReq.setHeader('NGSILD-Tenant', tenant);
       }
@@ -42,9 +67,30 @@ const proxy = createProxyMiddleware<express.Request, express.Response>({
       if (acceptEncoding) {
         proxyReq.setHeader('accept-encoding', acceptEncoding);
       }
-      if (req.headers.authorization) {
-        proxyReq.setHeader('Authorization', req.headers.authorization);
+      if (!quiet) {
+        // Log the final header set actually being forwarded to the broker.
+        log('%s %s -> %o', req.method, req.originalUrl, proxyReq.getHeaders());
       }
+    },
+    proxyRes: (proxyRes, req) => {
+      if (tenant) {
+        delete proxyRes.headers['ngsild-tenant'];
+      }
+      if (isHop(req)) {
+        return;
+      }
+      log(
+        '%s %s <- %d %o',
+        req.method,
+        req.originalUrl,
+        proxyRes.statusCode,
+        proxyRes.headers,
+      );
+      const chunks: Buffer[] = [];
+      proxyRes.on('data', (chunk: Buffer) => chunks.push(chunk));
+      proxyRes.on('end', () =>
+        log('response body <- %s', Buffer.concat(chunks).toString('utf8')),
+      );
     },
   },
 });
