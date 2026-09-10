@@ -122,6 +122,9 @@ const SEND_PICK_AS_ATTRS = process.env.SEND_PICK_AS_ATTRS === 'true';
 
 const TRANSPORT = process.env.MCP_TRANSPORT || 'stdio';
 const PORT = Number(process.env.MCP_PORT || 3000);
+// fastmcp 4's HTTP transport binds this host; unset it defaults to IPv6 localhost
+// only, which is unreachable on 127.0.0.1. Bind all interfaces so both resolve.
+const HOST = process.env.MCP_HOST || '0.0.0.0';
 
 export {
     CONTEXT_BROKER,
@@ -153,5 +156,6 @@ export {
     entityDefaultsFor,
     SEND_PICK_AS_ATTRS,
     TRANSPORT,
-    PORT
+    PORT,
+    HOST
 };
