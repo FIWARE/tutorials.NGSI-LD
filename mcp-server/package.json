@@ -22,8 +22,8 @@
     "dependencies": {
         "@apidevtools/json-schema-ref-parser": "^11",
         "debug": "^4",
-        "fastmcp": "^1",
-        "zod": "^3"
+        "fastmcp": "^4.20.9",
+        "zod": "^3.25.0"
     },
     "devDependencies": {
         "@types/debug": "^4",
@@ -35,8 +35,5 @@
         "typescript": "^5",
         "typescript-eslint": "^8",
         "vitest": "^2"
-    },
-    "overrides": {
-        "@modelcontextprotocol/sdk": "1.12.3"
     }
 }

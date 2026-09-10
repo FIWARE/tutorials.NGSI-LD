@@ -25,14 +25,19 @@ export function statusMeta(status: number): { category: string; retryable: boole
 }
 
 // A failed tool call. The `isError` flag is what tells the client this failed; a
-// bare string result never sets it. Body stays JSON so the agent can still read it;
-// a numeric `status` gets `category`/`retryable` unless the caller already set them.
+// bare string result never sets it. The same JSON goes in `content` (for clients
+// that only read text) and `structuredContent`; a numeric `status` gains
+// `category`/`retryable` unless the caller already set them.
 export function toolError(payload: Record<string, unknown>): ContentResult {
     const body =
         typeof payload.status === 'number' && !('category' in payload)
             ? { ...payload, ...statusMeta(payload.status) }
             : payload;
-    return { content: [{ type: 'text', text: JSON.stringify(body, null, 2) }], isError: true };
+    return {
+        content: [{ type: 'text', text: JSON.stringify(body, null, 2) }],
+        isError: true,
+        structuredContent: body
+    };
 }
 
 // Serialise a validate*/compose outcome: an `{ error }` payload becomes a tool
@@ -196,16 +201,16 @@ export function clampLimit(limit?: number): number {
     return Math.min(limit, ENTITY_LIMIT);
 }
 
-// Wrap a page of list results. `_notice` leads the JSON: a "more data" warning when
-// matches remain, or a "ran, matched nothing" confirmation on an empty page so a
-// zero-result query is not mistaken for a failure. `pagination` has hasMore/nextOffset.
+// Wrap a page of list results. `content` carries `_notice` (a "more data" warning
+// when matches remain, or a "ran, matched nothing" confirmation on an empty page),
+// `pagination` and `entities`; `structuredContent` carries `pagination` alone.
 export function okPage(
     entities: unknown[],
     page: EntityPage,
     toolName: string,
     typeLabel: string,
     metadataOnly = false
-): string {
+): ContentResult {
     const { total, limit, offset, returned } = page;
     const nextOffset = offset + limit;
     const hasMore = total === null ? returned >= limit : total > offset + returned;
@@ -226,9 +231,13 @@ export function okPage(
             (offset > 0 ? ` beyond offset ${offset}` : '') +
             `. This is a valid empty result, not an error.`;
     }
-    out.pagination = { total, limit, offset, returned, hasMore, nextOffset: hasMore ? nextOffset : null };
+    const pagination = { total, limit, offset, returned, hasMore, nextOffset: hasMore ? nextOffset : null };
+    out.pagination = pagination;
     out.entities = entities;
-    return JSON.stringify(out, null, 2);
+    return {
+        content: [{ type: 'text', text: JSON.stringify(out, null, 2) }],
+        structuredContent: { pagination }
+    };
 }
 
 type ListOutcome = { data: unknown[] } | { error: string; details: unknown };

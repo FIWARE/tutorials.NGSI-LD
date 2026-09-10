@@ -23,35 +23,35 @@ const page = (over: Partial<EntityPage>): EntityPage => ({
 });
 
 describe('okPage', () => {
+    // okPage returns a ContentResult: the full JSON in content text, pagination in structuredContent.
+    const body = (r: ReturnType<typeof okPage>) => JSON.parse(r.content[0].text as string);
+
     it('flags more data when the broker total exceeds this page', () => {
-        const out = JSON.parse(
-            okPage([{ id: 'a' }], page({ total: 1342, returned: 1, limit: 1 }), 'query_animal', 'Animal')
-        );
-        expect(out._notice).toMatch(/MORE DATA AVAILABLE: returned 1 of 1342 matching Animal/);
-        expect(out.pagination).toMatchObject({ total: 1342, hasMore: true, nextOffset: 1 });
+        const r = okPage([{ id: 'a' }], page({ total: 1342, returned: 1, limit: 1 }), 'query_animal', 'Animal');
+        expect(body(r)._notice).toMatch(/MORE DATA AVAILABLE: returned 1 of 1342 matching Animal/);
+        expect(body(r).pagination).toMatchObject({ total: 1342, hasMore: true, nextOffset: 1 });
+        expect(r.structuredContent).toEqual({ pagination: body(r).pagination });
     });
 
     it('omits the notice when the whole result set fits on one page', () => {
-        const out = JSON.parse(okPage([{ id: 'a' }], page({ total: 1, returned: 1 }), 'query_animal', 'Animal'));
+        const out = body(okPage([{ id: 'a' }], page({ total: 1, returned: 1 }), 'query_animal', 'Animal'));
         expect(out._notice).toBeUndefined();
         expect(out.pagination).toMatchObject({ total: 1, hasMore: false, nextOffset: null });
     });
 
     it('warns heuristically when the broker withheld the count and the page was full', () => {
-        const out = JSON.parse(
-            okPage([], page({ total: null, returned: 20, limit: 20 }), 'query_entities', 'Building')
-        );
+        const out = body(okPage([], page({ total: null, returned: 20, limit: 20 }), 'query_entities', 'Building'));
         expect(out._notice).toMatch(/MORE DATA LIKELY: 20 Building entities returned and the page was full/);
         expect(out.pagination).toMatchObject({ total: null, hasMore: true, nextOffset: 20 });
     });
 
     it('carries offset through to nextOffset', () => {
-        const out = JSON.parse(okPage([], page({ total: 500, offset: 100, returned: 100 }), 'query_animal', 'Animal'));
+        const out = body(okPage([], page({ total: 500, offset: 100, returned: 100 }), 'query_animal', 'Animal'));
         expect(out.pagination).toMatchObject({ offset: 100, hasMore: true, nextOffset: 200 });
     });
 
     it('metadataOnly returns pagination with an empty list and no notice', () => {
-        const out = JSON.parse(
+        const out = body(
             okPage([], page({ total: 1342, returned: 0, limit: 100, offset: 0 }), 'query_animal', 'Animal', true)
         );
         expect(out.entities).toEqual([]);
@@ -60,7 +60,7 @@ describe('okPage', () => {
     });
 
     it('confirms a zero-match query ran rather than failing', () => {
-        const out = JSON.parse(okPage([], page({ total: 0, returned: 0 }), 'query_animal', 'Animal'));
+        const out = body(okPage([], page({ total: 0, returned: 0 }), 'query_animal', 'Animal'));
         expect(out._notice).toMatch(
             /executed successfully and matched no Animal entities\. This is a valid empty result/
         );
@@ -69,7 +69,7 @@ describe('okPage', () => {
     });
 
     it('notes an empty page past the end without implying no matches at all', () => {
-        const out = JSON.parse(
+        const out = body(
             okPage([], page({ total: 40, offset: 100, returned: 0, limit: 100 }), 'query_animal', 'Animal')
         );
         expect(out._notice).toMatch(/beyond offset 100/);
@@ -94,14 +94,17 @@ describe('fail / toolError', () => {
                 status: 400
             }
         });
-        expect(body(fail(err))).toEqual({
+        const r = fail(err);
+        const expected = {
             error: 'Invalid Q-Filter',
             detail: 'unbalanced parenthesis',
             status: 400,
             type: 'https://uri.etsi.org/ngsi-ld/errors/BadRequestData',
             category: 'bad_request',
             retryable: false
-        });
+        };
+        expect(body(r)).toEqual(expected);
+        expect(r.structuredContent).toEqual(expected);
     });
 
     it('classifies a 5xx as a retryable server error', () => {
