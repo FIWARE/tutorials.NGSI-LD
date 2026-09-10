@@ -1,5 +1,5 @@
 // Per-schema tool factory: query_<type> (QUERIABLE_TYPES), get_<type> and
-// get_<type>_history (READABLE_TYPES). One call per schemas/*.json. See ARCHITECTURE.md §5.
+// get_<type>_history (READABLE_TYPES). One call per schemas/*.json.
 
 import type { FastMCP } from 'fastmcp';
 import { z } from 'zod';
@@ -7,12 +7,14 @@ import { listEntities, readEntity, readTemporalEntity } from '../../lib/ngsi-ld'
 import {
     ENTITY_LIMIT,
     TEMPORAL_BROKER,
+    TEMPORAL_BROKER_SEPARATE,
     isQueriableType,
     isReadableType,
     UNKNOWN_ATTRIBUTES,
     ADDITIONAL_PROPERTY
 } from '../../lib/constants';
 import type { LoadedSchema } from '../../lib/schema';
+import { reprOption, REPR_PARAM_DESC } from './query-entities';
 import {
     ok,
     fail,
@@ -40,7 +42,7 @@ const unbundle = <T>(e: T): T => (ADDITIONAL_PROPERTY_MODE ? spreadAdditionalPro
 // A VocabProperty value must match the schema enum term exactly, case included.
 const Q_HELP =
     ' Filter a sub-attribute with bracket syntax, e.g. `address[addressLocality]=="Tiergarten"`.' +
-    ' A VocabProperty value is matched case-sensitively against the schema enum term.';
+    ' An enumerated value is matched case-sensitively against the schema term.';
 
 // Returns the count of typed tools registered for this schema. `exposed` collects
 // their names for controllers/prompts/dynamic.ts to resolve a prompt's {{tools}}.
@@ -74,7 +76,7 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
                 'the given `offset` or narrow the query — never assume the first page is the whole result set.',
             parameters: z.object({
                 ...schema.inputShape,
-                q: z.string().optional().describe(`Extra raw NGSI-LD q filter, ANDed with the fields above.${Q_HELP}`),
+                q: z.string().optional().describe(`Extra raw \`q\` filter, ANDed with the fields above.${Q_HELP}`),
                 pick: z.string().optional().describe('Comma-separated attributes to return. Always set this.'),
                 limit: z.number().optional().describe(`Max entities to return (default/max ${ENTITY_LIMIT}).`),
                 offset: z
@@ -88,11 +90,12 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
                     .optional()
                     .describe(
                         'Return only the `pagination` block (total match count etc.) with an empty `entities` array — use to count matches without transferring any bodies.'
-                    )
+                    ),
+                compact: z.boolean().optional().describe(REPR_PARAM_DESC)
             }),
             execute: async (args: Record<string, unknown>) => {
                 try {
-                    const { q, pick, limit, offset, metadataOnly, ...filters } = args;
+                    const { q, pick, limit, offset, metadataOnly, compact, ...filters } = args;
                     snapEnumCase(filters, (a) => schema.writeAttrs[a]?.enumValues);
                     const rawQ = ADDITIONAL_PROPERTY_MODE
                         ? rewriteAdditionalPropertyQuery(q as string | undefined, modelledAttrs, ADDITIONAL_PROPERTY)
@@ -113,9 +116,19 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
                         limit: clampLimit(limit as number | undefined),
                         offset: offset as number | undefined,
                         metadataOnly,
-                        options: 'concise'
+                        options: reprOption(compact as boolean | undefined)
                     });
                     const entities = page.entities.map((e) => stripContext(e));
+                    // keyValues is a deliberate lossy view; the schema validators describe concise shape.
+                    if (compact) {
+                        return okPage(
+                            entities.map(unbundle),
+                            page,
+                            `query_${stem}`,
+                            schema.typeName,
+                            metadataOnly === true
+                        );
+                    }
                     const validator = pick ? schema.entityValidatorLoose : schema.entityValidator;
                     const outcome = validateList(entities, validator);
                     if ('error' in outcome) {
@@ -153,9 +166,10 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
                     .optional()
                     .describe(
                         'Existence check only — return `{ exists, id, type }` with no attributes. A missing entity yields `{ exists: false }`, not an error.'
-                    )
+                    ),
+                compact: z.boolean().optional().describe(REPR_PARAM_DESC)
             }),
-            execute: async ({ id, pick, metadataOnly }) => {
+            execute: async ({ id, pick, metadataOnly, compact }) => {
                 try {
                     if (metadataOnly) {
                         const head = stripContext(await readEntity(id, { pick: 'id', options: 'concise' })) as Record<
@@ -164,9 +178,13 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
                         >;
                         return ok({ exists: true, id: head.id ?? id, type: head.type });
                     }
-                    const body = await readEntity(id, { pick: projectPick(pick), options: 'concise' });
+                    const body = stripContext(
+                        await readEntity(id, { pick: projectPick(pick), options: reprOption(compact) })
+                    );
+                    // keyValues is a deliberate lossy view; the schema validators describe concise shape.
+                    if (compact) return ok(unbundle(body));
                     const validator = pick ? schema.entityValidatorLoose : schema.entityValidator;
-                    const res = validateOne(stripContext(body), validator);
+                    const res = validateOne(body, validator);
                     if ('error' in res) return toolError(res);
                     return ok({ ...res, data: unbundle(res.data) });
                 } catch (err) {
@@ -190,7 +208,9 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
             name: `get_${stem}_history`,
             description:
                 `[Time-series only] Use for ${schema.typeName} trend/history questions ("has it changed", "over the last month") — ` +
-                `not for current state. Returns [value, timestamp] tuples. Full schema: \`${schema.ontologyUri}\`.`,
+                `not for current state. Returns [value, timestamp] tuples. 404 if no history is retained. ` +
+                `Full schema: \`${schema.ontologyUri}\`.` +
+                (TEMPORAL_BROKER_SEPARATE ? ' Served from a separate temporal endpoint.' : ''),
             parameters: z.object({
                 id: z.string().describe(`URN of the ${schema.typeName}.`),
                 pick: z

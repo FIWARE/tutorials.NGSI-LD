@@ -10,8 +10,7 @@ export function registerAttributeVocabulary(server: FastMCP, vocab: Vocabulary):
         mimeType: 'application/json',
         description:
             'Preferred attribute term names for writing entities: the canonical spelling of each attribute, its ' +
-            'NGSI-LD attribute type, unit code, enum values, and which loaded data models use it — merged from the ' +
-            "NGSI-LD core context, this deployment's @context and the loaded schemas. Consult before choosing names.",
+            'attribute type, unit code, enum values, and which loaded data models use it. Consult before choosing names.',
         load: async () => ({ text: JSON.stringify(vocab, null, 2) })
     });
 }

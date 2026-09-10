@@ -1,4 +1,4 @@
-// Environment configuration for the NGSI-LD MCP server. See ARCHITECTURE.md §9.
+// Environment configuration for the NGSI-LD MCP server.
 
 // Location of the Orion-LD Context Broker.
 const CONTEXT_BROKER = process.env.CONTEXT_BROKER || 'http://localhost:1026/ngsi-ld/v1';
@@ -6,6 +6,9 @@ const CONTEXT_BROKER = process.env.CONTEXT_BROKER || 'http://localhost:1026/ngsi
 // NGSI-LD temporal interface (Mintaka, or Orion-LD's own /temporal). No default;
 // unset means the history tools are not registered.
 const TEMPORAL_BROKER = process.env.TEMPORAL_BROKER || undefined;
+
+// History lives on a different origin than current state, so the history tools say so.
+const TEMPORAL_BROKER_SEPARATE = !!TEMPORAL_BROKER && TEMPORAL_BROKER !== CONTEXT_BROKER;
 
 // JSON-LD @context served to the broker via the Link header on every call.
 // The agent never sees or handles this.
@@ -123,6 +126,7 @@ const PORT = Number(process.env.MCP_PORT || 3000);
 export {
     CONTEXT_BROKER,
     TEMPORAL_BROKER,
+    TEMPORAL_BROKER_SEPARATE,
     CONTEXT,
     LinkHeader,
     READ_TENANT,

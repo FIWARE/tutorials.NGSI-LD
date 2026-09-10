@@ -140,9 +140,9 @@ export function registerWrite(server: FastMCP, schema: LoadedSchema, exposed: Se
     server.addTool({
         name: `create_${stem}`,
         description:
-            `[WRITE] Create a new ${t} entity. Pass attributes in simplified form (\`name: value\`); the server encodes ` +
-            `the NGSI-LD attribute type, unitCode and observedAt from the schema. A relationship attribute takes the ` +
-            `target entity URN as its value; a GeoProperty takes GeoJSON (or a bare [lng, lat]). ` +
+            `[WRITE] Create a new ${t} entity. Pass attributes in simplified form (\`name: value\`); the server fills in ` +
+            `the attribute type, unit code and timestamp from the schema. A relationship attribute takes the target ` +
+            `entity URN as its value; a location attribute takes GeoJSON (or a bare [lng, lat]). ` +
             (mustHave.length ? `Required attributes: ${mustHave.join(', ')}. ` : '') +
             (defaultKeys.length
                 ? `Omitted attributes default to: ${defaultKeys
@@ -221,58 +221,66 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
     }
     const byType = new Map(schemas.map((s) => [s.typeName.toLowerCase(), s]));
     const typeNames = schemas.map((s) => s.typeName).sort();
-    // Creation is restricted to types with a loaded schema.
-    const typeParam = typeNames.length > 0 ? z.enum(typeNames as [string, ...string[]]) : z.string();
+    let count = 0;
 
-    exposed.add('create_entity');
-    server.addTool({
-        name: 'create_entity',
-        description:
-            '[WRITE] Create a new NGSI-LD entity. `type` must be one of the loaded data models — creation of an ' +
-            'unmodelled type is refused. Pass attributes in simplified form (`name: value`); the server encodes the ' +
-            'NGSI-LD attribute type, unitCode and observedAt from the schema and enforces its required attributes. A ' +
-            'relationship attribute takes the target entity URN; a GeoProperty takes GeoJSON (or a bare [lng, lat]).' +
-            CANON +
-            ' Prefer a typed `create_<type>` tool when one exists.',
-        parameters: z.object({
-            id: z.string().describe('URN for the new entity, e.g. "urn:ngsi-ld:Animal:001".'),
-            type: typeParam.describe('Entity type — must be a loaded data model.'),
-            attributes: z.record(jsonValue).describe('Attribute name → value in simplified (or already-typed) form.')
-        }),
-        execute: async ({ id, type, attributes }) => {
-            try {
-                const schema = byType.get(String(type).toLowerCase());
-                if (!schema) {
-                    return toolError({
-                        error: `No data model loaded for type "${type}" — creation refused. Supported types: ${
-                            typeNames.join(', ') || '(none)'
-                        }.`
+    // create_entity needs a schema (required attrs, encoding); with none loaded it
+    // could never succeed, so it is not registered — the typed create_<type> tools
+    // are likewise absent without their schema.
+    if (typeNames.length > 0) {
+        count++;
+        exposed.add('create_entity');
+        server.addTool({
+            name: 'create_entity',
+            description:
+                '[WRITE] Create a new entity. `type` must be one of the loaded data models — creation of an unmodelled ' +
+                'type is refused. Pass attributes in simplified form (`name: value`); the server fills in the attribute ' +
+                'type, unit code and timestamp from the schema and enforces its required attributes. A relationship ' +
+                'attribute takes the target entity URN; a location attribute takes GeoJSON (or a bare [lng, lat]).' +
+                CANON +
+                ' Prefer a typed `create_<type>` tool when one exists.',
+            parameters: z.object({
+                id: z.string().describe('URN for the new entity, e.g. "urn:ngsi-ld:Animal:001".'),
+                type: z.enum(typeNames as [string, ...string[]]).describe('Entity type — must be a loaded data model.'),
+                attributes: z
+                    .record(jsonValue)
+                    .describe('Attribute name → value in simplified (or already-typed) form.')
+            }),
+            execute: async ({ id, type, attributes }) => {
+                try {
+                    const schema = byType.get(String(type).toLowerCase());
+                    if (!schema) {
+                        return toolError({
+                            error: `No data model loaded for type "${type}" — creation refused. Supported types: ${typeNames.join(
+                                ', '
+                            )}.`
+                        });
+                    }
+                    const attrs = {
+                        ...entityDefaultsFor(schema.typeName),
+                        ...((attributes ?? {}) as Record<string, unknown>)
+                    };
+                    const missing = schema.required
+                        .filter((r) => !RESERVED_ATTRS.has(r))
+                        .filter((r) => attrs[r] === undefined || attrs[r] === null);
+                    if (missing.length) {
+                        return toolError({ error: `Missing required attribute(s): ${missing.join(', ')}` });
+                    }
+                    const composed = composeEntity(id, schema.typeName, attrs, schema);
+                    if ('error' in composed) return toolError(composed);
+                    await createEntity(composed.entity);
+                    return ok({
+                        created: id,
+                        type: schema.typeName,
+                        attributes: Object.keys(composed.entity).filter((k) => !RESERVED_ATTRS.has(k))
                     });
+                } catch (err) {
+                    return fail(err);
                 }
-                const attrs = {
-                    ...entityDefaultsFor(schema.typeName),
-                    ...((attributes ?? {}) as Record<string, unknown>)
-                };
-                const missing = schema.required
-                    .filter((r) => !RESERVED_ATTRS.has(r))
-                    .filter((r) => attrs[r] === undefined || attrs[r] === null);
-                if (missing.length) {
-                    return toolError({ error: `Missing required attribute(s): ${missing.join(', ')}` });
-                }
-                const composed = composeEntity(id, schema.typeName, attrs, schema);
-                if ('error' in composed) return toolError(composed);
-                await createEntity(composed.entity);
-                return ok({
-                    created: id,
-                    type: schema.typeName,
-                    attributes: Object.keys(composed.entity).filter((k) => !RESERVED_ATTRS.has(k))
-                });
-            } catch (err) {
-                return fail(err);
             }
-        }
-    });
+        });
+    }
 
+    count++;
     exposed.add('update_entity_attribute');
     server.addTool({
         name: 'update_entity_attribute',
@@ -306,5 +314,5 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
         }
     });
 
-    return 2;
+    return count;
 }

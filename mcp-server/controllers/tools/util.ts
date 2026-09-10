@@ -1,5 +1,5 @@
 // Shared helpers for tool `execute` handlers: output, error shaping, @context
-// stripping, the SCHEMA_VALIDATION policy (ARCHITECTURE.md §7, §11).
+// stripping, the SCHEMA_VALIDATION policy.
 
 import { z } from 'zod';
 import type { ContentResult } from 'fastmcp';
@@ -11,10 +11,28 @@ export function ok(data: unknown): string {
     return JSON.stringify(data, null, 2);
 }
 
+// Machine-readable retry signal keyed by HTTP status class. `category` groups the
+// failure, `retryable` says whether the same call may later succeed. (When fastmcp
+// gains structuredContent this object moves there verbatim.)
+export function statusMeta(status: number): { category: string; retryable: boolean } {
+    if (status === 404) return { category: 'not_found', retryable: false };
+    if (status === 409) return { category: 'conflict', retryable: false };
+    if (status === 401 || status === 403) return { category: 'auth', retryable: false };
+    if (status === 429) return { category: 'rate_limited', retryable: true };
+    if (status >= 400 && status < 500) return { category: 'bad_request', retryable: false };
+    if (status >= 500) return { category: 'server', retryable: true };
+    return { category: 'unknown', retryable: false };
+}
+
 // A failed tool call. The `isError` flag is what tells the client this failed; a
-// bare string result never sets it. Body stays JSON so the agent can still read it.
+// bare string result never sets it. Body stays JSON so the agent can still read it;
+// a numeric `status` gets `category`/`retryable` unless the caller already set them.
 export function toolError(payload: Record<string, unknown>): ContentResult {
-    return { content: [{ type: 'text', text: JSON.stringify(payload, null, 2) }], isError: true };
+    const body =
+        typeof payload.status === 'number' && !('category' in payload)
+            ? { ...payload, ...statusMeta(payload.status) }
+            : payload;
+    return { content: [{ type: 'text', text: JSON.stringify(body, null, 2) }], isError: true };
 }
 
 // Serialise a validate*/compose outcome: an `{ error }` payload becomes a tool
@@ -24,7 +42,8 @@ export function okOrError(res: Record<string, unknown>): string | ContentResult 
 }
 
 // Shape a thrown broker error. `cause` is the NGSI-LD ProblemDetails body: pull out
-// title/detail/type/status, dropping whichever the broker left off.
+// title/detail/type/status, dropping whichever the broker left off. `toolError` adds
+// `category`/`retryable` from `status`; a thrown error with no status is a network fault.
 export function fail(err: unknown): ContentResult {
     const e = err as Error & { cause?: unknown };
     const c = e.cause && typeof e.cause === 'object' ? (e.cause as Record<string, unknown>) : {};
@@ -32,10 +51,11 @@ export function fail(err: unknown): ContentResult {
     const type = typeof c.type === 'string' && c.type ? c.type : undefined;
     const status = typeof c.status === 'number' ? c.status : undefined;
     return toolError({
-        error: (typeof c.title === 'string' && c.title) || e.message || 'NGSI-LD request failed',
+        error: (typeof c.title === 'string' && c.title) || e.message || 'Broker request failed',
         ...(detail ? { detail } : {}),
         ...(status ? { status } : {}),
-        ...(type ? { type } : {})
+        ...(type ? { type } : {}),
+        ...(status === undefined ? { category: 'network', retryable: true } : {})
     });
 }
 
@@ -176,8 +196,9 @@ export function clampLimit(limit?: number): number {
     return Math.min(limit, ENTITY_LIMIT);
 }
 
-// Wrap a page of list results so the agent cannot mistake the first page for the whole
-// set: `_notice` leads the JSON when matches remain, `pagination` has `hasMore`/`nextOffset`.
+// Wrap a page of list results. `_notice` leads the JSON: a "more data" warning when
+// matches remain, or a "ran, matched nothing" confirmation on an empty page so a
+// zero-result query is not mistaken for a failure. `pagination` has hasMore/nextOffset.
 export function okPage(
     entities: unknown[],
     page: EntityPage,
@@ -199,6 +220,11 @@ export function okPage(
                 : `MORE DATA AVAILABLE: returned ${returned} of ${total} matching ${typeLabel} entities`) +
             `. Do not treat this as the complete set. Call ${toolName} again with offset=${nextOffset} for the ` +
             `next page, or add filters / narrow \`pick\` to reduce the result count.`;
+    } else if (returned === 0 && !metadataOnly) {
+        out._notice =
+            `The query executed successfully and matched no ${typeLabel} entities` +
+            (offset > 0 ? ` beyond offset ${offset}` : '') +
+            `. This is a valid empty result, not an error.`;
     }
     out.pagination = { total, limit, offset, returned, hasMore, nextOffset: hasMore ? nextOffset : null };
     out.entities = entities;

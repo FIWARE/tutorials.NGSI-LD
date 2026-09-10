@@ -15,15 +15,18 @@ export function registerContextDiscoveryTools(server: FastMCP, core: CoreSchemas
     server.addTool({
         name: 'list_entity_types',
         description:
-            '[Discovery] The entity types that exist on the Context Broker right now. Call this before any query_* tool ' +
-            "when you are unsure which types exist. details=true (default) returns EntityType objects with each type's " +
-            'attributeNames; details=false returns a bare EntityTypeList.',
+            '[Discovery] The entity types on the broker right now, each with its attribute names. Call this before a ' +
+            'query_* tool when you are not sure which types exist. Set `compact` for just the list of type names. ' +
+            'Same data as the `ngsi://types` resource.',
         parameters: z.object({
-            details: z.boolean().optional().describe('Include per-type attribute names (default true).')
+            compact: z
+                .boolean()
+                .optional()
+                .describe('Return just the list of names, without the per-item detail (default false).')
         }),
-        execute: async ({ details }) => {
+        execute: async ({ compact }) => {
             try {
-                const wantDetails = details !== false;
+                const wantDetails = compact !== true;
                 const body = stripContext(await listTypes(wantDetails));
                 const validator = wantDetails ? z.array(core.EntityType.validator) : core.EntityTypeList.validator;
                 return okOrError(validateOne(body, validator));
@@ -37,9 +40,9 @@ export function registerContextDiscoveryTools(server: FastMCP, core: CoreSchemas
     server.addTool({
         name: 'get_entity_type',
         description:
-            '[Discovery] Detailed information for one entity type: its entityCount and attributeDetails (EntityTypeInfo). ' +
-            'Optional drill-down after list_entity_types to decide what to `pick`/filter. Pass the type name as it appears ' +
-            'in list_entity_types (e.g. "Animal").',
+            '[Discovery] One entity type in detail: how many entities of it exist and a per-attribute breakdown of the ' +
+            'value types seen on the broker. Drill-down after list_entity_types to decide what to `pick` or filter. ' +
+            'Pass the type name as list_entity_types shows it, e.g. "Animal".',
         parameters: z.object({
             type: z.string().describe('Entity type name or fully-qualified URI, e.g. "Animal".')
         }),
@@ -61,15 +64,18 @@ export function registerContextDiscoveryTools(server: FastMCP, core: CoreSchemas
     server.addTool({
         name: 'list_attributes',
         description:
-            '[Discovery] The attribute names in use across the broker, and (with details) which entity types carry each. ' +
-            'details=true (default) returns Attribute objects (attributeName, attributeTypes, typeNames); details=false ' +
-            'returns a bare AttributeList.',
+            '[Discovery] The attribute names in use across the broker, each with the value types it holds and the ' +
+            'entity types that carry it. Set `compact` for just the list of names. Same data as the ' +
+            '`ngsi://attributes` resource.',
         parameters: z.object({
-            details: z.boolean().optional().describe('Return Attribute objects rather than a name list (default true).')
+            compact: z
+                .boolean()
+                .optional()
+                .describe('Return just the list of names, without the per-item detail (default false).')
         }),
-        execute: async ({ details }) => {
+        execute: async ({ compact }) => {
             try {
-                const wantDetails = details !== false;
+                const wantDetails = compact !== true;
                 const body = stripContext(await listAttributes(wantDetails));
                 const validator = wantDetails ? z.array(core.Attribute.validator) : core.AttributeList.validator;
                 return okOrError(validateOne(body, validator));
@@ -83,9 +89,9 @@ export function registerContextDiscoveryTools(server: FastMCP, core: CoreSchemas
     server.addTool({
         name: 'get_attribute',
         description:
-            '[Discovery] Detailed information for one attribute: attributeCount, attributeTypes and the entity typeNames ' +
-            'that carry it (Attribute). Useful to find which entity type to query for a given measurement. Pass the ' +
-            'attribute name as it appears in list_attributes (e.g. "temperature").',
+            '[Discovery] One attribute in detail: how many entities carry it, the value types it holds, and which ' +
+            'entity types have it — use it to find which type to query for a given measurement. Pass the attribute ' +
+            'name as list_attributes shows it, e.g. "temperature".',
         parameters: z.object({
             attrId: z.string().describe('Attribute name or fully-qualified URI, e.g. "temperature".')
         }),

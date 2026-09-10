@@ -38,8 +38,6 @@ export async function buildServer(): Promise<FastMCP> {
     registerContextDiscoveryTools(server, core);
     registerGetEntity(server);
     exposed.add('get_entity');
-    registerGeoQuery(server);
-    exposed.add('query_entities_geo');
     // No TEMPORAL_BROKER, no history tools.
     if (TEMPORAL_BROKER) {
         registerGetEntityHistory(server);
@@ -50,10 +48,12 @@ export async function buildServer(): Promise<FastMCP> {
     // only for QUERIABLE_TYPES / READABLE_TYPES.
     const schemas = await loadSchemas();
 
-    // Generic query gets the loaded schemas so it can auto-fill `expandValues` for
-    // a VocabProperty `q` filter when a schema for the queried type exists.
+    // Generic and geo query get the loaded schemas so they can auto-fill `expandValues`
+    // for a VocabProperty `q` filter when a schema for the queried type exists.
     registerQueryEntities(server, schemas);
     exposed.add('query_entities');
+    registerGeoQuery(server, schemas);
+    exposed.add('query_entities_geo');
 
     // A default for a type with no loaded schema is a config error, not ignorable.
     const loadedTypes = new Set(schemas.map((s) => s.typeName.toLowerCase()));

@@ -58,18 +58,34 @@ describe('okPage', () => {
         expect(out._notice).toBeUndefined();
         expect(out.pagination).toMatchObject({ total: 1342, limit: 100, hasMore: true, nextOffset: 100 });
     });
+
+    it('confirms a zero-match query ran rather than failing', () => {
+        const out = JSON.parse(okPage([], page({ total: 0, returned: 0 }), 'query_animal', 'Animal'));
+        expect(out._notice).toMatch(
+            /executed successfully and matched no Animal entities\. This is a valid empty result/
+        );
+        expect(out.pagination).toMatchObject({ total: 0, returned: 0, hasMore: false });
+        expect(out.entities).toEqual([]);
+    });
+
+    it('notes an empty page past the end without implying no matches at all', () => {
+        const out = JSON.parse(
+            okPage([], page({ total: 40, offset: 100, returned: 0, limit: 100 }), 'query_animal', 'Animal')
+        );
+        expect(out._notice).toMatch(/beyond offset 100/);
+    });
 });
 
 describe('fail / toolError', () => {
     const body = (r: { content: { text: string }[] }) => JSON.parse(r.content[0].text);
 
-    it('marks the result isError so the client can tell it apart from a success body', () => {
+    it('marks the result isError, and adds no category when there is no status', () => {
         const r = toolError({ error: 'nope' });
         expect(r.isError).toBe(true);
         expect(body(r)).toEqual({ error: 'nope' });
     });
 
-    it('surfaces the NGSI-LD ProblemDetails title/detail/type/status from cause', () => {
+    it('surfaces ProblemDetails title/detail/type/status and classifies the status', () => {
         const err = Object.assign(new Error('Invalid Q-Filter'), {
             cause: {
                 type: 'https://uri.etsi.org/ngsi-ld/errors/BadRequestData',
@@ -82,18 +98,34 @@ describe('fail / toolError', () => {
             error: 'Invalid Q-Filter',
             detail: 'unbalanced parenthesis',
             status: 400,
-            type: 'https://uri.etsi.org/ngsi-ld/errors/BadRequestData'
+            type: 'https://uri.etsi.org/ngsi-ld/errors/BadRequestData',
+            category: 'bad_request',
+            retryable: false
         });
     });
 
-    it('falls back to the Error message and omits absent fields', () => {
-        expect(body(fail(new Error('network down')))).toEqual({ error: 'network down' });
+    it('classifies a 5xx as a retryable server error', () => {
+        const err = Object.assign(new Error('boom'), { cause: { title: 'boom', status: 503 } });
+        expect(body(fail(err))).toMatchObject({ status: 503, category: 'server', retryable: true });
     });
 
-    it('notFound is an isError result with a 404 status', () => {
+    it('a thrown error with no status is a retryable network fault', () => {
+        expect(body(fail(new Error('network down')))).toEqual({
+            error: 'network down',
+            category: 'network',
+            retryable: true
+        });
+    });
+
+    it('notFound is an isError 404 classified as non-retryable not_found', () => {
         const r = notFound('Animal', 'urn:ngsi-ld:Animal:1');
         expect(r.isError).toBe(true);
-        expect(body(r)).toEqual({ error: 'No Animal found with id urn:ngsi-ld:Animal:1', status: 404 });
+        expect(body(r)).toEqual({
+            error: 'No Animal found with id urn:ngsi-ld:Animal:1',
+            status: 404,
+            category: 'not_found',
+            retryable: false
+        });
     });
 
     it('okOrError routes an { error } outcome to a tool error and data through untouched', () => {

@@ -1,5 +1,5 @@
 // Load schemas/*.json, dereference $ref, flatten allOf, and derive the Zod shapes
-// each dynamic tool needs (input filters, concise output, temporal). ARCHITECTURE.md §4, §7.
+// each dynamic tool needs (input filters, concise output, temporal).
 
 import fs from 'fs';
 import path from 'path';
@@ -305,14 +305,14 @@ function describe(source: JsonSchemaNode, typeName: string, ontologyUri: string,
     }
     if (lowTrust) {
         text +=
-            '\n\nNote: this profile is inferred (context term / SAREF / parent model), not a canonical Smart Data Model. ' +
+            '\n\nNote: this profile is inferred (context term / SAREF / parent model), not a curated data model. ' +
             'Treat the property list as indicative — only id and type are guaranteed.';
     } else if (source['x-derivedFrom']) {
         text +=
-            '\n\nNote: this model was derived from live broker data, not a canonical Smart Data Model — ' +
+            '\n\nNote: this model was derived from live broker data, not a curated data model — ' +
             'the property list is representative but not exhaustive.';
     }
-    text += `\n\nAlways narrow results with \`pick\`. If unsure which properties to filter or \`pick\`, read \`${ontologyUri}\` first.`;
+    text += `\n\nAlways narrow results with \`pick\`. The \`${ontologyUri}\` resource lists every property, enum and relationship target; consult it when unsure what to filter or \`pick\`.`;
     return text;
 }
 
