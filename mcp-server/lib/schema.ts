@@ -25,8 +25,8 @@ export interface LoadedSchema {
     lowTrust: boolean;
     writeAttrs: Record<string, WriteAttr>; // per-attribute NGSI-LD encoding hints for the write tools
     mobile: boolean; // x-mobile: `location` is a moving measurement
-    raw: JsonSchemaNode; // dereferenced + flattened
-    source: JsonSchemaNode; // as read from disk (served by the ontology resource)
+    raw: JsonSchemaNode; // dereferenced + flattened; served by the ontology resource
+    source: JsonSchemaNode; // as read from disk; used for title / model slug / tool description
 }
 
 // The eight NGSI-LD attribute types; value-bearing member per type is VALUE_KEY

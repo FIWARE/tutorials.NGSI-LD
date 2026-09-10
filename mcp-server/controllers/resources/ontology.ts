@@ -47,9 +47,11 @@ export function registerOntology(server: FastMCP, schemas: LoadedSchema[]): void
             name: `${s.typeName} data model`,
             mimeType: 'application/json',
             description:
-                `Full property list, enums, required fields and relationship targets for ${s.typeName}` +
-                (s.lowTrust ? ' (inferred profile — indicative only).' : '.'),
-            load: async () => ({ text: JSON.stringify(s.source, null, 2) })
+                `JSON Schema for ${s.typeName}, all $ref resolved and inlined (including the shared NGSI-LD/Smart ` +
+                `Data Model common attributes): every property, its NGSI-LD type, enums, required fields and ` +
+                `relationship targets` +
+                (s.lowTrust ? ' — inferred profile, indicative only.' : '.'),
+            load: async () => ({ text: JSON.stringify(s.raw, null, 2) })
         });
     }
 
@@ -59,7 +61,8 @@ export function registerOntology(server: FastMCP, schemas: LoadedSchema[]): void
         name: 'Data model schema',
         mimeType: 'application/json',
         description:
-            'Dereferenced schema for a data model. `model` e.g. "agrifood" / "generated"; `type` e.g. "Animal".',
+            'JSON Schema for a data model, all $ref resolved and inlined (common attributes included). `model` e.g. ' +
+            '"agrifood" / "generated"; `type` e.g. "Animal".',
         arguments: [
             { name: 'model', description: 'Model slug, e.g. "agrifood", "device", "generated".' },
             { name: 'type', description: 'Entity type, e.g. "Animal", "SoilSensor".' }
@@ -71,7 +74,7 @@ export function registerOntology(server: FastMCP, schemas: LoadedSchema[]): void
             if (!match) {
                 return { text: JSON.stringify({ error: `No data model ${model}/${type}` }, null, 2) };
             }
-            return { text: JSON.stringify(match.source, null, 2) };
+            return { text: JSON.stringify(match.raw, null, 2) };
         }
     });
 }

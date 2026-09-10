@@ -15,7 +15,8 @@ export function registerContextDiscoveryTools(server: FastMCP, core: CoreSchemas
     server.addTool({
         name: 'list_entity_types',
         description:
-            '[Discovery] The entity types on the broker right now, each with its attribute names. Call this before a ' +
+            '[Discovery] The entity types on the broker right now, each with the attribute names populated on its ' +
+            'entities (which can lag the model — an `ontology://` resource has the full set). Call this before a ' +
             'query_* tool when you are not sure which types exist. Set `compact` for just the list of type names. ' +
             'Same data as the `ngsi://types` resource.',
         parameters: z.object({
@@ -41,8 +42,10 @@ export function registerContextDiscoveryTools(server: FastMCP, core: CoreSchemas
         name: 'get_entity_type',
         description:
             '[Discovery] One entity type in detail: how many entities of it exist and a per-attribute breakdown of the ' +
-            'value types seen on the broker. Drill-down after list_entity_types to decide what to `pick` or filter. ' +
-            'Pass the type name as list_entity_types shows it, e.g. "Animal".',
+            'value types seen on the broker. This reflects only attributes populated on existing entities, so it can ' +
+            'be incomplete — an `ontology://` resource has the full modelled attribute set. Drill-down after ' +
+            'list_entity_types to decide what to `pick` or filter. Pass the type name as list_entity_types shows it, ' +
+            'e.g. "Animal".',
         parameters: z.object({
             entityType: z.string().describe('Entity type name or fully-qualified URI, e.g. "Animal".')
         }),
@@ -64,9 +67,10 @@ export function registerContextDiscoveryTools(server: FastMCP, core: CoreSchemas
     server.addTool({
         name: 'list_attributes',
         description:
-            '[Discovery] The attribute names in use across the broker, each with the value types it holds and the ' +
-            'entity types that carry it. Set `compact` for just the list of names. Same data as the ' +
-            '`ngsi://attributes` resource.',
+            '[Discovery] The attribute names populated on entities across the broker, each with the value types it ' +
+            'holds and the entity types that carry it. This is live data, not the model: a modelled attribute with ' +
+            'no values yet will be absent — an `ontology://` resource has the full set per type. Set `compact` for ' +
+            'just the list of names. Same data as the `ngsi://attributes` resource.',
         parameters: z.object({
             compact: z
                 .boolean()
