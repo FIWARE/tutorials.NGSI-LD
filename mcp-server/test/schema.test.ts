@@ -29,7 +29,9 @@ describe('loadOne — Animal (canonical SDM)', () => {
         expect(s.typeName).toBe('Animal');
         expect(s.model).toBe('agrifood');
         expect(s.ontologyUri).toBe('ontology://agrifood/Animal');
-        expect(Object.keys(s.inputShape)).toEqual(expect.arrayContaining(['species', 'legalId', 'sex', 'breed', 'name']));
+        expect(Object.keys(s.inputShape)).toEqual(
+            expect.arrayContaining(['species', 'legalId', 'sex', 'breed', 'name'])
+        );
         expect(Object.keys(s.inputShape)).not.toContain('id');
         expect(Object.keys(s.inputShape)).not.toContain('type');
         // storage-platform timestamps are not query filters
@@ -72,7 +74,12 @@ describe('loadOne — Animal (canonical SDM)', () => {
         const parsed = s.temporalValidator.safeParse({
             id: 'urn:ngsi-ld:Animal:cow001',
             type: 'Animal',
-            weight: { values: [[440, '2026-08-01T12:00:00Z'], [450, '2026-09-02T12:00:00Z']] }
+            weight: {
+                values: [
+                    [440, '2026-08-01T12:00:00Z'],
+                    [450, '2026-09-02T12:00:00Z']
+                ]
+            }
         });
         expect(parsed.success).toBe(true);
     });
@@ -82,7 +89,9 @@ describe('loadOne — offline $ref resolution', () => {
     it('flattens GSMA + Location + AgriFood commons into Building', async () => {
         const s = await loadOne('Building.json');
         // name/description come from GSMA-Commons, mapUrl/collapseRisk from the model block
-        expect(Object.keys(s.inputShape)).toEqual(expect.arrayContaining(['name', 'description', 'mapUrl', 'collapseRisk']));
+        expect(Object.keys(s.inputShape)).toEqual(
+            expect.arrayContaining(['name', 'description', 'mapUrl', 'collapseRisk'])
+        );
         // array-typed `category` is not a scalar filter
         expect(Object.keys(s.inputShape)).not.toContain('category');
     });

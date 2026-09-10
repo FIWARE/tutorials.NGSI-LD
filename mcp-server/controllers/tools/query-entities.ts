@@ -80,9 +80,8 @@ export function registerQueryEntities(server: FastMCP, schemas: LoadedSchema[] =
                         ev.add(attr);
                     }
                 }
-                // With a schema we know which attrs are VocabProperties - `expandValues`
-                // on anything else (a plain Property) makes the broker do a vocab-style
-                // match and silently return nothing, so drop those entries.
+                // `expandValues` on a plain Property makes the broker do a vocab-style
+                // match and silently return nothing, so keep only the known VocabProperties.
                 if (vocab) {
                     const allow = new Set(vocab);
                     for (const attr of [...ev]) {

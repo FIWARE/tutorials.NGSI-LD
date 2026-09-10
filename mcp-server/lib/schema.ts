@@ -354,14 +354,12 @@ export async function loadOne(file: string): Promise<LoadedSchema> {
 export async function loadSchemas(): Promise<LoadedSchema[]> {
     let files: string[] = [];
     try {
-        files = fs
-            .readdirSync(SCHEMA_DIR)
-            .filter(
-                (f) =>
-                    !f.startsWith('.') && // .gitkeep, .DS_Store
-                    f.endsWith('.json') &&
-                    fs.statSync(path.join(SCHEMA_DIR, f)).isFile()
-            );
+        files = fs.readdirSync(SCHEMA_DIR).filter(
+            (f) =>
+                !f.startsWith('.') && // .gitkeep, .DS_Store
+                f.endsWith('.json') &&
+                fs.statSync(path.join(SCHEMA_DIR, f)).isFile()
+        );
     } catch (err) {
         log('cannot read SCHEMA_DIR %s: %s', SCHEMA_DIR, (err as Error).message);
         return [];

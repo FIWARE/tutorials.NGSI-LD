@@ -67,7 +67,7 @@ export async function buildVocabulary(schemas: LoadedSchema[]): Promise<Vocabula
     return {
         note:
             'Canonical attribute names for creating and updating entities — use these spellings, do not invent variants. ' +
-            'Read ontology://<model>/<type> for an attribute\'s NGSI-LD type, unit, enum and required/allowed values. ' +
+            "Read ontology://<model>/<type> for an attribute's NGSI-LD type, unit, enum and required/allowed values. " +
             '`core` lists the NGSI-LD core terms, which are in no data model, so each carries a one-line meaning.',
         contextRead,
         core: CORE,

@@ -14,7 +14,7 @@ import {
 } from '../../lib/constants';
 import { normalizeAttribute } from '../../lib/normalize';
 import type { LoadedSchema } from '../../lib/schema';
-import { ok, fail, is404, notFound, RESERVED_ATTRS, isKnownAttr } from './util';
+import { ok, fail, toolError, okOrError, is404, notFound, RESERVED_ATTRS, isKnownAttr } from './util';
 
 // Any JSON value. Explicit anyOf, object branch as z.object({}).passthrough(), so
 // every branch of the emitted JSON Schema has a keyword; some MCP clients reject a bare {}.
@@ -56,7 +56,8 @@ function composeEntity(id: string, type: string, attrs: Record<string, unknown>,
 
     if (rejected.length) {
         return {
-            error: `Unknown attribute(s) for ${type}: ${rejected.join(', ')}. Only ${type} schema attributes ` +
+            error:
+                `Unknown attribute(s) for ${type}: ${rejected.join(', ')}. Only ${type} schema attributes ` +
                 `(${schema.ontologyUri}) are accepted.`
         };
     }
@@ -93,7 +94,8 @@ async function updateOne(
     if (schema && !isKnownAttr(attr, schema)) {
         if (UNKNOWN_ATTRIBUTES === 'reject') {
             return {
-                error: `Unknown attribute "${attr}" for ${schema.typeName}. Only ${schema.typeName} schema attributes ` +
+                error:
+                    `Unknown attribute "${attr}" for ${schema.typeName}. Only ${schema.typeName} schema attributes ` +
                     `(${schema.ontologyUri}) are accepted.`
             };
         }
@@ -147,22 +149,25 @@ export function registerWrite(server: FastMCP, schema: LoadedSchema, exposed: Se
                       .map((k) => `${k}=${JSON.stringify(defaults[k])}`)
                       .join(', ')}. `
                 : '') +
-            `Full schema: \`${schema.ontologyUri}\`.` + CANON,
+            `Full schema: \`${schema.ontologyUri}\`.` +
+            CANON,
         parameters: z.object({
             id: z.string().describe(`URN for the new entity, e.g. "urn:ngsi-ld:${t}:001".`),
             attributes: z
                 .record(jsonValue)
-                .describe('Attribute name → value in simplified form, e.g. { "species": "cow", "ownedBy": "urn:ngsi-ld:Person:001" }.')
+                .describe(
+                    'Attribute name → value in simplified form, e.g. { "species": "cow", "ownedBy": "urn:ngsi-ld:Person:001" }.'
+                )
         }),
         execute: async ({ id, attributes }) => {
             try {
                 const attrs = { ...defaults, ...((attributes ?? {}) as Record<string, unknown>) };
                 const missing = mustHave.filter((r) => attrs[r] === undefined || attrs[r] === null);
                 if (missing.length) {
-                    return JSON.stringify({ error: `Missing required attribute(s): ${missing.join(', ')}` });
+                    return toolError({ error: `Missing required attribute(s): ${missing.join(', ')}` });
                 }
                 const composed = composeEntity(id, t, attrs, schema);
-                if ('error' in composed) return JSON.stringify(composed);
+                if ('error' in composed) return toolError(composed);
                 await createEntity(composed.entity);
                 return ok({
                     created: id,
@@ -182,7 +187,8 @@ export function registerWrite(server: FastMCP, schema: LoadedSchema, exposed: Se
             `[WRITE] Update one attribute on an existing ${t}, or add a new one — the value (and any sub-attributes you ` +
             `pass) are merged in; sub-attributes you do not mention are kept; the attribute is created if absent. ` +
             `\`value\` is simplified form (a target URN for a relationship). unitCode and observedAt come from the schema ` +
-            `— pass them only to override. Schema: \`${schema.ontologyUri}\`.` + CANON,
+            `— pass them only to override. Schema: \`${schema.ontologyUri}\`.` +
+            CANON,
         parameters: z.object({
             id: z.string().describe(`URN of the ${t}.`),
             attr: z.string().describe('Attribute name, e.g. "weight" or "locatedAt".'),
@@ -192,9 +198,9 @@ export function registerWrite(server: FastMCP, schema: LoadedSchema, exposed: Se
         execute: async ({ id, attr, value, unitCode, observedAt }) => {
             try {
                 if (RESERVED_ATTRS.has(attr)) {
-                    return JSON.stringify({ error: `"${attr}" is not a writable attribute` });
+                    return toolError({ error: `"${attr}" is not a writable attribute` });
                 }
-                return ok(await updateOne(id, attr, value, schema, { unitCode, observedAt }));
+                return okOrError(await updateOne(id, attr, value, schema, { unitCode, observedAt }));
             } catch (err) {
                 if (is404(err)) {
                     return notFound(t, id, attr);
@@ -216,10 +222,7 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
     const byType = new Map(schemas.map((s) => [s.typeName.toLowerCase(), s]));
     const typeNames = schemas.map((s) => s.typeName).sort();
     // Creation is restricted to types with a loaded schema.
-    const typeParam =
-        typeNames.length > 0
-            ? z.enum(typeNames as [string, ...string[]])
-            : z.string();
+    const typeParam = typeNames.length > 0 ? z.enum(typeNames as [string, ...string[]]) : z.string();
 
     exposed.add('create_entity');
     server.addTool({
@@ -240,21 +243,24 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
             try {
                 const schema = byType.get(String(type).toLowerCase());
                 if (!schema) {
-                    return JSON.stringify({
+                    return toolError({
                         error: `No data model loaded for type "${type}" — creation refused. Supported types: ${
                             typeNames.join(', ') || '(none)'
                         }.`
                     });
                 }
-                const attrs = { ...entityDefaultsFor(schema.typeName), ...((attributes ?? {}) as Record<string, unknown>) };
+                const attrs = {
+                    ...entityDefaultsFor(schema.typeName),
+                    ...((attributes ?? {}) as Record<string, unknown>)
+                };
                 const missing = schema.required
                     .filter((r) => !RESERVED_ATTRS.has(r))
                     .filter((r) => attrs[r] === undefined || attrs[r] === null);
                 if (missing.length) {
-                    return JSON.stringify({ error: `Missing required attribute(s): ${missing.join(', ')}` });
+                    return toolError({ error: `Missing required attribute(s): ${missing.join(', ')}` });
                 }
                 const composed = composeEntity(id, schema.typeName, attrs, schema);
-                if ('error' in composed) return JSON.stringify(composed);
+                if ('error' in composed) return toolError(composed);
                 await createEntity(composed.entity);
                 return ok({
                     created: id,
@@ -287,10 +293,10 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
         execute: async ({ id, attr, value, type, unitCode, observedAt }) => {
             try {
                 if (RESERVED_ATTRS.has(attr)) {
-                    return JSON.stringify({ error: `"${attr}" is not a writable attribute` });
+                    return toolError({ error: `"${attr}" is not a writable attribute` });
                 }
                 const schema = type ? byType.get(type.toLowerCase()) : undefined;
-                return ok(await updateOne(id, attr, value, schema, { unitCode, observedAt }));
+                return okOrError(await updateOne(id, attr, value, schema, { unitCode, observedAt }));
             } catch (err) {
                 if (is404(err)) {
                     return notFound(type ?? 'entity', id, attr);

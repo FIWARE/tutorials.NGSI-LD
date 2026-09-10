@@ -18,9 +18,7 @@ describe('EntityTypeList (5.2.24)', () => {
 
     it('rejects a missing typeList and a wrong type literal', () => {
         expect(core.EntityTypeList.validator.safeParse({ id: 'x', type: 'EntityTypeList' }).success).toBe(false);
-        expect(
-            core.EntityTypeList.validator.safeParse({ id: 'x', type: 'Nope', typeList: [] }).success
-        ).toBe(false);
+        expect(core.EntityTypeList.validator.safeParse({ id: 'x', type: 'Nope', typeList: [] }).success).toBe(false);
     });
 });
 
@@ -44,7 +42,12 @@ describe('EntityTypeInfo (5.2.26)', () => {
             typeName: 'Animal',
             entityCount: 23,
             attributeDetails: [
-                { id: 'https://w3id.org/saref#weight', type: 'Attribute', attributeName: 'weight', attributeTypes: ['Property'] }
+                {
+                    id: 'https://w3id.org/saref#weight',
+                    type: 'Attribute',
+                    attributeName: 'weight',
+                    attributeTypes: ['Property']
+                }
             ]
         });
         expect(r.success).toBe(true);

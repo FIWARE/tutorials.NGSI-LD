@@ -11,7 +11,7 @@ export function registerAttributeVocabulary(server: FastMCP, vocab: Vocabulary):
         description:
             'Preferred attribute term names for writing entities: the canonical spelling of each attribute, its ' +
             'NGSI-LD attribute type, unit code, enum values, and which loaded data models use it — merged from the ' +
-            'NGSI-LD core context, this deployment\'s @context and the loaded schemas. Consult before choosing names.',
+            "NGSI-LD core context, this deployment's @context and the loaded schemas. Consult before choosing names.",
         load: async () => ({ text: JSON.stringify(vocab, null, 2) })
     });
 }
@@ -33,7 +33,10 @@ export function registerOntology(server: FastMCP, schemas: LoadedSchema[]): void
             text:
                 '# Ontology index\n\n' +
                 schemas
-                    .map((s) => `- \`${s.ontologyUri}\` — **${s.typeName}**: ${firstLine(s.source.description) || s.title}`)
+                    .map(
+                        (s) =>
+                            `- \`${s.ontologyUri}\` — **${s.typeName}**: ${firstLine(s.source.description) || s.title}`
+                    )
                     .join('\n') +
                 '\n'
         })
@@ -56,7 +59,8 @@ export function registerOntology(server: FastMCP, schemas: LoadedSchema[]): void
         uriTemplate: 'ontology://{model}/{type}',
         name: 'Data model schema',
         mimeType: 'application/json',
-        description: 'Dereferenced schema for a data model. `model` e.g. "agrifood" / "generated"; `type` e.g. "Animal".',
+        description:
+            'Dereferenced schema for a data model. `model` e.g. "agrifood" / "generated"; `type` e.g. "Animal".',
         arguments: [
             { name: 'model', description: 'Model slug, e.g. "agrifood", "device", "generated".' },
             { name: 'type', description: 'Entity type, e.g. "Animal", "SoilSensor".' }

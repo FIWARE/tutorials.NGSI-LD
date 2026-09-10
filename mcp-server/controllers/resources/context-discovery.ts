@@ -15,7 +15,8 @@ export function registerContextDiscoveryResources(server: FastMCP): void {
         uri: 'ngsi://types',
         name: 'Live entity types',
         mimeType: 'application/json',
-        description: 'EntityType list (with attribute names) that exists on the broker right now — GET /types?details=true.',
+        description:
+            'EntityType list (with attribute names) that exists on the broker right now — GET /types?details=true.',
         load: () => liveJson(() => listTypes(true))
     });
 
@@ -23,7 +24,8 @@ export function registerContextDiscoveryResources(server: FastMCP): void {
         uri: 'ngsi://attributes',
         name: 'Live attributes',
         mimeType: 'application/json',
-        description: 'Attribute list (name, types, owning entity types) in use on the broker right now — GET /attributes?details=true.',
+        description:
+            'Attribute list (name, types, owning entity types) in use on the broker right now — GET /attributes?details=true.',
         load: () => liveJson(() => listAttributes(true))
     });
 }

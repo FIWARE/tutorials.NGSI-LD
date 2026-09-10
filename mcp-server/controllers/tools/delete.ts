@@ -1,19 +1,19 @@
 // Destructive tools, kept apart from ./write.ts. Driven by WRITABLE. No DELETABLE_TYPES
 // list gives a generic delete pair; a list gives typed delete_<type> per listed type.
 
-import type { FastMCP } from 'fastmcp';
+import type { ContentResult, FastMCP } from 'fastmcp';
 import { z } from 'zod';
 import { deleteEntity, deleteAttribute, mergeEntity } from '../../lib/ngsi-ld';
 import { WRITABLE, isDeletableType, UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY } from '../../lib/constants';
 import type { LoadedSchema } from '../../lib/schema';
-import { ok, fail, is404, notFound, RESERVED_ATTRS, isKnownAttr } from './util';
+import { ok, fail, toolError, is404, notFound, RESERVED_ATTRS, isKnownAttr } from './util';
 
 // NGSI-LD merge-patch removes a member with the `urn:ngsi-ld:null` sentinel;
 // a literal JSON null does not delete.
 const NGSI_NULL = 'urn:ngsi-ld:null';
 
-const guardAttr = (attr: string): string | null =>
-    RESERVED_ATTRS.has(attr) ? JSON.stringify({ error: `"${attr}" cannot be removed` }) : null;
+const guardAttr = (attr: string): ContentResult | null =>
+    RESERVED_ATTRS.has(attr) ? toolError({ error: `"${attr}" cannot be removed` }) : null;
 
 // ---- typed: one pair per type named in DELETABLE_TYPES --------------------
 

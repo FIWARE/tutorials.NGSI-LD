@@ -56,13 +56,7 @@ export function registerGeoQuery(server: FastMCP): void {
                     metadataOnly,
                     options: 'concise'
                 });
-                return okPage(
-                    page.entities.map(stripContext),
-                    page,
-                    'query_entities_geo',
-                    type,
-                    metadataOnly === true
-                );
+                return okPage(page.entities.map(stripContext), page, 'query_entities_geo', type, metadataOnly === true);
             } catch (err) {
                 return fail(err);
             }

@@ -2,6 +2,7 @@
 // stripping, the SCHEMA_VALIDATION policy (ARCHITECTURE.md §7, §11).
 
 import { z } from 'zod';
+import type { ContentResult } from 'fastmcp';
 import { VALIDATION, ENTITY_LIMIT } from '../../lib/constants';
 import type { EntityPage } from '../../lib/ngsi-ld';
 import type { LoadedSchema } from '../../lib/schema';
@@ -10,9 +11,32 @@ export function ok(data: unknown): string {
     return JSON.stringify(data, null, 2);
 }
 
-export function fail(err: unknown): string {
-    const e = err as Error & { cause?: { detail?: string; status?: number } };
-    return JSON.stringify({ error: e.message, detail: e.cause?.detail });
+// A failed tool call. The `isError` flag is what tells the client this failed; a
+// bare string result never sets it. Body stays JSON so the agent can still read it.
+export function toolError(payload: Record<string, unknown>): ContentResult {
+    return { content: [{ type: 'text', text: JSON.stringify(payload, null, 2) }], isError: true };
+}
+
+// Serialise a validate*/compose outcome: an `{ error }` payload becomes a tool
+// error, anything else a success body (shape unchanged).
+export function okOrError(res: Record<string, unknown>): string | ContentResult {
+    return 'error' in res ? toolError(res) : ok(res);
+}
+
+// Shape a thrown broker error. `cause` is the NGSI-LD ProblemDetails body: pull out
+// title/detail/type/status, dropping whichever the broker left off.
+export function fail(err: unknown): ContentResult {
+    const e = err as Error & { cause?: unknown };
+    const c = e.cause && typeof e.cause === 'object' ? (e.cause as Record<string, unknown>) : {};
+    const detail = typeof c.detail === 'string' && c.detail ? c.detail : undefined;
+    const type = typeof c.type === 'string' && c.type ? c.type : undefined;
+    const status = typeof c.status === 'number' ? c.status : undefined;
+    return toolError({
+        error: (typeof c.title === 'string' && c.title) || e.message || 'NGSI-LD request failed',
+        ...(detail ? { detail } : {}),
+        ...(status ? { status } : {}),
+        ...(type ? { type } : {})
+    });
 }
 
 // Entity members, not writable/removable data attributes.
@@ -25,9 +49,10 @@ export function is404(err: unknown): boolean {
     return e?.cause?.status === 404 || /\b404\b|not found/i.test(e?.message || '');
 }
 
-export function notFound(type: string, id: string, attr?: string): string {
-    return JSON.stringify({
-        error: attr ? `No ${type} "${id}", or it has no attribute "${attr}"` : `No ${type} found with id ${id}`
+export function notFound(type: string, id: string, attr?: string): ContentResult {
+    return toolError({
+        error: attr ? `No ${type} "${id}", or it has no attribute "${attr}"` : `No ${type} found with id ${id}`,
+        status: 404
     });
 }
 
@@ -128,8 +153,7 @@ export function pickWithAdditionalProperty(
     if (names.includes(name)) {
         return pick;
     }
-    const needsContainer =
-        modelled === null || names.some((n) => n !== 'id' && n !== 'type' && !modelled.has(n));
+    const needsContainer = modelled === null || names.some((n) => n !== 'id' && n !== 'type' && !modelled.has(n));
     return needsContainer ? [...names, name].join(',') : pick;
 }
 

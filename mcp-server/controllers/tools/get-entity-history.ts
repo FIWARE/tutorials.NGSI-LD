@@ -1,7 +1,7 @@
 import type { FastMCP } from 'fastmcp';
 import { z } from 'zod';
 import { readTemporalEntity } from '../../lib/ngsi-ld';
-import { ok, fail, stripContext } from './util';
+import { ok, fail, toolError, stripContext } from './util';
 
 export function registerGetEntityHistory(server: FastMCP): void {
     server.addTool({
@@ -12,7 +12,10 @@ export function registerGetEntityHistory(server: FastMCP): void {
             'Returns [value, timestamp] tuples. Always set `pick` to the attributes you want tracked.',
         parameters: z.object({
             id: z.string().describe('Entity URN, e.g. "urn:ngsi-ld:Animal:cow001".'),
-            pick: z.string().optional().describe('Comma-separated attributes to track, e.g. "weight,heartRate". Always set this.'),
+            pick: z
+                .string()
+                .optional()
+                .describe('Comma-separated attributes to track, e.g. "weight,heartRate". Always set this.'),
             timerel: z
                 .enum(['before', 'after', 'between'])
                 .optional()
@@ -26,21 +29,28 @@ export function registerGetEntityHistory(server: FastMCP): void {
         }),
         execute: async ({ id, pick, timerel, timeAt, endTimeAt, lastN }) => {
             if (timerel && !timeAt) {
-                return JSON.stringify({ error: 'timeAt is required when timerel is set.' });
+                return toolError({ error: 'timeAt is required when timerel is set.' });
             }
             if (timeAt && !timerel) {
-                return JSON.stringify({ error: 'timerel is required when timeAt is set.' });
+                return toolError({ error: 'timerel is required when timeAt is set.' });
             }
             if (timerel === 'between' && !endTimeAt) {
-                return JSON.stringify({ error: 'endTimeAt is required when timerel is "between".' });
+                return toolError({ error: 'endTimeAt is required when timerel is "between".' });
             }
             try {
-                const body = await readTemporalEntity(id, { pick, timerel, timeAt, endTimeAt, lastN, options: 'temporalValues' });
+                const body = await readTemporalEntity(id, {
+                    pick,
+                    timerel,
+                    timeAt,
+                    endTimeAt,
+                    lastN,
+                    options: 'temporalValues'
+                });
                 return ok(stripContext(body));
             } catch (err) {
                 const e = err as Error;
                 if (/\b404\b|not found/i.test(e.message)) {
-                    return JSON.stringify({ error: `No entity found with id ${id}` });
+                    return toolError({ error: `No entity found with id ${id}`, status: 404 });
                 }
                 return fail(err);
             }

@@ -16,6 +16,8 @@ import type { LoadedSchema } from '../../lib/schema';
 import {
     ok,
     fail,
+    toolError,
+    okOrError,
     stripContext,
     clampLimit,
     validateList,
@@ -32,8 +34,7 @@ const ADDITIONAL_PROPERTY_MODE = UNKNOWN_ATTRIBUTES === 'additionalProperty';
 
 // In additionalProperty mode, lift the collected JsonProperty members back to the
 // top level of every returned entity so they read as ordinary fields.
-const unbundle = <T>(e: T): T =>
-    ADDITIONAL_PROPERTY_MODE ? spreadAdditionalProperty(e, ADDITIONAL_PROPERTY) : e;
+const unbundle = <T>(e: T): T => (ADDITIONAL_PROPERTY_MODE ? spreadAdditionalProperty(e, ADDITIONAL_PROPERTY) : e);
 
 // Sub-attributes filter with bracket syntax, e.g. q=address[addressLocality]=="x".
 // A VocabProperty value must match the schema enum term exactly, case included.
@@ -118,7 +119,7 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
                     const validator = pick ? schema.entityValidatorLoose : schema.entityValidator;
                     const outcome = validateList(entities, validator);
                     if ('error' in outcome) {
-                        return ok(outcome);
+                        return toolError(outcome);
                     }
                     return okPage(
                         outcome.data.map(unbundle),
@@ -166,13 +167,14 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
                     const body = await readEntity(id, { pick: projectPick(pick), options: 'concise' });
                     const validator = pick ? schema.entityValidatorLoose : schema.entityValidator;
                     const res = validateOne(stripContext(body), validator);
-                    return ok('data' in res ? { ...res, data: unbundle(res.data) } : res);
+                    if ('error' in res) return toolError(res);
+                    return ok({ ...res, data: unbundle(res.data) });
                 } catch (err) {
                     const e = err as Error;
                     if (/\b404\b|not found/i.test(e.message)) {
                         return metadataOnly
                             ? ok({ exists: false, id })
-                            : JSON.stringify({ error: `No ${schema.typeName} found with id ${id}` });
+                            : toolError({ error: `No ${schema.typeName} found with id ${id}`, status: 404 });
                     }
                     return fail(err);
                 }
@@ -209,13 +211,13 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
             execute: async ({ id, pick, timerel, timeAt, endTimeAt, lastN }) => {
                 try {
                     if (timerel && !timeAt) {
-                        return JSON.stringify({ error: 'timeAt is required when timerel is set.' });
+                        return toolError({ error: 'timeAt is required when timerel is set.' });
                     }
                     if (timeAt && !timerel) {
-                        return JSON.stringify({ error: 'timerel is required when timeAt is set.' });
+                        return toolError({ error: 'timerel is required when timeAt is set.' });
                     }
                     if (timerel === 'between' && !endTimeAt) {
-                        return JSON.stringify({ error: 'endTimeAt is required when timerel is "between".' });
+                        return toolError({ error: 'endTimeAt is required when timerel is "between".' });
                     }
                     const body = await readTemporalEntity(id, {
                         pick,
@@ -225,7 +227,7 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
                         lastN,
                         options: 'temporalValues'
                     });
-                    return ok(validateOne(stripContext(body), schema.temporalValidator));
+                    return okOrError(validateOne(stripContext(body), schema.temporalValidator));
                 } catch (err) {
                     return fail(err);
                 }

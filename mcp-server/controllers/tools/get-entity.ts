@@ -2,7 +2,7 @@ import type { FastMCP } from 'fastmcp';
 import { z } from 'zod';
 import { readEntity } from '../../lib/ngsi-ld';
 import { UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY } from '../../lib/constants';
-import { ok, fail, stripContext, spreadAdditionalProperty, pickWithAdditionalProperty } from './util';
+import { ok, fail, toolError, stripContext, spreadAdditionalProperty, pickWithAdditionalProperty } from './util';
 
 const ADDITIONAL_PROPERTY_MODE = UNKNOWN_ATTRIBUTES === 'additionalProperty';
 
@@ -47,7 +47,7 @@ export function registerGetEntity(server: FastMCP): void {
                 if (/\b404\b|not found/i.test(e.message)) {
                     return metadataOnly
                         ? ok({ exists: false, id })
-                        : JSON.stringify({ error: `No entity found with id ${id}` });
+                        : toolError({ error: `No entity found with id ${id}`, status: 404 });
                 }
                 return fail(err);
             }

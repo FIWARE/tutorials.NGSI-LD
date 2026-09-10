@@ -1,6 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import {
     okPage,
+    fail,
+    toolError,
+    okOrError,
+    notFound,
     spreadAdditionalProperty,
     rewriteAdditionalPropertyQuery,
     pickWithAdditionalProperty,
@@ -53,6 +57,49 @@ describe('okPage', () => {
         expect(out.entities).toEqual([]);
         expect(out._notice).toBeUndefined();
         expect(out.pagination).toMatchObject({ total: 1342, limit: 100, hasMore: true, nextOffset: 100 });
+    });
+});
+
+describe('fail / toolError', () => {
+    const body = (r: { content: { text: string }[] }) => JSON.parse(r.content[0].text);
+
+    it('marks the result isError so the client can tell it apart from a success body', () => {
+        const r = toolError({ error: 'nope' });
+        expect(r.isError).toBe(true);
+        expect(body(r)).toEqual({ error: 'nope' });
+    });
+
+    it('surfaces the NGSI-LD ProblemDetails title/detail/type/status from cause', () => {
+        const err = Object.assign(new Error('Invalid Q-Filter'), {
+            cause: {
+                type: 'https://uri.etsi.org/ngsi-ld/errors/BadRequestData',
+                title: 'Invalid Q-Filter',
+                detail: 'unbalanced parenthesis',
+                status: 400
+            }
+        });
+        expect(body(fail(err))).toEqual({
+            error: 'Invalid Q-Filter',
+            detail: 'unbalanced parenthesis',
+            status: 400,
+            type: 'https://uri.etsi.org/ngsi-ld/errors/BadRequestData'
+        });
+    });
+
+    it('falls back to the Error message and omits absent fields', () => {
+        expect(body(fail(new Error('network down')))).toEqual({ error: 'network down' });
+    });
+
+    it('notFound is an isError result with a 404 status', () => {
+        const r = notFound('Animal', 'urn:ngsi-ld:Animal:1');
+        expect(r.isError).toBe(true);
+        expect(body(r)).toEqual({ error: 'No Animal found with id urn:ngsi-ld:Animal:1', status: 404 });
+    });
+
+    it('okOrError routes an { error } outcome to a tool error and data through untouched', () => {
+        expect(typeof okOrError({ data: [1, 2] })).toBe('string');
+        const r = okOrError({ error: 'bad profile', details: [] });
+        expect(typeof r === 'object' && r.isError).toBe(true);
     });
 });
 

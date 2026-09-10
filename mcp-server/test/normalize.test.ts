@@ -79,8 +79,12 @@ describe('normalizeAttribute', () => {
     });
 
     it('applies unitCode to a ListProperty as well as a Property', () => {
-        expect(normalizeAttribute('a', [1, 2], prop({ ngsiType: 'ListProperty', unitCode: 'CEL' })).unitCode).toBe('CEL');
-        expect(normalizeAttribute('a', 'x', prop({ ngsiType: 'Relationship', unitCode: 'CEL' })).unitCode).toBeUndefined();
+        expect(normalizeAttribute('a', [1, 2], prop({ ngsiType: 'ListProperty', unitCode: 'CEL' })).unitCode).toBe(
+            'CEL'
+        );
+        expect(
+            normalizeAttribute('a', 'x', prop({ ngsiType: 'Relationship', unitCode: 'CEL' })).unitCode
+        ).toBeUndefined();
     });
 
     it('stamps observedAt when the schema marks the attribute x-observedAt', () => {
@@ -153,16 +157,21 @@ describe('normalizeAttribute', () => {
     });
 
     it('lifts observedAt from a concise value but a caller override still wins', () => {
-        const n = normalizeAttribute('heartRate', { value: 52, observedAt: '2026-01-01T00:00:00Z' }, prop({ observedAt: true }), {
-            observedAt: '2025-12-31T00:00:00Z'
-        });
+        const n = normalizeAttribute(
+            'heartRate',
+            { value: 52, observedAt: '2026-01-01T00:00:00Z' },
+            prop({ observedAt: true }),
+            {
+                observedAt: '2025-12-31T00:00:00Z'
+            }
+        );
         expect(n).toMatchObject({ type: 'Property', value: 52, observedAt: '2025-12-31T00:00:00Z' });
     });
 
     it('unpacks the NGSI-specific concise members without needing a metadata sibling', () => {
-        expect(normalizeAttribute('ownedBy', { object: 'urn:ngsi-ld:Person:1' }, prop({ ngsiType: 'Relationship' }))).toEqual(
-            { type: 'Relationship', object: 'urn:ngsi-ld:Person:1' }
-        );
+        expect(
+            normalizeAttribute('ownedBy', { object: 'urn:ngsi-ld:Person:1' }, prop({ ngsiType: 'Relationship' }))
+        ).toEqual({ type: 'Relationship', object: 'urn:ngsi-ld:Person:1' });
         expect(normalizeAttribute('sex', { vocab: 'male' }, prop({ ngsiType: 'VocabProperty' }))).toEqual({
             type: 'VocabProperty',
             vocab: 'male'
@@ -181,9 +190,10 @@ describe('normalizeAttribute', () => {
     });
 
     it('does not touch a plain multi-key object value', () => {
-        expect(
-            normalizeAttribute('address', { city: 'Berlin', value: 'x' }, prop())
-        ).toEqual({ type: 'Property', value: { city: 'Berlin', value: 'x' } });
+        expect(normalizeAttribute('address', { city: 'Berlin', value: 'x' }, prop())).toEqual({
+            type: 'Property',
+            value: { city: 'Berlin', value: 'x' }
+        });
     });
 });
 

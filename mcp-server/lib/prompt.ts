@@ -46,7 +46,9 @@ export function loadPrompts(): LoadedPrompt[] {
     try {
         files = fs
             .readdirSync(PROMPTS_DIR)
-            .filter((f) => !f.startsWith('.') && f.endsWith('.json') && fs.statSync(path.join(PROMPTS_DIR, f)).isFile());
+            .filter(
+                (f) => !f.startsWith('.') && f.endsWith('.json') && fs.statSync(path.join(PROMPTS_DIR, f)).isFile()
+            );
     } catch (err) {
         log('cannot read PROMPTS_DIR %s: %s', PROMPTS_DIR, (err as Error).message);
         return [];

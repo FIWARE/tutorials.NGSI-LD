@@ -45,10 +45,7 @@ const META_KEYS = ['unitCode', 'observedAt', 'datasetId'];
 
 // Unpack a value copied back from a concise read so it is not wrapped again into
 // `{ type, value: { value: 118 } }`. A plain `value` needs a metadata sibling to qualify.
-function fromConcise(
-    v: unknown,
-    key: string
-): { payload: unknown; unitCode?: string; observedAt?: string } | null {
+function fromConcise(v: unknown, key: string): { payload: unknown; unitCode?: string; observedAt?: string } | null {
     if (!v || typeof v !== 'object' || Array.isArray(v) || 'type' in v) return null;
     const o = v as Record<string, unknown>;
     if (!(key in o)) return null;
@@ -66,13 +63,7 @@ function fromConcise(
 // GeoProperty; everything else is a Property.
 function inferKind(value: unknown): NgsiAttrType {
     if (typeof value === 'string' && /^urn:ngsi-ld:/i.test(value)) return 'Relationship';
-    if (
-        value &&
-        typeof value === 'object' &&
-        !Array.isArray(value) &&
-        'type' in value &&
-        'coordinates' in value
-    ) {
+    if (value && typeof value === 'object' && !Array.isArray(value) && 'type' in value && 'coordinates' in value) {
         return 'GeoProperty';
     }
     return 'Property';

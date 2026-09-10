@@ -5,7 +5,7 @@ import type { FastMCP } from 'fastmcp';
 import { z } from 'zod';
 import { listTypes, readType, listAttributes, readAttribute } from '../../lib/ngsi-ld';
 import type { CoreSchemas } from '../../lib/core-schema';
-import { ok, fail, stripContext, validateOne } from './util';
+import { fail, toolError, okOrError, stripContext, validateOne } from './util';
 
 // Discovery data, not entities: a payload missing a spec field (Orion-LD emits
 // `typeName: []`) is still useful, so `validateOne` never drops rows in filter mode.
@@ -25,10 +25,8 @@ export function registerContextDiscoveryTools(server: FastMCP, core: CoreSchemas
             try {
                 const wantDetails = details !== false;
                 const body = stripContext(await listTypes(wantDetails));
-                const validator = wantDetails
-                    ? z.array(core.EntityType.validator)
-                    : core.EntityTypeList.validator;
-                return ok(validateOne(body, validator));
+                const validator = wantDetails ? z.array(core.EntityType.validator) : core.EntityTypeList.validator;
+                return okOrError(validateOne(body, validator));
             } catch (err) {
                 return fail(err);
             }
@@ -48,11 +46,11 @@ export function registerContextDiscoveryTools(server: FastMCP, core: CoreSchemas
         execute: async ({ type }) => {
             try {
                 const body = stripContext(await readType(type));
-                return ok(validateOne(body, core.EntityTypeInfo.validator));
+                return okOrError(validateOne(body, core.EntityTypeInfo.validator));
             } catch (err) {
                 const e = err as Error;
                 if (/\b404\b|not found/i.test(e.message)) {
-                    return JSON.stringify({ error: `No entity type "${type}" on the broker` });
+                    return toolError({ error: `No entity type "${type}" on the broker`, status: 404 });
                 }
                 return fail(err);
             }
@@ -74,7 +72,7 @@ export function registerContextDiscoveryTools(server: FastMCP, core: CoreSchemas
                 const wantDetails = details !== false;
                 const body = stripContext(await listAttributes(wantDetails));
                 const validator = wantDetails ? z.array(core.Attribute.validator) : core.AttributeList.validator;
-                return ok(validateOne(body, validator));
+                return okOrError(validateOne(body, validator));
             } catch (err) {
                 return fail(err);
             }
@@ -94,11 +92,11 @@ export function registerContextDiscoveryTools(server: FastMCP, core: CoreSchemas
         execute: async ({ attrId }) => {
             try {
                 const body = stripContext(await readAttribute(attrId));
-                return ok(validateOne(body, core.Attribute.validator));
+                return okOrError(validateOne(body, core.Attribute.validator));
             } catch (err) {
                 const e = err as Error;
                 if (/\b404\b|not found/i.test(e.message)) {
-                    return JSON.stringify({ error: `No attribute "${attrId}" on the broker` });
+                    return toolError({ error: `No attribute "${attrId}" on the broker`, status: 404 });
                 }
                 return fail(err);
             }
