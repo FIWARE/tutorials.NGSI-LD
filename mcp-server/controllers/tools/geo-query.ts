@@ -12,11 +12,11 @@ export function registerGeoQuery(server: FastMCP, schemas: LoadedSchema[] = []):
         description:
             '[Spatial] `query_entities` plus a geometry filter — the only tool for point-in-polygon, distance and ' +
             'intersection queries (the typed `query_<type>` tools cannot do geometry). Takes the same `q`, `pick`, ' +
-            '`expandValues` and pagination as `query_entities`; `georel`/`geometry`/`coordinates` add the spatial ' +
-            "predicate, ANDed with `q`. Typical use: read an entity's `location`, then pass those coordinates here to " +
-            'find what contains it or is nearby.',
+            '`expandValues` and pagination as `query_entities` (call `get_entity_type` first rather than guessing ' +
+            'attribute names); `georel`/`geometry`/`coordinates` add the spatial predicate, ANDed with `q`. Typical ' +
+            "use: read an entity's `location`, then pass those coordinates here to find what contains it or is nearby.",
         parameters: z.object({
-            type: z
+            entityType: z
                 .string()
                 .describe(
                     'Entity type, or a comma-separated list to match any, e.g. "AgriParcel" or "Device,Building".'
@@ -42,13 +42,18 @@ export function registerGeoQuery(server: FastMCP, schemas: LoadedSchema[] = []):
                 .string()
                 .optional()
                 .describe('`q` filter string, ANDed with the spatial filter, e.g. `category=="irrigation";area>1000`.'),
-            pick: z.string().optional().describe('Comma-separated attributes to return. Always set this.'),
+            pick: z
+                .string()
+                .optional()
+                .describe(
+                    'Comma-separated attributes to return. Set it to keep responses small; omit it for the whole entity when exploring.'
+                ),
             expandValues: z
                 .string()
                 .optional()
                 .describe(
                     'Comma-separated names of enumerated attributes used in `q`; the broker expands their values ' +
-                        'against the vocabulary before matching. Auto-filled when a schema for `type` is loaded.'
+                        'against the vocabulary before matching. Auto-filled when a schema for `entityType` is loaded.'
                 ),
             limit: z.number().optional().describe(`Max entities to return (default/max ${ENTITY_LIMIT}).`),
             offset: z

@@ -312,7 +312,7 @@ function describe(source: JsonSchemaNode, typeName: string, ontologyUri: string,
             '\n\nNote: this model was derived from live broker data, not a curated data model — ' +
             'the property list is representative but not exhaustive.';
     }
-    text += `\n\nAlways narrow results with \`pick\`. The \`${ontologyUri}\` resource lists every property, enum and relationship target; consult it when unsure what to filter or \`pick\`.`;
+    text += `\n\nUse \`pick\` to keep responses small once you know which attributes you want; omit it for the whole entity when exploring. The \`${ontologyUri}\` resource lists every property, enum and relationship target; consult it when unsure what to filter or \`pick\`.`;
     return text;
 }
 

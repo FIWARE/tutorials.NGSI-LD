@@ -77,17 +77,20 @@ export function registerDelete(server: FastMCP, schema: LoadedSchema, exposed: S
 
 // ---- generic: covers any type (WRITABLE=true, no DELETABLE_TYPES) ----------
 
-export function registerGenericDelete(server: FastMCP, exposed: Set<string>): number {
+export function registerGenericDelete(server: FastMCP, exposed: Set<string>, schemas: LoadedSchema[] = []): number {
     if (!WRITABLE) {
         return 0;
     }
+    const typedDelete = schemas.filter((s) => isDeletableType(s.typeName)).map((s) => s.typeName);
+    const preferTyped = (tool: string) =>
+        typedDelete.length ? ` Prefer a typed \`${tool}\` tool for ${typedDelete.join(', ')}.` : '';
 
     exposed.add('delete_entity_attribute');
     server.addTool({
         name: 'delete_entity_attribute',
         description:
-            '[DELETE] Remove one attribute from any existing entity. Does not delete the entity itself. Prefer a typed ' +
-            '`delete_<type>_attribute` tool when one exists.',
+            '[DELETE] Remove one attribute from any existing entity. Does not delete the entity itself.' +
+            preferTyped('delete_<type>_attribute'),
         parameters: z.object({
             id: z.string().describe('URN of the entity.'),
             attr: z.string().describe('Attribute name to remove.')
@@ -109,8 +112,8 @@ export function registerGenericDelete(server: FastMCP, exposed: Set<string>): nu
         name: 'delete_entity',
         description:
             '[DELETE] Delete an entire entity of any type and every attribute on it. Irreversible — no undo, no ' +
-            'soft-delete. To remove a single attribute use `delete_entity_attribute`. Prefer a typed `delete_<type>` ' +
-            'tool when one exists.',
+            'soft-delete. To remove a single attribute use `delete_entity_attribute`.' +
+            preferTyped('delete_<type>'),
         parameters: z.object({
             id: z.string().describe('URN of the entity to delete.')
         }),

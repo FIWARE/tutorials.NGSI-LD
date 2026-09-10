@@ -77,7 +77,12 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
             parameters: z.object({
                 ...schema.inputShape,
                 q: z.string().optional().describe(`Extra raw \`q\` filter, ANDed with the fields above.${Q_HELP}`),
-                pick: z.string().optional().describe('Comma-separated attributes to return. Always set this.'),
+                pick: z
+                    .string()
+                    .optional()
+                    .describe(
+                        'Comma-separated attributes to return. Set it to keep responses small; omit it for the whole entity when exploring.'
+                    ),
                 limit: z.number().optional().describe(`Max entities to return (default/max ${ENTITY_LIMIT}).`),
                 offset: z
                     .number()
@@ -160,7 +165,12 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
                 `Narrow with \`pick\`. Full schema: \`${schema.ontologyUri}\`.`,
             parameters: z.object({
                 id: z.string().describe(`URN of the ${schema.typeName}, e.g. "urn:ngsi-ld:${schema.typeName}:001".`),
-                pick: z.string().optional().describe('Comma-separated attributes to return. Always set this.'),
+                pick: z
+                    .string()
+                    .optional()
+                    .describe(
+                        'Comma-separated attributes to return. Set it to keep responses small; omit it for the whole entity when exploring.'
+                    ),
                 metadataOnly: z
                     .boolean()
                     .optional()
@@ -216,7 +226,9 @@ export function registerDynamic(server: FastMCP, schema: LoadedSchema, exposed: 
                 pick: z
                     .string()
                     .optional()
-                    .describe('Comma-separated attributes to track, e.g. "weight". Always set this.'),
+                    .describe(
+                        'Comma-separated attributes to track, e.g. "weight". Set it to focus the series; omit it to track every attribute.'
+                    ),
                 timerel: z
                     .enum(['before', 'after', 'between'])
                     .optional()

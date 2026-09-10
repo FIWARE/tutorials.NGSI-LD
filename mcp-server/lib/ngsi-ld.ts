@@ -22,6 +22,13 @@ interface CauseError extends Error {
     cause?: unknown;
 }
 
+// The ProblemDetails body plus the HTTP status, so downstream `fail()` can classify
+// the error. Orion-LD rarely puts `status` in the body; the response carries it.
+function causeFrom(body: unknown, httpStatus: number): Record<string, unknown> {
+    const b = body && typeof body === 'object' && !Array.isArray(body) ? (body as Record<string, unknown>) : {};
+    return { ...b, status: typeof b.status === 'number' ? b.status : httpStatus };
+}
+
 async function parse(response: Response): Promise<unknown> {
     let text = '';
     try {
@@ -131,7 +138,7 @@ function requestFull(
                             ? (data.body as string)
                             : `NGSI-LD error ${data.status}`)
                 );
-                error.cause = data.body;
+                error.cause = causeFrom(data.body, data.status);
                 throw error;
             }
             return { body: data.body, headers: data.headers };
@@ -173,7 +180,7 @@ function mutate(
                             ? (data.body as string)
                             : `NGSI-LD error ${data.status}`)
                 );
-                error.cause = data.body;
+                error.cause = causeFrom(data.body, data.status);
                 throw error;
             }
             return data.body || {};

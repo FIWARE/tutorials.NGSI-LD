@@ -221,6 +221,7 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
     }
     const byType = new Map(schemas.map((s) => [s.typeName.toLowerCase(), s]));
     const typeNames = schemas.map((s) => s.typeName).sort();
+    const typedWrite = schemas.filter((s) => isWritableType(s.typeName)).map((s) => s.typeName);
     let count = 0;
 
     // create_entity needs a schema (required attrs, encoding); with none loaded it
@@ -237,20 +238,22 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
                 'type, unit code and timestamp from the schema and enforces its required attributes. A relationship ' +
                 'attribute takes the target entity URN; a location attribute takes GeoJSON (or a bare [lng, lat]).' +
                 CANON +
-                ' Prefer a typed `create_<type>` tool when one exists.',
+                (typedWrite.length ? ` Prefer a typed \`create_<type>\` tool for ${typedWrite.join(', ')}.` : ''),
             parameters: z.object({
                 id: z.string().describe('URN for the new entity, e.g. "urn:ngsi-ld:Animal:001".'),
-                type: z.enum(typeNames as [string, ...string[]]).describe('Entity type — must be a loaded data model.'),
+                entityType: z
+                    .enum(typeNames as [string, ...string[]])
+                    .describe('Entity type — must be a loaded data model.'),
                 attributes: z
                     .record(jsonValue)
                     .describe('Attribute name → value in simplified (or already-typed) form.')
             }),
-            execute: async ({ id, type, attributes }) => {
+            execute: async ({ id, entityType, attributes }) => {
                 try {
-                    const schema = byType.get(String(type).toLowerCase());
+                    const schema = byType.get(String(entityType).toLowerCase());
                     if (!schema) {
                         return toolError({
-                            error: `No data model loaded for type "${type}" — creation refused. Supported types: ${typeNames.join(
+                            error: `No data model loaded for type "${entityType}" — creation refused. Supported types: ${typeNames.join(
                                 ', '
                             )}.`
                         });
@@ -287,27 +290,27 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
         description:
             '[WRITE] Update one attribute on any existing entity, or add a new one — the supplied value (and any ' +
             'sub-attributes) are merged in; sub-attributes you do not mention are kept; the attribute is created if ' +
-            'absent. Give `type` so the server can apply the schema encoding and the unknown-attribute policy; without ' +
+            'absent. Give `entityType` so the server can apply the schema encoding and the unknown-attribute policy; without ' +
             `it the value is inferred and \`attr\` is written as given.` +
             CANON +
-            ' Prefer a typed `update_<type>_attribute` tool when one exists.',
+            (typedWrite.length ? ` Prefer a typed \`update_<type>_attribute\` tool for ${typedWrite.join(', ')}.` : ''),
         parameters: z.object({
             id: z.string().describe('URN of the entity.'),
             attr: z.string().describe('Attribute name.'),
             value: jsonValue.describe('New value in simplified (or already-typed) form.'),
-            type: z.string().optional().describe('Entity type, to apply the loaded schema encoding.'),
+            entityType: z.string().optional().describe('Entity type, to apply the loaded schema encoding.'),
             ...attrOverrides
         }),
-        execute: async ({ id, attr, value, type, unitCode, observedAt }) => {
+        execute: async ({ id, attr, value, entityType, unitCode, observedAt }) => {
             try {
                 if (RESERVED_ATTRS.has(attr)) {
                     return toolError({ error: `"${attr}" is not a writable attribute` });
                 }
-                const schema = type ? byType.get(type.toLowerCase()) : undefined;
+                const schema = entityType ? byType.get(entityType.toLowerCase()) : undefined;
                 return okOrError(await updateOne(id, attr, value, schema, { unitCode, observedAt }));
             } catch (err) {
                 if (is404(err)) {
-                    return notFound(type ?? 'entity', id, attr);
+                    return notFound(entityType ?? 'entity', id, attr);
                 }
                 return fail(err);
             }

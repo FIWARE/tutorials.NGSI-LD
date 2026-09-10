@@ -1,7 +1,7 @@
 import type { FastMCP } from 'fastmcp';
 import { z } from 'zod';
 import { listEntities } from '../../lib/ngsi-ld';
-import { ENTITY_LIMIT, UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY } from '../../lib/constants';
+import { ENTITY_LIMIT, UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY, isQueriableType } from '../../lib/constants';
 import type { LoadedSchema } from '../../lib/schema';
 import {
     fail,
@@ -12,6 +12,7 @@ import {
     queryClauseHeads,
     rewriteAdditionalPropertyQuery,
     pickWithAdditionalProperty,
+    fallbackLead,
     CORE_ENTITY_ATTRS
 } from './util';
 
@@ -23,7 +24,7 @@ const shape = (e: unknown): unknown => {
 };
 
 export interface EntityQueryArgs {
-    type: string;
+    entityType: string;
     q?: string;
     pick?: string;
     expandValues?: string;
@@ -41,9 +42,10 @@ export const reprOption = (compact?: boolean): 'keyValues' | 'concise' => (compa
 
 export const REPR_PARAM_DESC =
     'Per-attribute response shape.\n' +
-    'Default: a bare value, or `{value, unitCode?, observedAt?, ...}` when the attribute carries metadata; a link ' +
-    'to another entity is `{object: "<URN>"}`, an enumerated value `{vocab: "<term>"}`, a location is GeoJSON. ' +
-    'Nothing is dropped.\n' +
+    'Default: a bare value, or `{value, unitCode?, observedAt?, ...}` when the attribute carries metadata (`unitCode` ' +
+    'is a UN/CEFACT common code, `observedAt` an ISO-8601 timestamp); a link to another entity is `{object: "<URN>"}` ' +
+    '(that URN is itself fetchable — follow it to traverse the graph), an enumerated value `{vocab: "<term>"}`, a ' +
+    'location is GeoJSON. Nothing is dropped.\n' +
     'compact=true: always a bare value, links as bare "<URN>" strings, locations as GeoJSON. Smaller and uniform, ' +
     'but unit codes, timestamps and sub-attributes are lost. Use it only when you just need raw values.';
 
@@ -63,7 +65,7 @@ export function makeEntityQuery(schemas: LoadedSchema[]) {
     }
 
     return async (args: EntityQueryArgs, toolName: string) => {
-        const { type, q, pick, expandValues, limit, offset, metadataOnly, compact } = args;
+        const { entityType, q, pick, expandValues, limit, offset, metadataOnly, compact } = args;
         try {
             // No schema is assumed, so every unmodelled attr sits in the JsonProperty
             // container: bracket bare `q` heads (except id/type/core terms) and always
@@ -83,7 +85,7 @@ export function makeEntityQuery(schemas: LoadedSchema[]) {
                 }
             }
             // `type` may be a comma list; pool the VocabProperties of every named type.
-            const types = type.split(',').map((t) => t.trim().toLowerCase());
+            const types = entityType.split(',').map((t) => t.trim().toLowerCase());
             const vocab = types.flatMap((t) => vocabByType.get(t) ?? []);
             const heads = queryClauseHeads(q);
             for (const attr of vocab) {
@@ -103,7 +105,7 @@ export function makeEntityQuery(schemas: LoadedSchema[]) {
             }
 
             const page = await listEntities({
-                type,
+                type: entityType,
                 q: effectiveQ,
                 pick: effectivePick,
                 expandValues: ev.size ? [...ev].join(',') : undefined,
@@ -116,7 +118,7 @@ export function makeEntityQuery(schemas: LoadedSchema[]) {
                 metadataOnly,
                 options: reprOption(compact)
             });
-            return okPage(page.entities.map(shape), page, toolName, type, metadataOnly === true);
+            return okPage(page.entities.map(shape), page, toolName, entityType, metadataOnly === true);
         } catch (err) {
             return fail(err);
         }
@@ -125,31 +127,35 @@ export function makeEntityQuery(schemas: LoadedSchema[]) {
 
 export function registerQueryEntities(server: FastMCP, schemas: LoadedSchema[] = []): void {
     const query = makeEntityQuery(schemas);
+    const typed = schemas.filter((s) => isQueriableType(s.typeName)).map((s) => s.typeName);
 
     server.addTool({
         name: 'query_entities',
         description:
-            '[Fallback] Generic current-state search for entities of one type. Use a typed `query_<type>` tool instead ' +
-            'whenever one exists for the entity type — it is schema-validated and better documented. Provide a `q` ' +
-            'filter string (`;` = AND, `|` = OR; operators `==` `!=` `>` `<` `>=` `<=` `~=`, string values in double ' +
-            'quotes). To filter an enumerated attribute (e.g. `sex=="Male"`) also set `expandValues` to those ' +
-            'attribute names. Always set `pick` to the attributes you need. ' +
+            fallbackLead('query_<type>', typed) +
+            'Current-state search for entities of one type. If unsure which attributes the type has, call ' +
+            '`get_entity_type` first — do not guess names in `q` or `pick`. Provide a `q` filter string (`;` = AND, ' +
+            '`|` = OR; operators `==` `!=` `>` `<` `>=` `<=` `~=`, string values in double quotes). To filter an ' +
+            'enumerated attribute (e.g. `sex=="Male"`) also set `expandValues` to those attribute names. Use `pick` ' +
+            'to keep responses small when you know which attributes you need; omit it for the full entity when exploring. ' +
             'The response is paginated: check the `pagination` block and, when `hasMore` is true, either call again with the ' +
             'given `offset` or narrow the query — never assume the first page is the whole result set.',
         parameters: z.object({
-            type: z.string().describe('Entity type, e.g. "Animal", "Building", "SoilSensor".'),
+            entityType: z.string().describe('Entity type, e.g. "Animal", "Building", "SoilSensor".'),
             q: z.string().optional().describe('`q` filter string, e.g. `species=="dairy cattle";weight>400`.'),
             pick: z
                 .string()
                 .optional()
-                .describe('Comma-separated attributes to return, e.g. "id,healthCondition,weight". Always set this.'),
+                .describe(
+                    'Comma-separated attributes to return, e.g. "id,healthCondition,weight". Set it to keep responses small; omit it for the whole entity when exploring or unsure which attributes exist.'
+                ),
             expandValues: z
                 .string()
                 .optional()
                 .describe(
                     'Comma-separated names of enumerated attributes used in `q` - the broker expands their `==`/`!=` ' +
                         'values against the vocabulary before matching, which an enumerated-attribute filter needs. ' +
-                        'Auto-filled when a schema for `type` is loaded.'
+                        'Auto-filled when a schema for `entityType` is loaded.'
                 ),
             limit: z.number().optional().describe(`Max entities to return (default/max ${ENTITY_LIMIT}).`),
             offset: z

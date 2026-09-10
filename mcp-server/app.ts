@@ -26,30 +26,53 @@ import {
 
 const log = debug('mcp:server');
 
+// Server-wide guidance surfaced to the agent in the initialize response.
+const INSTRUCTIONS = [
+    'Relationships are graph edges. An attribute value of `{object: "<URN>"}` (a bare "<URN>"',
+    'string in compact mode) points to another entity: fetch that URN with get_entity /',
+    'get_<type> to traverse, and chain from there. To go the other way, filter on the',
+    'relationship — `ownedBy=="<URN>"` finds every entity that points at one.',
+    '',
+    'Do not guess attribute names. Discover them with `list_entity_types` / `get_entity_type`,',
+    'or an `ontology://` resource, before using a name in `q`, `pick` or a write.',
+    '',
+    'A failed tool call is data, not a conversational event. Do not apologise and do not',
+    'narrate an interim step ("that failed, let me try again") — act on the result directly.',
+    'A failed result carries `structuredContent` with `category` and `retryable`:',
+    '- retryable true (category "network" or "server"): retry the same call.',
+    '- category "bad_request": the arguments are wrong — fix `q`, `pick`, coordinates or',
+    '  attribute values and call again.',
+    '- category "not_found": the target does not exist — do not retry; use a different id',
+    '  or report it.',
+    '- category "auth": cannot be resolved here — report it.',
+    'An empty query result (`entities: []`, `pagination.total` 0) is a valid answer, not a',
+    'failure — report it plainly.'
+].join('\n');
+
 export async function buildServer(): Promise<FastMCP> {
-    const server = new FastMCP({ name: 'ngsi-ld-mcp-server', version: '1.0.0' });
+    const server = new FastMCP({ name: 'ngsi-ld-mcp-server', version: '1.0.0', instructions: INSTRUCTIONS });
 
     // Every tool name registered below. prompts/*.json's {{tools}} resolves against
     // this, so a prompt only ever names a tool this instance exposes.
     const exposed = new Set<string>();
 
-    // Core NGSI-LD tools, always present.
     const core = await loadCoreSchemas();
     registerContextDiscoveryTools(server, core);
-    registerGetEntity(server);
-    exposed.add('get_entity');
-    // No TEMPORAL_BROKER, no history tools.
-    if (TEMPORAL_BROKER) {
-        registerGetEntityHistory(server);
-        exposed.add('get_entity_history');
-    }
 
     // Ontology resources cover every loaded type; typed per-type tools are generated
     // only for QUERIABLE_TYPES / READABLE_TYPES.
     const schemas = await loadSchemas();
 
-    // Generic and geo query get the loaded schemas so they can auto-fill `expandValues`
-    // for a VocabProperty `q` filter when a schema for the queried type exists.
+    // The generic tools take the loaded schemas so their descriptions can name the
+    // typed tools that shadow them (and only call themselves "[Fallback]" when those
+    // exist), and so query auto-fills `expandValues` for enumerated `q` filters.
+    registerGetEntity(server, schemas);
+    exposed.add('get_entity');
+    // No TEMPORAL_BROKER, no history tools.
+    if (TEMPORAL_BROKER) {
+        registerGetEntityHistory(server, schemas);
+        exposed.add('get_entity_history');
+    }
     registerQueryEntities(server, schemas);
     exposed.add('query_entities');
     registerGeoQuery(server, schemas);
@@ -77,7 +100,7 @@ export async function buildServer(): Promise<FastMCP> {
         writeTools += registerGenericWrite(server, schemas, exposed);
     }
     if (WRITABLE && !DELETABLE_TYPES_LISTED) {
-        writeTools += registerGenericDelete(server, exposed);
+        writeTools += registerGenericDelete(server, exposed, schemas);
     }
     registerOntology(server, schemas);
     // The attribute vocabulary guides adding new names; pointless (and its @context

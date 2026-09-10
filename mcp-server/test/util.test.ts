@@ -112,6 +112,13 @@ describe('fail / toolError', () => {
         expect(body(fail(err))).toMatchObject({ status: 503, category: 'server', retryable: true });
     });
 
+    it('infers the status from the NGSI-LD error type when the cause has none', () => {
+        const err = Object.assign(new Error('Invalid Q-Filter'), {
+            cause: { title: 'Invalid Q-Filter', type: 'https://uri.etsi.org/ngsi-ld/errors/BadRequestData' }
+        });
+        expect(body(fail(err))).toMatchObject({ status: 400, category: 'bad_request', retryable: false });
+    });
+
     it('a thrown error with no status is a retryable network fault', () => {
         expect(body(fail(new Error('network down')))).toEqual({
             error: 'network down',

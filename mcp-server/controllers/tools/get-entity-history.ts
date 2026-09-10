@@ -1,24 +1,29 @@
 import type { FastMCP } from 'fastmcp';
 import { z } from 'zod';
 import { readTemporalEntity } from '../../lib/ngsi-ld';
-import { TEMPORAL_BROKER_SEPARATE } from '../../lib/constants';
+import { TEMPORAL_BROKER_SEPARATE, isReadableType } from '../../lib/constants';
+import type { LoadedSchema } from '../../lib/schema';
 import { ok, fail, toolError, stripContext } from './util';
 
-export function registerGetEntityHistory(server: FastMCP): void {
+export function registerGetEntityHistory(server: FastMCP, schemas: LoadedSchema[] = []): void {
+    const hasTyped = schemas.some((s) => isReadableType(s.typeName));
     server.addTool({
         name: 'get_entity_history',
         description:
             '[Time-series only] Trend/history for a single entity by URN ("has it changed", "over the last month") — ' +
-            'not for current state, use get_entity for that. Prefer the typed `get_<type>_history` tool when one exists. ' +
-            'Returns [value, timestamp] tuples. Always set `pick` to the attributes you want tracked. 404 if no history ' +
-            'is retained for the entity.' +
+            'not for current state, use get_entity for that. ' +
+            (hasTyped ? 'Prefer the typed `get_<type>_history` tool when one exists. ' : '') +
+            'Returns [value, timestamp] tuples. Set `pick` to focus on specific attributes; omit it to track every ' +
+            'attribute. 404 if no history is retained for the entity.' +
             (TEMPORAL_BROKER_SEPARATE ? ' Served from a separate temporal endpoint.' : ''),
         parameters: z.object({
             id: z.string().describe('Entity URN, e.g. "urn:ngsi-ld:Animal:cow001".'),
             pick: z
                 .string()
                 .optional()
-                .describe('Comma-separated attributes to track, e.g. "weight,heartRate". Always set this.'),
+                .describe(
+                    'Comma-separated attributes to track, e.g. "weight,heartRate". Set it to focus the series; omit it to track every attribute.'
+                ),
             timerel: z
                 .enum(['before', 'after', 'between'])
                 .optional()

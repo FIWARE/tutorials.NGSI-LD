@@ -46,15 +46,42 @@ export function okOrError(res: Record<string, unknown>): string | ContentResult 
     return 'error' in res ? toolError(res) : ok(res);
 }
 
-// Shape a thrown broker error. `cause` is the NGSI-LD ProblemDetails body: pull out
-// title/detail/type/status, dropping whichever the broker left off. `toolError` adds
-// `category`/`retryable` from `status`; a thrown error with no status is a network fault.
+// Lead-in for a generic tool that per-type tools can shadow. Empty when none of
+// those typed tools are registered - then the generic tool is not a fallback, it
+// is the only option, and "[Fallback] / prefer a typed tool" would mislead.
+export function fallbackLead(typedTool: string, types: string[]): string {
+    return types.length
+        ? `[Fallback] A typed \`${typedTool}\` tool exists for ${types.join(', ')} — prefer it for those ` +
+              `types (schema-validated, better documented); use this only for other types. `
+        : '';
+}
+
+// NGSI-LD standard error types -> HTTP status, so a proxy that keeps the
+// ProblemDetails `type` but drops the response status still classifies correctly.
+const NGSI_ERROR_STATUS: Record<string, number> = {
+    InvalidRequest: 400,
+    BadRequestData: 400,
+    AlreadyExists: 409,
+    OperationNotSupported: 422,
+    ResourceNotFound: 404,
+    TooComplexQuery: 403,
+    TooManyResults: 403,
+    LdContextNotAvailable: 503,
+    NonexistentTenant: 404,
+    InternalError: 500
+};
+
+// Shape a thrown broker error. `cause` is the NGSI-LD ProblemDetails body plus the
+// HTTP status (lib/ngsi-ld.ts): pull out title/detail/type/status, and when the
+// status is missing infer it from the `type`. `toolError` derives category/retryable;
+// a thrown error with neither status nor a known type is a network fault.
 export function fail(err: unknown): ContentResult {
     const e = err as Error & { cause?: unknown };
     const c = e.cause && typeof e.cause === 'object' ? (e.cause as Record<string, unknown>) : {};
     const detail = typeof c.detail === 'string' && c.detail ? c.detail : undefined;
     const type = typeof c.type === 'string' && c.type ? c.type : undefined;
-    const status = typeof c.status === 'number' ? c.status : undefined;
+    const status =
+        (typeof c.status === 'number' ? c.status : undefined) ?? NGSI_ERROR_STATUS[type?.split('/').pop() ?? ''];
     return toolError({
         error: (typeof c.title === 'string' && c.title) || e.message || 'Broker request failed',
         ...(detail ? { detail } : {}),
@@ -229,7 +256,8 @@ export function okPage(
         out._notice =
             `The query executed successfully and matched no ${typeLabel} entities` +
             (offset > 0 ? ` beyond offset ${offset}` : '') +
-            `. This is a valid empty result, not an error.`;
+            `. This is a valid empty result, not an error. If an attribute name in \`q\` or \`pick\` was a guess, ` +
+            `confirm it with \`get_entity_type\`.`;
     }
     const pagination = { total, limit, offset, returned, hasMore, nextOffset: hasMore ? nextOffset : null };
     out.pagination = pagination;

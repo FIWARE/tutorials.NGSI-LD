@@ -1,25 +1,37 @@
 import type { FastMCP } from 'fastmcp';
 import { z } from 'zod';
 import { readEntity } from '../../lib/ngsi-ld';
-import { UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY } from '../../lib/constants';
-import { ok, fail, toolError, stripContext, spreadAdditionalProperty, pickWithAdditionalProperty } from './util';
+import { UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY, isReadableType } from '../../lib/constants';
+import type { LoadedSchema } from '../../lib/schema';
+import {
+    ok,
+    fail,
+    toolError,
+    stripContext,
+    spreadAdditionalProperty,
+    pickWithAdditionalProperty,
+    fallbackLead
+} from './util';
 import { reprOption, REPR_PARAM_DESC } from './query-entities';
 
 const ADDITIONAL_PROPERTY_MODE = UNKNOWN_ATTRIBUTES === 'additionalProperty';
 
-export function registerGetEntity(server: FastMCP): void {
+export function registerGetEntity(server: FastMCP, schemas: LoadedSchema[] = []): void {
+    const typed = schemas.filter((s) => isReadableType(s.typeName)).map((s) => s.typeName);
     server.addTool({
         name: 'get_entity',
         description:
-            '[Fallback] Retrieve a single entity by its URN when the type has no typed `get_<type>` tool, or ' +
-            'when walking a relationship chain: `pick` a relationship attribute, then call again with its target URN. ' +
-            'Prefer the typed `get_<type>` tool when one exists. Use `pick` to fetch only what you need.',
+            fallbackLead('get_<type>', typed) +
+            'Retrieve a single entity by its URN. Also used to walk a relationship chain: `pick` a relationship ' +
+            'attribute, then call again with its target URN. Use `pick` to fetch only what you need.',
         parameters: z.object({
             id: z.string().describe('Entity URN, e.g. "urn:ngsi-ld:Animal:cow001".'),
             pick: z
                 .string()
                 .optional()
-                .describe('Comma-separated attributes to return, e.g. "location,containedInPlace". Always set this.'),
+                .describe(
+                    'Comma-separated attributes to return, e.g. "location,containedInPlace". Set it to keep responses small; omit it for the whole entity when exploring or unsure which attributes exist.'
+                ),
             metadataOnly: z
                 .boolean()
                 .optional()

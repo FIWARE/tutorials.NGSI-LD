@@ -44,16 +44,16 @@ export function registerContextDiscoveryTools(server: FastMCP, core: CoreSchemas
             'value types seen on the broker. Drill-down after list_entity_types to decide what to `pick` or filter. ' +
             'Pass the type name as list_entity_types shows it, e.g. "Animal".',
         parameters: z.object({
-            type: z.string().describe('Entity type name or fully-qualified URI, e.g. "Animal".')
+            entityType: z.string().describe('Entity type name or fully-qualified URI, e.g. "Animal".')
         }),
-        execute: async ({ type }) => {
+        execute: async ({ entityType }) => {
             try {
-                const body = stripContext(await readType(type));
+                const body = stripContext(await readType(entityType));
                 return okOrError(validateOne(body, core.EntityTypeInfo.validator));
             } catch (err) {
                 const e = err as Error;
                 if (/\b404\b|not found/i.test(e.message)) {
-                    return toolError({ error: `No entity type "${type}" on the broker`, status: 404 });
+                    return toolError({ error: `No entity type "${entityType}" on the broker`, status: 404 });
                 }
                 return fail(err);
             }
