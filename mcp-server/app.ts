@@ -36,8 +36,6 @@ export async function buildServer(): Promise<FastMCP> {
     // Core NGSI-LD tools, always present.
     const core = await loadCoreSchemas();
     registerContextDiscoveryTools(server, core);
-    registerQueryEntities(server);
-    exposed.add('query_entities');
     registerGetEntity(server);
     exposed.add('get_entity');
     registerGeoQuery(server);
@@ -51,6 +49,11 @@ export async function buildServer(): Promise<FastMCP> {
     // Ontology resources cover every loaded type; typed per-type tools are generated
     // only for QUERIABLE_TYPES / READABLE_TYPES.
     const schemas = await loadSchemas();
+
+    // Generic query gets the loaded schemas so it can auto-fill `expandValues` for
+    // a VocabProperty `q` filter when a schema for the queried type exists.
+    registerQueryEntities(server, schemas);
+    exposed.add('query_entities');
 
     // A default for a type with no loaded schema is a config error, not ignorable.
     const loadedTypes = new Set(schemas.map((s) => s.typeName.toLowerCase()));
