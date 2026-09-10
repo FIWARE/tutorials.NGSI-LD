@@ -16,16 +16,24 @@ import { normalizeAttribute } from '../../lib/normalize';
 import type { LoadedSchema } from '../../lib/schema';
 import { ok, fail, toolError, okOrError, is404, notFound, RESERVED_ATTRS, isKnownAttr } from './util';
 
-// Any JSON value. Explicit anyOf, object branch as z.object({}).passthrough(), so
-// every branch of the emitted JSON Schema has a keyword; some MCP clients reject a bare {}.
-const jsonValue = z.union([
-    z.string(),
-    z.number(),
-    z.boolean(),
-    z.null(),
-    z.array(z.any()),
-    z.object({}).passthrough()
-]);
+// Attribute values arrive as strings so the schema has no anyOf (Gemini can't express one).
+// Turn "12" / "true" / "null" into primitives, `[`/`{` strings into JSON, keep the rest.
+function coerceScalar(v: unknown): unknown {
+    if (typeof v !== 'string') return v;
+    const t = v.trim();
+    if (t === 'true') return true;
+    if (t === 'false') return false;
+    if (t === 'null') return null;
+    if (/^-?\d+(\.\d+)?$/.test(t)) return Number(t);
+    if (/^[[{]/.test(t)) {
+        try {
+            return JSON.parse(t);
+        } catch {
+            /* leave as string */
+        }
+    }
+    return v;
+}
 
 type Composed = { entity: Record<string, unknown> } | { error: string };
 
@@ -36,7 +44,8 @@ function composeEntity(id: string, type: string, attrs: Record<string, unknown>,
     const extra: Record<string, unknown> = {};
     const rejected: string[] = [];
 
-    for (const [name, value] of Object.entries(attrs)) {
+    for (const [name, rawVal] of Object.entries(attrs)) {
+        const value = coerceScalar(rawVal);
         if (RESERVED_ATTRS.has(name) || value === undefined || value === null) continue;
         if (name === ADDITIONAL_PROPERTY && value && typeof value === 'object' && !Array.isArray(value)) {
             Object.assign(extra, value as Record<string, unknown>);
@@ -87,10 +96,11 @@ async function patchOrAppend(id: string, attr: string, node: unknown): Promise<'
 async function updateOne(
     id: string,
     attr: string,
-    value: unknown,
+    raw: unknown,
     schema: LoadedSchema | undefined,
     over: { unitCode?: string; observedAt?: string }
 ): Promise<Record<string, unknown>> {
+    const value = coerceScalar(raw);
     if (schema && !isKnownAttr(attr, schema)) {
         if (UNKNOWN_ATTRIBUTES === 'reject') {
             return {
@@ -154,9 +164,11 @@ export function registerWrite(server: FastMCP, schema: LoadedSchema, exposed: Se
         parameters: z.object({
             id: z.string().describe(`URN for the new entity, e.g. "urn:ngsi-ld:${t}:001".`),
             attributes: z
-                .record(jsonValue)
+                .record(z.string())
                 .describe(
-                    'Attribute name → value in simplified form, e.g. { "species": "cow", "ownedBy": "urn:ngsi-ld:Person:001" }.'
+                    'Attribute name → value, e.g. { "species": "cow", "weight": "400", "ownedBy": ' +
+                        '"urn:ngsi-ld:Person:001" }. Values are strings: a number or boolean is read as such, a ' +
+                        'relationship is the target URN, a list or GeoJSON is a JSON string.'
                 )
         }),
         execute: async ({ id, attributes }) => {
@@ -192,7 +204,12 @@ export function registerWrite(server: FastMCP, schema: LoadedSchema, exposed: Se
         parameters: z.object({
             id: z.string().describe(`URN of the ${t}.`),
             attr: z.string().describe('Attribute name, e.g. "weight" or "locatedAt".'),
-            value: jsonValue.describe('New value in simplified form.'),
+            value: z
+                .string()
+                .describe(
+                    'New value. A relationship: the target URN. A number or boolean: as text ("400", "true"). ' +
+                        'A list or GeoJSON: a JSON string.'
+                ),
             ...attrOverrides
         }),
         execute: async ({ id, attr, value, unitCode, observedAt }) => {
@@ -224,9 +241,8 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
     const typedWrite = schemas.filter((s) => isWritableType(s.typeName)).map((s) => s.typeName);
     let count = 0;
 
-    // create_entity needs a schema (required attrs, encoding); with none loaded it
-    // could never succeed, so it is not registered — the typed create_<type> tools
-    // are likewise absent without their schema.
+    // create_entity needs a schema, so it is not registered when none are loaded — same
+    // as the typed create_<type> tools, absent without their schema.
     if (typeNames.length > 0) {
         count++;
         exposed.add('create_entity');
@@ -245,8 +261,12 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
                     .enum(typeNames as [string, ...string[]])
                     .describe('Entity type — must be a loaded data model.'),
                 attributes: z
-                    .record(jsonValue)
-                    .describe('Attribute name → value in simplified (or already-typed) form.')
+                    .record(z.string())
+                    .describe(
+                        'Attribute name → value, e.g. { "species": "cow", "weight": "400" }. Values are strings: a ' +
+                            'number or boolean is read as such, a relationship is the target URN, a list or GeoJSON ' +
+                            'is a JSON string.'
+                    )
             }),
             execute: async ({ id, entityType, attributes }) => {
                 try {
@@ -297,7 +317,12 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
         parameters: z.object({
             id: z.string().describe('URN of the entity.'),
             attr: z.string().describe('Attribute name.'),
-            value: jsonValue.describe('New value in simplified (or already-typed) form.'),
+            value: z
+                .string()
+                .describe(
+                    'New value. A relationship: the target URN. A number or boolean: as text ("400", "true"). ' +
+                        'A list or GeoJSON: a JSON string.'
+                ),
             entityType: z.string().optional().describe('Entity type, to apply the loaded schema encoding.'),
             ...attrOverrides
         }),

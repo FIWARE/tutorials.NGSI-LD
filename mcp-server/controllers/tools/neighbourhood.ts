@@ -1,9 +1,5 @@
-// "Everything one hop from an entity" — backs the `neighbourhood` option on the get_entity
-// tool. Deliberately kept out of the execute handler: it fans out into many broker calls
-// (one per relationship target, plus a sibling query per relationship). Entities come back
-// in full concise form on purpose — `pick` is not applied, because the diagnostic signal
-// is usually a relationship on a *neighbour* (e.g. a newborn's `calvedBy`) that a trimmed
-// projection would hide.
+// Backs get_entity's `neighbourhood` option: an entity plus its one-hop graph, in its own
+// function (many broker calls). No `pick` — it would hide the neighbour edge that holds the answer.
 
 import { readEntity, listEntities } from '../../lib/ngsi-ld';
 import { UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY } from '../../lib/constants';
@@ -36,9 +32,8 @@ function relationshipTargets(v: unknown): string[] | null {
     return isRelationship ? [...new Set(urns)] : null;
 }
 
-// The entity, plus for each of its relationship attributes: the target entity/ies it
-// points to (forward), and every other entity of the same type that shares that
-// relationship value (siblings — e.g. co-located, same owner). Full concise form.
+// Per relationship attribute: the entities it points to (forward) and every same-type
+// entity sharing that value (siblings — co-located, same owner). Full concise form.
 export async function getNeighbourhood(id: string, limit?: number): Promise<Record<string, unknown>> {
     const cap = Math.min(limit && limit > 0 ? limit : 20, 100);
 

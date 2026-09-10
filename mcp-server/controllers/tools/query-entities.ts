@@ -49,9 +49,8 @@ export const REPR_PARAM_DESC =
     'compact=true: always a bare value, links as bare "<URN>" strings, locations as GeoJSON. Smaller and uniform, ' +
     'but unit codes, timestamps and sub-attributes are lost. Use it only when you just need raw values.';
 
-// Shared execute body for query_entities and its geo superset query_entities_geo:
-// additionalProperty `q`/`pick` bracketing, VocabProperty `expandValues` (auto-filled
-// from a loaded schema), an optional spatial predicate, then okPage pagination.
+// Shared execute body for query_entities and its geo superset: additionalProperty q/pick
+// bracketing, VocabProperty expandValues auto-fill, an optional geo predicate, then okPage.
 export function makeEntityQuery(schemas: LoadedSchema[]) {
     // type (lower-case) -> its VocabProperty attribute names, for every loaded schema.
     const vocabByType = new Map<string, string[]>();
@@ -67,9 +66,8 @@ export function makeEntityQuery(schemas: LoadedSchema[]) {
     return async (args: EntityQueryArgs, toolName: string) => {
         const { entityType, q, pick, expandValues, limit, offset, metadataOnly, compact } = args;
         try {
-            // No schema is assumed, so every unmodelled attr sits in the JsonProperty
-            // container: bracket bare `q` heads (except id/type/core terms) and always
-            // fetch the container for `pick`, so the caller never writes `additionalProperty[<name>]`.
+            // No schema here, so unmodelled attrs live in the JsonProperty container: bracket
+            // bare `q` heads and pull the whole container for `pick`, so the caller need not.
             const effectiveQ = ADDITIONAL_PROPERTY_MODE
                 ? rewriteAdditionalPropertyQuery(q, CORE_ENTITY_ATTRS, ADDITIONAL_PROPERTY)
                 : q;

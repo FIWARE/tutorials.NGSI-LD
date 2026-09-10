@@ -11,9 +11,8 @@ export function ok(data: unknown): string {
     return JSON.stringify(data, null, 2);
 }
 
-// Machine-readable retry signal keyed by HTTP status class. `category` groups the
-// failure, `retryable` says whether the same call may later succeed. (When fastmcp
-// gains structuredContent this object moves there verbatim.)
+// HTTP status class -> { category, retryable }: how the agent should react. Moves into
+// structuredContent verbatim once fastmcp supports it.
 export function statusMeta(status: number): { category: string; retryable: boolean } {
     if (status === 404) return { category: 'not_found', retryable: false };
     if (status === 409) return { category: 'conflict', retryable: false };
@@ -24,10 +23,8 @@ export function statusMeta(status: number): { category: string; retryable: boole
     return { category: 'unknown', retryable: false };
 }
 
-// A failed tool call. The `isError` flag is what tells the client this failed; a
-// bare string result never sets it. The same JSON goes in `content` (for clients
-// that only read text) and `structuredContent`; a numeric `status` gains
-// `category`/`retryable` unless the caller already set them.
+// A failed tool call: `isError` flags it (a bare string never does), the same JSON goes
+// in both `content` and `structuredContent`, and a numeric `status` adds category/retryable.
 export function toolError(payload: Record<string, unknown>): ContentResult {
     const body =
         typeof payload.status === 'number' && !('category' in payload)
@@ -46,9 +43,8 @@ export function okOrError(res: Record<string, unknown>): string | ContentResult 
     return 'error' in res ? toolError(res) : ok(res);
 }
 
-// Lead-in for a generic tool that per-type tools can shadow. Empty when none of
-// those typed tools are registered - then the generic tool is not a fallback, it
-// is the only option, and "[Fallback] / prefer a typed tool" would mislead.
+// "[Fallback]" lead-in for a generic tool that per-type tools can shadow. Empty when none
+// are registered — then it is the only option and "prefer a typed tool" would mislead.
 export function fallbackLead(typedTool: string, types: string[]): string {
     return types.length
         ? `[Fallback] A typed \`${typedTool}\` tool exists for ${types.join(', ')} — prefer it for those ` +
@@ -71,10 +67,8 @@ const NGSI_ERROR_STATUS: Record<string, number> = {
     InternalError: 500
 };
 
-// Shape a thrown broker error. `cause` is the NGSI-LD ProblemDetails body plus the
-// HTTP status (lib/ngsi-ld.ts): pull out title/detail/type/status, and when the
-// status is missing infer it from the `type`. `toolError` derives category/retryable;
-// a thrown error with neither status nor a known type is a network fault.
+// Shape a thrown broker error: pull title/detail/type/status off `cause` (ProblemDetails
+// body + HTTP status), infer status from `type` when missing, else treat as a network fault.
 export function fail(err: unknown): ContentResult {
     const e = err as Error & { cause?: unknown };
     const c = e.cause && typeof e.cause === 'object' ? (e.cause as Record<string, unknown>) : {};
@@ -228,9 +222,8 @@ export function clampLimit(limit?: number): number {
     return Math.min(limit, ENTITY_LIMIT);
 }
 
-// Wrap a page of list results. `content` carries `_notice` (a "more data" warning
-// when matches remain, or a "ran, matched nothing" confirmation on an empty page),
-// `pagination` and `entities`; `structuredContent` carries `pagination` alone.
+// Wrap a page of results: `content` gets `_notice` (a more-data warning or an
+// empty-result note), `pagination` and `entities`; `structuredContent` gets `pagination`.
 export function okPage(
     entities: unknown[],
     page: EntityPage,

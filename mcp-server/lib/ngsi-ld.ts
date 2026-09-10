@@ -76,6 +76,28 @@ function buildQuery(filters: Record<string, unknown> = {}): string {
     return clauses.join(';');
 }
 
+// NGSI-LD `q` has no null literal (`calvedBy==null` errors). Drop bare-null clauses and an
+// adjacent separator; a quoted "null" is a real string match and stays.
+function stripNullClauses(q: string): string {
+    if (!/[=<>~!]\s*null\b/.test(q)) {
+        return q;
+    }
+    const parts = q.split('"'); // even indices are outside quoted string values
+    const NULL_CLAUSE =
+        /[A-Za-z_@][\w.:@-]*(?:\[[^\]]*\])?(?:\.[A-Za-z0-9_]+)*\s*(?:==|!=|>=|<=|>|<|~=)\s*null\b\s*([;|]?)/g;
+    for (let i = 0; i < parts.length; i += 2) {
+        let p = parts[i].replace(NULL_CLAUSE, '$1').replace(/([;|])\s*(?=[;|])/g, '');
+        if (i === 0) {
+            p = p.replace(/^\s*[;|]+/, '');
+        }
+        if (i === parts.length - 1) {
+            p = p.replace(/[;|]+\s*$/, '');
+        }
+        parts[i] = p;
+    }
+    return parts.join('"');
+}
+
 // Build the query string by hand: URLSearchParams encodes spaces as '+', which
 // Orion-LD's `q` parser leaves undecoded and then matches nothing.
 function toQueryString(opts: Record<string, unknown>): string {
@@ -84,7 +106,7 @@ function toQueryString(opts: Record<string, unknown>): string {
     const filters = (params.filters as Record<string, unknown>) || undefined;
     delete params.filters;
 
-    const q = [buildQuery(filters), params.q].filter(Boolean).join(';');
+    const q = stripNullClauses([buildQuery(filters), params.q].filter(Boolean).join(';'));
     if (q) {
         params.q = q;
     } else {
@@ -149,8 +171,8 @@ function request(url: string, tenant: string | undefined = READ_TENANT): Promise
     return requestFull(url, tenant).then((d) => d.body);
 }
 
-// POST / PATCH / DELETE. Non-2xx throws with the ProblemDetails body on `.cause`.
-// WRITE_LOCAL_ONLY adds `local=true` to stop the write cascading to registrations.
+// POST / PATCH / DELETE; non-2xx throws with ProblemDetails on `.cause`. WRITE_LOCAL_ONLY
+// adds `local=true` on entity-level ops only — Orion-LD 404s it on `/attrs/{attr}`.
 function mutate(
     url: string,
     method: 'POST' | 'PATCH' | 'DELETE',
@@ -158,7 +180,8 @@ function mutate(
     tenant: string | undefined = WRITE_TENANT,
     contentType = 'application/json'
 ): Promise<unknown> {
-    const target = WRITE_LOCAL_ONLY ? `${url}${url.includes('?') ? '&' : '?'}local=true` : url;
+    const localOk = WRITE_LOCAL_ONLY && !/\/attrs(\/|$)/.test(url);
+    const target = localOk ? `${url}${url.includes('?') ? '&' : '?'}local=true` : url;
     log('%s %s', method, target);
     const headers = setHeaders(tenant);
     const init: RequestInit = { method, headers };
@@ -312,6 +335,7 @@ export {
     parse,
     setHeaders,
     buildQuery,
+    stripNullClauses,
     listEntities,
     readEntity,
     readTemporalEntity,
