@@ -11,9 +11,9 @@ const log = debug('mcp:prompt');
 export interface LoadedPrompt {
     name: string;
     description: string;
-    arguments: Record<string, string>; // argument name -> description shown to the caller
+    arguments: Record<string, string>; // maps each argument name to the description shown to the caller
     types: string[]; // NGSI-LD type names {{tools}} / {{type}} resolve against
-    tools: string[]; // tool-name patterns, e.g. "get_{{type}}", "query_entities_geo"
+    tools: string[]; // tool-name patterns, e.g. "get_{{type}}", "geoquery_entities"
     template: string;
     fields: Record<string, unknown>; // every other JSON key, available for {{placeholder}} substitution
 }

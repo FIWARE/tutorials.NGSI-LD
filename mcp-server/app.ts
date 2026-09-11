@@ -8,21 +8,13 @@ import { registerQueryEntities } from './controllers/tools/query-entities';
 import { registerGetEntity } from './controllers/tools/get-entity';
 import { registerGetEntityHistory } from './controllers/tools/get-entity-history';
 import { registerGeoQuery } from './controllers/tools/geo-query';
-import { registerDynamic } from './controllers/tools/dynamic';
-import { registerWrite, registerGenericWrite } from './controllers/tools/write';
-import { registerDelete, registerGenericDelete } from './controllers/tools/delete';
+import { registerGenericWrite } from './controllers/tools/write';
+import { registerGenericDelete } from './controllers/tools/delete';
 import { registerPrompts } from './controllers/prompts/dynamic';
 import { registerOntology, registerAttributeVocabulary } from './controllers/resources/ontology';
 import { registerContextDiscoveryResources } from './controllers/resources/context-discovery';
 import { buildVocabulary } from './lib/vocabulary';
-import {
-    TEMPORAL_BROKER,
-    WRITABLE,
-    WRITABLE_TYPES_LISTED,
-    DELETABLE_TYPES_LISTED,
-    UNKNOWN_ATTRIBUTES,
-    ENTITY_DEFAULTS
-} from './lib/constants';
+import { TEMPORAL_BROKER, WRITABLE, UNKNOWN_ATTRIBUTES, ENTITY_DEFAULTS } from './lib/constants';
 
 const log = debug('mcp:server');
 
@@ -67,24 +59,22 @@ export async function buildServer(): Promise<FastMCP> {
     const core = await loadCoreSchemas();
     registerContextDiscoveryTools(server, core);
 
-    // Ontology resources cover every loaded type; typed per-type tools are generated
-    // only for QUERIABLE_TYPES / READABLE_TYPES.
+    // Ontology resources cover every loaded type.
     const schemas = await loadSchemas();
 
-    // The generic tools take the loaded schemas so their descriptions can name the
-    // typed tools that shadow them (and only call themselves "[Fallback]" when those
-    // exist), and so query auto-fills `expandValues` for enumerated `q` filters.
-    registerGetEntity(server, schemas);
+    // The query tools take the loaded schemas so `expandValues` auto-fills for
+    // enumerated `q` filters.
+    registerGetEntity(server);
     exposed.add('get_entity');
     // No TEMPORAL_BROKER, no history tools.
     if (TEMPORAL_BROKER) {
-        registerGetEntityHistory(server, schemas);
+        registerGetEntityHistory(server);
         exposed.add('get_entity_history');
     }
     registerQueryEntities(server, schemas);
     exposed.add('query_entities');
     registerGeoQuery(server, schemas);
-    exposed.add('query_entities_geo');
+    exposed.add('geoquery_entities');
 
     // A default for a type with no loaded schema is a config error, not ignorable.
     const loadedTypes = new Set(schemas.map((s) => s.typeName.toLowerCase()));
@@ -94,21 +84,10 @@ export async function buildServer(): Promise<FastMCP> {
         }
     }
 
-    let typedTools = 0;
     let writeTools = 0;
-    for (const schema of schemas) {
-        typedTools += registerDynamic(server, schema, exposed);
-        // No-ops unless WRITABLE=true and the type is in WRITABLE_TYPES / DELETABLE_TYPES.
-        writeTools += registerWrite(server, schema, exposed);
-        writeTools += registerDelete(server, schema, exposed);
-    }
-    // WRITABLE=true with no list: the generic tool stands in (write and delete
-    // decided independently).
-    if (WRITABLE && !WRITABLE_TYPES_LISTED) {
+    if (WRITABLE) {
         writeTools += registerGenericWrite(server, schemas, exposed);
-    }
-    if (WRITABLE && !DELETABLE_TYPES_LISTED) {
-        writeTools += registerGenericDelete(server, exposed, schemas);
+        writeTools += registerGenericDelete(server, exposed);
     }
     registerOntology(server, schemas);
     // The attribute vocabulary guides adding new names; pointless (and its @context
@@ -123,9 +102,8 @@ export async function buildServer(): Promise<FastMCP> {
     const promptCount = registerPrompts(server, prompts, exposed);
 
     log(
-        '%d generic tools + %d typed tools + %d write/delete tools (temporal %s, writable %s) + %d ontology resources + %d prompts',
+        '%d generic tools + %d write/delete tools (temporal %s, writable %s) + %d ontology resources + %d prompts',
         TEMPORAL_BROKER ? 7 : 6,
-        typedTools,
         writeTools,
         TEMPORAL_BROKER ? 'on' : 'off',
         WRITABLE ? 'on' : 'off',

@@ -1,28 +1,17 @@
 import type { FastMCP } from 'fastmcp';
 import { z } from 'zod';
 import { readEntity } from '../../lib/ngsi-ld';
-import { UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY, isReadableType } from '../../lib/constants';
-import type { LoadedSchema } from '../../lib/schema';
-import {
-    ok,
-    fail,
-    toolError,
-    stripContext,
-    spreadAdditionalProperty,
-    pickWithAdditionalProperty,
-    fallbackLead
-} from './util';
+import { UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY } from '../../lib/constants';
+import { ok, fail, toolError, stripContext, spreadAdditionalProperty, pickWithAdditionalProperty } from './util';
 import { reprOption, REPR_PARAM_DESC } from './query-entities';
 import { getNeighbourhood } from './neighbourhood';
 
 const ADDITIONAL_PROPERTY_MODE = UNKNOWN_ATTRIBUTES === 'additionalProperty';
 
-export function registerGetEntity(server: FastMCP, schemas: LoadedSchema[] = []): void {
-    const typed = schemas.filter((s) => isReadableType(s.typeName)).map((s) => s.typeName);
+export function registerGetEntity(server: FastMCP): void {
     server.addTool({
         name: 'get_entity',
         description:
-            fallbackLead('get_<type>', typed) +
             'Retrieve a single entity by its URN. Also used to walk a relationship chain: `pick` a relationship ' +
             'attribute, then call again with its target URN. Use `pick` to fetch only what you need. For a "why / how / ' +
             'explain" question, set `neighbourhood` — it pulls the surrounding entities in one shot so you can see the ' +

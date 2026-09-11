@@ -60,10 +60,8 @@ describe('resolveTools', () => {
     });
 
     it('keeps a placeholder-free pattern verbatim only when it is exposed', () => {
-        expect(resolveTools(['query_entities_geo'], [], new Set(['query_entities_geo']))).toEqual([
-            'query_entities_geo'
-        ]);
-        expect(resolveTools(['query_entities_geo'], [], new Set())).toEqual([]);
+        expect(resolveTools(['geoquery_entities'], [], new Set(['geoquery_entities']))).toEqual(['geoquery_entities']);
+        expect(resolveTools(['geoquery_entities'], [], new Set())).toEqual([]);
     });
 
     it('deduplicates when several types fall back to the same generic tool', () => {

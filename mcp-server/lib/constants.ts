@@ -45,42 +45,15 @@ const PROMPTS_DIR = process.env.PROMPTS_DIR || `${__dirname}/../prompts`;
 
 const ENTITY_LIMIT = Number(process.env.ENTITY_LIMIT || 100);
 
-// Which loaded schemas get typed tools: QUERIABLE_TYPES for query_<type>,
-// READABLE_TYPES for get_<type>(_history). Comma-separated names, "*" all, unset none.
-function typeMatcher(raw: string | undefined): (typeName: string) => boolean {
-    const entries = (raw || '')
-        .split(',')
-        .map((s) => s.trim().toLowerCase())
-        .filter(Boolean);
-    if (entries.includes('*')) {
-        return () => true;
-    }
-    const set = new Set(entries);
-    return (typeName) => set.has(typeName.toLowerCase());
-}
-
-const isQueriableType = typeMatcher(process.env.QUERIABLE_TYPES);
-const isReadableType = typeMatcher(process.env.READABLE_TYPES);
-
 // Master interlock: unless it is exactly "true" the server is read-only and no
-// create/update/delete tool is registered, whatever the *_TYPES lists say.
+// create/update/delete tool is registered.
 const WRITABLE = process.env.WRITABLE === 'true';
-
-// With WRITABLE=true, these gate the typed write and delete tools independently.
-// Same comma-separated / "*" / unset semantics as the read lists; no generic tool.
-const isWritableType = typeMatcher(process.env.WRITABLE_TYPES);
-const isDeletableType = typeMatcher(process.env.DELETABLE_TYPES);
-
-// Was a list supplied? No list means the generic tool (create_entity ...); a list
-// means typed tools for those types only. Write and delete decide independently.
-const WRITABLE_TYPES_LISTED = !!process.env.WRITABLE_TYPES?.trim();
-const DELETABLE_TYPES_LISTED = !!process.env.DELETABLE_TYPES?.trim();
 
 // `providedBy` URN the write tools attach to every measurement they assert (the
 // attributes that carry `observedAt`). Unset means no provenance link.
 const PROVIDED_BY = process.env.PROVIDED_BY || undefined;
 
-// JSON { TypeName: { attr: value } }. On create_<type> any listed attribute the
+// JSON { TypeName: { attr: value } }. On create_entity, any listed attribute the
 // caller omits is filled in (caller wins). Strict parse; a bad value stops startup.
 export function parseEntityDefaults(raw: string | undefined): Map<string, Record<string, unknown>> {
     const map = new Map<string, Record<string, unknown>>();
@@ -144,13 +117,7 @@ export {
     PROMPTS_DIR,
     VALIDATION,
     ENTITY_LIMIT,
-    isQueriableType,
-    isReadableType,
     WRITABLE,
-    isWritableType,
-    isDeletableType,
-    WRITABLE_TYPES_LISTED,
-    DELETABLE_TYPES_LISTED,
     PROVIDED_BY,
     ENTITY_DEFAULTS,
     entityDefaultsFor,

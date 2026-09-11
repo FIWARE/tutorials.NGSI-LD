@@ -1,5 +1,5 @@
-// One FastMCP prompt per prompts/*.json spec. Static fields are stringified into
-// `template`; `{{tools}}` resolves against `exposed`, per-type generic fallback.
+// One FastMCP prompt per prompts/*.json spec. Static fields get stringified into
+// `template`, and `{{tools}}` resolves against `exposed` with a generic-tool fallback.
 
 import type { FastMCP, InputPromptArgument } from 'fastmcp';
 import debug from 'debug';
@@ -7,15 +7,16 @@ import type { LoadedPrompt } from '../../lib/prompt';
 
 const log = debug('mcp:prompt');
 
-// {{type}} tool-pattern -> its untyped fallback, for a type with no typed tool.
+// Maps a {{type}} tool pattern to the generic tool it falls back to when no
+// typed tool of that name is exposed.
 const DEFAULT_TOOL: Record<string, string> = {
     'query_{{type}}': 'query_entities',
     'get_{{type}}': 'get_entity',
     'get_{{type}}_history': 'get_entity_history'
 };
 
-// String as-is; array joined with ", "; object rendered as "key: value" pairs
-// joined with "; ". Covers `pick`, `phrasing`, `flagValues` and any other field.
+// Renders a field for template substitution: a string passes through, an array
+// joins with ", ", an object becomes "key: value" pairs joined with "; ".
 function stringifyField(value: unknown): string {
     if (Array.isArray(value)) {
         return value.map(stringifyField).join(', ');
@@ -28,8 +29,8 @@ function stringifyField(value: unknown): string {
     return String(value);
 }
 
-// Substitute {{type}} into each pattern per type, keeping the result only if
-// exposed, else the generic fallback. A pattern with no {{type}} is kept if exposed.
+// Fills {{type}} into each pattern per type, keeping only tool names that are
+// actually exposed (falling back to the generic tool otherwise).
 function resolveTools(tools: string[], types: string[], exposed: ReadonlySet<string>): string[] {
     const resolved: string[] = [];
     for (const pattern of tools) {

@@ -1,5 +1,5 @@
-// Load schemas/*.json, dereference $ref, flatten allOf, and derive the Zod shapes
-// each dynamic tool needs (input filters, concise output, temporal).
+// Loads schemas/*.json, dereferences $ref, flattens allOf, and builds the Zod
+// shapes the tools need: input filters, concise output, temporal validation.
 
 import fs from 'fs';
 import path from 'path';
@@ -29,8 +29,8 @@ export interface LoadedSchema {
     source: JsonSchemaNode; // as read from disk; used for title / model slug / tool description
 }
 
-// The eight NGSI-LD attribute types; value-bearing member per type is VALUE_KEY
-// in lib/normalize.ts.
+// The eight NGSI-LD attribute types. Each one's value-bearing member is looked
+// up via VALUE_KEY in lib/normalize.ts.
 export type NgsiAttrType =
     | 'Property'
     | 'GeoProperty'
@@ -52,8 +52,8 @@ export const NGSI_ATTR_TYPES: ReadonlySet<NgsiAttrType> = new Set([
     'JsonProperty'
 ]);
 
-// How a write tool encodes one attribute into normalised NGSI-LD, from
-// x-ngsi-type / x-unitCode / x-observedAt / enum on the flattened schema.
+// How a write tool encodes one attribute into normalised NGSI-LD, taken from
+// the flattened schema's x-ngsi-type, x-unitCode, x-observedAt and enum.
 export interface WriteAttr {
     ngsiType: NgsiAttrType;
     unitCode?: string;
@@ -63,8 +63,8 @@ export interface WriteAttr {
 
 // --- $ref resolution -------------------------------------------------------
 
-// Map any https://smart-data-models.github.io/... reference onto the matching
-// file in schemas/common/ so resolution stays fully offline.
+// Maps any https://smart-data-models.github.io/... reference onto the matching
+// file in schemas/common/, so $ref resolution stays fully offline.
 const sdmResolver = {
     order: 1,
     canRead: /^https?:\/\/smart-data-models\.github\.io\//i,
@@ -148,8 +148,8 @@ function baseZod(p: JsonSchemaNode): z.ZodTypeAny {
     }
 }
 
-// options=concise: a flat primitive with no metadata, else an object (value/target
-// plus metadata, no "type" tag) also covering Relationship / GeoProperty / VocabProperty.
+// The shape for options=concise: a bare value, or (when there's metadata) an
+// object carrying value/target — covers Relationship, GeoProperty and VocabProperty too.
 export function conciseValidator(base: z.ZodTypeAny): z.ZodTypeAny {
     return z.union([
         base,
@@ -173,7 +173,7 @@ function temporalValidator(base: z.ZodTypeAny): z.ZodTypeAny {
 
 // --- shape builder --------------------------------------------------------
 
-// Storage-platform timestamps: on entities, but never sensible query filters.
+// Storage-platform timestamps: present on entities, but never useful as query filters.
 const SYSTEM_FIELDS = new Set(['dateCreated', 'dateModified', 'createdAt', 'modifiedAt']);
 
 export interface Shapes {

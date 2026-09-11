@@ -1,17 +1,10 @@
-// Write tools, driven by WRITABLE. No WRITABLE_TYPES list gives a generic create /
-// update pair; a list gives typed create_<type> / update_<type>_attribute. Delete is ./delete.ts.
+// Generic write tools (create_entity, update_entity_attribute), driven by WRITABLE.
+// Delete is ./delete.ts.
 
 import type { FastMCP } from 'fastmcp';
 import { z } from 'zod';
 import { createEntity, mergeEntity, appendAttribute, patchAttribute } from '../../lib/ngsi-ld';
-import {
-    WRITABLE,
-    isWritableType,
-    PROVIDED_BY,
-    entityDefaultsFor,
-    UNKNOWN_ATTRIBUTES,
-    ADDITIONAL_PROPERTY
-} from '../../lib/constants';
+import { WRITABLE, PROVIDED_BY, entityDefaultsFor, UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY } from '../../lib/constants';
 import { normalizeAttribute } from '../../lib/normalize';
 import type { LoadedSchema } from '../../lib/schema';
 import { ok, fail, toolError, okOrError, is404, notFound, RESERVED_ATTRS, isKnownAttr } from './util';
@@ -133,116 +126,15 @@ const attrOverrides = {
 // does not load it, so do not point there.
 const CANON = UNKNOWN_ATTRIBUTES === 'reject' ? '' : ' Canonical attribute names: `ontology://attributes`.';
 
-// ---- typed: one pair per type named in WRITABLE_TYPES ----------------------
-
-export function registerWrite(server: FastMCP, schema: LoadedSchema, exposed: Set<string>): number {
-    if (!WRITABLE || !isWritableType(schema.typeName)) {
-        return 0;
-    }
-
-    const stem = schema.typeName.toLowerCase();
-    const t = schema.typeName;
-    const mustHave = schema.required.filter((r) => !RESERVED_ATTRS.has(r));
-    const defaults = entityDefaultsFor(t);
-    const defaultKeys = Object.keys(defaults).filter((k) => !RESERVED_ATTRS.has(k));
-
-    exposed.add(`create_${stem}`);
-    server.addTool({
-        name: `create_${stem}`,
-        description:
-            `[WRITE] Create a new ${t} entity. Pass attributes in simplified form (\`name: value\`); the server fills in ` +
-            `the attribute type, unit code and timestamp from the schema. A relationship attribute takes the target ` +
-            `entity URN as its value; a location attribute takes GeoJSON (or a bare [lng, lat]). ` +
-            (mustHave.length ? `Required attributes: ${mustHave.join(', ')}. ` : '') +
-            (defaultKeys.length
-                ? `Omitted attributes default to: ${defaultKeys
-                      .map((k) => `${k}=${JSON.stringify(defaults[k])}`)
-                      .join(', ')}. `
-                : '') +
-            `Full schema: \`${schema.ontologyUri}\`.` +
-            CANON,
-        parameters: z.object({
-            id: z.string().describe(`URN for the new entity, e.g. "urn:ngsi-ld:${t}:001".`),
-            attributes: z
-                .record(z.string())
-                .describe(
-                    'Attribute name → value, e.g. { "species": "cow", "weight": "400", "ownedBy": ' +
-                        '"urn:ngsi-ld:Person:001" }. Values are strings: a number or boolean is read as such, a ' +
-                        'relationship is the target URN, a list or GeoJSON is a JSON string.'
-                )
-        }),
-        execute: async ({ id, attributes }) => {
-            try {
-                const attrs = { ...defaults, ...((attributes ?? {}) as Record<string, unknown>) };
-                const missing = mustHave.filter((r) => attrs[r] === undefined || attrs[r] === null);
-                if (missing.length) {
-                    return toolError({ error: `Missing required attribute(s): ${missing.join(', ')}` });
-                }
-                const composed = composeEntity(id, t, attrs, schema);
-                if ('error' in composed) return toolError(composed);
-                await createEntity(composed.entity);
-                return ok({
-                    created: id,
-                    type: t,
-                    attributes: Object.keys(composed.entity).filter((k) => !RESERVED_ATTRS.has(k))
-                });
-            } catch (err) {
-                return fail(err);
-            }
-        }
-    });
-
-    exposed.add(`update_${stem}_attribute`);
-    server.addTool({
-        name: `update_${stem}_attribute`,
-        description:
-            `[WRITE] Update one attribute on an existing ${t}, or add a new one — the value (and any sub-attributes you ` +
-            `pass) are merged in; sub-attributes you do not mention are kept; the attribute is created if absent. ` +
-            `\`value\` is simplified form (a target URN for a relationship). unitCode and observedAt come from the schema ` +
-            `— pass them only to override. Schema: \`${schema.ontologyUri}\`.` +
-            CANON,
-        parameters: z.object({
-            id: z.string().describe(`URN of the ${t}.`),
-            attr: z.string().describe('Attribute name, e.g. "weight" or "locatedAt".'),
-            value: z
-                .string()
-                .describe(
-                    'New value. A relationship: the target URN. A number or boolean: as text ("400", "true"). ' +
-                        'A list or GeoJSON: a JSON string.'
-                ),
-            ...attrOverrides
-        }),
-        execute: async ({ id, attr, value, unitCode, observedAt }) => {
-            try {
-                if (RESERVED_ATTRS.has(attr)) {
-                    return toolError({ error: `"${attr}" is not a writable attribute` });
-                }
-                return okOrError(await updateOne(id, attr, value, schema, { unitCode, observedAt }));
-            } catch (err) {
-                if (is404(err)) {
-                    return notFound(t, id, attr);
-                }
-                return fail(err);
-            }
-        }
-    });
-
-    return 2;
-}
-
-// ---- generic: one pair covering any type (WRITABLE=true, no WRITABLE_TYPES) ----
-
 export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], exposed: Set<string>): number {
     if (!WRITABLE) {
         return 0;
     }
     const byType = new Map(schemas.map((s) => [s.typeName.toLowerCase(), s]));
     const typeNames = schemas.map((s) => s.typeName).sort();
-    const typedWrite = schemas.filter((s) => isWritableType(s.typeName)).map((s) => s.typeName);
     let count = 0;
 
-    // create_entity needs a schema, so it is not registered when none are loaded — same
-    // as the typed create_<type> tools, absent without their schema.
+    // create_entity needs a schema, so it is not registered when none are loaded.
     if (typeNames.length > 0) {
         count++;
         exposed.add('create_entity');
@@ -253,8 +145,7 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
                 'type is refused. Pass attributes in simplified form (`name: value`); the server fills in the attribute ' +
                 'type, unit code and timestamp from the schema and enforces its required attributes. A relationship ' +
                 'attribute takes the target entity URN; a location attribute takes GeoJSON (or a bare [lng, lat]).' +
-                CANON +
-                (typedWrite.length ? ` Prefer a typed \`create_<type>\` tool for ${typedWrite.join(', ')}.` : ''),
+                CANON,
             parameters: z.object({
                 id: z.string().describe('URN for the new entity, e.g. "urn:ngsi-ld:Animal:001".'),
                 entityType: z
@@ -312,8 +203,7 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
             'sub-attributes) are merged in; sub-attributes you do not mention are kept; the attribute is created if ' +
             'absent. Give `entityType` so the server can apply the schema encoding and the unknown-attribute policy; without ' +
             `it the value is inferred and \`attr\` is written as given.` +
-            CANON +
-            (typedWrite.length ? ` Prefer a typed \`update_<type>_attribute\` tool for ${typedWrite.join(', ')}.` : ''),
+            CANON,
         parameters: z.object({
             id: z.string().describe('URN of the entity.'),
             attr: z.string().describe('Attribute name.'),

@@ -1,7 +1,7 @@
 import type { FastMCP } from 'fastmcp';
 import { z } from 'zod';
 import { listEntities } from '../../lib/ngsi-ld';
-import { ENTITY_LIMIT, UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY, isQueriableType } from '../../lib/constants';
+import { ENTITY_LIMIT, UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY } from '../../lib/constants';
 import type { LoadedSchema } from '../../lib/schema';
 import {
     fail,
@@ -12,7 +12,6 @@ import {
     queryClauseHeads,
     rewriteAdditionalPropertyQuery,
     pickWithAdditionalProperty,
-    fallbackLead,
     CORE_ENTITY_ATTRS
 } from './util';
 
@@ -52,7 +51,7 @@ export const REPR_PARAM_DESC =
 // Shared execute body for query_entities and its geo superset: additionalProperty q/pick
 // bracketing, VocabProperty expandValues auto-fill, an optional geo predicate, then okPage.
 export function makeEntityQuery(schemas: LoadedSchema[]) {
-    // type (lower-case) -> its VocabProperty attribute names, for every loaded schema.
+    // Maps each type (lower-cased) to its VocabProperty attribute names, for every loaded schema.
     const vocabByType = new Map<string, string[]>();
     for (const s of schemas) {
         vocabByType.set(
@@ -125,12 +124,10 @@ export function makeEntityQuery(schemas: LoadedSchema[]) {
 
 export function registerQueryEntities(server: FastMCP, schemas: LoadedSchema[] = []): void {
     const query = makeEntityQuery(schemas);
-    const typed = schemas.filter((s) => isQueriableType(s.typeName)).map((s) => s.typeName);
 
     server.addTool({
         name: 'query_entities',
         description:
-            fallbackLead('query_<type>', typed) +
             'Current-state search for entities of one type. If unsure which attributes the type has, call ' +
             '`get_entity_type` first — do not guess names in `q` or `pick`. Provide a `q` filter string (`;` = AND, ' +
             '`|` = OR; operators `==` `!=` `>` `<` `>=` `<=` `~=`, string values in double quotes). To filter an ' +

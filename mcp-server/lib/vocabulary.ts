@@ -10,7 +10,7 @@ const log = debug('mcp:vocab');
 export interface Vocabulary {
     note: string;
     contextRead: boolean;
-    core: Record<string, string>; // term -> one-line meaning
+    core: Record<string, string>; // maps each term to a one-line meaning
     attributes: string[];
 }
 

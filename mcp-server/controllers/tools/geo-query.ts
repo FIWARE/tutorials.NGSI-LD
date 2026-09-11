@@ -8,13 +8,13 @@ export function registerGeoQuery(server: FastMCP, schemas: LoadedSchema[] = []):
     const query = makeEntityQuery(schemas);
 
     server.addTool({
-        name: 'query_entities_geo',
+        name: 'geoquery_entities',
         description:
             '[Spatial] `query_entities` plus a geometry filter — the only tool for point-in-polygon, distance and ' +
-            'intersection queries (the typed `query_<type>` tools cannot do geometry). Takes the same `q`, `pick`, ' +
-            '`expandValues` and pagination as `query_entities` (call `get_entity_type` first rather than guessing ' +
-            'attribute names); `georel`/`geometry`/`coordinates` add the spatial predicate, ANDed with `q`. Typical ' +
-            "use: read an entity's `location`, then pass those coordinates here to find what contains it or is nearby.",
+            'intersection queries. Takes the same `q`, `pick`, `expandValues` and pagination as `query_entities` ' +
+            '(call `get_entity_type` first rather than guessing attribute names); `georel`/`geometry`/`coordinates` ' +
+            "add the spatial predicate, ANDed with `q`. Typical use: read an entity's `location`, then pass those " +
+            'coordinates here to find what contains it or is nearby.',
         parameters: z.object({
             entityType: z
                 .string()
@@ -70,6 +70,6 @@ export function registerGeoQuery(server: FastMCP, schemas: LoadedSchema[] = []):
                 ),
             compact: z.boolean().optional().describe(REPR_PARAM_DESC)
         }),
-        execute: (args) => query({ ...args, geoproperty: args.geoproperty || 'location' }, 'query_entities_geo')
+        execute: (args) => query({ ...args, geoproperty: args.geoproperty || 'location' }, 'geoquery_entities')
     });
 }

@@ -310,22 +310,22 @@ function readTemporalEntity(entityId: string, opts: Record<string, unknown>): Pr
     );
 }
 
-// GET /types  (details=false -> EntityTypeList, details=true -> EntityType[])
+// GET /types: details=false returns an EntityTypeList, details=true an EntityType[].
 function listTypes(details = true): Promise<unknown> {
     return request(`${CONTEXT_BROKER}/types?${toQueryString({ details })}`);
 }
 
-// GET /types/{type} -> EntityTypeInfo
+// GET /types/{type}, returns an EntityTypeInfo.
 function readType(type: string): Promise<unknown> {
     return request(`${CONTEXT_BROKER}/types/${encodeURIComponent(type)}`);
 }
 
-// GET /attributes  (details=false -> AttributeList, details=true -> Attribute[])
+// GET /attributes: details=false returns an AttributeList, details=true an Attribute[].
 function listAttributes(details = true): Promise<unknown> {
     return request(`${CONTEXT_BROKER}/attributes?${toQueryString({ details })}`);
 }
 
-// GET /attributes/{attrId} -> Attribute
+// GET /attributes/{attrId}, returns an Attribute.
 function readAttribute(attrId: string): Promise<unknown> {
     return request(`${CONTEXT_BROKER}/attributes/${encodeURIComponent(attrId)}`);
 }

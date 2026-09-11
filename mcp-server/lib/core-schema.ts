@@ -14,7 +14,7 @@ const log = debug('mcp:schema');
 export interface CoreSchema {
     typeName: string;
     source: JsonSchemaNode; // as read from disk (served by the ontology resource)
-    validator: z.ZodTypeAny; // dereferenced -> Zod
+    validator: z.ZodTypeAny; // built from the dereferenced schema
 }
 
 export type CoreName = 'EntityTypeList' | 'EntityType' | 'EntityTypeInfo' | 'AttributeList' | 'Attribute';

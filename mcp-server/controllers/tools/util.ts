@@ -11,8 +11,8 @@ export function ok(data: unknown): string {
     return JSON.stringify(data, null, 2);
 }
 
-// HTTP status class -> { category, retryable }: how the agent should react. Moves into
-// structuredContent verbatim once fastmcp supports it.
+// Turns an HTTP status into { category, retryable } — how the agent should react.
+// Moves into structuredContent verbatim once fastmcp supports it.
 export function statusMeta(status: number): { category: string; retryable: boolean } {
     if (status === 404) return { category: 'not_found', retryable: false };
     if (status === 409) return { category: 'conflict', retryable: false };
@@ -43,16 +43,7 @@ export function okOrError(res: Record<string, unknown>): string | ContentResult 
     return 'error' in res ? toolError(res) : ok(res);
 }
 
-// "[Fallback]" lead-in for a generic tool that per-type tools can shadow. Empty when none
-// are registered — then it is the only option and "prefer a typed tool" would mislead.
-export function fallbackLead(typedTool: string, types: string[]): string {
-    return types.length
-        ? `[Fallback] A typed \`${typedTool}\` tool exists for ${types.join(', ')} — prefer it for those ` +
-              `types (schema-validated, better documented); use this only for other types. `
-        : '';
-}
-
-// NGSI-LD standard error types -> HTTP status, so a proxy that keeps the
+// Maps NGSI-LD standard error types to an HTTP status, so a proxy that keeps the
 // ProblemDetails `type` but drops the response status still classifies correctly.
 const NGSI_ERROR_STATUS: Record<string, number> = {
     InvalidRequest: 400,
@@ -119,7 +110,7 @@ export function spreadAdditionalProperty<T>(entity: T, name: string): T {
 }
 
 // Read counterpart of spreadAdditionalProperty: rewrite a raw `q` clause on an
-// unmodelled attr onto the container (`colour==` -> `additionalProperty[colour]==`).
+// unmodelled attr onto the container (`colour==` becomes `additionalProperty[colour]==`).
 export function rewriteAdditionalPropertyQuery(
     q: string | undefined,
     modelled: ReadonlySet<string>,
