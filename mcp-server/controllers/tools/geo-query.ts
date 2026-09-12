@@ -13,7 +13,7 @@ export function registerGeoQuery(server: FastMCP, schemas: LoadedSchema[] = []):
         description:
             'Spatial search for entities of one type — point-in-polygon, distance and intersection queries via ' +
             '`georel`/`geometry`/`coordinates`, ANDed with an optional `q` filter; the only tool that can do this. ' +
-            '`pick`, `expandValues` and pagination work the same as `query_entities` (call ' +
+            '`pick` and pagination work the same as `query_entities` (call ' +
             '`discover_context_meta_data` first rather than guessing attribute names). Typical use: read an ' +
             "entity's `location`, then pass those coordinates here to find what contains it or is nearby.",
         parameters: z.object({
@@ -50,13 +50,6 @@ export function registerGeoQuery(server: FastMCP, schemas: LoadedSchema[] = []):
                     'Comma-separated attributes to return. Leave unset by default; set it only once you already ' +
                         'know exactly which attributes you want. `geoproperty` (default "location") is always ' +
                         'included even if omitted here — a geo query is about its coordinates.'
-                ),
-            expandValues: z
-                .string()
-                .optional()
-                .describe(
-                    'Comma-separated names of enumerated attributes used in `q`; the broker expands their values ' +
-                        'against the vocabulary before matching. Auto-filled when a schema for `entityType` is loaded.'
                 ),
             limit: z.number().optional().describe(`Max entities to return (default/max ${ENTITY_LIMIT}).`),
             offset: z

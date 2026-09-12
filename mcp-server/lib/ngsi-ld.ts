@@ -283,7 +283,8 @@ function listEntities(opts: Record<string, unknown>): Promise<EntityPage> {
     return requestFull(`${CONTEXT_BROKER}/entities?${query}`).then(({ body, headers }) => {
         const raw = headers.get('NGSILD-Results-Count');
         const total = raw !== null && raw.trim() !== '' && !Number.isNaN(Number(raw)) ? Number(raw) : null;
-        const entities = metadataOnly === true ? [] : Array.isArray(body) ? body : [];
+        const all = Array.isArray(body) ? body : [];
+        const entities = metadataOnly === true ? [] : all.slice(0, limit);
         return { entities, total, limit, offset, returned: entities.length };
     });
 }

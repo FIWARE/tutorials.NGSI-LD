@@ -23,14 +23,14 @@ const page = (over: Partial<EntityPage>): EntityPage => ({
 });
 
 describe('okPage', () => {
-    // okPage returns a ContentResult: the full JSON in content text, pagination in structuredContent.
+    // okPage returns a ContentResult: the same JSON in both content text and structuredContent.
     const body = (r: ReturnType<typeof okPage>) => JSON.parse(r.content[0].text as string);
 
     it('flags more data when the broker total exceeds this page', () => {
         const r = okPage([{ id: 'a' }], page({ total: 1342, returned: 1, limit: 1 }), 'query_animal', 'Animal');
         expect(body(r)._notice).toMatch(/MORE DATA AVAILABLE: returned 1 of 1342 matching Animal/);
         expect(body(r).pagination).toMatchObject({ total: 1342, hasMore: true, nextOffset: 1 });
-        expect(r.structuredContent).toEqual({ pagination: body(r).pagination });
+        expect(r.structuredContent).toEqual(body(r));
     });
 
     it('omits the notice when the whole result set fits on one page', () => {

@@ -26,7 +26,6 @@ export interface EntityQueryArgs {
     entityType: string;
     q?: string;
     pick?: string;
-    expandValues?: string;
     limit?: number;
     offset?: number;
     metadataOnly?: boolean;
@@ -63,7 +62,7 @@ export function makeEntityQuery(schemas: LoadedSchema[]) {
     }
 
     return async (args: EntityQueryArgs, toolName: string) => {
-        const { entityType, q, pick, expandValues, limit, offset, metadataOnly, compact } = args;
+        const { entityType, q, pick, limit, offset, metadataOnly, compact } = args;
         try {
             // No schema here, so unmodelled attrs live in the JsonProperty container: bracket
             // bare `q` heads and pull the whole container for `pick`, so the caller need not.
@@ -85,32 +84,12 @@ export function makeEntityQuery(schemas: LoadedSchema[]) {
                 }
             }
 
-            const ev = new Set<string>();
-            for (const name of String(expandValues ?? '').split(',')) {
-                const t = name.trim();
-                if (t) {
-                    ev.add(t);
-                }
-            }
-            // `type` may be a comma list; pool the VocabProperties of every named type.
+            // `type` may be a comma list; pool the VocabProperties of every named type, then
+            // expand only the ones actually filtered on in `q` — the broker 400s otherwise.
             const types = entityType.split(',').map((t) => t.trim().toLowerCase());
             const vocab = types.flatMap((t) => vocabByType.get(t) ?? []);
             const heads = queryClauseHeads(q);
-            for (const attr of vocab) {
-                if (heads.includes(attr)) {
-                    ev.add(attr);
-                }
-            }
-            // `expandValues` on a plain Property makes the broker vocab-match and return
-            // nothing; drop non-VocabProperty entries, but only when a schema covers the type.
-            if (types.some((t) => vocabByType.has(t))) {
-                const allow = new Set(vocab);
-                for (const attr of [...ev]) {
-                    if (!allow.has(attr)) {
-                        ev.delete(attr);
-                    }
-                }
-            }
+            const ev = new Set(vocab.filter((attr) => heads.includes(attr)));
 
             const page = await listEntities({
                 type: entityType,
@@ -143,8 +122,8 @@ export function registerQueryEntities(server: FastMCP, schemas: LoadedSchema[] =
             'Current-state search for entities of one type. If unsure which attributes the type has, call ' +
             '`discover_context_meta_data` first — do not guess names in `q` or `pick`. Provide a `q` filter string (`;` = AND, ' +
             '`|` = OR; operators `==` `!=` `>` `<` `>=` `<=` `~=`, string values in double quotes). To filter an ' +
-            'enumerated attribute (e.g. `sex=="Male"`) also set `expandValues` to those attribute names. Leave ' +
-            '`pick` unset by default (see its own description). ' +
+            'enumerated attribute (e.g. `sex=="Male"`), just write it in `q` — vocabulary matching is automatic. ' +
+            'Leave `pick` unset by default (see its own description). ' +
             'The response is paginated: check the `pagination` block and, when `hasMore` is true, either call again with the ' +
             'given `offset` or narrow the query — never assume the first page is the whole result set.',
         parameters: z.object({
@@ -156,14 +135,6 @@ export function registerQueryEntities(server: FastMCP, schemas: LoadedSchema[] =
                 .describe(
                     'Comma-separated attributes to return, e.g. "id,healthCondition,weight". Leave unset by default; ' +
                         'set it only once you already know exactly which attributes you want.'
-                ),
-            expandValues: z
-                .string()
-                .optional()
-                .describe(
-                    'Comma-separated names of enumerated attributes used in `q` - the broker expands their `==`/`!=` ' +
-                        'values against the vocabulary before matching, which an enumerated-attribute filter needs. ' +
-                        'Auto-filled when a schema for `entityType` is loaded.'
                 ),
             limit: z.number().optional().describe(`Max entities to return (default/max ${ENTITY_LIMIT}).`),
             offset: z

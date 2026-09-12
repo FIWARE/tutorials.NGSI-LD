@@ -213,8 +213,8 @@ export function clampLimit(limit?: number): number {
     return Math.min(limit, ENTITY_LIMIT);
 }
 
-// Wrap a page of results: `content` gets `_notice` (a more-data warning or an
-// empty-result note), `pagination` and `entities`; `structuredContent` gets `pagination`.
+// Wrap a page of results. Both `content` and `structuredContent` carry the same
+// `_notice`/`pagination`/`entities` — some clients only show one of the two.
 export function okPage(
     entities: unknown[],
     page: EntityPage,
@@ -248,7 +248,7 @@ export function okPage(
     out.entities = entities;
     return {
         content: [{ type: 'text', text: JSON.stringify(out, null, 2) }],
-        structuredContent: { pagination }
+        structuredContent: out
     };
 }
 
