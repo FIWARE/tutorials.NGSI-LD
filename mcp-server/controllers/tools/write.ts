@@ -139,7 +139,7 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
             name: 'create_entity',
             annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
             description:
-                '[WRITE] Create a new entity. `type` must be one of the loaded data models — creation of an unmodelled ' +
+                'Create a new entity. `type` must be one of the loaded data models — creation of an unmodelled ' +
                 'type is refused. Pass attributes in simplified form (`name: value`); the server fills in the attribute ' +
                 'type, unit code and timestamp from the schema and enforces its required attributes. A relationship ' +
                 'attribute takes the target entity URN; a location attribute takes GeoJSON (or a bare [lng, lat]).' +
@@ -198,7 +198,7 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
         name: 'upsert_attribute',
         annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
         description:
-            '[WRITE] Update one attribute on any existing entity, or add a new one — the supplied value (and any ' +
+            'Update one attribute on any existing entity, or add a new one — the supplied value (and any ' +
             'sub-attributes) are merged in; sub-attributes you do not mention are kept; the attribute is created if ' +
             'absent. Give `entityType` so the server can apply the schema encoding and the unknown-attribute policy; without ' +
             `it the value is inferred and \`attr\` is written as given.` +

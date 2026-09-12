@@ -19,7 +19,7 @@ export function registerGenericDelete(server: FastMCP, exposed: Set<string>): nu
     server.addTool({
         name: 'delete_attribute',
         annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
-        description: '[DELETE] Remove one attribute from any existing entity. Does not delete the entity itself.',
+        description: 'Remove one attribute from any existing entity. Does not delete the entity itself.',
         parameters: z.object({
             id: z.string().describe('URN of the entity.'),
             attr: z.string().describe('Attribute name to remove.')
