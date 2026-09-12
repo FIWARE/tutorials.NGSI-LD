@@ -127,9 +127,8 @@ export function registerQueryEntities(server: FastMCP, schemas: LoadedSchema[] =
         description:
             'Current-state search for entities of one type. If unsure which attributes the type has, call ' +
             '`discover_context_meta_data` first — do not guess names in `filter` or `pick`. Provide a filter string ' +
-            '(`;` = AND, `|` = OR; operators `==` `!=` `>` `<` `>=` `<=` `~=`, string values in double quotes). To ' +
-            'filter an enumerated attribute (e.g. `sex=="Male"`), just write it in `filter` — vocabulary matching ' +
-            'is automatic. Leave `pick` unset by default (see its own description). ' +
+            '(`;` = AND, `|` = OR; operators `==` `!=` `>` `<` `>=` `<=` `~=`, string values in double quotes). ' +
+            'Leave `pick` unset by default (see its own description). ' +
             'The response is paginated: check the `pagination` block and, when `hasMore` is true, either call again with the ' +
             'given `offset` or narrow the query — never assume the first page is the whole result set.',
         parameters: z.object({
