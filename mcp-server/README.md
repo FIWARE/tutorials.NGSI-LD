@@ -17,9 +17,9 @@ response against a schema, and returns a token-efficient shape.
 ## Features
 
 - **Generic tools**: `query_entities`, `get_entity` and `geoquery_entities` work on any type, with an NGSI-LD
-  `filter`, attribute projection (`pick`) and the broker geo engine (`georel` / `geometry` / `coordinates`).
+  `filter`, attribute projection (`pick`) and the broker geo engine (`relation` / `geometry` / `coordinates`).
   `geoquery_entities` always includes `geoproperty` (default `location`) in the response even when `pick` omits
-  it. `get_entity_history` adds the temporal interface (`timerel` / `timeAt`) when `TEMPORAL_BROKER` is set.
+  it. `get_entity_history` adds the temporal interface (`when` / `timeAt`) when `TEMPORAL_BROKER` is set.
   `metadataOnly` turns any read into a probe: just the `pagination` block on `query_*`, or `{ exists, id, type }`
   on `get_entity` (`{ exists: false }` for a missing entity, not an error).
 - **Write tools** (off unless `WRITABLE=true`): `create_entity` / `upsert_attribute`, plus `delete_entity` /

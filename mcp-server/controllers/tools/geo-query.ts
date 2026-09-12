@@ -4,6 +4,20 @@ import { ENTITY_LIMIT } from '../../lib/constants';
 import type { LoadedSchema } from '../../lib/schema';
 import { makeEntityQuery, REPR_PARAM_DESC } from './query-entities';
 
+const GEOREL_VALUES = ['near', 'within', 'contains', 'intersects', 'equals', 'disjoint', 'overlaps'] as const;
+
+// Only "near" takes a distance modifier; the broker wants it appended as "near;maxDistance==<n>".
+function buildGeorel(georel: string, minDistance?: number, maxDistance?: number): string {
+    if (georel !== 'near') {
+        return georel;
+    }
+    const parts: string[] = [];
+    if (minDistance !== undefined) parts.push(`minDistance==${minDistance}`);
+    if (maxDistance !== undefined) parts.push(`maxDistance==${maxDistance}`);
+    if (!parts.length) parts.push('maxDistance==100');
+    return ['near', ...parts].join(';');
+}
+
 export function registerGeoQuery(server: FastMCP, schemas: LoadedSchema[] = []): void {
     const query = makeEntityQuery(schemas);
 
@@ -12,7 +26,7 @@ export function registerGeoQuery(server: FastMCP, schemas: LoadedSchema[] = []):
         annotations: { readOnlyHint: true, openWorldHint: false },
         description:
             'Spatial search for entities of one type — point-in-polygon, distance and intersection queries via ' +
-            '`georel`/`geometry`/`coordinates`, ANDed with an optional `filter`; the only tool that can do this. ' +
+            '`relation`/`geometry`/`coordinates`, ANDed with an optional `filter`; the only tool that can do this. ' +
             '`pick` and pagination work the same as `query_entities` (call ' +
             '`discover_context_meta_data` first rather than guessing attribute names). Typical use: read an ' +
             "entity's `location`, then pass those coordinates here to find what contains it or is nearby.",
@@ -22,14 +36,22 @@ export function registerGeoQuery(server: FastMCP, schemas: LoadedSchema[] = []):
                 .describe(
                     'Entity type, or a comma-separated list to match any, e.g. "AgriParcel" or "Device,Building".'
                 ),
-            georel: z
-                .string()
-                .describe(
-                    'Spatial relationship: "near;maxDistance==2000", "near;minDistance==100", "within", "contains", "intersects", "equals", "disjoint", "overlaps".'
-                ),
+            relation: z
+                .enum(GEOREL_VALUES)
+                .default('near')
+                .describe('Spatial relationship to test against `coordinates` (default "near").'),
+            maxDistance: z
+                .number()
+                .optional()
+                .describe('With relation="near": max distance in meters from `coordinates` (default 100).'),
+            minDistance: z
+                .number()
+                .optional()
+                .describe('With relation="near": min distance in meters from `coordinates`.'),
             geometry: z
-                .string()
-                .describe('GeoJSON geometry type: "Point", "LineString", "Polygon", "MultiPoint", "MultiPolygon".'),
+                .enum(['Point', 'LineString', 'Polygon', 'MultiPoint', 'MultiPolygon'])
+                .default('Point')
+                .describe('GeoJSON geometry type of `coordinates` (default "Point").'),
             coordinates: z
                 .string()
                 .describe(
@@ -69,6 +91,14 @@ export function registerGeoQuery(server: FastMCP, schemas: LoadedSchema[] = []):
                 ),
             compact: z.boolean().optional().describe(REPR_PARAM_DESC)
         }),
-        execute: (args) => query({ ...args, geoproperty: args.geoproperty || 'location' }, 'geoquery_entities')
+        execute: ({ relation, minDistance, maxDistance, ...args }) =>
+            query(
+                {
+                    ...args,
+                    georel: buildGeorel(relation, minDistance, maxDistance),
+                    geoproperty: args.geoproperty || 'location'
+                },
+                'geoquery_entities'
+            )
     });
 }

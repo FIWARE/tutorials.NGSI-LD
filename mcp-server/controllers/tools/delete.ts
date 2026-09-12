@@ -41,7 +41,7 @@ export function registerGenericDelete(server: FastMCP, exposed: Set<string>): nu
         name: 'delete_entity',
         annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
         description:
-            '[DELETE] Delete an entire entity of any type and every attribute on it. Irreversible — no undo, no ' +
+            'Delete an entire entity of any type and every attribute on it. Irreversible — no undo, no ' +
             'soft-delete. To remove a single attribute use `delete_attribute`.',
         parameters: z.object({
             id: z.string().describe('URN of the entity to delete.')

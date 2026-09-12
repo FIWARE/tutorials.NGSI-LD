@@ -21,31 +21,33 @@ export function registerGetEntityHistory(server: FastMCP): void {
                 .describe(
                     'Comma-separated attributes to track, e.g. "weight,heartRate". Set it to focus the series; omit it to track every attribute.'
                 ),
-            timerel: z
+            when: z
                 .enum(['before', 'after', 'between'])
                 .optional()
-                .describe('Temporal relationship; requires timeAt. Omit both for the full available history.'),
+                .describe(
+                    'Where the returned window sits relative to timeAt; requires timeAt. Omit both for the full available history.'
+                ),
             timeAt: z
                 .string()
                 .optional()
-                .describe('ISO8601 anchor timestamp, e.g. "2026-08-01T00:00:00Z". Required when timerel is set.'),
-            endTimeAt: z.string().optional().describe('ISO8601 end timestamp; required when timerel is "between".'),
+                .describe('ISO8601 anchor timestamp, e.g. "2026-08-01T00:00:00Z". Required when `when` is set.'),
+            endTimeAt: z.string().optional().describe('ISO8601 end timestamp; required when `when` is "between".'),
             lastN: z.number().optional().describe('Return only the most recent N instances per attribute.')
         }),
-        execute: async ({ id, pick, timerel, timeAt, endTimeAt, lastN }) => {
-            if (timerel && !timeAt) {
-                return toolError({ error: 'timeAt is required when timerel is set.' });
+        execute: async ({ id, pick, when, timeAt, endTimeAt, lastN }) => {
+            if (when && !timeAt) {
+                return toolError({ error: 'timeAt is required when `when` is set.' });
             }
-            if (timeAt && !timerel) {
-                return toolError({ error: 'timerel is required when timeAt is set.' });
+            if (timeAt && !when) {
+                return toolError({ error: '`when` is required when timeAt is set.' });
             }
-            if (timerel === 'between' && !endTimeAt) {
-                return toolError({ error: 'endTimeAt is required when timerel is "between".' });
+            if (when === 'between' && !endTimeAt) {
+                return toolError({ error: 'endTimeAt is required when `when` is "between".' });
             }
             try {
                 const body = await readTemporalEntity(id, {
                     pick,
-                    timerel,
+                    timerel: when,
                     timeAt,
                     endTimeAt,
                     lastN,
