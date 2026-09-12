@@ -1,4 +1,4 @@
-// Generic destructive tools (delete_entity, delete_entity_attribute), driven by WRITABLE.
+// Generic destructive tools (delete_entity, delete_attribute), driven by WRITABLE.
 // Write tools are in ./write.ts.
 
 import type { ContentResult, FastMCP } from 'fastmcp';
@@ -15,9 +15,10 @@ export function registerGenericDelete(server: FastMCP, exposed: Set<string>): nu
         return 0;
     }
 
-    exposed.add('delete_entity_attribute');
+    exposed.add('delete_attribute');
     server.addTool({
-        name: 'delete_entity_attribute',
+        name: 'delete_attribute',
+        annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
         description: '[DELETE] Remove one attribute from any existing entity. Does not delete the entity itself.',
         parameters: z.object({
             id: z.string().describe('URN of the entity.'),
@@ -38,9 +39,10 @@ export function registerGenericDelete(server: FastMCP, exposed: Set<string>): nu
     exposed.add('delete_entity');
     server.addTool({
         name: 'delete_entity',
+        annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
         description:
             '[DELETE] Delete an entire entity of any type and every attribute on it. Irreversible — no undo, no ' +
-            'soft-delete. To remove a single attribute use `delete_entity_attribute`.',
+            'soft-delete. To remove a single attribute use `delete_attribute`.',
         parameters: z.object({
             id: z.string().describe('URN of the entity to delete.')
         }),

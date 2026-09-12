@@ -1,9 +1,9 @@
-// Generic write tools (create_entity, update_entity_attribute), driven by WRITABLE.
+// Generic write tools (create_entity, upsert_attribute), driven by WRITABLE.
 // Delete is ./delete.ts.
 
 import type { FastMCP } from 'fastmcp';
 import { z } from 'zod';
-import { createEntity, mergeEntity, appendAttribute, patchAttribute } from '../../lib/ngsi-ld';
+import { createEntity, mergeEntity, appendAttribute, patchAttribute, readEntity } from '../../lib/ngsi-ld';
 import { WRITABLE, PROVIDED_BY, entityDefaultsFor, UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY } from '../../lib/constants';
 import { normalizeAttribute } from '../../lib/normalize';
 import type { LoadedSchema } from '../../lib/schema';
@@ -69,19 +69,16 @@ function composeEntity(id: string, type: string, attrs: Record<string, unknown>,
     return { entity };
 }
 
-// PATCH the attribute; on 404 it does not exist yet, so POST to create it. A
-// missing entity 404s both calls and maps to notFound.
+// Checks existence first rather than trusting PATCH's status code — some brokers (an
+// Orion-LD pre-release, at least) 2xx a PATCH on a missing attribute and do nothing. PATCH merges; POST replaces.
 async function patchOrAppend(id: string, attr: string, node: unknown): Promise<'merged' | 'created'> {
-    try {
+    const current = (await readEntity(id, { pick: attr, options: 'concise' })) as Record<string, unknown>;
+    if (attr in current) {
         await patchAttribute(id, attr, node);
         return 'merged';
-    } catch (err) {
-        if (is404(err)) {
-            await appendAttribute(id, attr, node);
-            return 'created';
-        }
-        throw err;
     }
+    await appendAttribute(id, attr, node);
+    return 'created';
 }
 
 // Single-attribute update under UNKNOWN_ATTRIBUTES. In additionalProperty mode an
@@ -140,6 +137,7 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
         exposed.add('create_entity');
         server.addTool({
             name: 'create_entity',
+            annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
             description:
                 '[WRITE] Create a new entity. `type` must be one of the loaded data models — creation of an unmodelled ' +
                 'type is refused. Pass attributes in simplified form (`name: value`); the server fills in the attribute ' +
@@ -195,9 +193,10 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
     }
 
     count++;
-    exposed.add('update_entity_attribute');
+    exposed.add('upsert_attribute');
     server.addTool({
-        name: 'update_entity_attribute',
+        name: 'upsert_attribute',
+        annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
         description:
             '[WRITE] Update one attribute on any existing entity, or add a new one — the supplied value (and any ' +
             'sub-attributes) are merged in; sub-attributes you do not mention are kept; the attribute is created if ' +

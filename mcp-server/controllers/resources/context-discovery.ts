@@ -16,8 +16,8 @@ export function registerContextDiscoveryResources(server: FastMCP): void {
         name: 'Live entity types',
         mimeType: 'application/json',
         description:
-            'The entity types on the broker right now, each with its attribute names. Same data as the ' +
-            'list_entity_types tool.',
+            'The entity types on the broker right now, each with its attribute names. Same data as the `types` ' +
+            'part of `discover_context_meta_data` with `pick=live_data`.',
         load: () => liveJson(() => listTypes(true))
     });
 
@@ -27,7 +27,7 @@ export function registerContextDiscoveryResources(server: FastMCP): void {
         mimeType: 'application/json',
         description:
             'The attribute names in use on the broker right now, each with its value types and owning entity types. ' +
-            'Same data as the list_attributes tool.',
+            'Same data as the `attributes` part of `discover_context_meta_data` with `pick=live_data`.',
         load: () => liveJson(() => listAttributes(true))
     });
 }

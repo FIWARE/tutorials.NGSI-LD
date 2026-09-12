@@ -7,11 +7,11 @@ import { ok, fail, toolError, stripContext } from './util';
 export function registerGetEntityHistory(server: FastMCP): void {
     server.addTool({
         name: 'get_entity_history',
+        annotations: { readOnlyHint: true, openWorldHint: false },
         description:
-            '[Time-series only] Trend/history for a single entity by URN ("has it changed", "over the last month") — ' +
-            'not for current state, use get_entity for that. ' +
-            'Returns [value, timestamp] tuples. Set `pick` to focus on specific attributes; omit it to track every ' +
-            'attribute. 404 if no history is retained for the entity.' +
+            'Trend/history for a single entity by URN ("has it changed", "over the last month") — not for ' +
+            'current state, use get_entity for that. Returns [value, timestamp] tuples; `pick` narrows which ' +
+            'attributes (see its own description). 404 if no history is retained for the entity.' +
             (TEMPORAL_BROKER_SEPARATE ? ' Served from a separate temporal endpoint.' : ''),
         parameters: z.object({
             id: z.string().describe('Entity URN, e.g. "urn:ngsi-ld:Animal:cow001".'),

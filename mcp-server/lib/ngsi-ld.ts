@@ -310,7 +310,8 @@ function readTemporalEntity(entityId: string, opts: Record<string, unknown>): Pr
     );
 }
 
-// GET /types: details=false returns an EntityTypeList, details=true an EntityType[].
+// GET /types: details=true asks for the fuller EntityType[], false the lighter
+// EntityTypeList. Sent explicitly — some brokers don't default it to false when omitted.
 function listTypes(details = true): Promise<unknown> {
     return request(`${CONTEXT_BROKER}/types?${toQueryString({ details })}`);
 }
@@ -320,7 +321,8 @@ function readType(type: string): Promise<unknown> {
     return request(`${CONTEXT_BROKER}/types/${encodeURIComponent(type)}`);
 }
 
-// GET /attributes: details=false returns an AttributeList, details=true an Attribute[].
+// GET /attributes: details=true asks for the fuller Attribute[], details=false the
+// lighter AttributeList. Sent explicitly either way, for the same reason as listTypes.
 function listAttributes(details = true): Promise<unknown> {
     return request(`${CONTEXT_BROKER}/attributes?${toQueryString({ details })}`);
 }

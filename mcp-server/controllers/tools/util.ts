@@ -241,7 +241,7 @@ export function okPage(
             `The query executed successfully and matched no ${typeLabel} entities` +
             (offset > 0 ? ` beyond offset ${offset}` : '') +
             `. This is a valid empty result, not an error. If an attribute name in \`q\` or \`pick\` was a guess, ` +
-            `confirm it with \`get_entity_type\`.`;
+            `confirm it with \`discover_context_meta_data\`.`;
     }
     const pagination = { total, limit, offset, returned, hasMore, nextOffset: hasMore ? nextOffset : null };
     out.pagination = pagination;

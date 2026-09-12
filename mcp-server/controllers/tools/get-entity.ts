@@ -11,6 +11,7 @@ const ADDITIONAL_PROPERTY_MODE = UNKNOWN_ATTRIBUTES === 'additionalProperty';
 export function registerGetEntity(server: FastMCP): void {
     server.addTool({
         name: 'get_entity',
+        annotations: { readOnlyHint: true, openWorldHint: false },
         description:
             'Retrieve a single entity by its URN. Also used to walk a relationship chain: `pick` a relationship ' +
             'attribute, then call again with its target URN. Use `pick` to fetch only what you need. For a "why / how / ' +
@@ -22,7 +23,9 @@ export function registerGetEntity(server: FastMCP): void {
                 .string()
                 .optional()
                 .describe(
-                    'Comma-separated attributes to return, e.g. "location,containedInPlace". Set it to keep responses small; omit it for the whole entity when exploring or unsure which attributes exist. Ignored when `neighbourhood` is set.'
+                    'Comma-separated attributes to return, e.g. "location,containedInPlace". Leave unset by ' +
+                        'default; set it only once you already know exactly which attributes you want. Ignored ' +
+                        'when `neighbourhood` is set.'
                 ),
             metadataOnly: z
                 .boolean()

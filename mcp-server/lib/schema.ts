@@ -59,6 +59,7 @@ export interface WriteAttr {
     unitCode?: string;
     observedAt: boolean;
     enumValues?: string[];
+    description: string;
 }
 
 // --- $ref resolution -------------------------------------------------------
@@ -243,7 +244,8 @@ export function buildShapes(source: JsonSchemaNode, deref: JsonSchemaNode): Shap
             enumValues:
                 Array.isArray(prop.enum) && prop.enum.every((e) => typeof e === 'string')
                     ? (prop.enum as string[])
-                    : undefined
+                    : undefined,
+            description: typeof prop.description === 'string' ? prop.description.trim() : ''
         };
 
         const base = baseZod(prop);

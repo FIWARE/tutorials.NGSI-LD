@@ -18,22 +18,28 @@ response against a schema, and returns a token-efficient shape.
 
 - **Generic tools**: `query_entities`, `get_entity` and `geoquery_entities` work on any type, with an NGSI-LD `q`
   filter, attribute projection (`pick`) and the broker geo engine (`georel` / `geometry` / `coordinates`).
-  `get_entity_history` adds the temporal interface (`timerel` / `timeAt`) when `TEMPORAL_BROKER` is set. `metadataOnly`
-  turns any read into a probe: on `query_*` it returns just the `pagination` block with an empty `entities` array; on
-  `get_entity` it is an existence check returning `{ exists, id, type }` (a missing entity gives `{ exists: false }`,
-  not an error). The ontology resources document every loaded type; these tools cover retrieval for all of them.
-- **Write tools** (off unless `WRITABLE=true`): `create_entity` / `update_entity_attribute`, plus `delete_entity` /
-  `delete_entity_attribute`. `ENTITY_DEFAULTS` supplies per-type default values for creates. The agent passes
+  `geoquery_entities` always includes `geoproperty` (default `location`) in the response even when `pick` omits
+  it. `get_entity_history` adds the temporal interface (`timerel` / `timeAt`) when `TEMPORAL_BROKER` is set.
+  `metadataOnly` turns any read into a probe: just the `pagination` block on `query_*`, or `{ exists, id, type }`
+  on `get_entity` (`{ exists: false }` for a missing entity, not an error).
+- **Write tools** (off unless `WRITABLE=true`): `create_entity` / `upsert_attribute`, plus `delete_entity` /
+  `delete_attribute`. `ENTITY_DEFAULTS` supplies per-type default values for creates. The agent passes
   attributes as `name: value`; the server encodes the NGSI-LD attribute type (one of the eight: `Property`,
   `GeoProperty`, `Relationship`, `VocabProperty`, `LanguageProperty`, `ListProperty`, `ListRelationship`,
   `JsonProperty`), `unitCode` and `observedAt` from the schema's `x-ngsi-type` / `x-unitCode` / `x-observedAt`
   keywords when a schema is loaded for the type (else inferred from the value). A `location` GeoProperty is
   timestamped only when the schema has `x-mobile: true`; a bare `[lng, lat]` becomes a GeoJSON Point.
-  `create_entity` enforces required attributes when a schema is loaded. `update_entity_attribute` merges one
+  `create_entity` enforces required attributes when a schema is loaded. `upsert_attribute` merges one
   attribute (value and named sub-attributes updated, the rest kept), creates it if absent, and takes `unitCode` /
   `observedAt` overrides. `PROVIDED_BY`, when set, is attached as a `providedBy` link to every asserted measurement.
-- **Context discovery**: `list_entity_types`, `get_entity_type`, `list_attributes` and `get_attribute` wrap the
-  `/types` and `/attributes` endpoints for run-time introspection.
+- **Context discovery**: `discover_context_meta_data` covers what exists — `live_data` (live broker state: types
+  and attributes) plus three schema-derived maps that are always complete even before anything is populated:
+  `enums` (allowed values per attribute), `relationships` and `properties` (every attribute, split by NGSI-LD
+  kind, each as `{ relationship, property, description }`). `pick` selects which kinds to return (omit for all
+  four); `name` drills into one item instead of listing every one; `compact` trims a `live_data` listing to just
+  names. `live_data` also carries an `ontology`/`ontologies` link to the full modelled schema (required
+  attributes, units, nested structure) for when this tool's own data isn't enough. See the tool's own description
+  for the exact per-kind resolution rules and response shape.
 - **Prompts** (opt-in): each `prompt.json` (see `PROMPTS_DIR`) becomes an MCP prompt whose template names the tools this
   instance exposes.
 - **Resources**: each model's dereferenced schema is served at `ontology://<model>/<type>`. `ontology://attributes` is
@@ -78,9 +84,9 @@ Add `DEBUG=mcp:*` for debug output. All logging goes to `stderr`, safe alongside
 
 ### Write Requests
 
-- `WRITABLE` - Master switch. Only if set to `true` is the server considered read-write: unless it is exactly
-  `"true"` no `create_entity`, `update_entity_attribute`, `delete_entity` or `delete_entity_attribute` tool is
-  registered. This is the audit point for "can this server mutate the broker?". Default: unset (read-only).
+- `WRITABLE` - Master switch: unless set to exactly `"true"`, the server is read-only and no `create_entity`,
+  `upsert_attribute`, `delete_entity` or `delete_attribute` tool is registered. The audit point for "can this
+  server mutate the broker?". Default: unset (read-only).
 - `ENTITY_DEFAULTS` - JSON `{ "TypeName": { "attr": value } }`. On `create_entity` a listed attribute the caller
   omits is filled in from here; caller values win, an explicit `null` suppresses a default. Values are simplified
   form and go through the usual schema encoding. Strict parse: bad JSON stops start-up, and so does a key naming a
@@ -89,8 +95,8 @@ Add `DEBUG=mcp:*` for debug output. All logging goes to `stderr`, safe alongside
   attributes, plus a moving `location`). Unset means no provenance link.
 - `UNKNOWN_ATTRIBUTES` - How create/update handles an attribute not in the target type's schema: `accept` (default,
   encode best-effort), `reject` (fail the call), or `additionalProperty` (collect into one `JsonProperty`). In
-  `additionalProperty` mode, `update_entity_attribute` deep-merges an unmodelled attr into that JsonProperty;
-  `delete_entity_attribute` removes one with the `urn:ngsi-ld:null` sentinel; and `query_entities` / `get_entity`
+  `additionalProperty` mode, `upsert_attribute` deep-merges an unmodelled attr into that JsonProperty;
+  `delete_attribute` removes one with the `urn:ngsi-ld:null` sentinel; and `query_entities` / `get_entity`
   lift its members to the top level so they read as ordinary fields. The agent addresses collected attributes by
   their plain name: a `q` clause like `colour=="red"` is rewritten to `additionalProperty[colour]=="red"`, and a
   `pick` of an unmodelled name pulls the container back so the member survives projection. Not surfaced in the tool

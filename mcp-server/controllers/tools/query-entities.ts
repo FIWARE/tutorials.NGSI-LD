@@ -70,9 +70,20 @@ export function makeEntityQuery(schemas: LoadedSchema[]) {
             const effectiveQ = ADDITIONAL_PROPERTY_MODE
                 ? rewriteAdditionalPropertyQuery(q, CORE_ENTITY_ATTRS, ADDITIONAL_PROPERTY)
                 : q;
-            const effectivePick = ADDITIONAL_PROPERTY_MODE
+            let effectivePick = ADDITIONAL_PROPERTY_MODE
                 ? pickWithAdditionalProperty(pick, null, ADDITIONAL_PROPERTY)
                 : pick;
+            // A geo query (args.geoproperty set) is always about that attribute's coordinates —
+            // keep it in the result even when the caller's `pick` didn't ask for it.
+            if (args.geoproperty && effectivePick) {
+                const names = effectivePick
+                    .split(',')
+                    .map((s) => s.trim())
+                    .filter(Boolean);
+                if (!names.includes(args.geoproperty)) {
+                    effectivePick = [...names, args.geoproperty].join(',');
+                }
+            }
 
             const ev = new Set<string>();
             for (const name of String(expandValues ?? '').split(',')) {
@@ -127,12 +138,13 @@ export function registerQueryEntities(server: FastMCP, schemas: LoadedSchema[] =
 
     server.addTool({
         name: 'query_entities',
+        annotations: { readOnlyHint: true, openWorldHint: false },
         description:
             'Current-state search for entities of one type. If unsure which attributes the type has, call ' +
-            '`get_entity_type` first — do not guess names in `q` or `pick`. Provide a `q` filter string (`;` = AND, ' +
+            '`discover_context_meta_data` first — do not guess names in `q` or `pick`. Provide a `q` filter string (`;` = AND, ' +
             '`|` = OR; operators `==` `!=` `>` `<` `>=` `<=` `~=`, string values in double quotes). To filter an ' +
-            'enumerated attribute (e.g. `sex=="Male"`) also set `expandValues` to those attribute names. Use `pick` ' +
-            'to keep responses small when you know which attributes you need; omit it for the full entity when exploring. ' +
+            'enumerated attribute (e.g. `sex=="Male"`) also set `expandValues` to those attribute names. Leave ' +
+            '`pick` unset by default (see its own description). ' +
             'The response is paginated: check the `pagination` block and, when `hasMore` is true, either call again with the ' +
             'given `offset` or narrow the query — never assume the first page is the whole result set.',
         parameters: z.object({
@@ -142,7 +154,8 @@ export function registerQueryEntities(server: FastMCP, schemas: LoadedSchema[] =
                 .string()
                 .optional()
                 .describe(
-                    'Comma-separated attributes to return, e.g. "id,healthCondition,weight". Set it to keep responses small; omit it for the whole entity when exploring or unsure which attributes exist.'
+                    'Comma-separated attributes to return, e.g. "id,healthCondition,weight". Leave unset by default; ' +
+                        'set it only once you already know exactly which attributes you want.'
                 ),
             expandValues: z
                 .string()

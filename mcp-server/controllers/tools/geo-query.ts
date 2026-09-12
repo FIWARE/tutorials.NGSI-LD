@@ -9,12 +9,13 @@ export function registerGeoQuery(server: FastMCP, schemas: LoadedSchema[] = []):
 
     server.addTool({
         name: 'geoquery_entities',
+        annotations: { readOnlyHint: true, openWorldHint: false },
         description:
-            '[Spatial] `query_entities` plus a geometry filter — the only tool for point-in-polygon, distance and ' +
-            'intersection queries. Takes the same `q`, `pick`, `expandValues` and pagination as `query_entities` ' +
-            '(call `get_entity_type` first rather than guessing attribute names); `georel`/`geometry`/`coordinates` ' +
-            "add the spatial predicate, ANDed with `q`. Typical use: read an entity's `location`, then pass those " +
-            'coordinates here to find what contains it or is nearby.',
+            'Spatial search for entities of one type — point-in-polygon, distance and intersection queries via ' +
+            '`georel`/`geometry`/`coordinates`, ANDed with an optional `q` filter; the only tool that can do this. ' +
+            '`pick`, `expandValues` and pagination work the same as `query_entities` (call ' +
+            '`discover_context_meta_data` first rather than guessing attribute names). Typical use: read an ' +
+            "entity's `location`, then pass those coordinates here to find what contains it or is nearby.",
         parameters: z.object({
             entityType: z
                 .string()
@@ -46,7 +47,9 @@ export function registerGeoQuery(server: FastMCP, schemas: LoadedSchema[] = []):
                 .string()
                 .optional()
                 .describe(
-                    'Comma-separated attributes to return. Set it to keep responses small; omit it for the whole entity when exploring.'
+                    'Comma-separated attributes to return. Leave unset by default; set it only once you already ' +
+                        'know exactly which attributes you want. `geoproperty` (default "location") is always ' +
+                        'included even if omitted here — a geo query is about its coordinates.'
                 ),
             expandValues: z
                 .string()

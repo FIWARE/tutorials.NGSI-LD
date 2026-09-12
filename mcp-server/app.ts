@@ -14,6 +14,8 @@ import { registerPrompts } from './controllers/prompts/dynamic';
 import { registerOntology, registerAttributeVocabulary } from './controllers/resources/ontology';
 import { registerContextDiscoveryResources } from './controllers/resources/context-discovery';
 import { buildVocabulary } from './lib/vocabulary';
+import { buildEnums } from './lib/enums';
+import { buildRelationships, buildProperties } from './lib/relationships';
 import { TEMPORAL_BROKER, WRITABLE, UNKNOWN_ATTRIBUTES, ENTITY_DEFAULTS } from './lib/constants';
 
 const log = debug('mcp:server');
@@ -32,9 +34,9 @@ const INSTRUCTIONS = [
     'way, filter — `ownedBy=="<URN>"` finds every entity that points at one.',
     '',
     'Do not guess attribute names. An `ontology://<model>/<type>` resource is the full JSON',
-    'Schema for a type (common attributes included); `list_entity_types` / `get_entity_type` /',
-    '`list_attributes` show only what is populated on entities now, so they can be incomplete.',
-    'Check one before using a name in `q`, `pick` or a write.',
+    'Schema for a type (common attributes included); `discover_context_meta_data` shows only what',
+    'is populated on entities now, so it can be incomplete. Check one before using a name in `q`,',
+    '`pick` or a write.',
     '',
     'A failed tool call is data, not a conversational event. Do not apologise and do not',
     'narrate an interim step ("that failed, let me try again") — act on the result directly.',
@@ -57,10 +59,17 @@ export async function buildServer(): Promise<FastMCP> {
     const exposed = new Set<string>();
 
     const core = await loadCoreSchemas();
-    registerContextDiscoveryTools(server, core);
 
     // Ontology resources cover every loaded type.
     const schemas = await loadSchemas();
+    registerContextDiscoveryTools(server, {
+        core,
+        enums: buildEnums(schemas),
+        relationships: buildRelationships(schemas),
+        properties: buildProperties(schemas),
+        typeNames: schemas.map((s) => s.typeName),
+        ontologyLinks: Object.fromEntries(schemas.map((s) => [s.typeName, s.ontologyUri]))
+    });
 
     // The query tools take the loaded schemas so `expandValues` auto-fills for
     // enumerated `q` filters.
@@ -103,7 +112,7 @@ export async function buildServer(): Promise<FastMCP> {
 
     log(
         '%d generic tools + %d write/delete tools (temporal %s, writable %s) + %d ontology resources + %d prompts',
-        TEMPORAL_BROKER ? 7 : 6,
+        TEMPORAL_BROKER ? 5 : 4,
         writeTools,
         TEMPORAL_BROKER ? 'on' : 'off',
         WRITABLE ? 'on' : 'off',
