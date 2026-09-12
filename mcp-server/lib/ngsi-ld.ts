@@ -53,29 +53,6 @@ function setHeaders(tenant: string | undefined): Record<string, string> {
     return headers;
 }
 
-// key=="value" clauses joined by ';' (AND). A value already starting with an
-// operator passes through so the agent can send ranges; numeric values stay unquoted.
-function buildQuery(filters: Record<string, unknown> = {}): string {
-    const clauses: string[] = [];
-    for (const [key, raw] of Object.entries(filters)) {
-        if (raw === undefined || raw === null || raw === '') {
-            continue;
-        }
-        const value = String(raw);
-        const op = value.match(/^\s*(>=|<=|!=|==|>|<|~=)(.*)$/);
-        if (op) {
-            const rhs = op[2].trim();
-            const num = rhs !== '' && !isNaN(Number(rhs));
-            clauses.push(`${key}${op[1]}${num ? rhs : `"${rhs}"`}`);
-        } else if (value.trim() !== '' && !isNaN(Number(value))) {
-            clauses.push(`${key}==${value}`);
-        } else {
-            clauses.push(`${key}=="${value}"`);
-        }
-    }
-    return clauses.join(';');
-}
-
 // NGSI-LD `q` has no null literal (`calvedBy==null` errors). Drop bare-null clauses and an
 // adjacent separator; a quoted "null" is a real string match and stays.
 function stripNullClauses(q: string): string {
@@ -103,10 +80,7 @@ function stripNullClauses(q: string): string {
 function toQueryString(opts: Record<string, unknown>): string {
     const params: Record<string, unknown> = { ...opts };
 
-    const filters = (params.filters as Record<string, unknown>) || undefined;
-    delete params.filters;
-
-    const q = stripNullClauses([buildQuery(filters), params.q].filter(Boolean).join(';'));
+    const q = stripNullClauses(String(params.q ?? ''));
     if (q) {
         params.q = q;
     } else {
@@ -337,7 +311,6 @@ export type { EntityPage };
 export {
     parse,
     setHeaders,
-    buildQuery,
     stripNullClauses,
     listEntities,
     readEntity,

@@ -127,7 +127,7 @@ export function registerContextDiscoveryTools(server: FastMCP, maps: DiscoveryMa
         name: 'discover_context_meta_data',
         annotations: { readOnlyHint: true, openWorldHint: false },
         description:
-            'Look up what exists right now — call this before guessing a name in `q`/`pick`, before writing, or ' +
+            'Look up what exists right now — call this before guessing a name in `filter`/`pick`, before writing, or ' +
             'before filtering an enumerated attribute. `pick` selects what to return (see its own description); ' +
             '`name` drills into one item instead of listing every one; `compact` trims a non-drilled-into ' +
             '"live_data" listing to just names. Response is one JSON object keyed by kind — "live_data" gives ' +

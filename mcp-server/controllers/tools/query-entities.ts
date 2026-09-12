@@ -12,6 +12,7 @@ import {
     queryClauseHeads,
     rewriteAdditionalPropertyQuery,
     pickWithAdditionalProperty,
+    snapEnumCase,
     CORE_ENTITY_ATTRS
 } from './util';
 
@@ -24,7 +25,7 @@ const shape = (e: unknown): unknown => {
 
 export interface EntityQueryArgs {
     entityType: string;
-    q?: string;
+    filter?: string;
     pick?: string;
     limit?: number;
     offset?: number;
@@ -50,25 +51,32 @@ export const REPR_PARAM_DESC =
 // Shared execute body for query_entities and its geo superset: additionalProperty q/pick
 // bracketing, VocabProperty expandValues auto-fill, an optional geo predicate, then okPage.
 export function makeEntityQuery(schemas: LoadedSchema[]) {
-    // Maps each type (lower-cased) to its VocabProperty attribute names, for every loaded schema.
-    const vocabByType = new Map<string, string[]>();
+    // Maps each type (lower-cased) to its VocabProperty attributes and their enum values.
+    const vocabByType = new Map<string, Record<string, string[]>>();
     for (const s of schemas) {
-        vocabByType.set(
-            s.typeName.toLowerCase(),
-            Object.entries(s.writeAttrs)
-                .filter(([, w]) => w.ngsiType === 'VocabProperty')
-                .map(([name]) => name)
-        );
+        const vocab: Record<string, string[]> = {};
+        for (const [name, w] of Object.entries(s.writeAttrs)) {
+            if (w.ngsiType === 'VocabProperty' && w.enumValues?.length) {
+                vocab[name] = w.enumValues;
+            }
+        }
+        vocabByType.set(s.typeName.toLowerCase(), vocab);
     }
 
     return async (args: EntityQueryArgs, toolName: string) => {
-        const { entityType, q, pick, limit, offset, metadataOnly, compact } = args;
+        const { entityType, filter, pick, limit, offset, metadataOnly, compact } = args;
         try {
+            // `type` may be a comma list; pool the VocabProperties of every named type.
+            const types = entityType.split(',').map((t) => t.trim().toLowerCase());
+            const vocabMaps = types.map((t) => vocabByType.get(t)).filter((m): m is Record<string, string[]> => !!m);
+            const enumsFor = (attr: string): string[] | undefined => vocabMaps.map((m) => m[attr]).find((v) => v);
+            const snappedFilter = snapEnumCase(filter, enumsFor);
+
             // No schema here, so unmodelled attrs live in the JsonProperty container: bracket
             // bare `q` heads and pull the whole container for `pick`, so the caller need not.
             const effectiveQ = ADDITIONAL_PROPERTY_MODE
-                ? rewriteAdditionalPropertyQuery(q, CORE_ENTITY_ATTRS, ADDITIONAL_PROPERTY)
-                : q;
+                ? rewriteAdditionalPropertyQuery(snappedFilter, CORE_ENTITY_ATTRS, ADDITIONAL_PROPERTY)
+                : snappedFilter;
             let effectivePick = ADDITIONAL_PROPERTY_MODE
                 ? pickWithAdditionalProperty(pick, null, ADDITIONAL_PROPERTY)
                 : pick;
@@ -84,12 +92,10 @@ export function makeEntityQuery(schemas: LoadedSchema[]) {
                 }
             }
 
-            // `type` may be a comma list; pool the VocabProperties of every named type, then
-            // expand only the ones actually filtered on in `q` — the broker 400s otherwise.
-            const types = entityType.split(',').map((t) => t.trim().toLowerCase());
-            const vocab = types.flatMap((t) => vocabByType.get(t) ?? []);
-            const heads = queryClauseHeads(q);
-            const ev = new Set(vocab.filter((attr) => heads.includes(attr)));
+            // Expand only the enumerated attributes actually filtered on — the broker
+            // 400s if `expandValues` names a non-enumerated attribute.
+            const heads = queryClauseHeads(filter);
+            const ev = new Set(vocabMaps.flatMap((m) => Object.keys(m)).filter((attr) => heads.includes(attr)));
 
             const page = await listEntities({
                 type: entityType,
@@ -120,15 +126,21 @@ export function registerQueryEntities(server: FastMCP, schemas: LoadedSchema[] =
         annotations: { readOnlyHint: true, openWorldHint: false },
         description:
             'Current-state search for entities of one type. If unsure which attributes the type has, call ' +
-            '`discover_context_meta_data` first — do not guess names in `q` or `pick`. Provide a `q` filter string (`;` = AND, ' +
-            '`|` = OR; operators `==` `!=` `>` `<` `>=` `<=` `~=`, string values in double quotes). To filter an ' +
-            'enumerated attribute (e.g. `sex=="Male"`), just write it in `q` — vocabulary matching is automatic. ' +
-            'Leave `pick` unset by default (see its own description). ' +
+            '`discover_context_meta_data` first — do not guess names in `filter` or `pick`. Provide a filter string ' +
+            '(`;` = AND, `|` = OR; operators `==` `!=` `>` `<` `>=` `<=` `~=`, string values in double quotes). To ' +
+            'filter an enumerated attribute (e.g. `sex=="Male"`), just write it in `filter` — vocabulary matching ' +
+            'is automatic. Leave `pick` unset by default (see its own description). ' +
             'The response is paginated: check the `pagination` block and, when `hasMore` is true, either call again with the ' +
             'given `offset` or narrow the query — never assume the first page is the whole result set.',
         parameters: z.object({
             entityType: z.string().describe('Entity type, e.g. "Animal", "Building", "SoilSensor".'),
-            q: z.string().optional().describe('`q` filter string, e.g. `species=="dairy cattle";weight>400`.'),
+            filter: z
+                .string()
+                .optional()
+                .describe(
+                    'Filter string, e.g. `species=="dairy cattle"` or `weight>400`. Only narrow by an attribute ' +
+                        'you actually need to filter on — to just see a value, `pick` it instead.'
+                ),
             pick: z
                 .string()
                 .optional()

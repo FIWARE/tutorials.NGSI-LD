@@ -12,7 +12,7 @@ export function registerGeoQuery(server: FastMCP, schemas: LoadedSchema[] = []):
         annotations: { readOnlyHint: true, openWorldHint: false },
         description:
             'Spatial search for entities of one type — point-in-polygon, distance and intersection queries via ' +
-            '`georel`/`geometry`/`coordinates`, ANDed with an optional `q` filter; the only tool that can do this. ' +
+            '`georel`/`geometry`/`coordinates`, ANDed with an optional `filter`; the only tool that can do this. ' +
             '`pick` and pagination work the same as `query_entities` (call ' +
             '`discover_context_meta_data` first rather than guessing attribute names). Typical use: read an ' +
             "entity's `location`, then pass those coordinates here to find what contains it or is nearby.",
@@ -39,10 +39,13 @@ export function registerGeoQuery(server: FastMCP, schemas: LoadedSchema[] = []):
                 .string()
                 .optional()
                 .describe('Which location/geometry attribute to test against (default "location").'),
-            q: z
+            filter: z
                 .string()
                 .optional()
-                .describe('`q` filter string, ANDed with the spatial filter, e.g. `category=="irrigation";area>1000`.'),
+                .describe(
+                    'Filter string, ANDed with the spatial filter, e.g. `category=="irrigation"` or `area>1000`. ' +
+                        'Only narrow by an attribute you actually need to filter on — to just see a value, `pick` it instead.'
+                ),
             pick: z
                 .string()
                 .optional()

@@ -280,17 +280,22 @@ describe('queryClauseHeads', () => {
 describe('snapEnumCase', () => {
     const enumsFor = (a: string) => (a === 'sex' ? ['Male', 'Female'] : undefined);
 
-    it('snaps a value that differs only by case to the schema term', () => {
-        expect(snapEnumCase({ sex: 'male' }, enumsFor)).toEqual({ sex: 'Male' });
-        expect(snapEnumCase({ sex: 'FEMALE' }, enumsFor)).toEqual({ sex: 'Female' });
+    it('snaps a quoted value that differs only by case to the schema term', () => {
+        expect(snapEnumCase('sex=="male"', enumsFor)).toBe('sex=="Male"');
+        expect(snapEnumCase('sex!="FEMALE"', enumsFor)).toBe('sex!="Female"');
     });
 
-    it('leaves an exact match, a non-enum field and an unknown value alone', () => {
-        expect(snapEnumCase({ sex: 'Male', species: 'pig', breed: 'x' }, enumsFor)).toEqual({
-            sex: 'Male',
-            species: 'pig',
-            breed: 'x'
-        });
-        expect(snapEnumCase({ sex: 'unknown' }, enumsFor)).toEqual({ sex: 'unknown' });
+    it('leaves an exact match, a non-enum attribute and an unknown value alone', () => {
+        expect(snapEnumCase('sex=="Male";species=="pig"', enumsFor)).toBe('sex=="Male";species=="pig"');
+        expect(snapEnumCase('sex=="unknown"', enumsFor)).toBe('sex=="unknown"');
+    });
+
+    it('snaps every matching clause in a compound query', () => {
+        expect(snapEnumCase('species=="pig";sex=="male"', enumsFor)).toBe('species=="pig";sex=="Male"');
+    });
+
+    it('passes through empty input', () => {
+        expect(snapEnumCase(undefined, enumsFor)).toBeUndefined();
+        expect(snapEnumCase('', enumsFor)).toBe('');
     });
 });

@@ -16,8 +16,8 @@ response against a schema, and returns a token-efficient shape.
 
 ## Features
 
-- **Generic tools**: `query_entities`, `get_entity` and `geoquery_entities` work on any type, with an NGSI-LD `q`
-  filter, attribute projection (`pick`) and the broker geo engine (`georel` / `geometry` / `coordinates`).
+- **Generic tools**: `query_entities`, `get_entity` and `geoquery_entities` work on any type, with an NGSI-LD
+  `filter`, attribute projection (`pick`) and the broker geo engine (`georel` / `geometry` / `coordinates`).
   `geoquery_entities` always includes `geoproperty` (default `location`) in the response even when `pick` omits
   it. `get_entity_history` adds the temporal interface (`timerel` / `timeAt`) when `TEMPORAL_BROKER` is set.
   `metadataOnly` turns any read into a probe: just the `pagination` block on `query_*`, or `{ exists, id, type }`
@@ -98,7 +98,7 @@ Add `DEBUG=mcp:*` for debug output. All logging goes to `stderr`, safe alongside
   `additionalProperty` mode, `upsert_attribute` deep-merges an unmodelled attr into that JsonProperty;
   `delete_attribute` removes one with the `urn:ngsi-ld:null` sentinel; and `query_entities` / `get_entity`
   lift its members to the top level so they read as ordinary fields. The agent addresses collected attributes by
-  their plain name: a `q` clause like `colour=="red"` is rewritten to `additionalProperty[colour]=="red"`, and a
+  their plain name: a `filter` clause like `colour=="red"` is rewritten to `additionalProperty[colour]=="red"`, and a
   `pick` of an unmodelled name pulls the container back so the member survives projection. Not surfaced in the tool
   descriptions.
 - `ADDITIONAL_PROPERTY` - Name of that catch-all `JsonProperty`. Default: `additionalProperty`.

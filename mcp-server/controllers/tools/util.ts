@@ -131,24 +131,6 @@ export function rewriteAdditionalPropertyQuery(
     return parts.join('"');
 }
 
-// Enum matching is case-sensitive. Snap a filter value to the schema term when it
-// differs only by case; mutates and returns `filters`.
-export function snapEnumCase(
-    filters: Record<string, unknown>,
-    enumsFor: (attr: string) => string[] | undefined
-): Record<string, unknown> {
-    for (const [k, v] of Object.entries(filters)) {
-        const terms = enumsFor(k);
-        if (terms && typeof v === 'string') {
-            const hit = terms.find((t) => t.toLowerCase() === v.toLowerCase());
-            if (hit) {
-                filters[k] = hit;
-            }
-        }
-    }
-    return filters;
-}
-
 // The attribute name at the head of each `q` clause, ignoring quoted values. Used
 // to see which schema attributes a raw query actually touches.
 export function queryClauseHeads(q: string | undefined): string[] {
@@ -163,6 +145,21 @@ export function queryClauseHeads(q: string | undefined): string[] {
         }
     }
     return heads;
+}
+
+// Enum matching is case-sensitive. Snap a quoted `==`/`!=` value to the schema term
+// when it differs only by case, so a caller's guessed case still matches.
+export function snapEnumCase(
+    q: string | undefined,
+    enumsFor: (attr: string) => string[] | undefined
+): string | undefined {
+    if (!q) {
+        return q;
+    }
+    return q.replace(/([A-Za-z_][A-Za-z0-9_]*)(==|!=)"([^"]*)"/g, (m, attr: string, op: string, value: string) => {
+        const hit = enumsFor(attr)?.find((t) => t.toLowerCase() === value.toLowerCase());
+        return hit && hit !== value ? `${attr}${op}"${hit}"` : m;
+    });
 }
 
 // Core-context terms valid on any entity even when a schema omits them.
@@ -240,7 +237,7 @@ export function okPage(
         out._notice =
             `The query executed successfully and matched no ${typeLabel} entities` +
             (offset > 0 ? ` beyond offset ${offset}` : '') +
-            `. This is a valid empty result, not an error. If an attribute name in \`q\` or \`pick\` was a guess, ` +
+            `. This is a valid empty result, not an error. If an attribute name in \`filter\` or \`pick\` was a guess, ` +
             `confirm it with \`discover_context_meta_data\`.`;
     }
     const pagination = { total, limit, offset, returned, hasMore, nextOffset: hasMore ? nextOffset : null };
@@ -252,25 +249,7 @@ export function okPage(
     };
 }
 
-type ListOutcome = { data: unknown[] } | { error: string; details: unknown };
 type OneOutcome = { data: unknown } | { error: string; details: unknown };
-
-export function validateList(entities: unknown[], validator: z.ZodTypeAny): ListOutcome {
-    if (VALIDATION === 'off') {
-        return { data: entities };
-    }
-    if (VALIDATION === 'strict') {
-        const parsed = z.array(validator).safeParse(entities);
-        return parsed.success
-            ? { data: parsed.data }
-            : {
-                  error: 'Broker returned entities that do not match the required profile.',
-                  details: parsed.error.issues
-              };
-    }
-    // filter mode: keep the records that pass
-    return { data: entities.filter((e) => validator.safeParse(e).success) };
-}
 
 export function validateOne(entity: unknown, validator: z.ZodTypeAny): OneOutcome {
     if (VALIDATION === 'off') {
