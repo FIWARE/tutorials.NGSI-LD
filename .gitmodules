@@ -82,3 +82,7 @@
 	path = tutorials.Context-Providers
 	url = https://github.com/FIWARE/tutorials.Context-Providers
 	branch = NGSI-LD
+[submodule "tutorials.PEP-Proxy"]
+	path = tutorials.PEP-Proxy
+	url = git@github.com:FIWARE/tutorials.PEP-Proxy.git
+	branch = NGSI-LD
