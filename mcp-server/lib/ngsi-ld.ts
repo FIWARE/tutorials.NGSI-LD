@@ -87,10 +87,10 @@ function toQueryString(opts: Record<string, unknown>): string {
         delete params.q;
     }
 
-    if (params.format) {
-        params.options = params.format === 'simplified' ? 'keyValues' : params.format;
-        delete params.format;
+    if (params.sysAttrs) {
+        params.options = params.options ? `${params.options},sysAttrs` : 'sysAttrs';
     }
+    delete params.sysAttrs;
     if (params.pick) {
         // Keep id/type so a projected entity stays identifiable and validatable.
         const attrs = [

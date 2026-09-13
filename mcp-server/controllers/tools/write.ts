@@ -72,7 +72,7 @@ function composeEntity(id: string, type: string, attrs: Record<string, unknown>,
 // Checks existence first rather than trusting PATCH's status code — some brokers (an
 // Orion-LD pre-release, at least) 2xx a PATCH on a missing attribute and do nothing. PATCH merges; POST replaces.
 async function patchOrAppend(id: string, attr: string, node: unknown): Promise<'merged' | 'created'> {
-    const current = (await readEntity(id, { pick: attr, options: 'concise' })) as Record<string, unknown>;
+    const current = (await readEntity(id, { pick: attr, format: 'concise' })) as Record<string, unknown>;
     if (attr in current) {
         await patchAttribute(id, attr, node);
         return 'merged';

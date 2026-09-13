@@ -37,7 +37,7 @@ function relationshipTargets(v: unknown): string[] | null {
 export async function getNeighbourhood(id: string, limit?: number): Promise<Record<string, unknown>> {
     const cap = Math.min(limit && limit > 0 ? limit : 20, 100);
 
-    const self = shape(await readEntity(id, { options: 'concise' })) as Record<string, unknown>;
+    const self = shape(await readEntity(id, { format: 'concise' })) as Record<string, unknown>;
     const type = typeof self.type === 'string' ? self.type : undefined;
 
     const adjacency: Record<string, unknown> = {};
@@ -52,7 +52,7 @@ export async function getNeighbourhood(id: string, limit?: number): Promise<Reco
 
         const targetEntities = await Promise.all(
             targets.map((u) =>
-                readEntity(u, { options: 'concise' })
+                readEntity(u, { format: 'concise' })
                     .then(shape)
                     .catch(() => ({ id: u, unreadable: true }))
             )
@@ -61,7 +61,7 @@ export async function getNeighbourhood(id: string, limit?: number): Promise<Reco
         let siblings: unknown[] = [];
         if (type) {
             const q = targets.map((u) => `${attr}=="${u}"`).join('|');
-            const page = await listEntities({ type, q, limit: cap, options: 'concise' });
+            const page = await listEntities({ type, q, limit: cap, format: 'concise' });
             siblings = page.entities.map(shape).filter((e) => (e as Record<string, unknown>).id !== id);
         }
 

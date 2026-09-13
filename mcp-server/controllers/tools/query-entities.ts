@@ -37,7 +37,12 @@ export interface EntityQueryArgs {
     geoproperty?: string;
 }
 
-export const reprOption = (compact?: boolean): 'keyValues' | 'concise' => (compact ? 'keyValues' : 'concise');
+export const reprFormat = (compact?: boolean): 'simplified' | 'concise' => (compact ? 'simplified' : 'concise');
+
+export function needsSysAttrs(pick?: string): boolean {
+    const names = pick ? pick.split(',').map((s) => s.trim()) : [];
+    return names.includes('createdAt') || names.includes('modifiedAt');
+}
 
 export const REPR_PARAM_DESC =
     'Per-attribute response shape.\n' +
@@ -45,8 +50,9 @@ export const REPR_PARAM_DESC =
     'is a UN/CEFACT common code, `observedAt` an ISO-8601 timestamp); a link to another entity is `{object: "<URN>"}` ' +
     '(that URN is itself fetchable — follow it to traverse the graph), an enumerated value `{vocab: "<term>"}`, a ' +
     'location is GeoJSON. Nothing is dropped.\n' +
-    'compact=true: always a bare value, links as bare "<URN>" strings, locations as GeoJSON. Smaller and uniform, ' +
-    'but unit codes, timestamps and sub-attributes are lost. Use it only when you just need raw values.';
+    'compact=true: a bare value, links as bare "<URN>" strings, locations as GeoJSON; an enumerated value stays ' +
+    '`{vocab: "<term>"}` either way — the broker never flattens it. Smaller and more uniform elsewhere, but unit ' +
+    'codes, timestamps and sub-attributes are lost. Use it only when you just need raw values.';
 
 // Shared execute body for query_entities and its geo superset: additionalProperty q/pick
 // bracketing, VocabProperty expandValues auto-fill, an optional geo predicate, then okPage.
@@ -109,7 +115,8 @@ export function makeEntityQuery(schemas: LoadedSchema[]) {
                 limit: clampLimit(limit),
                 offset,
                 metadataOnly,
-                options: reprOption(compact)
+                format: reprFormat(compact),
+                sysAttrs: needsSysAttrs(effectivePick) || undefined
             });
             return okPage(page.entities.map(shape), page, toolName, entityType, metadataOnly === true);
         } catch (err) {
