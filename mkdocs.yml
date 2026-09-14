@@ -39,6 +39,8 @@ nav:
       - Securing Access: securing-access.md
       - PEP Proxy: pep-proxy.md
       - Verifiable Credentials: verifiable-credentials.md
+  - AI Agents:
+      - Securing an MCP Server: mcp-server.md
   - 'Processing, Analysis and Visualization':
       - Cloud Edge Computing: edge-computing.md
   - Integrating NGSI-v2 Systems:

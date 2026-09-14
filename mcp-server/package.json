@@ -23,6 +23,7 @@
         "@apidevtools/json-schema-ref-parser": "^11",
         "debug": "^4",
         "fastmcp": "^4.20.9",
+        "jose": "^5.10.0",
         "zod": "^3.25.0"
     },
     "devDependencies": {

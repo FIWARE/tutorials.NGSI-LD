@@ -7,6 +7,8 @@ import { listTypes, readType, listAttributes, readAttribute } from '../../lib/ng
 import type { CoreSchemas } from '../../lib/core-schema';
 import type { EnumMap } from '../../lib/enums';
 import type { AttrDescMap, AttrInfo } from '../../lib/relationships';
+import type { SchemaRegistry } from '../../lib/registry';
+import { withSession, type Session } from '../../lib/session';
 import { ok, fail, stripContext, validateOne } from './util';
 
 const NOT_FOUND = /\b404\b|not found/i;
@@ -17,11 +19,7 @@ const KINDS = ['live_data', 'enums', 'relationships', 'properties'] as const;
 
 export interface DiscoveryMaps {
     core: CoreSchemas;
-    enums: EnumMap;
-    relationships: AttrDescMap;
-    properties: AttrDescMap;
-    typeNames: string[];
-    ontologyLinks: Record<string, string>; // typeName -> its ontology://<model>/<type> URI
+    registry: SchemaRegistry;
 }
 
 async function fetchTypes(core: CoreSchemas, name: string | undefined, compact: boolean): Promise<unknown> {
@@ -119,9 +117,8 @@ function fetchAttrInfo(
     return findAttrIn(relationships, attr) ?? findAttrIn(properties, attr) ?? {};
 }
 
-export function registerContextDiscoveryTools(server: FastMCP, maps: DiscoveryMaps): void {
-    const { core, enums, relationships, properties, typeNames, ontologyLinks } = maps;
-    const knownTypes = new Set(typeNames.map((t) => t.toLowerCase()));
+export function registerContextDiscoveryTools(server: FastMCP<Session>, maps: DiscoveryMaps): void {
+    const { core, registry } = maps;
 
     server.addTool({
         name: 'discover_context_meta_data',
@@ -160,9 +157,25 @@ export function registerContextDiscoveryTools(server: FastMCP, maps: DiscoveryMa
             compact: z
                 .boolean()
                 .optional()
-                .describe('For a non-drilled-into "live_data" listing, return just the names, without per-item detail.')
+                .describe(
+                    'For a non-drilled-into "live_data" listing, return just the names, without per-item detail.'
+                ),
+            refresh: z
+                .boolean()
+                .optional()
+                .describe(
+                    'Re-read the entity types from the broker before answering. Use after new entity types have ' +
+                        'been created, when a type you expect is missing from "enums"/"relationships"/"properties".'
+                )
         }),
-        execute: async ({ pick, name, compact }) => {
+        execute: withSession(async ({ pick, name, compact, refresh }) => {
+            if (refresh) {
+                await registry.refresh();
+            } else {
+                await registry.refreshIfStale();
+            }
+            const { enums, relationships, properties, typeNames, ontologyLinks } = registry.get();
+            const knownTypes = new Set(typeNames.map((t) => t.toLowerCase()));
             const requested = (pick ?? '')
                 .split(',')
                 .map((s) => s.trim())
@@ -204,6 +217,6 @@ export function registerContextDiscoveryTools(server: FastMCP, maps: DiscoveryMa
                 }
             }
             return ok(result);
-        }
+        })
     });
 }

@@ -1,4 +1,5 @@
 import type { FastMCP } from 'fastmcp';
+import { withSession, type Session } from '../../lib/session';
 import { z } from 'zod';
 import { readEntity } from '../../lib/ngsi-ld';
 import { UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY } from '../../lib/constants';
@@ -8,7 +9,7 @@ import { getNeighbourhood } from './neighbourhood';
 
 const ADDITIONAL_PROPERTY_MODE = UNKNOWN_ATTRIBUTES === 'additionalProperty';
 
-export function registerGetEntity(server: FastMCP): void {
+export function registerGetEntity(server: FastMCP<Session>): void {
     server.addTool({
         name: 'get_entity',
         annotations: { readOnlyHint: true, openWorldHint: false },
@@ -50,7 +51,7 @@ export function registerGetEntity(server: FastMCP): void {
                 .optional()
                 .describe('With `neighbourhood`, max sibling entities per relationship (default 20, max 100).')
         }),
-        execute: async ({ id, pick, metadataOnly, compact, neighbourhood, limit }) => {
+        execute: withSession(async ({ id, pick, metadataOnly, compact, neighbourhood, limit }) => {
             try {
                 if (metadataOnly) {
                     const head = stripContext(await readEntity(id, { pick: 'id', format: 'concise' })) as Record<
@@ -84,6 +85,6 @@ export function registerGetEntity(server: FastMCP): void {
                 }
                 return fail(err);
             }
-        }
+        })
     });
 }

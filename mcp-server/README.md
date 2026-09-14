@@ -82,6 +82,48 @@ Add `DEBUG=mcp:*` for debug output. All logging goes to `stderr`, safe alongside
 - `NGSI_CORE_SCHEMA_DIR` - The bundled context-discovery response schemas. Default: `./ngsi-schemas`. Shipped in the
   image; you should not need to change it.
 
+### Discovery
+
+- `DISCOVERY` - `merge` reads the broker's entity types at start-up and adds any that `SCHEMA_DIR` does not already
+  cover; `off` (default) uses only the schemas on disk. Discovery never displaces a curated schema. `GET /types`
+  reports only types that currently hold at least one entity, and `attributeDetails` reports only attributes that are
+  currently populated, so a discovered type describes what exists today rather than the shape the type should take. A
+  curated schema covers a type before anything is created, and lists the attributes no entity carries yet.
+- For a discovered type the entity type URI is resolved first: if it names a Smart Data Model, that published
+  `schema.json` is fetched and used in full. Only when no data model can be found is a profile synthesised from the
+  broker's own introspection, and such a profile is marked low trust — required is relaxed to `id`/`type` and the
+  tool description tells the agent the attribute list is indicative.
+- `DISCOVERY_TTL` - Seconds before a discovered set is re-read. Default: `0`, meaning start-up only; the
+  `discover_context_meta_data` tool's `refresh` argument re-runs it on demand regardless.
+- `SDM_BASE_URL` - Where a Smart Data Model is fetched from. Default:
+  `https://raw.githubusercontent.com/smart-data-models`.
+
+### OAuth
+
+Off by default, so the server runs unauthenticated in the tutorials that expect it.
+
+- `AUTH_ENABLED` - Set to exactly `"true"` to require a bearer token on the HTTP transport. The token is verified
+  against the issuer's JWKS, and then forwarded to the broker on that caller's behalf, so the broker's own access
+  policies apply to the user rather than to this server.
+- `OIDC_ISSUER` - Realm URL, e.g. `http://keycloak:8080/realms/farm-management`. This must equal the `iss` claim in the
+  tokens presented, exactly - a token whose issuer differs by hostname or port is rejected as invalid. Keycloak stamps
+  `iss` from its configured frontend hostname, which is usually the address clients reach it on rather than the one
+  this server reaches it on. The JWKS, token and authorization endpoints are derived from `OIDC_ISSUER` by default;
+  where the two differ, override them with `OIDC_JWKS_URI`, `OIDC_TOKEN_URL` and `OIDC_AUTHORIZE_URL` so the issuer
+  stays the public string while the lookups stay on the internal network.
+- `OIDC_AUDIENCE` - Expected `aud` claim. Unset means the audience is not checked, since Keycloak only populates `aud`
+  once an audience mapper is configured.
+- `OIDC_CLIENT_ID` / `OIDC_CLIENT_SECRET` - Client credentials used for the server's own calls: start-up discovery,
+  and any request with no caller to borrow a token from (the `stdio` transport).
+- `MCP_RESOURCE_URL` - Canonical resource identifier published in the
+  [RFC 9728](https://www.rfc-editor.org/rfc/rfc9728.html) metadata at `/.well-known/oauth-protected-resource`, which a
+  client with no token reads to find the authorization server. This is the URL clients actually call - the gateway
+  address, not the in-network one. Set it, along with `OIDC_ISSUER`, to serve the discovery endpoints.
+- `WRITE_ROLES` - Comma-separated realm roles allowed to use the write and delete tools. A caller holding none of them
+  does not see those tools listed at all. A bare `role` may write every type; `role:TypeA|TypeB` may write only those
+  types, checked against the entity's type as held by the broker. Default:
+  `farm-manager,livestock-supervisor:Animal|Water|FillingLevelSensor`.
+
 ### Write Requests
 
 - `WRITABLE` - Master switch: unless set to exactly `"true"`, the server is read-only and no `create_entity`,

@@ -3,12 +3,54 @@
 
 import { z } from 'zod';
 import type { ContentResult } from 'fastmcp';
-import { VALIDATION, ENTITY_LIMIT } from '../../lib/constants';
-import type { EntityPage } from '../../lib/ngsi-ld';
+import { VALIDATION, ENTITY_LIMIT, AUTH_ENABLED, WRITE_ROLES } from '../../lib/constants';
+import { readEntity, type EntityPage } from '../../lib/ngsi-ld';
 import type { LoadedSchema } from '../../lib/schema';
+import { currentSession, type Session } from '../../lib/session';
 
 export function ok(data: unknown): string {
     return JSON.stringify(data, null, 2);
+}
+
+// fastmcp `canAccess` for the write and delete tools. A caller without one of
+// WRITE_ROLES never sees them in tools/list, so the model is not tempted to try.
+export function canWrite(auth: Session | undefined): boolean {
+    if (!AUTH_ENABLED) {
+        return true;
+    }
+    return !!auth?.roles?.some((role) => WRITE_ROLES.has(role));
+}
+
+// Types the caller may write, or null for every type. One unrestricted role wins.
+export function writableTypes(auth: Session | undefined): Set<string> | null {
+    if (!AUTH_ENABLED) {
+        return null;
+    }
+    const types = new Set<string>();
+    for (const role of auth?.roles ?? []) {
+        if (!WRITE_ROLES.has(role)) continue;
+        const allowed = WRITE_ROLES.get(role);
+        if (!allowed) return null;
+        allowed.forEach((t) => types.add(t));
+    }
+    return types;
+}
+
+// Refusal for a write outside the caller's types. Without `type` it is read from the
+// broker, since a caller-supplied entityType on an existing entity proves nothing.
+export async function typeDenied(id: string, type?: string): Promise<ContentResult | null> {
+    const allowed = writableTypes(currentSession());
+    if (!allowed) {
+        return null;
+    }
+    const actual = type ?? ((await readEntity(id, { pick: 'type', format: 'concise' })) as { type?: string }).type;
+    if (actual && allowed.has(actual)) {
+        return null;
+    }
+    return toolError({
+        error: `Not permitted to write ${actual ?? 'this'} entities. Writable types: ${[...allowed].join(', ')}.`,
+        status: 403
+    });
 }
 
 // Turns an HTTP status into { category, retryable } — how the agent should react.

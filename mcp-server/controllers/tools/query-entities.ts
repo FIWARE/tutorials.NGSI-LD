@@ -1,4 +1,5 @@
 import type { FastMCP } from 'fastmcp';
+import { withSession, type Session } from '../../lib/session';
 import { z } from 'zod';
 import { listEntities } from '../../lib/ngsi-ld';
 import { ENTITY_LIMIT, UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY } from '../../lib/constants';
@@ -125,7 +126,7 @@ export function makeEntityQuery(schemas: LoadedSchema[]) {
     };
 }
 
-export function registerQueryEntities(server: FastMCP, schemas: LoadedSchema[] = []): void {
+export function registerQueryEntities(server: FastMCP<Session>, schemas: LoadedSchema[] = []): void {
     const query = makeEntityQuery(schemas);
 
     server.addTool({
@@ -169,6 +170,6 @@ export function registerQueryEntities(server: FastMCP, schemas: LoadedSchema[] =
                 ),
             compact: z.boolean().optional().describe(REPR_PARAM_DESC)
         }),
-        execute: (args) => query(args, 'query_entities')
+        execute: withSession(async (args) => query(args, 'query_entities'))
     });
 }

@@ -2,6 +2,7 @@
 // `template`, and `{{tools}}` resolves against `exposed` with a generic-tool fallback.
 
 import type { FastMCP, InputPromptArgument } from 'fastmcp';
+import type { Session } from '../../lib/session';
 import debug from 'debug';
 import type { LoadedPrompt } from '../../lib/prompt';
 
@@ -65,7 +66,7 @@ function render(template: string, values: Record<string, string>): string {
     });
 }
 
-export function registerPrompt(server: FastMCP, spec: LoadedPrompt, exposed: ReadonlySet<string>): void {
+export function registerPrompt(server: FastMCP<Session>, spec: LoadedPrompt, exposed: ReadonlySet<string>): void {
     const args: InputPromptArgument[] = Object.entries(spec.arguments).map(([name, description]) => ({
         name,
         description,
@@ -95,7 +96,11 @@ export function registerPrompt(server: FastMCP, spec: LoadedPrompt, exposed: Rea
 }
 
 // Returns the number of prompts registered.
-export function registerPrompts(server: FastMCP, prompts: LoadedPrompt[], exposed: ReadonlySet<string>): number {
+export function registerPrompts(
+    server: FastMCP<Session>,
+    prompts: LoadedPrompt[],
+    exposed: ReadonlySet<string>
+): number {
     for (const spec of prompts) {
         registerPrompt(server, spec, exposed);
     }

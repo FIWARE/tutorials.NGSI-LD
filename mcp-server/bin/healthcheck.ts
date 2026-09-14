@@ -1,13 +1,17 @@
 #!/usr/bin/env node
 
-import { CONTEXT_BROKER } from '../lib/constants';
+// Probes this server, not the broker — once the broker requires a token, 401 reads as healthy.
 
-fetch(`${CONTEXT_BROKER}/types`, { headers: { Accept: 'application/json' } })
+import { HOST, PORT } from '../lib/constants';
+
+const host = HOST === '0.0.0.0' ? '127.0.0.1' : HOST;
+
+fetch(`http://${host}:${PORT}/health`)
     .then((r) => {
-        console.info(`broker responded ${r.status}`);
-        process.exit(r.status < 500 ? 0 : 1);
+        console.info(`mcp-server responded ${r.status}`);
+        process.exit(r.ok ? 0 : 1);
     })
     .catch((err: Error) => {
-        console.error(`broker unreachable: ${err.message}`);
+        console.error(`mcp-server unreachable: ${err.message}`);
         process.exit(1);
     });

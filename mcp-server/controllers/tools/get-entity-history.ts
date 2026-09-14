@@ -1,10 +1,11 @@
 import type { FastMCP } from 'fastmcp';
+import { withSession, type Session } from '../../lib/session';
 import { z } from 'zod';
 import { readTemporalEntity } from '../../lib/ngsi-ld';
 import { TEMPORAL_BROKER_SEPARATE } from '../../lib/constants';
 import { ok, fail, toolError, stripContext } from './util';
 
-export function registerGetEntityHistory(server: FastMCP): void {
+export function registerGetEntityHistory(server: FastMCP<Session>): void {
     server.addTool({
         name: 'get_entity_history',
         annotations: { readOnlyHint: true, openWorldHint: false },
@@ -34,7 +35,7 @@ export function registerGetEntityHistory(server: FastMCP): void {
             endTimeAt: z.string().optional().describe('ISO8601 end timestamp; required when `when` is "between".'),
             lastN: z.number().optional().describe('Return only the most recent N instances per attribute.')
         }),
-        execute: async ({ id, pick, when, timeAt, endTimeAt, lastN }) => {
+        execute: withSession(async ({ id, pick, when, timeAt, endTimeAt, lastN }) => {
             if (when && !timeAt) {
                 return toolError({ error: 'timeAt is required when `when` is set.' });
             }
@@ -61,6 +62,6 @@ export function registerGetEntityHistory(server: FastMCP): void {
                 }
                 return fail(err);
             }
-        }
+        })
     });
 }

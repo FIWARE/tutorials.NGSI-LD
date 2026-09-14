@@ -1,6 +1,5 @@
 import debug from 'debug';
 import { FastMCP } from 'fastmcp';
-import { loadSchemas } from './lib/schema';
 import { loadCoreSchemas } from './lib/core-schema';
 import { loadPrompts } from './lib/prompt';
 import { registerContextDiscoveryTools } from './controllers/tools/context-discovery';
@@ -14,9 +13,22 @@ import { registerPrompts } from './controllers/prompts/dynamic';
 import { registerOntology, registerAttributeVocabulary } from './controllers/resources/ontology';
 import { registerContextDiscoveryResources } from './controllers/resources/context-discovery';
 import { buildVocabulary } from './lib/vocabulary';
-import { buildEnums } from './lib/enums';
-import { buildRelationships, buildProperties } from './lib/relationships';
-import { TEMPORAL_BROKER, WRITABLE, UNKNOWN_ATTRIBUTES, ENTITY_DEFAULTS } from './lib/constants';
+import { SchemaRegistry } from './lib/registry';
+import { verifyBearer } from './lib/auth';
+import type { Session } from './lib/session';
+import {
+    TEMPORAL_BROKER,
+    WRITABLE,
+    UNKNOWN_ATTRIBUTES,
+    ENTITY_DEFAULTS,
+    DISCOVERY,
+    AUTH_ENABLED,
+    OIDC_ISSUER,
+    OIDC_JWKS_URI,
+    OIDC_TOKEN_URL,
+    OIDC_AUTHORIZE_URL,
+    MCP_RESOURCE_URL
+} from './lib/constants';
 
 const log = debug('mcp:server');
 
@@ -51,8 +63,46 @@ const INSTRUCTIONS = [
     'failure — report it plainly.'
 ].join('\n');
 
-export async function buildServer(): Promise<FastMCP> {
-    const server = new FastMCP({ name: 'ngsi-ld-mcp-server', version: '1.0.0', instructions: INSTRUCTIONS });
+// RFC 9728 protected-resource metadata plus the RFC 8414 authorization-server
+// metadata, so a client holding no token can find the OIDC provider from a 401 alone.
+function oauthConfig() {
+    if (!AUTH_ENABLED || !OIDC_ISSUER || !MCP_RESOURCE_URL) {
+        return undefined;
+    }
+    return {
+        enabled: true as const,
+        protectedResource: {
+            resource: MCP_RESOURCE_URL,
+            authorizationServers: [OIDC_ISSUER],
+            bearerMethodsSupported: ['header'],
+            scopesSupported: ['openid', 'profile', 'email']
+        },
+        authorizationServer: {
+            issuer: OIDC_ISSUER,
+            authorizationEndpoint: OIDC_AUTHORIZE_URL,
+            tokenEndpoint: OIDC_TOKEN_URL,
+            jwksUri: OIDC_JWKS_URI,
+            registrationEndpoint: `${OIDC_ISSUER}/clients-registrations/openid-connect`,
+            responseTypesSupported: ['code'],
+            grantTypesSupported: ['authorization_code', 'refresh_token', 'client_credentials'],
+            codeChallengeMethodsSupported: ['S256'],
+            scopesSupported: ['openid', 'profile', 'email']
+        }
+    };
+}
+
+export async function buildServer(): Promise<FastMCP<Session>> {
+    const server = new FastMCP<Session>({
+        name: 'ngsi-ld-mcp-server',
+        version: '1.0.0',
+        instructions: INSTRUCTIONS,
+        // The gateway checks the token too, but it cannot see which tool is being
+        // called, so per-tool authorization needs the claims here.
+        ...(AUTH_ENABLED ? { authenticate: verifyBearer } : {}),
+        ...(oauthConfig() ? { oauth: oauthConfig() } : {}),
+        // An unauthenticated probe of this server, as opposed to the broker.
+        health: { enabled: true, path: '/health' }
+    });
 
     // Every tool name registered below. prompts/*.json's {{tools}} resolves against
     // this, so a prompt only ever names a tool this instance exposes.
@@ -60,16 +110,12 @@ export async function buildServer(): Promise<FastMCP> {
 
     const core = await loadCoreSchemas();
 
-    // Ontology resources cover every loaded type.
-    const schemas = await loadSchemas();
-    registerContextDiscoveryTools(server, {
-        core,
-        enums: buildEnums(schemas),
-        relationships: buildRelationships(schemas),
-        properties: buildProperties(schemas),
-        typeNames: schemas.map((s) => s.typeName),
-        ontologyLinks: Object.fromEntries(schemas.map((s) => [s.typeName, s.ontologyUri]))
-    });
+    // Disk schemas, then whatever the broker itself reports. Tools read the registry
+    // rather than a captured array, so a later refresh reaches them.
+    const registry = new SchemaRegistry();
+    await registry.load();
+    const schemas = registry.get().schemas;
+    registerContextDiscoveryTools(server, { core, registry });
 
     // The query tools take the loaded schemas so `expandValues` auto-fills for
     // enumerated `q` filters.
@@ -85,20 +131,25 @@ export async function buildServer(): Promise<FastMCP> {
     registerGeoQuery(server, schemas);
     exposed.add('geoquery_entities');
 
-    // A default for a type with no loaded schema is a config error, not ignorable.
+    // A default for a type with no loaded schema is a config error — unless discovery
+    // is on, where the type may simply have no entities on the broker yet.
     const loadedTypes = new Set(schemas.map((s) => s.typeName.toLowerCase()));
     for (const type of ENTITY_DEFAULTS.keys()) {
-        if (!loadedTypes.has(type.toLowerCase())) {
+        if (loadedTypes.has(type.toLowerCase())) {
+            continue;
+        }
+        if (DISCOVERY === 'off') {
             throw new Error(`ENTITY_DEFAULTS names unknown type "${type}"; no schema is loaded for it`);
         }
+        log('ENTITY_DEFAULTS names "%s", which no schema covers yet', type);
     }
 
     let writeTools = 0;
     if (WRITABLE) {
-        writeTools += registerGenericWrite(server, schemas, exposed);
+        writeTools += registerGenericWrite(server, registry, exposed);
         writeTools += registerGenericDelete(server, exposed);
     }
-    registerOntology(server, schemas);
+    registerOntology(server, registry);
     // The attribute vocabulary guides adding new names; pointless (and its @context
     // fetch wasted) when unmodelled names are rejected.
     if (UNKNOWN_ATTRIBUTES !== 'reject') {

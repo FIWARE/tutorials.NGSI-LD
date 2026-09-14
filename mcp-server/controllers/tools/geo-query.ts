@@ -1,4 +1,5 @@
 import type { FastMCP } from 'fastmcp';
+import { withSession, type Session } from '../../lib/session';
 import { z } from 'zod';
 import { ENTITY_LIMIT } from '../../lib/constants';
 import type { LoadedSchema } from '../../lib/schema';
@@ -18,7 +19,7 @@ function buildGeorel(georel: string, minDistance?: number, maxDistance?: number)
     return ['near', ...parts].join(';');
 }
 
-export function registerGeoQuery(server: FastMCP, schemas: LoadedSchema[] = []): void {
+export function registerGeoQuery(server: FastMCP<Session>, schemas: LoadedSchema[] = []): void {
     const query = makeEntityQuery(schemas);
 
     server.addTool({
@@ -91,7 +92,7 @@ export function registerGeoQuery(server: FastMCP, schemas: LoadedSchema[] = []):
                 ),
             compact: z.boolean().optional().describe(REPR_PARAM_DESC)
         }),
-        execute: ({ relation, minDistance, maxDistance, ...args }) =>
+        execute: withSession(async ({ relation, minDistance, maxDistance, ...args }) =>
             query(
                 {
                     ...args,
@@ -100,5 +101,6 @@ export function registerGeoQuery(server: FastMCP, schemas: LoadedSchema[] = []):
                 },
                 'geoquery_entities'
             )
+        )
     });
 }

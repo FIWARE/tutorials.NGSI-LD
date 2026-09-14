@@ -93,6 +93,62 @@ function entityDefaultsFor(typeName: string): Record<string, unknown> {
 
 const SEND_PICK_AS_ATTRS = process.env.SEND_PICK_AS_ATTRS === 'true';
 
+// Master interlock for OAuth. Off, the server accepts anonymous sessions and sends
+// no Authorization header — the shape every unsecured tutorial relies on.
+const AUTH_ENABLED = process.env.AUTH_ENABLED === 'true';
+
+// Keycloak realm URL, e.g. http://keycloak:8080/realms/farm-management.
+const OIDC_ISSUER = process.env.OIDC_ISSUER || undefined;
+const OIDC_JWKS_URI = process.env.OIDC_JWKS_URI || `${OIDC_ISSUER}/protocol/openid-connect/certs`;
+const OIDC_TOKEN_URL = process.env.OIDC_TOKEN_URL || `${OIDC_ISSUER}/protocol/openid-connect/token`;
+const OIDC_AUTHORIZE_URL = process.env.OIDC_AUTHORIZE_URL || `${OIDC_ISSUER}/protocol/openid-connect/auth`;
+// Unset means the audience claim is not checked — Keycloak only populates `aud`
+// once an audience mapper is configured, so this is opt-in.
+const OIDC_AUDIENCE = process.env.OIDC_AUDIENCE || undefined;
+
+// Client credentials for the server's own calls: start-up discovery, and any
+// request with no caller token (stdio transport).
+const OIDC_CLIENT_ID = process.env.OIDC_CLIENT_ID || undefined;
+const OIDC_CLIENT_SECRET = process.env.OIDC_CLIENT_SECRET || undefined;
+
+// Canonical resource identifier published in the RFC 9728 metadata. This is the
+// gateway URL a client actually calls, not the in-network one.
+const MCP_RESOURCE_URL = process.env.MCP_RESOURCE_URL || undefined;
+
+// Realm roles allowed to use write/delete; a caller without one never sees them in tools/list.
+// `role` may write every type, `role:TypeA|TypeB` only those.
+const WRITE_ROLES: Map<string, string[] | null> = new Map(
+    (process.env.WRITE_ROLES || 'farm-manager,livestock-supervisor:Animal|Water|FillingLevelSensor')
+        .split(',')
+        .map((r) => r.trim())
+        .filter(Boolean)
+        .map((r) => {
+            const [role, types] = r.split(':');
+            return [
+                role.trim(),
+                types === undefined
+                    ? null
+                    : types
+                          .split('|')
+                          .map((t) => t.trim())
+                          .filter(Boolean)
+            ];
+        })
+);
+
+// `merge` adds broker-discovered types to the curated ones in SCHEMA_DIR; it never replaces
+// a curated schema, since GET /types and attributeDetails only see currently-populated attributes.
+const DISCOVERY = (() => {
+    const v = process.env.DISCOVERY || 'off';
+    return v === 'merge' ? v : 'off';
+})() as 'off' | 'merge';
+
+// Seconds before a discovered set is considered stale. 0 means start-up only.
+const DISCOVERY_TTL = Number(process.env.DISCOVERY_TTL || 0);
+
+// Where an entity type URI is resolved to a curated JSON Schema.
+const SDM_BASE_URL = process.env.SDM_BASE_URL || 'https://raw.githubusercontent.com/smart-data-models';
+
 const TRANSPORT = process.env.MCP_TRANSPORT || 'stdio';
 const PORT = Number(process.env.MCP_PORT || 3000);
 // fastmcp 4's HTTP transport binds this host; unset it defaults to IPv6 localhost
@@ -122,6 +178,19 @@ export {
     ENTITY_DEFAULTS,
     entityDefaultsFor,
     SEND_PICK_AS_ATTRS,
+    AUTH_ENABLED,
+    OIDC_ISSUER,
+    OIDC_JWKS_URI,
+    OIDC_TOKEN_URL,
+    OIDC_AUTHORIZE_URL,
+    OIDC_AUDIENCE,
+    OIDC_CLIENT_ID,
+    OIDC_CLIENT_SECRET,
+    MCP_RESOURCE_URL,
+    WRITE_ROLES,
+    DISCOVERY,
+    DISCOVERY_TTL,
+    SDM_BASE_URL,
     TRANSPORT,
     PORT,
     HOST

@@ -353,6 +353,37 @@ export async function loadOne(file: string): Promise<LoadedSchema> {
     };
 }
 
+// The in-memory twin of loadOne: same shapes, but from a schema handed over rather
+// than read from SCHEMA_DIR. Used by the broker-driven discovery in discover.ts.
+export async function loadFromSource(typeName: string, source: JsonSchemaNode): Promise<LoadedSchema> {
+    const deref = (await dereference(source as object, {
+        resolve: { sdm: sdmResolver },
+        dereference: { circular: 'ignore' }
+    })) as JsonSchemaNode;
+
+    const model = modelSlug(source);
+    const ontologyUri = `ontology://${model}/${typeName}`;
+    const shapes = buildShapes(source, deref);
+
+    return {
+        typeName,
+        model,
+        ontologyUri,
+        title: typeof source.title === 'string' && source.title.trim() ? source.title.trim() : typeName,
+        toolDescription: describe(source, typeName, ontologyUri, shapes.lowTrust),
+        inputShape: shapes.inputShape,
+        entityValidator: shapes.entityValidator,
+        entityValidatorLoose: shapes.entityValidatorLoose,
+        temporalValidator: shapes.temporalValidator,
+        required: shapes.required,
+        lowTrust: shapes.lowTrust,
+        writeAttrs: shapes.writeAttrs,
+        mobile: shapes.mobile,
+        raw: deref,
+        source
+    };
+}
+
 export async function loadSchemas(): Promise<LoadedSchema[]> {
     let files: string[] = [];
     try {

@@ -2,12 +2,25 @@
 // Delete is ./delete.ts.
 
 import type { FastMCP } from 'fastmcp';
+import { withSession, type Session } from '../../lib/session';
 import { z } from 'zod';
 import { createEntity, mergeEntity, appendAttribute, patchAttribute, readEntity } from '../../lib/ngsi-ld';
 import { WRITABLE, PROVIDED_BY, entityDefaultsFor, UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY } from '../../lib/constants';
 import { normalizeAttribute } from '../../lib/normalize';
 import type { LoadedSchema } from '../../lib/schema';
-import { ok, fail, toolError, okOrError, is404, notFound, RESERVED_ATTRS, isKnownAttr } from './util';
+import type { SchemaRegistry } from '../../lib/registry';
+import {
+    ok,
+    fail,
+    toolError,
+    okOrError,
+    is404,
+    notFound,
+    RESERVED_ATTRS,
+    isKnownAttr,
+    canWrite,
+    typeDenied
+} from './util';
 
 // Attribute values arrive as strings so the schema has no anyOf (Gemini can't express one).
 // Turn "12" / "true" / "null" into primitives, `[`/`{` strings into JSON, keep the rest.
@@ -123,21 +136,21 @@ const attrOverrides = {
 // does not load it, so do not point there.
 const CANON = UNKNOWN_ATTRIBUTES === 'reject' ? '' : ' Canonical attribute names: `ontology://attributes`.';
 
-export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], exposed: Set<string>): number {
+export function registerGenericWrite(server: FastMCP<Session>, registry: SchemaRegistry, exposed: Set<string>): number {
     if (!WRITABLE) {
         return 0;
     }
-    const byType = new Map(schemas.map((s) => [s.typeName.toLowerCase(), s]));
-    const typeNames = schemas.map((s) => s.typeName).sort();
+    const byType = () => new Map(registry.get().schemas.map((s) => [s.typeName.toLowerCase(), s]));
+    const typeNames = () => registry.get().typeNames.slice().sort();
     let count = 0;
 
-    // create_entity needs a schema, so it is not registered when none are loaded.
-    if (typeNames.length > 0) {
+    {
         count++;
         exposed.add('create_entity');
         server.addTool({
             name: 'create_entity',
             annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+            canAccess: canWrite,
             description:
                 'Create a new entity. `type` must be one of the loaded data models — creation of an unmodelled ' +
                 'type is refused. Pass attributes in simplified form (`name: value`); the server fills in the attribute ' +
@@ -146,9 +159,14 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
                 CANON,
             parameters: z.object({
                 id: z.string().describe('URN for the new entity, e.g. "urn:ngsi-ld:Animal:001".'),
+                // A plain string, not an enum: the set of known types grows when a type
+                // is discovered, and clients cache the parameter schema they first saw.
                 entityType: z
-                    .enum(typeNames as [string, ...string[]])
-                    .describe('Entity type — must be a loaded data model.'),
+                    .string()
+                    .describe(
+                        'Entity type — must be a loaded data model. Call `discover_context_meta_data` if unsure ' +
+                            'which types are modelled.'
+                    ),
                 attributes: z
                     .record(z.string())
                     .describe(
@@ -157,16 +175,18 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
                             'is a JSON string.'
                     )
             }),
-            execute: async ({ id, entityType, attributes }) => {
+            execute: withSession(async ({ id, entityType, attributes }) => {
                 try {
-                    const schema = byType.get(String(entityType).toLowerCase());
+                    const schema = byType().get(String(entityType).toLowerCase());
                     if (!schema) {
                         return toolError({
-                            error: `No data model loaded for type "${entityType}" — creation refused. Supported types: ${typeNames.join(
+                            error: `No data model loaded for type "${entityType}" — creation refused. Supported types: ${typeNames().join(
                                 ', '
                             )}.`
                         });
                     }
+                    const denied = await typeDenied(id, schema.typeName);
+                    if (denied) return denied;
                     const attrs = {
                         ...entityDefaultsFor(schema.typeName),
                         ...((attributes ?? {}) as Record<string, unknown>)
@@ -188,7 +208,7 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
                 } catch (err) {
                     return fail(err);
                 }
-            }
+            })
         });
     }
 
@@ -197,6 +217,7 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
     server.addTool({
         name: 'upsert_attribute',
         annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+        canAccess: canWrite,
         description:
             'Update one attribute on any existing entity, or add a new one — the supplied value (and any ' +
             'sub-attributes) are merged in; sub-attributes you do not mention are kept; the attribute is created if ' +
@@ -215,12 +236,14 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
             entityType: z.string().optional().describe('Entity type, to apply the loaded schema encoding.'),
             ...attrOverrides
         }),
-        execute: async ({ id, attr, value, entityType, unitCode, observedAt }) => {
+        execute: withSession(async ({ id, attr, value, entityType, unitCode, observedAt }) => {
             try {
                 if (RESERVED_ATTRS.has(attr)) {
                     return toolError({ error: `"${attr}" is not a writable attribute` });
                 }
-                const schema = entityType ? byType.get(entityType.toLowerCase()) : undefined;
+                const denied = await typeDenied(id);
+                if (denied) return denied;
+                const schema = entityType ? byType().get(entityType.toLowerCase()) : undefined;
                 return okOrError(await updateOne(id, attr, value, schema, { unitCode, observedAt }));
             } catch (err) {
                 if (is404(err)) {
@@ -228,7 +251,7 @@ export function registerGenericWrite(server: FastMCP, schemas: LoadedSchema[], e
                 }
                 return fail(err);
             }
-        }
+        })
     });
 
     return count;

@@ -11,8 +11,11 @@ import {
     WRITE_LOCAL_ONLY,
     TEMPORAL_TENANT,
     SEND_PICK_AS_ATTRS,
-    ENTITY_LIMIT
+    ENTITY_LIMIT,
+    AUTH_ENABLED
 } from './constants';
+import { currentToken } from './session';
+import { serviceToken } from './auth';
 
 const log = debug('mcp:ngsi');
 
@@ -39,9 +42,9 @@ async function parse(response: Response): Promise<unknown> {
     }
 }
 
-// The agent never picks a tenant. Reads use READ_TENANT, writes WRITE_TENANT,
-// temporal TEMPORAL_TENANT; undefined means the broker default.
-function setHeaders(tenant: string | undefined): Record<string, string> {
+// The agent never picks a tenant — reads use READ_TENANT, writes WRITE_TENANT, temporal TEMPORAL_TENANT.
+// The caller's token is forwarded when there is one; start-up discovery and stdio runs fall back to the service account.
+async function setHeaders(tenant: string | undefined): Promise<Record<string, string>> {
     const headers: Record<string, string> = {
         Accept: JSON_LD_HEADER,
         Link: LinkHeader
@@ -49,6 +52,12 @@ function setHeaders(tenant: string | undefined): Record<string, string> {
     if (tenant) {
         headers['NGSILD-Tenant'] = tenant;
         headers['NGSILD-Path'] = '/';
+    }
+    if (AUTH_ENABLED) {
+        const token = currentToken() || (await serviceToken());
+        if (token) {
+            headers.Authorization = `Bearer ${token}`;
+        }
     }
     return headers;
 }
@@ -117,12 +126,12 @@ function toQueryString(opts: Record<string, unknown>): string {
 
 // Any 2xx is success. Brokers use 206 for a truncated result (temporal lastN, a
 // page cap), not just 200.
-function requestFull(
+async function requestFull(
     url: string,
     tenant: string | undefined = READ_TENANT
 ): Promise<{ body: unknown; headers: Headers }> {
     log('GET %s', url);
-    return fetch(url, { method: 'GET', headers: setHeaders(tenant) })
+    return fetch(url, { method: 'GET', headers: await setHeaders(tenant) })
         .then((r) => parse(r).then((body) => ({ status: r.status, body, headers: r.headers })))
         .then((data) => {
             if (data.status < 200 || data.status >= 300) {
@@ -147,7 +156,7 @@ function request(url: string, tenant: string | undefined = READ_TENANT): Promise
 
 // POST / PATCH / DELETE; non-2xx throws with ProblemDetails on `.cause`. WRITE_LOCAL_ONLY
 // adds `local=true` on entity-level ops only — Orion-LD 404s it on `/attrs/{attr}`.
-function mutate(
+async function mutate(
     url: string,
     method: 'POST' | 'PATCH' | 'DELETE',
     body?: unknown,
@@ -157,7 +166,7 @@ function mutate(
     const localOk = WRITE_LOCAL_ONLY && !/\/attrs(\/|$)/.test(url);
     const target = localOk ? `${url}${url.includes('?') ? '&' : '?'}local=true` : url;
     log('%s %s', method, target);
-    const headers = setHeaders(tenant);
+    const headers = await setHeaders(tenant);
     const init: RequestInit = { method, headers };
     if (body !== undefined) {
         // @context rides in the Link header, so the body is plain json / merge-patch+json.
