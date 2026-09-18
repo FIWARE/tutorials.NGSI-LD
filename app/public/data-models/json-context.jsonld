@@ -311,7 +311,7 @@
         "verified": "https://uri.fiware.org/ns/dataModels#verified",
         "species": "agrifood:species",
         "sex": "agrifood:sex",
-        "legalId": "agrifood:legalId",
+        "legalID": "fiware:legalID",
         "additionalProperty": "schema:additionalProperty",
         "comment": "schema:comment",
         "cropType": "agrifood:hasAgriCrop",

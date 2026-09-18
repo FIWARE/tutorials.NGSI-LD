@@ -46,6 +46,9 @@ const proxy = createProxyMiddleware<express.Request, express.Response>({
         log('-'.repeat(72));
         log(req.originalUrl);
       }
+      for (const name of SKIP_HEADERS) {
+        proxyReq.removeHeader(name);
+      }
       for (const [name, value] of Object.entries(req.headers)) {
         if (value === undefined || SKIP_HEADERS.has(name.toLowerCase())) {
           continue;
@@ -68,7 +71,6 @@ const proxy = createProxyMiddleware<express.Request, express.Response>({
         proxyReq.setHeader('accept-encoding', acceptEncoding);
       }
       if (!quiet) {
-        // Log the final header set actually being forwarded to the broker.
         log('%s %s -> %o', req.method, req.originalUrl, proxyReq.getHeaders());
       }
     },
@@ -86,11 +88,13 @@ const proxy = createProxyMiddleware<express.Request, express.Response>({
         proxyRes.statusCode,
         proxyRes.headers,
       );
-      const chunks: Buffer[] = [];
-      proxyRes.on('data', (chunk: Buffer) => chunks.push(chunk));
-      proxyRes.on('end', () =>
-        log('response body <- %s', Buffer.concat(chunks).toString('utf8')),
-      );
+      if (log.enabled) {
+        const chunks: Buffer[] = [];
+        proxyRes.on('data', (chunk: Buffer) => chunks.push(chunk));
+        proxyRes.on('end', () =>
+          log('response body <- %s', Buffer.concat(chunks).toString('utf8')),
+        );
+      }
     },
   },
 });

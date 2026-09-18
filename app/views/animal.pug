@@ -23,10 +23,10 @@ block content
                   - if (animal.species)
                     dt.col-lg-3 Species: 
                     dd.col-lg-9 #{animal.species.value}
-                  - if (animal.legalId||animal.legalID.value)
-                    dt.col-lg-3 Legal ID: 
+                  - if (animal.legalId||animal.legalID)
+                    dt.col-lg-3 Legal ID:
                     dd.col-lg-9
-                      code #{animal.legalId.value||animal.legalID.value}
+                      code #{(animal.legalId||animal.legalID).value}
                   - if (animal.phenologicalCondition)
                     dt.col-lg-3 Phenological
                       br 
