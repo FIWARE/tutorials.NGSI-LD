@@ -789,6 +789,10 @@ parameter to retrieve key-values.
 This example lists selected data from two **TemperatureSensor** entities chosen by `id`. Note that every `id` must be
 unique, so `type` is not required for this request. To filter by `id` add the entries in a comma delimited list.
 
+A list of `id` values is not on its own enough to make a query. NGSI-LD requires at least one of `type`, `attrs`, `q`,
+a GeoQuery or `local=true`, and raises `BadRequestData` ("too wide query") without one, `pick` does not count,
+so `local=true` is used here because it satisfies the requirement without naming a `type`.
+
 #### 13 Request:
 
 ```bash
@@ -797,6 +801,7 @@ curl -G -iX GET \
 -H 'Link: <http://context/user-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' \
 -H 'Accept: application/json' \
 -d 'id=urn:ngsi-ld:TemperatureSensor:001,urn:ngsi-ld:TemperatureSensor:002' \
+-d 'local=true' \
 -d 'pick=id,type,temperature' \
 -d 'format=concise'
 ```
@@ -840,6 +845,7 @@ curl -G -iX GET \
 -H 'Accept: application/geo+json' \
 -H 'NGSILD-Tenant: openiot' \
 -d 'id=urn:ngsi-ld:Animal:pig010,urn:ngsi-ld:Animal:pig006' \
+-d 'local=true' \
 -d 'format=concise'
 ```
 

@@ -720,8 +720,8 @@ adding a User `@context`.
 curl -G -X GET \
   'http://localhost:1026/ngsi-ld/v1/entities/' \
   -H 'Accept: application/ld+json'  \
-  -d 'type=https://uri.fiware.org/ns/dataModels%23Building' \
-  -d 'pick=id,type,https://uri.fiware.org/ns/dataModels%23category'
+  -d 'type=https://smartdatamodels.org/dataModel.Building/Building' \
+  -d 'pick=id,type,https://smartdatamodels.org/dataModel.Building/category'
 ```
 
 #### Response:
