@@ -86,3 +86,7 @@
 	path = tutorials.PEP-Proxy
 	url = git@github.com:FIWARE/tutorials.PEP-Proxy.git
 	branch = NGSI-LD
+[submodule "tutorials.Securing-Access"]
+	path = tutorials.Securing-Access
+	url = https://github.com/FIWARE/tutorials.Securing-Access
+	branch = NGSI-LD
