@@ -149,28 +149,35 @@ export function registerGenericWrite(server: FastMCP<Session>, registry: SchemaR
         exposed.add('create_entity');
         server.addTool({
             name: 'create_entity',
-            annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+            annotations: {
+                title: 'Create entity',
+                readOnlyHint: false,
+                destructiveHint: false,
+                idempotentHint: false,
+                openWorldHint: true
+            },
             canAccess: canWrite,
             description:
-                'Create a new entity. `type` must be one of the loaded data models — creation of an unmodelled ' +
-                'type is refused. Pass attributes in simplified form (`name: value`); the server fills in the attribute ' +
-                'type, unit code and timestamp from the schema and enforces its required attributes. A relationship ' +
-                'attribute takes the target entity URN; a location attribute takes GeoJSON (or a bare [lng, lat]).' +
+                'Create a new entity. `entityType` must be a loaded data model; unmodelled types are refused ' +
+                '(`discover_context_meta_data` lists them and their required attributes). Pass attributes as ' +
+                '`name: value`; the server adds the attribute type, unit code and timestamp from the schema and ' +
+                'enforces required attributes. A relationship takes the target URN, a location takes GeoJSON or a ' +
+                'bare [lng, lat], and numbers and booleans are passed as text. Fails if the id already exists.' +
                 CANON,
             parameters: z.object({
-                id: z.string().describe('URN for the new entity, e.g. "urn:ngsi-ld:Animal:001".'),
+                id: z.string().describe('URN for the new entity, e.g. "urn:ngsi-ld:<Type>:<id>".'),
                 // A plain string, not an enum: the set of known types grows when a type
                 // is discovered, and clients cache the parameter schema they first saw.
                 entityType: z
                     .string()
                     .describe(
-                        'Entity type — must be a loaded data model. Call `discover_context_meta_data` if unsure ' +
+                        'Entity type; must be a loaded data model. Call `discover_context_meta_data` if unsure ' +
                             'which types are modelled.'
                     ),
                 attributes: z
                     .record(z.string())
                     .describe(
-                        'Attribute name → value, e.g. { "species": "cow", "weight": "400" }. Values are strings: a ' +
+                        'Attribute name → value, e.g. { "name": "Example", "count": "400" }. Values are strings: a ' +
                             'number or boolean is read as such, a relationship is the target URN, a list or GeoJSON ' +
                             'is a JSON string.'
                     )
@@ -216,13 +223,21 @@ export function registerGenericWrite(server: FastMCP<Session>, registry: SchemaR
     exposed.add('upsert_attribute');
     server.addTool({
         name: 'upsert_attribute',
-        annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+        annotations: {
+            title: 'Set attribute',
+            readOnlyHint: false,
+            destructiveHint: true,
+            idempotentHint: true,
+            openWorldHint: true
+        },
         canAccess: canWrite,
         description:
-            'Update one attribute on any existing entity, or add a new one — the supplied value (and any ' +
-            'sub-attributes) are merged in; sub-attributes you do not mention are kept; the attribute is created if ' +
-            'absent. Give `entityType` so the server can apply the schema encoding and the unknown-attribute policy; without ' +
-            `it the value is inferred and \`attr\` is written as given.` +
+            'Set one attribute on an existing entity, creating the attribute if absent. Values are merged: ' +
+            'sub-attributes you do not mention are kept. Give `entityType` so the server applies the schema ' +
+            'encoding and unknown-attribute policy; otherwise the value is inferred and `attr` is written as given. ' +
+            `Use \`create_entity\` for a new entity. This is also how a device is commanded: writing a control or ` +
+            'setpoint attribute can trigger a physical action that deleting the attribute does not undo, so ' +
+            'confirm with the user before writing to a device or actuator.' +
             CANON,
         parameters: z.object({
             id: z.string().describe('URN of the entity.'),

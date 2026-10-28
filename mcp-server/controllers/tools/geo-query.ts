@@ -3,6 +3,7 @@ import { withSession, type Session } from '../../lib/session';
 import { z } from 'zod';
 import { ENTITY_LIMIT } from '../../lib/constants';
 import type { LoadedSchema } from '../../lib/schema';
+import type { SchemaRegistry } from '../../lib/registry';
 import { makeEntityQuery, REPR_PARAM_DESC } from './query-entities';
 
 const GEOREL_VALUES = ['near', 'within', 'contains', 'intersects', 'equals', 'disjoint', 'overlaps'] as const;
@@ -19,28 +20,37 @@ function buildGeorel(georel: string, minDistance?: number, maxDistance?: number)
     return ['near', ...parts].join(';');
 }
 
-export function registerGeoQuery(server: FastMCP<Session>, schemas: LoadedSchema[] = []): void {
-    const query = makeEntityQuery(schemas);
+export function registerGeoQuery(
+    server: FastMCP<Session>,
+    schemas: LoadedSchema[] = [],
+    registry?: SchemaRegistry
+): void {
+    const query = makeEntityQuery(schemas, registry);
 
     server.addTool({
         name: 'geoquery_entities',
-        annotations: { readOnlyHint: true, openWorldHint: false },
+        annotations: { title: 'Spatial query', readOnlyHint: true, openWorldHint: false },
         description:
-            'Spatial search for entities of one type — point-in-polygon, distance and intersection queries via ' +
-            '`relation`/`geometry`/`coordinates`, ANDed with an optional `filter`; the only tool that can do this. ' +
-            '`pick` and pagination work the same as `query_entities` (call ' +
-            '`discover_context_meta_data` first rather than guessing attribute names). Typical use: read an ' +
-            "entity's `location`, then pass those coordinates here to find what contains it or is nearby.",
+            'Spatial search over entities of one type, or a comma-separated list: tests an entity\'s geo attribute ' +
+            '(default `location`) against the GeoJSON in `coordinates`, optionally ANDed with `filter`. It is the ' +
+            'only tool that does spatial matching, and only entities holding that attribute can match. Other ' +
+            'parameters work as in `query_entities`. Typical use: read an entity\'s location with `get_entity`, ' +
+            'then pass those coordinates here to find what contains it or is near it.',
         parameters: z.object({
             entityType: z
                 .string()
                 .describe(
-                    'Entity type, or a comma-separated list to match any, e.g. "AgriParcel" or "Device,Building".'
+                    'Entity type, or a comma-separated list to match any. Use a type name returned by ' +
+                        '`discover_context_meta_data`.'
                 ),
             relation: z
                 .enum(GEOREL_VALUES)
                 .default('near')
-                .describe('Spatial relationship to test against `coordinates` (default "near").'),
+                .describe(
+                    'Spatial relationship between the entity\'s geometry and `coordinates` (default "near"). ' +
+                        '"within": the entity lies inside `coordinates`; "contains": the entity\'s geometry ' +
+                        'contains `coordinates`; "near": within `maxDistance` metres.'
+                ),
             maxDistance: z
                 .number()
                 .optional()
@@ -66,18 +76,18 @@ export function registerGeoQuery(server: FastMCP<Session>, schemas: LoadedSchema
                 .string()
                 .optional()
                 .describe(
-                    'Filter string, ANDed with the spatial filter, e.g. `category=="irrigation"` or `area>1000`. ' +
-                        'Only narrow by an attribute you actually need to filter on — to just see a value, `pick` it instead.'
+                    'Filter string, ANDed with the spatial filter, e.g. `status=="active"` or `area>1000`. ' +
+                        'Filter only on attributes you need to narrow by; to just see a value, `pick` it instead.'
                 ),
             pick: z
                 .string()
                 .optional()
                 .describe(
-                    'Comma-separated attributes to return. Leave unset by default; set it only once you already ' +
-                        'know exactly which attributes you want. `geoproperty` (default "location") is always ' +
-                        'included even if omitted here — a geo query is about its coordinates.'
+                    'Comma-separated attribute names to return. Set it once you know which attributes you need; ' +
+                        'unset returns every attribute. `geoproperty` (default "location") is always included even ' +
+                        'if omitted here, since a geo query is about its coordinates.'
                 ),
-            limit: z.number().optional().describe(`Max entities to return (default/max ${ENTITY_LIMIT}).`),
+            limit: z.number().optional().describe(`Max entities per page (default and maximum ${ENTITY_LIMIT}).`),
             offset: z
                 .number()
                 .optional()

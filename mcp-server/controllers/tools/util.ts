@@ -4,7 +4,7 @@
 import { z } from 'zod';
 import type { ContentResult } from 'fastmcp';
 import { VALIDATION, ENTITY_LIMIT, AUTH_ENABLED, WRITE_ROLES } from '../../lib/constants';
-import { readEntity, type EntityPage } from '../../lib/ngsi-ld';
+import { readEntity, listEntities, type EntityPage } from '../../lib/ngsi-ld';
 import type { LoadedSchema } from '../../lib/schema';
 import { currentSession, type Session } from '../../lib/session';
 
@@ -135,6 +135,58 @@ export function notFound(type: string, id: string, attr?: string): ContentResult
     });
 }
 
+function editDistance(a: string, b: string): number {
+    let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+    for (let i = 1; i <= a.length; i++) {
+        const row = [i];
+        for (let j = 1; j <= b.length; j++) {
+            row[j] = Math.min(prev[j] + 1, row[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        }
+        prev = row;
+    }
+    return prev[b.length];
+}
+
+// The few names closest to a mistyped one: case-insensitive edit distance of up to a third of the
+// length, or a shared prefix. A name differing only by case counts, since NGSI-LD names are case-sensitive.
+export function nearMatches(input: string, candidates: Iterable<string>, max = 3): string[] {
+    const want = input.toLowerCase();
+    const allowed = Math.max(1, Math.floor(want.length / 3));
+    const scored: [string, number][] = [];
+    for (const c of new Set(candidates)) {
+        if (c === input) continue;
+        const have = c.toLowerCase();
+        const d = editDistance(want, have);
+        const prefix = want.length >= 3 && have.length >= 3 && (have.startsWith(want) || want.startsWith(have));
+        if (d <= allowed || prefix) scored.push([c, d]);
+    }
+    return scored
+        .sort((x, y) => x[1] - y[1] || x[0].localeCompare(y[0]))
+        .slice(0, max)
+        .map(([c]) => c);
+}
+
+// Ids close to a missing one, for a not-found reply. Asks the broker for the ids sharing its
+// `urn:ngsi-ld:<Type>:` prefix; any failure just means no suggestions.
+export async function similarIds(id: string, max = 3): Promise<string[]> {
+    const cut = id.lastIndexOf(':');
+    const type = id.split(':')[2];
+    if (cut < 0 || !type) {
+        return [];
+    }
+    try {
+        const prefix = id.slice(0, cut + 1).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const page = await listEntities({ type, idPattern: `^${prefix}`, pick: 'id', limit: 100 });
+        const ids = page.entities.map((e) => (e as { id?: string }).id).filter((s): s is string => !!s);
+        // Compare only the part after the shared prefix, or the prefix inflates the allowed distance.
+        const head = id.slice(0, cut + 1);
+        const tails = ids.filter((s) => s.startsWith(head)).map((s) => s.slice(head.length));
+        return nearMatches(id.slice(cut + 1), tails, max).map((t) => head + t);
+    } catch {
+        return [];
+    }
+}
+
 // additionalProperty mode: unmodelled attributes are stored inside one JsonProperty.
 // Lift its members to the top level on read (a real attribute of the same name wins).
 export function spreadAdditionalProperty<T>(entity: T, name: string): T {
@@ -259,13 +311,17 @@ export function okPage(
     page: EntityPage,
     toolName: string,
     typeLabel: string,
-    metadataOnly = false
+    metadataOnly = false,
+    hints: string[] = []
 ): ContentResult {
     const { total, limit, offset, returned } = page;
     const nextOffset = offset + limit;
     const hasMore = total === null ? returned >= limit : total > offset + returned;
 
     const out: Record<string, unknown> = {};
+    const confirmNames =
+        'If a type or attribute name in `entityType`, `filter` or `pick` was a guess, confirm it with ' +
+        '`discover_context_meta_data`.';
     // A metadata-only call asked for no bodies, so the "paginate for more" notice
     // would just be noise.
     if (hasMore && !metadataOnly) {
@@ -275,12 +331,23 @@ export function okPage(
                 : `MORE DATA AVAILABLE: returned ${returned} of ${total} matching ${typeLabel} entities`) +
             `. Do not treat this as the complete set. Call ${toolName} again with offset=${nextOffset} for the ` +
             `next page, or add filters / narrow \`pick\` to reduce the result count.`;
+    } else if (metadataOnly && total === 0) {
+        out._notice =
+            `The query executed successfully and matched no ${typeLabel} entities. This is a valid empty result, ` +
+            `not an error. ${confirmNames}`;
+    } else if (metadataOnly && total === null) {
+        out._notice =
+            `The broker reported no match count for this ${typeLabel} query, which usually means nothing matched. ` +
+            confirmNames;
     } else if (returned === 0 && !metadataOnly) {
         out._notice =
             `The query executed successfully and matched no ${typeLabel} entities` +
             (offset > 0 ? ` beyond offset ${offset}` : '') +
-            `. This is a valid empty result, not an error. If an attribute name in \`filter\` or \`pick\` was a guess, ` +
-            `confirm it with \`discover_context_meta_data\`.`;
+            `. This is a valid empty result, not an error. ${confirmNames}`;
+    }
+    // Near-miss names for a query that matched nothing; present only when there is something to suggest.
+    if (hints.length) {
+        out._hints = hints;
     }
     const pagination = { total, limit, offset, returned, hasMore, nextOffset: hasMore ? nextOffset : null };
     out.pagination = pagination;

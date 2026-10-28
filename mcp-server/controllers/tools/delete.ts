@@ -20,7 +20,13 @@ export function registerGenericDelete(server: FastMCP<Session>, exposed: Set<str
     server.addTool({
         name: 'delete_attribute',
         canAccess: canWrite,
-        annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
+        annotations: {
+            title: 'Delete attribute',
+            readOnlyHint: false,
+            destructiveHint: true,
+            idempotentHint: true,
+            openWorldHint: false
+        },
         description: 'Remove one attribute from any existing entity. Does not delete the entity itself.',
         parameters: z.object({
             id: z.string().describe('URN of the entity.'),
@@ -44,7 +50,13 @@ export function registerGenericDelete(server: FastMCP<Session>, exposed: Set<str
     server.addTool({
         name: 'delete_entity',
         canAccess: canWrite,
-        annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
+        annotations: {
+            title: 'Delete entity',
+            readOnlyHint: false,
+            destructiveHint: true,
+            idempotentHint: true,
+            openWorldHint: false
+        },
         description:
             'Delete an entire entity of any type and every attribute on it. Irreversible — no undo, no ' +
             'soft-delete. To remove a single attribute use `delete_attribute`.',

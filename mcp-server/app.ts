@@ -39,16 +39,17 @@ const INSTRUCTIONS = [
     'about an entity, call `get_entity` with `neighbourhood=true` FIRST, before chasing',
     'hypotheses across other entity types: it returns the entity plus, per relationship, the',
     'target entities and every same-type entity that shares that relationship value (e.g. the',
-    "others in the same barn). Read the neighbours' own relationships too — the explanation",
-    "is often a neighbour pointing back at the entity (a newborn's `calvedBy`, say), not an",
+    "others at the same location). Read the neighbours' own relationships too — the explanation",
+    "is often a neighbour pointing back at the entity (a child's link to its parent, say), not an",
     'attribute on the entity itself. Do not `pick` a `neighbourhood` call; trimming hides the',
     'edges that carry the answer. For a single manual hop, fetch the URN; to go the other',
     'way, filter — `ownedBy=="<URN>"` finds every entity that points at one.',
     '',
-    'Do not guess attribute names. An `ontology://<model>/<type>` resource is the full JSON',
-    'Schema for a type (common attributes included); `discover_context_meta_data` shows only what',
-    'is populated on entities now, so it can be incomplete. Check one before using a name in `filter`,',
-    '`pick` or a write.',
+    'Do not guess attribute names. Call `discover_context_meta_data` with `name` set to a type',
+    'first: its "enums", "relationships" and "properties" come from the loaded schema and are',
+    'always complete, whereas "live_data" shows only what is stored now and can be incomplete.',
+    'An unscoped call lists every type and is large. An `ontology://<model>/<type>` resource is',
+    'the full JSON Schema for a type; read it only when the discovery data is not enough.',
     '',
     'A failed tool call is data, not a conversational event. Do not apologise and do not',
     'narrate an interim step ("that failed, let me try again") — act on the result directly.',
@@ -126,9 +127,9 @@ export async function buildServer(): Promise<FastMCP<Session>> {
         registerGetEntityHistory(server);
         exposed.add('get_entity_history');
     }
-    registerQueryEntities(server, schemas);
+    registerQueryEntities(server, schemas, registry);
     exposed.add('query_entities');
-    registerGeoQuery(server, schemas);
+    registerGeoQuery(server, schemas, registry);
     exposed.add('geoquery_entities');
 
     // A default for a type with no loaded schema is a config error — unless discovery

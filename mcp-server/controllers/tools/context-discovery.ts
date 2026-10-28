@@ -1,7 +1,7 @@
 // Context discovery, all through one tool: the broker's /types and /attributes, plus
 // the schema-derived enum/relationship/property maps. Broker responses validate against ngsi-schemas/*.json.
 
-import type { FastMCP } from 'fastmcp';
+import type { ContentResult, FastMCP } from 'fastmcp';
 import { z } from 'zod';
 import { listTypes, readType, listAttributes, readAttribute } from '../../lib/ngsi-ld';
 import type { CoreSchemas } from '../../lib/core-schema';
@@ -9,7 +9,7 @@ import type { EnumMap } from '../../lib/enums';
 import type { AttrDescMap, AttrInfo } from '../../lib/relationships';
 import type { SchemaRegistry } from '../../lib/registry';
 import { withSession, type Session } from '../../lib/session';
-import { ok, fail, stripContext, validateOne } from './util';
+import { ok, fail, toolError, stripContext, validateOne, nearMatches } from './util';
 
 const NOT_FOUND = /\b404\b|not found/i;
 
@@ -117,55 +117,77 @@ function fetchAttrInfo(
     return findAttrIn(relationships, attr) ?? findAttrIn(properties, attr) ?? {};
 }
 
+// A kind that failed (bad `pick`, broker error, missing item) is an error, not data: the call
+// fails with the first failure's status/category, and whatever else succeeded rides along under `results`.
+export function settleDiscovery(result: Record<string, unknown>): string | ContentResult {
+    const failed: [string, Record<string, unknown>][] = [];
+    const rest: Record<string, unknown> = {};
+    for (const [kind, value] of Object.entries(result)) {
+        if (value && typeof value === 'object' && typeof (value as { error?: unknown }).error === 'string') {
+            failed.push([kind, value as Record<string, unknown>]);
+        } else {
+            rest[kind] = value;
+        }
+    }
+    if (!failed.length) {
+        return ok(result);
+    }
+    const { error: _first, ...meta } = failed[0][1];
+    return toolError({
+        error: failed.map(([kind, e]) => `${kind}: ${e.error}`).join('; '),
+        // No status or category on the failure (an unsupported `pick`) means the arguments were wrong.
+        ...('status' in meta || 'category' in meta ? meta : { status: 400 }),
+        ...(Object.keys(rest).length ? { results: rest } : {})
+    });
+}
+
 export function registerContextDiscoveryTools(server: FastMCP<Session>, maps: DiscoveryMaps): void {
     const { core, registry } = maps;
 
     server.addTool({
         name: 'discover_context_meta_data',
-        annotations: { readOnlyHint: true, openWorldHint: false },
+        annotations: { title: 'Discover data model', readOnlyHint: true, openWorldHint: false },
         description:
-            'Look up what exists right now — call this before guessing a name in `filter`/`pick`, before writing, or ' +
-            'before filtering an enumerated attribute. `pick` selects what to return (see its own description); ' +
-            '`name` drills into one item instead of listing every one; `compact` trims a non-drilled-into ' +
-            '"live_data" listing to just names. Response is one JSON object keyed by kind — "live_data" gives ' +
-            '"types"/"attributes", plus an "ontology"/"ontologies" link to the full modelled schema (required ' +
-            "attributes, units, nested structure) for when this tool's own data is not enough.",
+            'Look up the data model and what is currently stored. Use it to confirm type names, attribute names and ' +
+            'enumerated values before writing a `filter`, `pick` or a write; do not guess them. Set `name`: with ' +
+            'none it lists every type and can cost thousands of tokens (add `compact` for names only). "enums", ' +
+            '"relationships" and "properties" come from the loaded schema and are always complete; "live_data" ' +
+            'shows what the broker holds now and can lag. An "ontology" link points to the full schema.',
         parameters: z.object({
             pick: z
                 .string()
                 .optional()
                 .describe(
-                    'Comma-separated: "live_data" (types + attributes as currently seen on the broker), "enums" ' +
-                        '(enumerated attribute values per type), "relationships" (attributes pointing to another ' +
-                        'entity, `{relationship, property, description}` per type), "properties" (every other ' +
+                    'Comma-separated, no other separator; spaces after the comma are fine. Values: "live_data" ' +
+                        '(types and attributes currently on the broker), "enums" (allowed values for enumerated ' +
+                        'attributes, per type), "relationships" (attributes that link to another entity, ' +
+                        '`{relationship, property, description}` per type), "properties" (every other ' +
                         'data-bearing attribute, same shape). The three schema-derived kinds are always complete, ' +
-                        'even before anything is populated. Omit for all four.'
+                        'even before anything is stored. Omit for all four, which is the largest response.'
                 ),
             name: z
                 .string()
                 .optional()
                 .describe(
-                    'Drill into just this one item instead of listing every one, e.g. "Animal" or "temperature". ' +
-                        'Tried as a type name first — for "live_data" that\'s the entity type\'s full broker ' +
-                        "detail, for the schema-derived kinds that type's map with no type-name wrapper. Anything " +
-                        'else is tried as an attribute name instead: "live_data" its broker detail, "enums" the ' +
-                        'union of its values as a bare array, "relationships"/"properties" its ' +
-                        '`{relationship, property, description}` record merged into the top level. None of these ' +
-                        'error when nothing matches (`{}`/`[]` instead) — an attribute simply not being that kind ' +
-                        'is a real answer.'
+                    'Narrow to one item. A type name (case-insensitive) returns that type\'s entry; any other value ' +
+                        'is tried as an attribute name. For "enums", "relationships" and "properties" no match ' +
+                        'returns `[]` or `{}`, so an empty answer may mean a wrong name. For "live_data" a missing ' +
+                        'type or attribute is a not_found error.'
                 ),
             compact: z
                 .boolean()
                 .optional()
                 .describe(
-                    'For a non-drilled-into "live_data" listing, return just the names, without per-item detail.'
+                    'Only affects an unscoped "live_data" listing: return names only, without per-item detail. ' +
+                        'Ignored when `name` is set and for "enums", "relationships" and "properties".'
                 ),
             refresh: z
                 .boolean()
                 .optional()
                 .describe(
-                    'Re-read the entity types from the broker before answering. Use after new entity types have ' +
-                        'been created, when a type you expect is missing from "enums"/"relationships"/"properties".'
+                    'Re-read the entity types from the broker before answering. Without it the server refreshes ' +
+                        'only when its cached copy is stale. Use after new entity types have been created, or when ' +
+                        'a type you expect is missing from "enums"/"relationships"/"properties".'
                 )
         }),
         execute: withSession(async ({ pick, name, compact, refresh }) => {
@@ -216,7 +238,20 @@ export function registerContextDiscoveryTools(server: FastMCP<Session>, maps: Di
                     result[kind] = { error: `Unsupported pick value "${kind}". Supported: ${KINDS.join(', ')}.` };
                 }
             }
-            return ok(result);
+            if (name && !knownTypes.has(name.toLowerCase())) {
+                const live = result.attributes as Record<string, unknown> | undefined;
+                const inSchema =
+                    findAttrIn(relationships, name) || findAttrIn(properties, name) || fetchEnumValues(enums, name).length;
+                // Neither a type nor an attribute anywhere: an empty answer here is more likely a wrong name than a real absence.
+                if (!inSchema && !(live && !('error' in live))) {
+                    const attrNames = [relationships, properties].flatMap((m) => Object.values(m).flatMap(Object.keys));
+                    const near = nearMatches(name, [...typeNames, ...attrNames]);
+                    result._hint = near.length
+                        ? `No type or attribute named "${name}". Did you mean: ${near.join(', ')}?`
+                        : `No type or attribute named "${name}". Call without \`name\` and with pick="live_data", compact=true to list the types.`;
+                }
+            }
+            return settleDiscovery(result);
         })
     });
 }

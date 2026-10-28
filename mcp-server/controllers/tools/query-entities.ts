@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { listEntities } from '../../lib/ngsi-ld';
 import { ENTITY_LIMIT, UNKNOWN_ATTRIBUTES, ADDITIONAL_PROPERTY } from '../../lib/constants';
 import type { LoadedSchema } from '../../lib/schema';
+import type { SchemaRegistry } from '../../lib/registry';
 import {
     fail,
     stripContext,
@@ -14,6 +15,7 @@ import {
     rewriteAdditionalPropertyQuery,
     pickWithAdditionalProperty,
     snapEnumCase,
+    nearMatches,
     CORE_ENTITY_ATTRS
 } from './util';
 
@@ -46,18 +48,58 @@ export function needsSysAttrs(pick?: string): boolean {
 }
 
 export const REPR_PARAM_DESC =
-    'Per-attribute response shape.\n' +
-    'Default: a bare value, or `{value, unitCode?, observedAt?, ...}` when the attribute carries metadata (`unitCode` ' +
-    'is a UN/CEFACT common code, `observedAt` an ISO-8601 timestamp); a link to another entity is `{object: "<URN>"}` ' +
-    '(that URN is itself fetchable — follow it to traverse the graph), an enumerated value `{vocab: "<term>"}`, a ' +
-    'location is GeoJSON. Nothing is dropped.\n' +
-    'compact=true: a bare value, links as bare "<URN>" strings, locations as GeoJSON; an enumerated value stays ' +
-    '`{vocab: "<term>"}` either way — the broker never flattens it. Smaller and more uniform elsewhere, but unit ' +
-    'codes, timestamps and sub-attributes are lost. Use it only when you just need raw values.';
+    'Response shape. Default keeps metadata: `{value, unitCode?, observedAt?}`, links as `{object: "<URN>"}`, ' +
+    'enumerated values as `{vocab}`, locations as GeoJSON. compact=true returns bare values and bare URN strings, ' +
+    'dropping unit codes, timestamps and sub-attributes.';
+
+// For a query that matched nothing: which requested types or filter attributes the loaded
+// schemas do not know, with the closest known names. Advisory only — a type or attribute the
+// schemas lack can still exist on the broker, so a partial (low-trust) profile is not checked.
+export function emptyResultHints(entityType: string, filter: string | undefined, schemas: LoadedSchema[]): string[] {
+    if (!schemas.length) {
+        return [];
+    }
+    const hints: string[] = [];
+    const byType = new Map(schemas.map((s) => [s.typeName.toLowerCase(), s]));
+    const known: LoadedSchema[] = [];
+    for (const raw of entityType.split(',')) {
+        const t = raw.trim();
+        const schema = t ? byType.get(t.toLowerCase()) : undefined;
+        if (schema) {
+            known.push(schema);
+        } else if (t) {
+            const near = nearMatches(
+                t,
+                schemas.map((s) => s.typeName)
+            );
+            hints.push(
+                near.length
+                    ? `"${t}" is not a known type. Did you mean: ${near.join(', ')}?`
+                    : `"${t}" is not a known type. Call discover_context_meta_data to list the types.`
+            );
+        }
+    }
+    const checkable = known.filter((s) => !s.lowTrust);
+    if (checkable.length && checkable.length === known.length) {
+        const attrs = new Set(['id', 'type', ...CORE_ENTITY_ATTRS, ...checkable.flatMap((s) => Object.keys(s.writeAttrs))]);
+        const label = checkable.map((s) => s.typeName).join(', ');
+        for (const head of new Set(queryClauseHeads(filter))) {
+            if (attrs.has(head)) continue;
+            const near = nearMatches(head, attrs);
+            hints.push(
+                near.length
+                    ? `"${head}" is not a known attribute of ${label}. Did you mean: ${near.join(', ')}?`
+                    : `"${head}" is not a known attribute of ${label}. Call discover_context_meta_data with name set to the type to list its attributes.`
+            );
+        }
+    }
+    return hints;
+}
 
 // Shared execute body for query_entities and its geo superset: additionalProperty q/pick
 // bracketing, VocabProperty expandValues auto-fill, an optional geo predicate, then okPage.
-export function makeEntityQuery(schemas: LoadedSchema[]) {
+// `registry`, when given, supplies the current schemas so a later discovery pass reaches the hints.
+export function makeEntityQuery(schemas: LoadedSchema[], registry?: SchemaRegistry) {
     // Maps each type (lower-cased) to its VocabProperty attributes and their enum values.
     const vocabByType = new Map<string, Record<string, string[]>>();
     for (const s of schemas) {
@@ -119,43 +161,55 @@ export function makeEntityQuery(schemas: LoadedSchema[]) {
                 format: reprFormat(compact),
                 sysAttrs: needsSysAttrs(effectivePick) || undefined
             });
-            return okPage(page.entities.map(shape), page, toolName, entityType, metadataOnly === true);
+            const empty = page.total === 0 || (page.total === null && page.returned === 0);
+            const hints = empty ? emptyResultHints(entityType, filter, registry?.get().schemas ?? schemas) : [];
+            return okPage(page.entities.map(shape), page, toolName, entityType, metadataOnly === true, hints);
         } catch (err) {
             return fail(err);
         }
     };
 }
 
-export function registerQueryEntities(server: FastMCP<Session>, schemas: LoadedSchema[] = []): void {
-    const query = makeEntityQuery(schemas);
+export function registerQueryEntities(
+    server: FastMCP<Session>,
+    schemas: LoadedSchema[] = [],
+    registry?: SchemaRegistry
+): void {
+    const query = makeEntityQuery(schemas, registry);
 
     server.addTool({
         name: 'query_entities',
-        annotations: { readOnlyHint: true, openWorldHint: false },
+        annotations: { title: 'Query entities', readOnlyHint: true, openWorldHint: false },
         description:
-            'Current-state search for entities of one type. If unsure which attributes the type has, call ' +
-            '`discover_context_meta_data` first — do not guess names in `filter` or `pick`. Provide a filter string ' +
-            '(`;` = AND, `|` = OR; operators `==` `!=` `>` `<` `>=` `<=` `~=`, string values in double quotes). ' +
-            'Leave `pick` unset by default (see its own description). ' +
-            'The response is paginated: check the `pagination` block and, when `hasMore` is true, either call again with the ' +
-            'given `offset` or narrow the query — never assume the first page is the whole result set.',
+            'Current-state search over entities of one type, or a comma-separated list. Confirm attribute names and ' +
+            'enumerated values with `discover_context_meta_data` first; do not guess. `filter`: `;` = AND, `|` = OR, ' +
+            'operators `==` `!=` `>` `<` `>=` `<=` `~=`, string values in double quotes. `pick` only the attributes ' +
+            'you need (unpicked records are much larger) and use `metadataOnly` to count matches first. Results ' +
+            'are paginated: check `pagination`, and when `hasMore` is true call again with the given `offset` or ' +
+            'narrow the query; never assume the first page is the whole set.',
         parameters: z.object({
-            entityType: z.string().describe('Entity type, e.g. "Animal", "Building", "SoilSensor".'),
+            entityType: z
+                .string()
+                .describe(
+                    'Entity type, or a comma-separated list to match any. Use a type name returned by ' +
+                        '`discover_context_meta_data`.'
+                ),
             filter: z
                 .string()
                 .optional()
                 .describe(
-                    'Filter string, e.g. `species=="dairy cattle"` or `weight>400`. Only narrow by an attribute ' +
-                        'you actually need to filter on — to just see a value, `pick` it instead.'
+                    'Filter string, e.g. `status=="active"` or `count>400`. Enumerated values are matched ' +
+                        'case-sensitively, but a value that differs only by case is corrected for you. Filter only on ' +
+                        'attributes you need to narrow by; to just see a value, `pick` it instead.'
                 ),
             pick: z
                 .string()
                 .optional()
                 .describe(
-                    'Comma-separated attributes to return, e.g. "id,healthCondition,weight". Leave unset by default; ' +
-                        'set it only once you already know exactly which attributes you want.'
+                    'Comma-separated attribute names to return, e.g. "id,status,count". Set it once you know which ' +
+                        'attributes you need; unset returns every attribute.'
                 ),
-            limit: z.number().optional().describe(`Max entities to return (default/max ${ENTITY_LIMIT}).`),
+            limit: z.number().optional().describe(`Max entities per page (default and maximum ${ENTITY_LIMIT}).`),
             offset: z
                 .number()
                 .optional()
@@ -166,7 +220,8 @@ export function registerQueryEntities(server: FastMCP<Session>, schemas: LoadedS
                 .boolean()
                 .optional()
                 .describe(
-                    'Return only the `pagination` block (total match count etc.) with an empty `entities` array — use to count matches without transferring any bodies.'
+                    'Return only the `pagination` block with an empty `entities` array. Use it to count matches ' +
+                        'before fetching them (`total` can be null if the broker does not report a count).'
                 ),
             compact: z.boolean().optional().describe(REPR_PARAM_DESC)
         }),
