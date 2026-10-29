@@ -120,11 +120,11 @@ export async function buildServer(): Promise<FastMCP<Session>> {
 
     // The query tools take the loaded schemas so `expandValues` auto-fills for
     // enumerated `q` filters.
-    registerGetEntity(server);
+    registerGetEntity(server, schemas);
     exposed.add('get_entity');
     // No TEMPORAL_BROKER, no history tools.
     if (TEMPORAL_BROKER) {
-        registerGetEntityHistory(server);
+        registerGetEntityHistory(server, schemas);
         exposed.add('get_entity_history');
     }
     registerQueryEntities(server, schemas, registry);

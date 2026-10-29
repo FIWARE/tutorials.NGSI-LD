@@ -277,9 +277,8 @@ function readEntity(entityId: string, opts: Record<string, unknown>): Promise<un
     return request(`${CONTEXT_BROKER}/entities/${encodeURIComponent(entityId)}?${toQueryString(opts)}`);
 }
 
-// GET /temporal/entities/{id} against the temporal broker under TEMPORAL_TENANT.
 // Projection goes as `attrs`, supported far more widely than `pick` on temporal.
-function readTemporalEntity(entityId: string, opts: Record<string, unknown>): Promise<unknown> {
+function temporalQuery(opts: Record<string, unknown>): string {
     const { pick, ...rest } = opts;
     if (pick) {
         rest.attrs = String(pick)
@@ -288,10 +287,20 @@ function readTemporalEntity(entityId: string, opts: Record<string, unknown>): Pr
             .filter(Boolean)
             .join(',');
     }
+    return toQueryString(rest);
+}
+
+// GET /temporal/entities/{id} against the temporal broker under TEMPORAL_TENANT.
+function readTemporalEntity(entityId: string, opts: Record<string, unknown>): Promise<unknown> {
     return request(
-        `${TEMPORAL_BROKER!}/temporal/entities/${encodeURIComponent(entityId)}?${toQueryString(rest)}`,
+        `${TEMPORAL_BROKER!}/temporal/entities/${encodeURIComponent(entityId)}?${temporalQuery(opts)}`,
         TEMPORAL_TENANT
     );
+}
+
+// GET /temporal/entities: one series per matching entity. The broker requires timerel and timeAt.
+function listTemporalEntities(opts: Record<string, unknown>): Promise<unknown> {
+    return request(`${TEMPORAL_BROKER!}/temporal/entities?${temporalQuery(opts)}`, TEMPORAL_TENANT);
 }
 
 // GET /types: details=true asks for the fuller EntityType[], false the lighter
@@ -324,6 +333,7 @@ export {
     listEntities,
     readEntity,
     readTemporalEntity,
+    listTemporalEntities,
     listTypes,
     readType,
     listAttributes,

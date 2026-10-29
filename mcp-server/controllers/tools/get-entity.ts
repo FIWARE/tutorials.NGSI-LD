@@ -10,51 +10,51 @@ import {
     stripContext,
     spreadAdditionalProperty,
     pickWithAdditionalProperty,
-    similarIds
+    similarIds,
+    exampleUrn
 } from './util';
 import { reprFormat, needsSysAttrs, REPR_PARAM_DESC } from './query-entities';
+import type { LoadedSchema } from '../../lib/schema';
 import { getNeighbourhood } from './neighbourhood';
 
 const ADDITIONAL_PROPERTY_MODE = UNKNOWN_ATTRIBUTES === 'additionalProperty';
 
-export function registerGetEntity(server: FastMCP<Session>): void {
+export function registerGetEntity(server: FastMCP<Session>, schemas: LoadedSchema[] = []): void {
     server.addTool({
         name: 'get_entity',
         annotations: { title: 'Get entity', readOnlyHint: true, openWorldHint: false },
         description:
-            'Retrieve one entity by URN. Also walks relationships: `pick` a relationship attribute, then call again ' +
-            'with its target URN. For "why / how / explain" questions set `neighbourhood` first: it returns the ' +
-            'entity, its relationship targets and the same-type entities sharing each relationship value, so the ' +
-            'explaining link is visible. Otherwise `pick` only what you need; `metadataOnly` checks existence ' +
-            'cheaply. A missing entity is a not_found error, or `{ exists: false }` with `metadataOnly`.',
+            'Retrieve one entity by URN; to follow a relationship, `pick` it and fetch its target URN. For "why / ' +
+            'how / explain" questions set `neighbourhood` first: it returns the entity, its relationship targets ' +
+            'and the same-type entities sharing each relationship value. Otherwise `pick` only what you need. A ' +
+            'missing entity is a not_found error.',
         parameters: z.object({
-            id: z.string().describe('Entity URN, e.g. "urn:ngsi-ld:<Type>:<id>".'),
+            id: z.string().describe(`Entity URN, e.g. "${exampleUrn(schemas)}".`),
             pick: z
                 .string()
                 .optional()
                 .describe(
-                    'Comma-separated attribute names to return, e.g. "location,status". Set it once you know which ' +
-                        'attributes you need; unset returns every attribute. Ignored when `neighbourhood` is set.'
+                    'Comma-separated attribute names to return, e.g. "location,status". Unset returns every ' +
+                        'attribute. Ignored with `neighbourhood`.'
                 ),
             metadataOnly: z
                 .boolean()
                 .optional()
                 .describe(
-                    'Existence check only: return `{ exists, id, type }` with no attributes. A missing entity yields `{ exists: false }`, not an error.'
+                    'Existence check: return `{ exists, id, type }` only. A missing entity gives `{ exists: false }`, not an error.'
                 ),
             compact: z
                 .boolean()
                 .optional()
-                .describe(REPR_PARAM_DESC + '\nIgnored when `neighbourhood` is set.'),
+                .describe(REPR_PARAM_DESC + ' Ignored with `neighbourhood`.'),
             neighbourhood: z
                 .boolean()
                 .optional()
                 .describe(
-                    'Return `{ entity, adjacency }`: for each relationship attribute, the target entities plus every ' +
-                        'other same-type entity sharing that relationship value (siblings, e.g. same location or ' +
-                        'owner). One hop, forward only: entities that point *at* this one are not included. ' +
-                        'Entities come back in full, so `pick` and `compact` are ignored; the response can be ' +
-                        'large, so lower `limit` to shrink it.'
+                    'Return `{ entity, adjacency }`: per relationship attribute, the targets plus every other ' +
+                        'same-type entity sharing that value (siblings, e.g. same location or owner). One hop, ' +
+                        'forward only. Entities come back in full (`pick` and `compact` ignored); lower `limit` ' +
+                        'to shrink the response.'
                 ),
             limit: z
                 .number()

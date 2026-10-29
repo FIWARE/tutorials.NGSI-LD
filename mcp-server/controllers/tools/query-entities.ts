@@ -16,7 +16,8 @@ import {
     pickWithAdditionalProperty,
     snapEnumCase,
     nearMatches,
-    CORE_ENTITY_ATTRS
+    CORE_ENTITY_ATTRS,
+    exampleUrn
 } from './util';
 
 const ADDITIONAL_PROPERTY_MODE = UNKNOWN_ATTRIBUTES === 'additionalProperty';
@@ -28,6 +29,8 @@ const shape = (e: unknown): unknown => {
 
 export interface EntityQueryArgs {
     entityType: string;
+    ids?: string;
+    idPattern?: string;
     filter?: string;
     pick?: string;
     limit?: number;
@@ -48,9 +51,8 @@ export function needsSysAttrs(pick?: string): boolean {
 }
 
 export const REPR_PARAM_DESC =
-    'Response shape. Default keeps metadata: `{value, unitCode?, observedAt?}`, links as `{object: "<URN>"}`, ' +
-    'enumerated values as `{vocab}`, locations as GeoJSON. compact=true returns bare values and bare URN strings, ' +
-    'dropping unit codes, timestamps and sub-attributes.';
+    'Default keeps metadata: `{value, unitCode?, observedAt?}`, links as `{object: "<URN>"}`, enumerations as ' +
+    '`{vocab}`. true returns bare values and URN strings.';
 
 // For a query that matched nothing: which requested types or filter attributes the loaded
 // schemas do not know, with the closest known names. Advisory only — a type or attribute the
@@ -81,7 +83,12 @@ export function emptyResultHints(entityType: string, filter: string | undefined,
     }
     const checkable = known.filter((s) => !s.lowTrust);
     if (checkable.length && checkable.length === known.length) {
-        const attrs = new Set(['id', 'type', ...CORE_ENTITY_ATTRS, ...checkable.flatMap((s) => Object.keys(s.writeAttrs))]);
+        const attrs = new Set([
+            'id',
+            'type',
+            ...CORE_ENTITY_ATTRS,
+            ...checkable.flatMap((s) => Object.keys(s.writeAttrs))
+        ]);
         const label = checkable.map((s) => s.typeName).join(', ');
         for (const head of new Set(queryClauseHeads(filter))) {
             if (attrs.has(head)) continue;
@@ -113,7 +120,7 @@ export function makeEntityQuery(schemas: LoadedSchema[], registry?: SchemaRegist
     }
 
     return async (args: EntityQueryArgs, toolName: string) => {
-        const { entityType, filter, pick, limit, offset, metadataOnly, compact } = args;
+        const { entityType, ids, idPattern, filter, pick, limit, offset, metadataOnly, compact } = args;
         try {
             // `type` may be a comma list; pool the VocabProperties of every named type.
             const types = entityType.split(',').map((t) => t.trim().toLowerCase());
@@ -148,6 +155,8 @@ export function makeEntityQuery(schemas: LoadedSchema[], registry?: SchemaRegist
 
             const page = await listEntities({
                 type: entityType,
+                id: ids,
+                idPattern,
                 q: effectiveQ,
                 pick: effectivePick,
                 expandValues: ev.size ? [...ev].join(',') : undefined,
@@ -181,12 +190,11 @@ export function registerQueryEntities(
         name: 'query_entities',
         annotations: { title: 'Query entities', readOnlyHint: true, openWorldHint: false },
         description:
-            'Current-state search over entities of one type, or a comma-separated list. Confirm attribute names and ' +
-            'enumerated values with `discover_context_meta_data` first; do not guess. `filter`: `;` = AND, `|` = OR, ' +
+            'Current-state search over one entity type, or a comma-separated list. Confirm attribute names and ' +
+            'enumerated values with `discover_context_meta_data`; do not guess. `filter`: `;` = AND, `|` = OR, ' +
             'operators `==` `!=` `>` `<` `>=` `<=` `~=`, string values in double quotes. `pick` only the attributes ' +
-            'you need (unpicked records are much larger) and use `metadataOnly` to count matches first. Results ' +
-            'are paginated: check `pagination`, and when `hasMore` is true call again with the given `offset` or ' +
-            'narrow the query; never assume the first page is the whole set.',
+            'you need (unpicked records are much larger) and use `metadataOnly` to count first. Results are ' +
+            'paginated: when `pagination.hasMore` is true, call again with `offset` or narrow the query.',
         parameters: z.object({
             entityType: z
                 .string()
@@ -194,34 +202,40 @@ export function registerQueryEntities(
                     'Entity type, or a comma-separated list to match any. Use a type name returned by ' +
                         '`discover_context_meta_data`.'
                 ),
+            ids: z
+                .string()
+                .optional()
+                .describe(
+                    `Comma-separated entity URNs to fetch, e.g. "${exampleUrn(schemas, 'a')},${exampleUrn(schemas, 'b')}".`
+                ),
+            idPattern: z
+                .string()
+                .optional()
+                .describe(`Regular expression the entity URN must match, e.g. "^${exampleUrn(schemas, '')}".`),
             filter: z
                 .string()
                 .optional()
                 .describe(
-                    'Filter string, e.g. `status=="active"` or `count>400`. Enumerated values are matched ' +
-                        'case-sensitively, but a value that differs only by case is corrected for you. Filter only on ' +
-                        'attributes you need to narrow by; to just see a value, `pick` it instead.'
+                    'E.g. `status=="active"` or `count>400`. Enumerated values are case-sensitive, but a case-only ' +
+                        'difference is corrected. To just see a value, `pick` it instead of filtering.'
                 ),
             pick: z
                 .string()
                 .optional()
                 .describe(
-                    'Comma-separated attribute names to return, e.g. "id,status,count". Set it once you know which ' +
-                        'attributes you need; unset returns every attribute.'
+                    'Comma-separated attribute names to return, e.g. "id,status,count". Unset returns every attribute.'
                 ),
             limit: z.number().optional().describe(`Max entities per page (default and maximum ${ENTITY_LIMIT}).`),
             offset: z
                 .number()
                 .optional()
-                .describe(
-                    'Row offset for pagination; pass the `nextOffset` from a previous response to fetch the next page.'
-                ),
+                .describe('Row offset; pass `nextOffset` from the previous response for the next page.'),
             metadataOnly: z
                 .boolean()
                 .optional()
                 .describe(
-                    'Return only the `pagination` block with an empty `entities` array. Use it to count matches ' +
-                        'before fetching them (`total` can be null if the broker does not report a count).'
+                    'Return only `pagination` (empty `entities`), to count matches first. `total` is null if the ' +
+                        'broker reports no count.'
                 ),
             compact: z.boolean().optional().describe(REPR_PARAM_DESC)
         }),

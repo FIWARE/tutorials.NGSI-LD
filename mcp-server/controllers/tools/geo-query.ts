@@ -31,10 +31,10 @@ export function registerGeoQuery(
         name: 'geoquery_entities',
         annotations: { title: 'Spatial query', readOnlyHint: true, openWorldHint: false },
         description:
-            'Spatial search over entities of one type, or a comma-separated list: tests an entity\'s geo attribute ' +
+            "Spatial search over entities of one type, or a comma-separated list: tests an entity's geo attribute " +
             '(default `location`) against the GeoJSON in `coordinates`, optionally ANDed with `filter`. It is the ' +
             'only tool that does spatial matching, and only entities holding that attribute can match. Other ' +
-            'parameters work as in `query_entities`. Typical use: read an entity\'s location with `get_entity`, ' +
+            "parameters work as in `query_entities`. Typical use: read an entity's location with `get_entity`, " +
             'then pass those coordinates here to find what contains it or is near it.',
         parameters: z.object({
             entityType: z
@@ -47,18 +47,11 @@ export function registerGeoQuery(
                 .enum(GEOREL_VALUES)
                 .default('near')
                 .describe(
-                    'Spatial relationship between the entity\'s geometry and `coordinates` (default "near"). ' +
-                        '"within": the entity lies inside `coordinates`; "contains": the entity\'s geometry ' +
-                        'contains `coordinates`; "near": within `maxDistance` metres.'
+                    'Default "near": within `maxDistance` metres of `coordinates`. "within": the entity lies ' +
+                        'inside `coordinates`; "contains": the entity\'s geometry contains `coordinates`.'
                 ),
-            maxDistance: z
-                .number()
-                .optional()
-                .describe('With relation="near": max distance in meters from `coordinates` (default 100).'),
-            minDistance: z
-                .number()
-                .optional()
-                .describe('With relation="near": min distance in meters from `coordinates`.'),
+            maxDistance: z.number().optional().describe('With "near": max distance in metres (default 100).'),
+            minDistance: z.number().optional().describe('With "near": min distance in metres.'),
             geometry: z
                 .enum(['Point', 'LineString', 'Polygon', 'MultiPoint', 'MultiPolygon'])
                 .default('Point')
@@ -75,31 +68,20 @@ export function registerGeoQuery(
             filter: z
                 .string()
                 .optional()
-                .describe(
-                    'Filter string, ANDed with the spatial filter, e.g. `status=="active"` or `area>1000`. ' +
-                        'Filter only on attributes you need to narrow by; to just see a value, `pick` it instead.'
-                ),
+                .describe('ANDed with the spatial filter, e.g. `status=="active"`. As in `query_entities`.'),
             pick: z
                 .string()
                 .optional()
-                .describe(
-                    'Comma-separated attribute names to return. Set it once you know which attributes you need; ' +
-                        'unset returns every attribute. `geoproperty` (default "location") is always included even ' +
-                        'if omitted here, since a geo query is about its coordinates.'
-                ),
+                .describe('Comma-separated attribute names to return; `geoproperty` is always included.'),
             limit: z.number().optional().describe(`Max entities per page (default and maximum ${ENTITY_LIMIT}).`),
             offset: z
                 .number()
                 .optional()
-                .describe(
-                    'Row offset for pagination; pass the `nextOffset` from a previous response to fetch the next page.'
-                ),
+                .describe('Row offset; pass `nextOffset` from the previous response for the next page.'),
             metadataOnly: z
                 .boolean()
                 .optional()
-                .describe(
-                    'Return only the `pagination` block (total match count etc.) with an empty `entities` array — use to count matches without transferring any bodies.'
-                ),
+                .describe('Return only `pagination` (empty `entities`), to count matches first.'),
             compact: z.boolean().optional().describe(REPR_PARAM_DESC)
         }),
         execute: withSession(async ({ relation, minDistance, maxDistance, ...args }) =>

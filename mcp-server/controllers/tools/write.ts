@@ -19,7 +19,8 @@ import {
     RESERVED_ATTRS,
     isKnownAttr,
     canWrite,
-    typeDenied
+    typeDenied,
+    exampleUrn
 } from './util';
 
 // Attribute values arrive as strings so the schema has no anyOf (Gemini can't express one).
@@ -158,14 +159,14 @@ export function registerGenericWrite(server: FastMCP<Session>, registry: SchemaR
             },
             canAccess: canWrite,
             description:
-                'Create a new entity. `entityType` must be a loaded data model; unmodelled types are refused ' +
-                '(`discover_context_meta_data` lists them and their required attributes). Pass attributes as ' +
-                '`name: value`; the server adds the attribute type, unit code and timestamp from the schema and ' +
-                'enforces required attributes. A relationship takes the target URN, a location takes GeoJSON or a ' +
-                'bare [lng, lat], and numbers and booleans are passed as text. Fails if the id already exists.' +
+                'Create a new entity. `entityType` must be a loaded data model (`discover_context_meta_data` lists ' +
+                'them and their required attributes). Pass attributes as `name: value`; the server adds attribute ' +
+                'type, unit code and timestamp from the schema and enforces required attributes. A relationship ' +
+                'takes the target URN, a location GeoJSON or [lng, lat]; numbers and booleans are passed as text. ' +
+                'Fails if the id exists.' +
                 CANON,
             parameters: z.object({
-                id: z.string().describe('URN for the new entity, e.g. "urn:ngsi-ld:<Type>:<id>".'),
+                id: z.string().describe(`URN for the new entity, e.g. "${exampleUrn(registry.get().schemas)}".`),
                 // A plain string, not an enum: the set of known types grows when a type
                 // is discovered, and clients cache the parameter schema they first saw.
                 entityType: z
@@ -232,12 +233,11 @@ export function registerGenericWrite(server: FastMCP<Session>, registry: SchemaR
         },
         canAccess: canWrite,
         description:
-            'Set one attribute on an existing entity, creating the attribute if absent. Values are merged: ' +
-            'sub-attributes you do not mention are kept. Give `entityType` so the server applies the schema ' +
-            'encoding and unknown-attribute policy; otherwise the value is inferred and `attr` is written as given. ' +
-            `Use \`create_entity\` for a new entity. This is also how a device is commanded: writing a control or ` +
-            'setpoint attribute can trigger a physical action that deleting the attribute does not undo, so ' +
-            'confirm with the user before writing to a device or actuator.' +
+            'Set one attribute on an existing entity, creating it if absent; sub-attributes you do not mention are ' +
+            'kept. Give `entityType` so the server applies the schema encoding; otherwise the value is inferred ' +
+            'and `attr` is written as given. Use `create_entity` for a new entity. Writing a control or setpoint ' +
+            'attribute commands a device and can trigger a physical action that deleting it does not undo: ' +
+            'confirm with the user first.' +
             CANON,
         parameters: z.object({
             id: z.string().describe('URN of the entity.'),

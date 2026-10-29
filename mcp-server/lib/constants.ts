@@ -45,6 +45,9 @@ const PROMPTS_DIR = process.env.PROMPTS_DIR || `${__dirname}/../prompts`;
 
 const ENTITY_LIMIT = Number(process.env.ENTITY_LIMIT || 100);
 
+// Type used in the example URNs of tool descriptions; unset or unknown, the first loaded type is used.
+const EXAMPLE_TYPE = process.env.EXAMPLE_TYPE || undefined;
+
 // Master interlock: unless it is exactly "true" the server is read-only and no
 // create/update/delete tool is registered.
 const WRITABLE = process.env.WRITABLE === 'true';
@@ -173,6 +176,7 @@ export {
     PROMPTS_DIR,
     VALIDATION,
     ENTITY_LIMIT,
+    EXAMPLE_TYPE,
     WRITABLE,
     PROVIDED_BY,
     ENTITY_DEFAULTS,

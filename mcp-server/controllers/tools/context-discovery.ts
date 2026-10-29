@@ -149,30 +149,27 @@ export function registerContextDiscoveryTools(server: FastMCP<Session>, maps: Di
         annotations: { title: 'Discover data model', readOnlyHint: true, openWorldHint: false },
         description:
             'Look up the data model and what is currently stored. Use it to confirm type names, attribute names and ' +
-            'enumerated values before writing a `filter`, `pick` or a write; do not guess them. Set `name`: with ' +
-            'none it lists every type and can cost thousands of tokens (add `compact` for names only). "enums", ' +
-            '"relationships" and "properties" come from the loaded schema and are always complete; "live_data" ' +
-            'shows what the broker holds now and can lag. An "ontology" link points to the full schema.',
+            'enumerated values before writing a `filter`, `pick` or a write; do not guess them. Set `name` to a ' +
+            'type: unscoped it lists every type and costs thousands of tokens. "enums", "relationships" and ' +
+            '"properties" come from the loaded schema and are always complete; "live_data" is what the broker ' +
+            'holds now and can lag. An "ontology" link points to the full schema.',
         parameters: z.object({
             pick: z
                 .string()
                 .optional()
                 .describe(
-                    'Comma-separated, no other separator; spaces after the comma are fine. Values: "live_data" ' +
-                        '(types and attributes currently on the broker), "enums" (allowed values for enumerated ' +
-                        'attributes, per type), "relationships" (attributes that link to another entity, ' +
-                        '`{relationship, property, description}` per type), "properties" (every other ' +
-                        'data-bearing attribute, same shape). The three schema-derived kinds are always complete, ' +
-                        'even before anything is stored. Omit for all four, which is the largest response.'
+                    'Comma-separated: "live_data" (types and attributes now on the broker), "enums" (allowed ' +
+                        'values per type), "relationships" (attributes linking to another entity), "properties" ' +
+                        '(all other attributes). The schema kinds are always complete. Omit for all four, the ' +
+                        'largest response.'
                 ),
             name: z
                 .string()
                 .optional()
                 .describe(
-                    'Narrow to one item. A type name (case-insensitive) returns that type\'s entry; any other value ' +
-                        'is tried as an attribute name. For "enums", "relationships" and "properties" no match ' +
-                        'returns `[]` or `{}`, so an empty answer may mean a wrong name. For "live_data" a missing ' +
-                        'type or attribute is a not_found error.'
+                    'Narrow to one type (case-insensitive) or, failing that, one attribute name. For "enums", ' +
+                        '"relationships" and "properties" a miss returns `[]` or `{}`, which may mean a wrong name; ' +
+                        'for "live_data" it is a not_found error.'
                 ),
             compact: z
                 .boolean()
@@ -185,9 +182,8 @@ export function registerContextDiscoveryTools(server: FastMCP<Session>, maps: Di
                 .boolean()
                 .optional()
                 .describe(
-                    'Re-read the entity types from the broker before answering. Without it the server refreshes ' +
-                        'only when its cached copy is stale. Use after new entity types have been created, or when ' +
-                        'a type you expect is missing from "enums"/"relationships"/"properties".'
+                    'Re-read the entity types from the broker first (otherwise only when the cache is stale). ' +
+                        'Use after creating new types, or when an expected type is missing.'
                 )
         }),
         execute: withSession(async ({ pick, name, compact, refresh }) => {
@@ -241,7 +237,9 @@ export function registerContextDiscoveryTools(server: FastMCP<Session>, maps: Di
             if (name && !knownTypes.has(name.toLowerCase())) {
                 const live = result.attributes as Record<string, unknown> | undefined;
                 const inSchema =
-                    findAttrIn(relationships, name) || findAttrIn(properties, name) || fetchEnumValues(enums, name).length;
+                    findAttrIn(relationships, name) ||
+                    findAttrIn(properties, name) ||
+                    fetchEnumValues(enums, name).length;
                 // Neither a type nor an attribute anywhere: an empty answer here is more likely a wrong name than a real absence.
                 if (!inSchema && !(live && !('error' in live))) {
                     const attrNames = [relationships, properties].flatMap((m) => Object.values(m).flatMap(Object.keys));

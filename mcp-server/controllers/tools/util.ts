@@ -3,7 +3,7 @@
 
 import { z } from 'zod';
 import type { ContentResult } from 'fastmcp';
-import { VALIDATION, ENTITY_LIMIT, AUTH_ENABLED, WRITE_ROLES } from '../../lib/constants';
+import { VALIDATION, ENTITY_LIMIT, AUTH_ENABLED, WRITE_ROLES, EXAMPLE_TYPE } from '../../lib/constants';
 import { readEntity, listEntities, type EntityPage } from '../../lib/ngsi-ld';
 import type { LoadedSchema } from '../../lib/schema';
 import { currentSession, type Session } from '../../lib/session';
@@ -295,6 +295,13 @@ export function stripContext<T>(payload: T): T {
         return rest as T;
     }
     return payload;
+}
+
+// A URN for parameter descriptions: EXAMPLE_TYPE when it is a loaded type, else the first loaded
+// type, else a placeholder. The tool schema is fixed at registration, so this reads the types loaded then.
+export function exampleUrn(schemas: { typeName: string }[], id = '<id>', preferred = EXAMPLE_TYPE): string {
+    const named = preferred && schemas.find((s) => s.typeName.toLowerCase() === preferred.toLowerCase());
+    return `urn:ngsi-ld:${(named || schemas[0])?.typeName ?? '<Type>'}:${id}`;
 }
 
 export function clampLimit(limit?: number): number {
