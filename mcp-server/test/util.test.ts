@@ -33,6 +33,19 @@ describe('okPage', () => {
         expect(r.structuredContent).toEqual(body(r));
     });
 
+    it('reports an empty page as a valid empty result, not as more data, whatever total the broker gives', () => {
+        const out = body(okPage([], page({ total: 73, returned: 0, limit: 100 }), 'query_animal', 'Animal'));
+        expect(out._notice).toMatch(/matched no Animal entities\. This is a valid empty result/);
+        expect(out._notice).not.toMatch(/MORE DATA/);
+        expect(out.pagination).toMatchObject({ total: 73, returned: 0, hasMore: false, nextOffset: null });
+    });
+
+    it('keeps the total for a count-only call, where no rows come back by design', () => {
+        const out = body(okPage([], page({ total: 4, returned: 0 }), 'query_animal', 'Animal', true));
+        expect(out.pagination).toMatchObject({ total: 4, hasMore: true });
+        expect(out._notice).toBeUndefined();
+    });
+
     it('omits the notice when the whole result set fits on one page', () => {
         const out = body(okPage([{ id: 'a' }], page({ total: 1, returned: 1 }), 'query_animal', 'Animal'));
         expect(out._notice).toBeUndefined();

@@ -135,7 +135,7 @@ export function notFound(type: string, id: string, attr?: string): ContentResult
     });
 }
 
-function editDistance(a: string, b: string): number {
+export function editDistance(a: string, b: string): number {
     let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
     for (let i = 1; i <= a.length; i++) {
         const row = [i];
@@ -323,7 +323,10 @@ export function okPage(
 ): ContentResult {
     const { total, limit, offset, returned } = page;
     const nextOffset = offset + limit;
-    const hasMore = total === null ? returned >= limit : total > offset + returned;
+    // A page with no rows has nothing after it, whatever total the broker reports. A count-only call
+    // returns no rows by design, so there the total alone says whether anything matched.
+    const hasMore =
+        returned === 0 && !metadataOnly ? false : total === null ? returned >= limit : total > offset + returned;
 
     const out: Record<string, unknown> = {};
     const confirmNames =

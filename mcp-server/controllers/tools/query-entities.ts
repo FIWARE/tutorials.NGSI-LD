@@ -16,6 +16,7 @@ import {
     pickWithAdditionalProperty,
     snapEnumCase,
     nearMatches,
+    editDistance,
     CORE_ENTITY_ATTRS,
     exampleUrn
 } from './util';
@@ -53,6 +54,95 @@ export function needsSysAttrs(pick?: string): boolean {
 export const REPR_PARAM_DESC =
     'Default keeps metadata: `{value, unitCode?, observedAt?}`, links as `{object: "<URN>"}`, enumerations as ' +
     '`{vocab}`. true returns bare values and URN strings.';
+
+// Nothing of use came back, so near-miss hints are worth computing. A normal query is empty when
+// its first page has no rows. A count-only query returns no rows by design, so only the total can say.
+export function isEmptyResult(
+    page: { total: number | null; returned: number; offset: number },
+    countOnly: boolean
+): boolean {
+    return countOnly ? page.total === 0 : page.returned === 0 && page.offset === 0;
+}
+
+// "Años" and "anos" both fold to "anos": comparison ignoring case and accents.
+const fold = (s: string): string => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+
+// Accented forms of the letters that have them, so one regex class covers "anos" and "años".
+const ACCENTED: Record<string, string> = {
+    a: 'áàâäãåā',
+    c: 'çćč',
+    e: 'éèêëēė',
+    i: 'íìîïī',
+    n: 'ñń',
+    o: 'óòôöõøō',
+    s: 'šś',
+    u: 'úùûüū',
+    y: 'ýÿ',
+    z: 'žźż'
+};
+
+// Broker regex for the first two characters of `value` in any case or accent, e.g. "pe" -> "[Pp][EeÉé...].*".
+// Deliberately unanchored: it only narrows what the broker returns; ranking does the rest.
+export function leadingPattern(value: string): string {
+    const classes = [...value].slice(0, 2).map((ch) => {
+        const base = fold(ch);
+        if (/^[a-z]$/.test(base)) {
+            const set = base + (ACCENTED[base] ?? '');
+            return `[${set}${set.toUpperCase()}]`;
+        }
+        return /^[0-9]$/.test(base) ? base : '.';
+    });
+    return `${classes.join('')}.*`;
+}
+
+// Stored values nearest to `wanted`, best first: same text ignoring case/accents, then one containing the
+// other, then by edit distance, so "Petal" beats "Grape" for "petal". `exact` counts the first kind.
+export function closestValues(wanted: string, stored: unknown[], max = 3): { values: string[]; exact: number } {
+    const strings = [...new Set(stored.filter((v): v is string => typeof v === 'string'))];
+    if (strings.includes(wanted)) return { values: [], exact: 0 };
+    const w = fold(wanted);
+    const ranked = strings
+        .map((v) => {
+            const f = fold(v);
+            const tier = f === w ? 0 : f.includes(w) || w.includes(f) ? 1 : 2;
+            return { v, tier, dist: editDistance(w, f) };
+        })
+        .sort((x, y) => x.tier - y.tier || x.dist - y.dist || x.v.localeCompare(y.v));
+    return { values: ranked.slice(0, max).map((r) => r.v), exact: ranked.filter((r) => r.tier === 0).length };
+}
+
+// For a query that matched nothing: quoted `attr=="value"` clauses where the broker holds a stored value
+// differing only by case or accents ("twilight" for "Twilight", "anos" for "años"), else the closest values
+// it does hold. Enumerated attributes are skipped (their case is already corrected). `valuesOf` asks the
+// broker for stored values of `attr` that start like `wanted`.
+export async function valueMismatchHints(
+    filter: string | undefined,
+    skip: ReadonlySet<string>,
+    valuesOf: (attr: string, wanted: string) => Promise<unknown[]>
+): Promise<string[]> {
+    const hints: string[] = [];
+    const seen = new Set<string>();
+    for (const m of (filter ?? '').matchAll(/([A-Za-z_][A-Za-z0-9_]*)==\"([^\"]*)\"/g)) {
+        const [, attr, wanted] = m;
+        if (skip.has(attr) || !wanted || seen.has(m[0])) continue;
+        seen.add(m[0]);
+        try {
+            const { values, exact } = closestValues(wanted, await valuesOf(attr, wanted));
+            const quoted = (vs: string[]) => vs.map((v) => `"${v}"`).join(', ');
+            if (exact) {
+                hints.push(
+                    `No ${attr} equals "${wanted}", but ${quoted(values.slice(0, exact))} differs only by case or ` +
+                        `accents. Try ${attr}=="${values[0]}".`
+                );
+            } else if (values.length) {
+                hints.push(`No ${attr} equals "${wanted}". Closest stored values: ${quoted(values)}.`);
+            }
+        } catch {
+            /* advisory only */
+        }
+    }
+    return hints;
+}
 
 // For a query that matched nothing: which requested types or filter attributes the loaded
 // schemas do not know, with the closest known names. Advisory only — a type or attribute the
@@ -170,8 +260,27 @@ export function makeEntityQuery(schemas: LoadedSchema[], registry?: SchemaRegist
                 format: reprFormat(compact),
                 sysAttrs: needsSysAttrs(effectivePick) || undefined
             });
-            const empty = page.total === 0 || (page.total === null && page.returned === 0);
+            const empty = isEmptyResult(page, metadataOnly === true);
             const hints = empty ? emptyResultHints(entityType, filter, registry?.get().schemas ?? schemas) : [];
+            if (empty) {
+                const valuesOf = async (attr: string, wanted: string): Promise<unknown[]> => {
+                    const probeQ = `${attr}~="${leadingPattern(wanted)}"`;
+                    const probe = await listEntities({
+                        type: entityType,
+                        q: ADDITIONAL_PROPERTY_MODE
+                            ? rewriteAdditionalPropertyQuery(probeQ, CORE_ENTITY_ATTRS, ADDITIONAL_PROPERTY)
+                            : probeQ,
+                        pick: ADDITIONAL_PROPERTY_MODE
+                            ? pickWithAdditionalProperty(attr, null, ADDITIONAL_PROPERTY)
+                            : attr,
+                        format: 'simplified',
+                        limit: ENTITY_LIMIT
+                    });
+                    return probe.entities.map((e) => (shape(e) as Record<string, unknown>)[attr]);
+                };
+                const enumAttrs = new Set(vocabMaps.flatMap((m) => Object.keys(m)));
+                hints.push(...(await valueMismatchHints(filter, enumAttrs, valuesOf)));
+            }
             return okPage(page.entities.map(shape), page, toolName, entityType, metadataOnly === true, hints);
         } catch (err) {
             return fail(err);
@@ -216,8 +325,9 @@ export function registerQueryEntities(
                 .string()
                 .optional()
                 .describe(
-                    'E.g. `status=="active"` or `count>400`. Enumerated values are case-sensitive, but a case-only ' +
-                        'difference is corrected. To just see a value, `pick` it instead of filtering.'
+                    'E.g. `status=="active"` or `count>400`. Matching is case- and accent-sensitive; when nothing matches, ' +
+                        'a hint suggests stored values that differ only by case or accents. To just see a value, ' +
+                        '`pick` it instead of filtering.'
                 ),
             pick: z
                 .string()
